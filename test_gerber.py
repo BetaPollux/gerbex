@@ -5,8 +5,6 @@ import math
 import pytest
 import gerber
 from gerber import Gerber
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
 
 def test_format():
@@ -224,15 +222,17 @@ def test_aperture_macro():
     state = Gerber()
     statement = '%AMCIRC*\n1,1,1.5,0,0,0*%'
     state.aperture_macro('%AMCIRC*\n1,1,1.5,0,0,0*%')
-    assert type(state.macros['CIRC']) == gerber.Macro
-    # assert state.macros['CIRC'].parameters == '%AMCIRC*\n1,1,1.5,0,0,0*%'
+    assert type(state.templates['CIRC']) == gerber.Macro
+    assert type(state.templates['CIRC'].primitives[0]) == gerber.MacroCircle
+    assert state.templates['CIRC'].primitives[0].diameter == 1.5
 
 
 def test_aperture_define_macro():
     state = Gerber()
     state.aperture_macro('%AMCIRC*\n1,1,1.5,0,0,0*%')
     state.aperture_define('%ADD15CIRC*%')
-    assert state.apertures['D15'] == state.macros['CIRC']
+    assert type(state.apertures['D15']) == gerber.Macro
+    assert state.apertures['D15'] != state.templates['CIRC']
 
 
 def test_set_current_aperture():
@@ -484,6 +484,35 @@ def test_macro_outline_too_few_params():
         gerber.MacroOutline.parse('4,1,3,1,-1,1,1,2,1,30')
 
 
+def test_block_aperture():
+    state = Gerber()
+    state.aperture_define('%ADD10C,7.500000*%')
+    state.aperture_define('%ADD11C,15*%')
+    # G04 Define block aperture D100, consisting of two draws and a round dot*
+    state.aperture_block('%ABD100*%')
+    state.set_current_aperture('D10*')
+    state.move_operation('X65532000Y17605375D02*')
+    state.interpolate_operation('Y65865375D01*')
+    state.interpolate_operation('X-3556000D01*')
+    state.set_current_aperture('D11*')
+    state.flash_operation('X-3556000Y17605375D03*')
+    state.aperture_block('%AB*%')
+    assert len(state.objects) == 0
+    block = state.apertures['D100']
+    assert type(block) == gerber.BlockAperture
+    assert type(block.objects[0]) == gerber.Draw
+    assert type(block.objects[1]) == gerber.Draw
+    assert type(block.objects[2]) == gerber.Flash
+    assert block.objects[0].aperture.diameter == 7.5
+    assert block.objects[1].aperture.diameter == 7.5
+    assert block.objects[2].aperture.diameter == 15
+
+
+def test_nested_block():
+    # TODO test nested block
+    pass
+
+
 @pytest.mark.parametrize(
     "filename",
     [
@@ -505,3 +534,7 @@ def test_parse(filename):
     state = Gerber()
     directory = 'Gerber_File_Format_Examples 20210409'
     state.parse(os.path.join(directory, filename))
+
+
+if __name__ == '__main__':
+    test_block_aperture()

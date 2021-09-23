@@ -4,6 +4,6 @@ Object based Gerber file parser, intended for export of PCB designs to other for
 Return a collection of objects representing Gerber Draws, Flashes and other elements.
 
 Planned exports:
-*matplotlib visualization
-*numpy array
-*pymesh
+- matplotlib visualization
+- numpy array
+- pymesh

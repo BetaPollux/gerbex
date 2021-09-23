@@ -4,12 +4,6 @@
 
 import re
 import copy
-import sys
-
-# TBD?
-# Processor
-# Parser
-# State
 
 RE_INT = r'[+-]?[0-9]+'
 
@@ -21,18 +15,22 @@ class Gerber():
         self.unit = None
         self.current_point = None
         self.current_aperture = None
-        self.interpolation = None
+        # Interpolation should be None, but not all files have G01
+        self.interpolation = 'linear'
         self.region = None
         self.transform = ApertureTransform()
         self.apertures = {}
         self.templates = {
-            'C': Circle,  # TODO make these objects, not constructors
-            'R': Rectangle,
-            'O': Obround,
-            'P': Polygon
+            'C': Circle(1.0),
+            'R': Rectangle(1.0, 1.0),
+            'O': Obround(1.0, 1.0),
+            'P': Polygon(1.0, 3, 0.0)
         }
-        self.macros = {}  # TODO remove this
         self.objects = []
+        self.objects_list_stack = [self.objects]
+
+    def add_object(self, new_obj):
+        self.objects_list_stack[-1].append(new_obj)
 
     def comment(self, statement: str):
         pass
@@ -44,11 +42,14 @@ class Gerber():
         raise NotImplementedError('Command not implemented: ' + statement)
 
     def begin_region(self, statement: str):
+        # TODO is self.region required?
         self.region = Region(self.transform)
+        self.objects_list_stack.append(self.region)
 
     def end_region(self, statement: str):
         self.region.close()
-        self.objects.append(self.region)
+        self.objects_list_stack.pop()
+        self.add_object(self.region)
         self.region = None
 
     def get_command_function(self, statement: str):
@@ -73,7 +74,7 @@ class Gerber():
             'LS': self.load_scaling,
             'G36': self.begin_region,
             'G37': self.end_region,
-            'AB': self.not_implemented,
+            'AB': self.aperture_block,
             'SR': self.not_implemented,
             'TF': self.ignore,
             'TA': self.ignore,
@@ -131,10 +132,7 @@ class Gerber():
                         command = self.get_command_function(statement)
                         command(statement)
                     except (ValueError, KeyError) as ex:
-                        print('Error reading ', filename, 'on line',
-                              line_num + 1, file=sys.stderr)
-                        print(ex, file=sys.stderr)
-                        sys.exit()
+                        raise ValueError(f'Error line {line_num + 1}: {ex}')
 
     def set_mode(self, statement: str):
         # Set unit of measurement to metric or imperial
@@ -173,7 +171,10 @@ class Gerber():
             raise ValueError(f'Unrecognized interpolation statement: {statement}')
 
     def create_aperture(self):
-        return self.apertures[self.current_aperture].clone()
+        if self.current_aperture is not None:
+            return self.apertures[self.current_aperture].clone()
+        else:
+            return None
 
     def get_new_point(self, x, y):
         if x and y:
@@ -195,23 +196,17 @@ class Gerber():
             j = match.group(4)
             new_point = self.get_new_point(x, y)
             if self.interpolation == 'linear':
-                if self.region:
-                    self.region.append(Draw(None, self.transform, self.current_point, new_point))
-                else:
-                    self.objects.append(Draw(self.create_aperture(), self.transform,
-                                             self.current_point, new_point))
+                self.add_object(Draw(self.create_aperture(), self.transform,
+                                     self.current_point, new_point))
             elif self.interpolation in ('cw_circular', 'ccw_circular'):
                 if i and j:
                     offset = (int(i[1:]), int(j[1:]))
                 else:
                     raise ValueError(f'Missing offset: I {i}, J {j}')
                 is_cw = (self.interpolation == 'cw_circular')
-                if self.region:
-                    self.region.append(Arc(None, self.transform,
-                                           self.current_point, new_point, offset, is_cw))
-                else:
-                    self.objects.append(Arc(self.create_aperture(), self.transform,
-                                            self.current_point, new_point, offset, is_cw))
+                self.add_object(Arc(self.create_aperture(), self.transform,
+                                    self.current_point, new_point,
+                                    offset, is_cw))
             else:
                 raise ValueError(f'Invalid interpolation: {self.interpolation}')
             self.current_point = new_point
@@ -236,7 +231,7 @@ class Gerber():
             y = match.group(2)
             new_point = self.get_new_point(x, y)
             aperture = self.create_aperture()
-            self.objects.append(Flash(aperture, self.transform, new_point))
+            self.add_object(Flash(aperture, self.transform, new_point))
             self.current_point = new_point
         else:
             raise ValueError(f'Unrecognized flash operation: {statement}')
@@ -289,11 +284,8 @@ class Gerber():
             if ident in self.apertures:
                 raise ValueError(f'Aperture {ident} already defined')
 
-            # TODO unify macro and templates
             if template_name in self.templates:
-                self.apertures[ident] = self.templates[template_name].parse(parameters)
-            elif template_name in self.macros:
-                self.apertures[ident] = self.macros[template_name].calculate(parameters)
+                self.apertures[ident] = self.templates[template_name].derive_from(parameters)
             else:
                 raise KeyError(f'Aperture template {template_name} not defined')
         else:
@@ -304,9 +296,35 @@ class Gerber():
         match = re.search(r'%AM([\w\.\$]+)', statement)
         if match is not None:
             ident = match.group(1)
-            self.macros[ident] = Macro.parse(statement)
+            if ident in self.templates:
+                raise ValueError(f'Aperture {ident} template already defined')
+            self.templates[ident] = Macro.parse(statement)
         else:
             raise ValueError(f'Unrecognized aperture macro statement: {statement}')
+
+    def aperture_block(self, statement: str):
+        # %ABD12*%
+        # %ADD11C,0.5*%
+        # D10*
+        # G01*
+        # X-2500000Y-1000000D03*
+        # Y1000000D03*
+        # %LPC*%
+        # ...
+        # G01*
+        # %AB*%
+        match = re.search(r'%AB(D[0-9]{2,})?\*%', statement)
+        if match is not None:
+            ident = match.group(1)
+            if ident is None:  # Close Block
+                self.objects_list_stack.pop()
+            else:  # Open new Block
+                if ident in self.apertures:
+                    raise ValueError(f'Aperture {ident} already defined')
+                self.apertures[ident] = BlockAperture()
+                self.objects_list_stack.append(self.apertures[ident].objects)
+        else:
+            raise ValueError(f'Unrecognized aperture block statement: {statement}')
 
     def set_current_aperture(self, statement: str):
         # D10*
@@ -336,14 +354,13 @@ class Aperture():
     def __init__(self):
         pass
 
-    @classmethod
-    def parse(cls, statement: str):  # TODO this should be clone
+    def derive_from(self, statement: str):
         if statement is None:
             raise ValueError('Missing parameters statement')
         tokens = statement.split('X')
-        return cls(*[float(token) for token in tokens])
+        return type(self)(*[float(token) for token in tokens])
 
-    def clone(self):  # TODO add parameters here instead
+    def clone(self):
         new = copy.copy(self)
         return new
 
@@ -390,8 +407,9 @@ class Macro(Aperture):
         self.name = name
         self.primitives = primitives
 
-    def calculate(self, parameters: str):
-        return self
+    def derive_from(self, statement: str):
+        #TODO parse statement for parametrized macros
+        return self.clone()
 
     @classmethod
     def parse(cls, statement: str):
@@ -513,11 +531,21 @@ class MacroOutline(MacroPrimitive):
             raise ValueError(f'Expected {2*vertices + 1} parameters but received {len(args)}')
 
 
+class BlockAperture(Aperture):
+    def __init__(self):
+        self.objects = []
+
+
 class GraphicalObject():
     def __init__(self, aperture, transform, origin: tuple):
         self.aperture = aperture
         self.transform = copy.copy(transform)
         self.origin = origin
+
+    def translate(self, translation):
+        dx, dy = translation
+        x0, y0 = self.origin
+        self.origin = (x0 + dx, y0 + dy)
 
     def get_vertices(self, scale=1e-6):
         raise NotImplementedError('get_vertices not implemented')
@@ -528,6 +556,13 @@ class Draw(GraphicalObject):
         super().__init__(aperture, transform, origin)
         self.endpoint = endpoint
 
+    def translate(self, translation):
+        dx, dy = translation
+        x0, y0 = self.origin
+        x1, y1 = self.endpoint
+        self.origin = (x0 + dx, y0 + dy)
+        self.endpoint = (x1 + dx, y1 + dy)
+
 
 # TODO Arc needs quadrant mode
 class Arc(GraphicalObject):
@@ -536,6 +571,13 @@ class Arc(GraphicalObject):
         self.endpoint = endpoint
         self.offset = offset
         self.is_cw = is_cw
+
+    def translate(self, translation):
+        dx, dy = translation
+        x0, y0 = self.origin
+        x1, y1 = self.endpoint
+        self.origin = (x0 + dx, y0 + dy)
+        self.endpoint = (x1 + dx, y1 + dy)
 
 
 class Flash(GraphicalObject):
