@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import os
-import math
 import pytest
 import gerber
 from gerber import Gerber
@@ -509,8 +508,35 @@ def test_block_aperture():
 
 
 def test_nested_block():
-    # TODO test nested block
-    pass
+    state = Gerber()
+    state.aperture_define('%ADD12R,20X10*%')
+    # G04 Define block aperture  D102, consisting of 2x3 flashes of D101*
+    state.aperture_block('%ABD102*%')
+    # G04 Define nested block aperture D101, consisting of 2x2 flashes of D12*
+    state.aperture_block('%ABD101*%')
+    state.set_current_aperture('D12*')
+    state.flash_operation('X0Y0D03*')
+    state.flash_operation('X0Y70000000D03*')
+    state.flash_operation('X100000000Y0D03*')
+    state.flash_operation('X100000000Y70000000D03*')
+    state.aperture_block('%AB*%')
+    state.set_current_aperture('D101*')
+    state.flash_operation('X0Y0D03*')
+    state.flash_operation('X0Y160000000D03*')
+    state.flash_operation('X0Y320000000D03*')
+    state.flash_operation('X230000000Y0D03*')
+    state.flash_operation('X230000000Y160000000D03*')
+    state.flash_operation('X230000000Y320000000D03*')
+    state.aperture_block('%AB*%')
+    assert len(state.objects) == 0
+    parent = state.apertures['D102']
+    child = state.apertures['D101']
+    assert len(parent.objects) == 6
+    assert len(child.objects) == 4
+    for parent_obj in parent.objects:
+        assert type(parent_obj.aperture) == gerber.BlockAperture
+    for child_obj in child.objects:
+        assert type(child_obj.aperture) == gerber.Rectangle
 
 
 @pytest.mark.parametrize(

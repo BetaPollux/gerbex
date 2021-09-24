@@ -19,29 +19,24 @@ import copy
 def render(state):
     patches = []
     for obj in state.objects:
-        render = get_render(obj)
-        if type(render) == list:
-            # TODO this needs to handle nested lists
-            patches.extend(render)
-        else:
-            patches.append(render)
+        append_render(patches, obj)
     return mpl.collections.PatchCollection(patches, match_original=True)
 
 
-def get_render(obj):
+def append_render(patches, obj):
     if isinstance(obj, gerber.Draw):
-        return render_draw(obj)
+        append_render_draw(patches, obj)
     elif isinstance(obj, gerber.Flash):
-        return render_flash(obj)
+        append_render_flash(patches, obj)
     elif isinstance(obj, gerber.Arc):
-        return render_arc(obj)
+        append_render_arc(patches, obj)
     elif isinstance(obj, gerber.Region):
-        return render_region(obj)
+        append_render_region(patches, obj)
     else:
         raise TypeError('Unsupported object type for render')
 
 
-def render_draw(obj):
+def append_render_draw(patches, obj):
     assert isinstance(obj, gerber.Draw)
     assert isinstance(obj.aperture, gerber.Circle)
     x0, y0 = obj.origin
@@ -54,10 +49,10 @@ def render_draw(obj):
     r = 1e6 * 0.5 * obj.aperture.diameter
     dx = r * np.sin(angle)
     dy = r * np.cos(angle)
-    return mpatches.Polygon(1e-6 * np.array([[x0 - dx, x1 - dx, x1 + dx, x0 + dx], [y0 + dy, y1 + dy, y1 - dy, y0 - dy]]).T)
+    patches.append(mpatches.Polygon(1e-6 * np.array([[x0 - dx, x1 - dx, x1 + dx, x0 + dx], [y0 + dy, y1 + dy, y1 - dy, y0 - dy]]).T))
 
 
-def render_arc(obj):
+def append_render_arc(patches, obj):
     assert isinstance(obj, gerber.Arc)
     assert isinstance(obj.aperture, gerber.Circle)
     dx, dy = obj.offset
@@ -75,10 +70,10 @@ def render_arc(obj):
     xc = np.concatenate([xco, xci])
     yc = np.concatenate([yco, yci])
     xy = 1e-6 * np.vstack([xc, yc]).T
-    return mpatches.Polygon(xy, fill=False)
+    patches.append(mpatches.Polygon(xy, fill=False))
 
 
-def render_region(obj):
+def append_render_region(patches, obj):
     assert isinstance(obj, gerber.Region)
     x = []
     y = []
@@ -101,27 +96,27 @@ def render_region(obj):
         else:
             raise TypeError('Segment not supported')
     xy = 1e-6 * np.vstack([x, y]).T
-    return mpatches.Polygon(xy, fill=False)
+    patches.append(mpatches.Polygon(xy, fill=False))
 
 
-def render_flash(obj):
+def append_render_flash(patches, obj):
     assert isinstance(obj, gerber.Flash)
     assert obj.aperture is not None
     if isinstance(obj.aperture, gerber.Circle):
-        return mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
-                                      0.5 * obj.aperture.diameter,
-                                      resolution=36)
+        patches.append(mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
+                                              0.5 * obj.aperture.diameter,
+                                              resolution=36))
     elif isinstance(obj.aperture, gerber.Polygon):
-        return mpatches.RegularPolygon(1e-6 * np.array(obj.origin),
-                                       obj.aperture.vertices,
-                                       0.5 * obj.aperture.outer_diameter,
-                                       orientation=-0.5 * np.pi)
+        patches.append(mpatches.RegularPolygon(1e-6 * np.array(obj.origin),
+                                               obj.aperture.vertices,
+                                               0.5 * obj.aperture.outer_diameter,
+                                               orientation=-0.5 * np.pi))
     elif isinstance(obj.aperture, gerber.Rectangle):
         dx = 0.5 * obj.aperture.x_size
         dy = 0.5 * obj.aperture.y_size
-        return mpatches.Rectangle(1e-6 * np.array(obj.origin) + np.array([-dx, -dy]),
-                                  obj.aperture.x_size,
-                                  obj.aperture.y_size)
+        patches.append(mpatches.Rectangle(1e-6 * np.array(obj.origin) + np.array([-dx, -dy]),
+                                          obj.aperture.x_size,
+                                          obj.aperture.y_size))
     elif isinstance(obj.aperture, gerber.Obround):
         x0, y0 = 1e-6 * np.array(obj.origin)
         dx = 0.5 * obj.aperture.x_size
@@ -136,18 +131,17 @@ def render_flash(obj):
             x = np.array([x0, x0 + dx, x0 + dx, x0, x0 - dx, x0 - dx])
             y = np.array([y0 + dy, y0 + dy - r, y0 - dy + r, y0 - dy, y0 - dy + r, y0 + dy - r])
         xy = np.vstack([x, y]).T
-        return mpatches.Polygon(xy)
+        patches.append(mpatches.Polygon(xy))
     elif isinstance(obj.aperture, gerber.Macro):
         # TODO render macro primitives
-        return mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
-                                      0.2, color='r',
-                                      resolution=10)
+        patches.append(mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
+                                              0.2, color='r',
+                                              resolution=10))
     elif isinstance(obj.aperture, gerber.BlockAperture):
-        # TODO render nested blocks
-        block_children = [copy.copy(block) for block in obj.aperture.objects]
-        for child in block_children:
-            child.translate(obj.origin)
-        return [get_render(block) for block in block_children]
+            block_children = [copy.copy(block) for block in obj.aperture.objects]
+            for child in block_children:
+                child.translate(obj.origin)
+                append_render(patches, child)
     else:
         raise NotImplementedError('Unrecognized Aperture ' + str(type(obj.aperture)))
 
@@ -188,8 +182,6 @@ def test_one():
     ax.plot(*get_poly_circle_vertices((2.0, 2.5), 0.3, -150.0, 30.0, is_cw=False), ls='dashed')
     ax.plot(*get_poly_circle_vertices((3.0, 2.5), 0.3, -150.0, -30.0, is_cw=True))
     ax.plot(*get_poly_circle_vertices((3.0, 2.5), 0.3, -150.0, -30.0, is_cw=False), ls='dashed')
-    flash = gerber.Flash(gerber.Circle(0.25), None, (0, 0))
-    ax.add_patch(render_flash(flash))
     ax.set_aspect(1)
     plt.show()
 
@@ -228,7 +220,7 @@ if __name__ == '__main__':
     test_file('2-13-1_Two_square_boxes.gbr')
     test_file('2-13-2_Polarities_and_Apertures.gbr')
     test_file('6-1-6-2_A_drill_file.gbr')
-    # test_file('4-6-4_Nested_blocks.gbr')
+    test_file('4-6-4_Nested_blocks.gbr')
     test_file('4-11-6_Block_with_different_orientations.gbr')
     # test_file('sample_macro.gbr')
     # test_file('sample_macro_X1.gbr')
