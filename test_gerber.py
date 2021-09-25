@@ -605,7 +605,7 @@ def test_macro_variables():
 
 def test_macro_missing_variable():
     state = Gerber()
-    with pytest.raises(IndexError):
+    with pytest.raises(KeyError):
         state.aperture_macro('%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%')
         state.aperture_define('%ADD34DONUTVAR,0.100X0X0*%')
 
@@ -645,6 +645,19 @@ def test_macro_expressions(expr, result):
 def test_macro_expressions_illegal(expr):
     with pytest.raises(ValueError):
         gerber.Macro.eval_expression(expr)
+
+
+def test_macro_new_variable():
+    state = Gerber()
+    state.aperture_macro('%AMDONUTCAL*1,1,$1,$2,$3*$4=$1x0.75*1,0,$4,$2,$3*%')
+    state.aperture_define('%ADD35DONUTCAL,0.020X0X0*%')
+    assert type(state.apertures['D35']) == gerber.Macro
+    assert state.apertures['D35'].primitives[0].diameter == approx(0.02)
+    assert state.apertures['D35'].primitives[0].x == 0
+    assert state.apertures['D35'].primitives[0].y == 0
+    assert state.apertures['D35'].primitives[1].diameter == approx(0.015)
+    assert state.apertures['D35'].primitives[1].x == 0
+    assert state.apertures['D35'].primitives[1].y == 0
 
 
 @pytest.mark.parametrize(

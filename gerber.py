@@ -28,6 +28,7 @@ class Gerber():
         }
         self.objects = []
         self.objects_list_stack = [self.objects]
+        self.reached_eof = False
 
     def add_object(self, new_obj):
         self.objects_list_stack[-1].append(new_obj)
@@ -75,12 +76,12 @@ class Gerber():
             'G36': self.begin_region,
             'G37': self.end_region,
             'AB': self.aperture_block,
-            'SR': self.not_implemented,
+            'SR': self.not_implemented,  # TODO implement SR
             'TF': self.ignore,
             'TA': self.ignore,
             'TO': self.ignore,
             'TD': self.ignore,
-            'M02': self.ignore
+            'M02': self.set_eof
         }
         # Extended commands
         # e.g.
@@ -110,10 +111,18 @@ class Gerber():
         except KeyError:
             raise KeyError(f'Unrecognized statement: {statement}')
 
+    def set_eof(self, statement: str):
+        if statement != 'M02*':
+            raise ValueError('Invalid EOF statement')
+        self.reached_eof = True
+
     def parse(self, filename: str):
         with open(filename, 'r') as f:
             delimiter = False
             for line_num, line in enumerate(f):
+                if line.isspace():
+                    continue
+
                 if line.startswith('%'):
                     delimiter = True
                     statement = ''
@@ -133,6 +142,8 @@ class Gerber():
                         command(statement)
                     except (ValueError, KeyError) as ex:
                         raise ValueError(f'Error line {line_num + 1}: {ex}')
+        if not self.reached_eof:
+            raise ValueError('File did not contain EOF marker')
 
     def set_mode(self, statement: str):
         # Set unit of measurement to metric or imperial
@@ -408,32 +419,39 @@ class Macro(Aperture):
         self.primitives = primitives
 
     def derive_from(self, statement: str):
-        # Find parameters that need to be fulfilled in the template
-        params_iter = re.finditer(r'\$(\d+)', self.template_str)
-        params = {int(param.group(1)) for param in params_iter}
         # Collect parameter values from creation statement
-        argv = []
+        params = {}
         if statement is not None:
-            argv = [float(token) for token in statement.split('X')]
-        # TODO handle variable expressions
-        if len(params) > len(argv):
-            raise IndexError('Unfulfilled parameters in macro')
-        # Fill template with parameters
-        filled_template = self.template_str
-        for i, p in enumerate(params):
-            filled_template = filled_template.replace(f'${p}', str(argv[i]))
+            for i, token in enumerate(statement.split('X')):
+                params[i + 1] = float(token)
         # Create primitives by parsing template string
         primitives = []
-        blocks = filled_template.replace('\n', '').split('*')
+        blocks = self.template_str.replace('\n', '').split('*')
         for block in blocks:
             # Ignore open/close block or comment
             if block.startswith('%') or block.startswith('0'):
                 continue
-            code = block.split(',')[0]
-            try:
-                primitives.append(Macro.primtypes(code).parse(block))
-            except KeyError:
-                raise KeyError('Unrecognized macro code ' + str(code))
+            # Resolve new variables
+            if block.startswith('$'):
+                expr = re.search(r'\$(\d+)\s*=([^*]+)*', block)
+                expr_p = expr.group(1)
+                expr_e = expr.group(2)
+                for p, v in params.items():
+                    expr_e = expr_e.replace(f'${p}', str(v))
+                params[expr_p] = Macro.eval_expression(expr_e)
+            # Attempt to create a primitive
+            else:
+                code = block.split(',')[0]
+                for p, v in params.items():
+                    block = block.replace(f'${p}', str(v))
+                missing = re.search(r'\$\d+', block)
+                if missing:
+                    raise KeyError('Unfulfilled macro parameter ' +
+                                   missing.group())
+                try:
+                    primitives.append(Macro.primtypes(code).parse(block))
+                except KeyError:
+                    raise KeyError('Unrecognized macro code ' + str(code))
         return type(self)(self.template_str, primitives)
 
     @staticmethod
