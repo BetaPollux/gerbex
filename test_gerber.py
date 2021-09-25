@@ -2,6 +2,7 @@
 
 import os
 import pytest
+from pytest import approx
 import gerber
 from gerber import Gerber
 
@@ -222,8 +223,8 @@ def test_aperture_macro():
     statement = '%AMCIRC*\n1,1,1.5,0,0,0*%'
     state.aperture_macro('%AMCIRC*\n1,1,1.5,0,0,0*%')
     assert type(state.templates['CIRC']) == gerber.Macro
-    assert type(state.templates['CIRC'].primitives[0]) == gerber.MacroCircle
-    assert state.templates['CIRC'].primitives[0].diameter == 1.5
+    assert state.templates['CIRC'].template_str == '%AMCIRC*\n1,1,1.5,0,0,0*%'
+    assert len(state.templates['CIRC'].primitives) == 0
 
 
 def test_aperture_define_macro():
@@ -232,6 +233,8 @@ def test_aperture_define_macro():
     state.aperture_define('%ADD15CIRC*%')
     assert type(state.apertures['D15']) == gerber.Macro
     assert state.apertures['D15'] != state.templates['CIRC']
+    assert len(state.apertures['D15'].primitives) == 1
+    assert type(state.apertures['D15'].primitives[0]) == gerber.MacroCircle
 
 
 def test_set_current_aperture():
@@ -483,6 +486,50 @@ def test_macro_outline_too_few_params():
         gerber.MacroOutline.parse('4,1,3,1,-1,1,1,2,1,30')
 
 
+@pytest.mark.parametrize(
+    "primitive",
+    [
+        '1,1,1.5,0.125,0.375,45.0',
+        '1,1,1.5,0.125,0.375',
+        '20,1,0.9,0,0.45,12,0.45,0',
+        '21,1,6.8,1.2,3.4,0.6,30',
+        '5,1,8,0.5,0.2,4,30',
+        '7,0.1,0.2,0.800,0.550,0.125,45',
+        '6,0.1,0.2,1.25,.1,0.11,3,0.03,1.50,0',
+        '4,1,3,1,-1,1,1,2,1,1,-1,30'
+    ],
+)
+def test_macro_primitive_creation(primitive):
+    state = Gerber()
+    state.aperture_macro('%AMSINGLE*' + primitive + '*%')
+    state.aperture_define('%ADD34SINGLE*%')
+    assert 'SINGLE' in state.templates
+    assert 'D34' in state.apertures
+
+
+@pytest.mark.parametrize(
+    "bad_code",
+    [
+        '2',
+        '22',
+        '9'
+    ],
+)
+def test_macro_invalid_primitive_creation(bad_code):
+    state = Gerber()
+    with pytest.raises(KeyError):
+        state.aperture_macro(f'%AMSINGLE*{bad_code},1,2,3*%')
+        state.aperture_define('%ADD34SINGLE*%')
+
+
+def test_macro_ignores_comments():
+    state = Gerber()
+    state.aperture_macro('%AMSINGLE*\n0 A comment*\n1,1,1.5,0.125,0.375*%')
+    state.aperture_define('%ADD34SINGLE*%')
+    assert 'SINGLE' in state.templates
+    assert 'D34' in state.apertures
+
+
 def test_block_aperture():
     state = Gerber()
     state.aperture_define('%ADD10C,7.500000*%')
@@ -539,6 +586,67 @@ def test_nested_block():
         assert type(child_obj.aperture) == gerber.Rectangle
 
 
+def test_macro_variables():
+    state = Gerber()
+    state.aperture_macro('%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%')
+    state.aperture_define('%ADD34DONUTVAR,0.100X0X0X0.080*%')
+    assert type(state.templates['DONUTVAR']) == gerber.Macro
+    assert type(state.apertures['D34']) == gerber.Macro
+    assert len(state.apertures['D34'].primitives) == 2
+    assert state.apertures['D34'].primitives[0].exposure == 1
+    assert state.apertures['D34'].primitives[0].diameter == 0.1
+    assert state.apertures['D34'].primitives[0].x == 0
+    assert state.apertures['D34'].primitives[0].y == 0
+    assert state.apertures['D34'].primitives[1].exposure == 0
+    assert state.apertures['D34'].primitives[1].diameter == 0.08
+    assert state.apertures['D34'].primitives[1].x == 0
+    assert state.apertures['D34'].primitives[1].y == 0
+
+
+def test_macro_missing_variable():
+    state = Gerber()
+    with pytest.raises(IndexError):
+        state.aperture_macro('%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%')
+        state.aperture_define('%ADD34DONUTVAR,0.100X0X0*%')
+
+
+@pytest.mark.parametrize(
+    "expr, result",
+    [
+        ('5', 5),
+        ('1.25', 1.25),
+        ('+3.125', 3.125),
+        ('-2.0', -2.0),
+        ('0.75+0.25', 1.0),
+        ('2x1.25', 2.50),
+        ('2.50/5', 0.5),
+        ('-5.0+3.0', -2.0),
+        ('3.0-3x3.0', -6.0),
+        ('1.25x2-3', -0.5),
+        ('1.5x0.5', 0.75),
+        ('(1.25-1.0)x2', 0.5)
+    ],
+)
+def test_macro_expressions(expr, result):
+    assert gerber.Macro.eval_expression(expr) == approx(result)
+
+
+@pytest.mark.parametrize(
+    "expr",
+    [
+        '1.25X3',
+        '1.25*2',
+        'a*b',
+        '$1/2',
+        '1|2',
+        'import sys'
+    ],
+)
+def test_macro_expressions_illegal(expr):
+    with pytest.raises(ValueError):
+        gerber.Macro.eval_expression(expr)
+
+
 @pytest.mark.parametrize(
     "filename",
     [
@@ -560,7 +668,3 @@ def test_parse(filename):
     state = Gerber()
     directory = 'Gerber_File_Format_Examples 20210409'
     state.parse(os.path.join(directory, filename))
-
-
-if __name__ == '__main__':
-    test_block_aperture()

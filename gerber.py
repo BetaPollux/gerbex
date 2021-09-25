@@ -402,20 +402,43 @@ class Polygon(Aperture):
 
 
 class Macro(Aperture):
-    def __init__(self, name: str, primitives: list):
+    def __init__(self, template_str: str, primitives: list):
         super().__init__()
-        self.name = name
+        self.template_str = template_str
         self.primitives = primitives
 
     def derive_from(self, statement: str):
-        #TODO parse statement for parametrized macros
-        return self.clone()
+        # Find parameters that need to be fulfilled in the template
+        params_iter = re.finditer(r'\$(\d+)', self.template_str)
+        params = {int(param.group(1)) for param in params_iter}
+        # Collect parameter values from creation statement
+        argv = []
+        if statement is not None:
+            argv = [float(token) for token in statement.split('X')]
+        # TODO handle variable expressions
+        if len(params) > len(argv):
+            raise IndexError('Unfulfilled parameters in macro')
+        # Fill template with parameters
+        filled_template = self.template_str
+        for i, p in enumerate(params):
+            filled_template = filled_template.replace(f'${p}', str(argv[i]))
+        # Create primitives by parsing template string
+        primitives = []
+        blocks = filled_template.replace('\n', '').split('*')
+        for block in blocks:
+            # Ignore open/close block or comment
+            if block.startswith('%') or block.startswith('0'):
+                continue
+            code = block.split(',')[0]
+            try:
+                primitives.append(Macro.primtypes(code).parse(block))
+            except KeyError:
+                raise KeyError('Unrecognized macro code ' + str(code))
+        return type(self)(self.template_str, primitives)
 
-    @classmethod
-    def parse(cls, statement: str):
-        primtype = {
-            '0': None,  # Comment
-            '%': None,  # Delimiter
+    @staticmethod
+    def primtypes(code):
+        prims = {
             '1': MacroCircle,
             '20': MacroVectorLine,
             '21': MacroCenterLine,
@@ -424,21 +447,24 @@ class Macro(Aperture):
             '6': MacroMoire,
             '7': MacroThermal
         }
-        match = re.search(r'%AM([\w\.\$]+)', statement)
-        if match:
-            name = match.group(1)
-        else:
+        return prims[code]
+
+    @classmethod
+    def parse(cls, statement: str):
+        if not statement.startswith('%AM'):
             raise ValueError('Invalid define macro statement')
-        primitives = []
-        blocks = statement.replace('\n', '').split('*')
-        for block in blocks:
-            code = block[0]
-            try:
-                if primtype[code] is not None:
-                    primitives.append(primtype[code].parse(block))
-            except KeyError:
-                raise KeyError('Unrecognized macro code ' + str(code))
-        return cls(name, primitives)
+        # TODO validate template
+        return cls(statement, [])
+
+    @staticmethod
+    def eval_expression(expr: str):
+        legal = set('0123456789()-+/x.')
+        chars = set(expr)
+        illegal = chars.difference(legal)
+        if len(illegal) > 0:
+            raise ValueError('Illegal characters in expression: ' + expr)
+        expr = expr.replace('x', '*')  # Multiplication
+        return eval(expr)
 
 
 class MacroPrimitive():
@@ -450,7 +476,7 @@ class MacroPrimitive():
         if statement is None:
             raise ValueError('Missing parameters statement')
         tokens = statement.split(',')[1:]  # Discard first token (shape code)
-        return cls(*[float(token) for token in tokens])
+        return cls(*[Macro.eval_expression(token) for token in tokens])
 
 
 class MacroCircle(MacroPrimitive):

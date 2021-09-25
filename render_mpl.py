@@ -224,4 +224,4 @@ if __name__ == '__main__':
     test_file('4-11-6_Block_with_different_orientations.gbr')
     # test_file('sample_macro.gbr')
     # test_file('sample_macro_X1.gbr')
-    # test_file('SMD_prim_20.gbr')
+    test_file('SMD_prim_20.gbr')
