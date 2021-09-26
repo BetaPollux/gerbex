@@ -10,6 +10,7 @@ import matplotlib as mpl
 import gerber
 import copy
 
+# TODO remove magic 1e6 and fix units/scaling
 # TODO move vertex calcs into aperture classes etc
 # TODO render holes
 # TODO render transforms
@@ -32,6 +33,8 @@ def append_render(patches, obj):
         append_render_arc(patches, obj)
     elif isinstance(obj, gerber.Region):
         append_render_region(patches, obj)
+    elif isinstance(obj, gerber.StepAndRepeat):
+        append_render_step_and_repeat(patches, obj)
     else:
         raise TypeError('Unsupported object type for render')
 
@@ -146,6 +149,17 @@ def append_render_flash(patches, obj):
         raise NotImplementedError('Unrecognized Aperture ' + str(type(obj.aperture)))
 
 
+def append_render_step_and_repeat(patches, obj):
+    for i in range(obj.nx):
+        for j in range(obj.ny):
+            dx = i * obj.step_x * 1e6
+            dy = j * obj.step_y * 1e6
+            children = [copy.copy(child) for child in obj.objects]
+            for child in children:
+                child.translate((dx, dy))
+                append_render(patches, child)
+
+
 def get_poly_circle_vertices(center, radius, start_angle=0.0, end_angle=90.0, max_step=10.0, is_cw: bool = False):
     assert np.abs(start_angle) <= 180.0
     assert np.abs(end_angle) <= 180.0
@@ -222,6 +236,6 @@ if __name__ == '__main__':
     test_file('6-1-6-2_A_drill_file.gbr')
     test_file('4-6-4_Nested_blocks.gbr')
     test_file('4-11-6_Block_with_different_orientations.gbr')
-    # test_file('sample_macro.gbr')
-    # test_file('sample_macro_X1.gbr')
+    test_file('sample_macro.gbr')
+    test_file('sample_macro_X1.gbr')
     test_file('SMD_prim_20.gbr')

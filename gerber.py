@@ -5,7 +5,10 @@
 import re
 import copy
 
+# Meant for extracting substrings only
+# Cast to int or float will catch invalid strings
 RE_INT = r'[+-]?[0-9]+'
+RE_DEC = r'[+-]?[0-9\.]+?'
 
 
 class Gerber():
@@ -48,7 +51,7 @@ class Gerber():
         self.objects_list_stack.append(self.region)
 
     def end_region(self, statement: str):
-        self.region.close()
+        self.region.end_contour()
         self.objects_list_stack.pop()
         self.add_object(self.region)
         self.region = None
@@ -76,7 +79,7 @@ class Gerber():
             'G36': self.begin_region,
             'G37': self.end_region,
             'AB': self.aperture_block,
-            'SR': self.not_implemented,  # TODO implement SR
+            'SR': self.step_and_repeat,
             'TF': self.ignore,
             'TA': self.ignore,
             'TO': self.ignore,
@@ -333,7 +336,7 @@ class Gerber():
                 if ident in self.apertures:
                     raise ValueError(f'Aperture {ident} already defined')
                 self.apertures[ident] = BlockAperture()
-                self.objects_list_stack.append(self.apertures[ident].objects)
+                self.objects_list_stack.append(self.apertures[ident])
         else:
             raise ValueError(f'Unrecognized aperture block statement: {statement}')
 
@@ -349,6 +352,26 @@ class Gerber():
                 raise KeyError(f'Aperture {ident} is not defined')
         else:
             raise ValueError(f'Unrecognized set current aperture statement: {statement}')
+
+    def step_and_repeat(self, statement: str):
+        # %SRX3Y2I5.0J4.0*%
+        # ...
+        # %SR*%
+        # Step and repeat all enclosed statements
+        if statement == '%SR*%':
+            self.objects_list_stack.pop()
+        else:
+            match = re.search(rf'%SRX(\d+)Y(\d+)I({RE_DEC})J({RE_DEC})\*%', statement)
+            if match is not None:
+                x = int(match.group(1))
+                y = int(match.group(2))
+                i = float(match.group(3))
+                j = float(match.group(4))
+                sr = StepAndRepeat(x, y, i, j)
+                self.add_object(sr)
+                self.objects_list_stack.append(sr)
+            else:
+                raise ValueError(f'Unrecognized step and repeat statement: {statement}')
 
 
 class ApertureTransform():
@@ -579,6 +602,9 @@ class BlockAperture(Aperture):
     def __init__(self):
         self.objects = []
 
+    def append(self, object):
+        self.objects.append(object)
+
 
 class GraphicalObject():
     def __init__(self, aperture, transform, origin: tuple):
@@ -610,7 +636,8 @@ class Draw(GraphicalObject):
 
 # TODO Arc needs quadrant mode
 class Arc(GraphicalObject):
-    def __init__(self, aperture, transform, origin: tuple, endpoint: tuple, offset: tuple, is_cw: bool = True):
+    def __init__(self, aperture, transform, origin: tuple, endpoint: tuple,
+                 offset: tuple, is_cw: bool = True):
         super().__init__(aperture, transform, origin)
         self.endpoint = endpoint
         self.offset = offset
@@ -650,5 +677,18 @@ class Region(GraphicalObject):
             self.end_contour()
         self.objects.append(object)
 
-    def close(self):
-        self.end_contour()
+
+class StepAndRepeat():
+    def __init__(self, nx: int, ny: int, step_x: float, step_y: float):
+        if nx < 1 or ny < 1:
+            raise ValueError('Repeat must be 1 or greater')
+        if step_x < 0.0 or step_y < 0.0:
+            raise ValueError('Step size must be positive')
+        self.nx = nx
+        self.ny = ny
+        self.step_x = step_x
+        self.step_y = step_y
+        self.objects = []
+
+    def append(self, object):
+        self.objects.append(object)

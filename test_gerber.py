@@ -660,6 +660,29 @@ def test_macro_new_variable():
     assert state.apertures['D35'].primitives[1].y == 0
 
 
+def test_step_and_repeat():
+    state = Gerber()
+    state.aperture_define('%ADD13C,0.5X0.25*%')
+    state.aperture_define('%ADD14R,0.044X0.025*%')
+    # G04 A block of two flashes is repeated 3x2 times*
+    state.step_and_repeat('%SRX3Y2I5.0J4.0*%')
+    state.set_current_aperture('D13*')
+    state.flash_operation('X123456Y789012D03*')
+    state.set_current_aperture('D14*')
+    state.flash_operation('X456789Y012345D03*')
+    state.step_and_repeat('%SR*%')
+    # Flash outside of SR
+    state.flash_operation('X450000Y012300D03*')
+    sr = state.objects[0]
+    assert type(sr) == gerber.StepAndRepeat
+    assert sr.nx == 3
+    assert sr.ny == 2
+    assert sr.step_x == 5.0
+    assert sr.step_y == 4.0
+    assert len(state.objects) == 2
+    assert type(state.objects[1]) == gerber.Flash
+
+
 @pytest.mark.parametrize(
     "filename",
     [
