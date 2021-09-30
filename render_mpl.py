@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 import gerber
+import vertices
 import copy
 
 # TODO remove magic 1e6 and fix units/scaling
@@ -42,38 +43,22 @@ def append_render(patches, obj):
 def append_render_draw(patches, obj):
     assert isinstance(obj, gerber.Draw)
     assert isinstance(obj.aperture, gerber.Circle)
-    x0, y0 = obj.origin
-    x1, y1 = obj.endpoint
-    # TODO should have rounded ends
-    if x1 != x0:
-        angle = np.arctan2(y1 - y0, x1 - x0)
-    else:
-        angle = 0.5 * np.pi
-    r = 1e6 * 0.5 * obj.aperture.diameter
-    dx = r * np.sin(angle)
-    dy = r * np.cos(angle)
-    patches.append(mpatches.Polygon(1e-6 * np.array([[x0 - dx, x1 - dx, x1 + dx, x0 + dx], [y0 + dy, y1 + dy, y1 - dy, y0 - dy]]).T))
+    x0, y0 = 1e-6 * np.array(obj.origin)
+    x1, y1 = 1e-6 * np.array(obj.endpoint)
+    pts = vertices.rounded_line(obj.aperture.diameter, x0, y0, x1, y1)
+    patches.append(mpatches.Polygon(pts))
 
 
 def append_render_arc(patches, obj):
     assert isinstance(obj, gerber.Arc)
     assert isinstance(obj.aperture, gerber.Circle)
-    dx, dy = obj.offset
-    x1, y1 = obj.origin
+    dx, dy = 1e-6 * np.array(obj.offset)
+    x1, y1 = 1e-6 * np.array(obj.origin)
+    x2, y2 = 1e-6 * np.array(obj.endpoint)
     x0, y0 = x1 + dx, y1 + dy
-    x2, y2 = obj.endpoint
-    r = np.sqrt((x1-x0)**2 + (y1-y0)**2)
-    dr = 1e6 * 0.5 * obj.aperture.diameter
-    start_angle = np.rad2deg(np.arctan2(y1-y0, x1-x0))
-    end_angle = np.rad2deg(np.arctan2(y2-y0, x2-x0))
-    # TODO should have rounded ends
-    xco, yco = get_poly_circle_vertices((x0, y0), r+dr, start_angle, end_angle, is_cw=obj.is_cw)
-    xci, yci = get_poly_circle_vertices((x0, y0), r-dr, start_angle, end_angle, is_cw=obj.is_cw)
-    xci, yci = np.flip(xci), np.flip(yci)
-    xc = np.concatenate([xco, xci])
-    yc = np.concatenate([yco, yci])
-    xy = 1e-6 * np.vstack([xc, yc]).T
-    patches.append(mpatches.Polygon(xy, fill=False))
+    pts = vertices.rounded_arc(obj.aperture.diameter, x0, y0, x1, y1, x2, y2)
+    vertices.translate(pts, x0, y0)
+    patches.append(mpatches.Polygon(pts))
 
 
 def append_render_region(patches, obj):
@@ -106,34 +91,35 @@ def append_render_flash(patches, obj):
     assert isinstance(obj, gerber.Flash)
     assert obj.aperture is not None
     if isinstance(obj.aperture, gerber.Circle):
-        patches.append(mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
-                                              0.5 * obj.aperture.diameter,
-                                              resolution=36))
+        pts = vertices.circle(obj.aperture.diameter)
+        x0, y0 = 1e-6 * np.array(obj.origin)
+        vertices.translate(pts, x0, y0)
+        patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Polygon):
         patches.append(mpatches.RegularPolygon(1e-6 * np.array(obj.origin),
                                                obj.aperture.vertices,
                                                0.5 * obj.aperture.outer_diameter,
                                                orientation=-0.5 * np.pi))
     elif isinstance(obj.aperture, gerber.Rectangle):
-        dx = 0.5 * obj.aperture.x_size
-        dy = 0.5 * obj.aperture.y_size
-        patches.append(mpatches.Rectangle(1e-6 * np.array(obj.origin) + np.array([-dx, -dy]),
-                                          obj.aperture.x_size,
-                                          obj.aperture.y_size))
+        pts = vertices.rectangle(obj.aperture.x_size, obj.aperture.y_size)
+        x0, y0 = 1e-6 * np.array(obj.origin)
+        vertices.translate(pts, x0, y0)
+        patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Obround):
         x0, y0 = 1e-6 * np.array(obj.origin)
-        dx = 0.5 * obj.aperture.x_size
-        dy = 0.5 * obj.aperture.y_size
-        # TODO make circle ends not triangles
         if obj.aperture.x_size > obj.aperture.y_size:
             r = 0.5 * obj.aperture.y_size
-            x = np.array([x0 + dx, x0 + dx - r, x0 - dx + r, x0 - dx, x0 - dx + r, x0 + dx - r])
-            y = np.array([y0, y0 + dy, y0 + dy, y0, y0 - dy, y0 - dy])
+            c1 = vertices.arc(r, -90, 90)
+            vertices.translate(c1, x0 + 0.5 * obj.aperture.x_size - r, y0)
+            c2 = vertices.arc(r, 90, 270)
+            vertices.translate(c2, x0 - 0.5 * obj.aperture.x_size + r, y0)
         else:
             r = 0.5 * obj.aperture.x_size
-            x = np.array([x0, x0 + dx, x0 + dx, x0, x0 - dx, x0 - dx])
-            y = np.array([y0 + dy, y0 + dy - r, y0 - dy + r, y0 - dy, y0 - dy + r, y0 + dy - r])
-        xy = np.vstack([x, y]).T
+            c1 = vertices.arc(r, 0, 180)
+            vertices.translate(c1, x0, y0 + 0.5 * obj.aperture.y_size - r)
+            c2 = vertices.arc(r, 180, 360)
+            vertices.translate(c2, x0, y0 - 0.5 * obj.aperture.y_size + r)
+        xy = np.vstack([c1, c2])
         patches.append(mpatches.Polygon(xy))
     elif isinstance(obj.aperture, gerber.Macro):
         # TODO render macro primitives
@@ -141,10 +127,10 @@ def append_render_flash(patches, obj):
                                               0.2, color='r',
                                               resolution=10))
     elif isinstance(obj.aperture, gerber.BlockAperture):
-            block_children = [copy.copy(block) for block in obj.aperture.objects]
-            for child in block_children:
-                child.translate(obj.origin)
-                append_render(patches, child)
+        block_children = [copy.copy(block) for block in obj.aperture.objects]
+        for child in block_children:
+            child.translate(obj.origin)
+            append_render(patches, child)
     else:
         raise NotImplementedError('Unrecognized Aperture ' + str(type(obj.aperture)))
 
@@ -176,30 +162,6 @@ def get_poly_circle_vertices(center, radius, start_angle=0.0, end_angle=90.0, ma
             y0 + radius * np.sin(a))
 
 
-def test_one():
-    obj = gerber.Draw(None, None, (0, 0), (1, 1))
-    fig, ax = plt.subplots()
-    ax.fill(*get_poly_circle_vertices((1.0, 0), 0.5, 180.0, -180.0))
-    ax.plot(*get_poly_circle_vertices((0.0, 1.5), 0.3, 45.0, 180.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((0.0, 1.5), 0.3, 45.0, 180.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((1.0, 1.5), 0.3, -30.0, -150.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((1.0, 1.5), 0.3, -30.0, -150.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((2.0, 1.5), 0.3, -30.0, 150.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((2.0, 1.5), 0.3, -30.0, 150.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((3.0, 1.5), 0.3, 30.0, -150.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((3.0, 1.5), 0.3, 30.0, -150.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((0.0, 2.5), 0.3, 180.0, 45.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((0.0, 2.5), 0.3, 180.0, 45.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((1.0, 2.5), 0.3, -150.0, -30.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((1.0, 2.5), 0.3, -150.0, -30.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((2.0, 2.5), 0.3, -150.0, 30.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((2.0, 2.5), 0.3, -150.0, 30.0, is_cw=False), ls='dashed')
-    ax.plot(*get_poly_circle_vertices((3.0, 2.5), 0.3, -150.0, -30.0, is_cw=True))
-    ax.plot(*get_poly_circle_vertices((3.0, 2.5), 0.3, -150.0, -30.0, is_cw=False), ls='dashed')
-    ax.set_aspect(1)
-    plt.show()
-
-
 def test_file(filename):
     state = gerber.Gerber()
     directory = 'Gerber_File_Format_Examples 20210409'
@@ -229,7 +191,6 @@ def test_hole():
 
 
 if __name__ == '__main__':
-    test_one()
     # test_hole()
     test_file('2-13-1_Two_square_boxes.gbr')
     test_file('2-13-2_Polarities_and_Apertures.gbr')
