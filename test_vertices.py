@@ -19,6 +19,14 @@ def test_circle():
     assert pts.min() == -1.0
 
 
+def test_regular_poly():
+    pts = v.regular_poly(1.0, 3)
+    assert pts.shape == (3, 2)
+    assert pts[0] == approx([0.5, 0.0], rel=1e-3)
+    assert pts[1] == approx([-0.25, 0.433], rel=1e-3)
+    assert pts[2] == approx([-0.25, -0.433], rel=1e-3)
+
+
 def test_rectangle():
     pts = v.rectangle(3.0, 2.5)
     assert pts.shape == (4, 2)

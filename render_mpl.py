@@ -16,6 +16,7 @@ import copy
 # TODO render holes
 # TODO render transforms
 # TODO add tests
+# TODO render primitive rotations
 
 
 def render(state):
@@ -78,7 +79,8 @@ def append_render_region(patches, obj):
             r = np.sqrt((x1-x0)**2 + (y1-y0)**2)
             start_angle = np.rad2deg(np.arctan2(y1-y0, x1-x0))
             end_angle = np.rad2deg(np.arctan2(y2-y0, x2-x0))
-            xc, yc = get_poly_circle_vertices((x0, y0), r, start_angle, end_angle, is_cw=segment.is_cw)
+            xc, yc = get_poly_circle_vertices((x0, y0), r, start_angle,
+                                              end_angle, is_cw=segment.is_cw)
             x.extend(xc)
             y.extend(yc)
         else:
@@ -96,10 +98,11 @@ def append_render_flash(patches, obj):
         vertices.translate(pts, x0, y0)
         patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Polygon):
-        patches.append(mpatches.RegularPolygon(1e-6 * np.array(obj.origin),
-                                               obj.aperture.vertices,
-                                               0.5 * obj.aperture.outer_diameter,
-                                               orientation=-0.5 * np.pi))
+        pts = vertices.regular_poly(obj.aperture.outer_diameter,
+                                    obj.aperture.vertices)
+        x0, y0 = 1e-6 * np.array(obj.origin)
+        vertices.translate(pts, x0, y0)
+        patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Rectangle):
         pts = vertices.rectangle(obj.aperture.x_size, obj.aperture.y_size)
         x0, y0 = 1e-6 * np.array(obj.origin)
@@ -108,31 +111,70 @@ def append_render_flash(patches, obj):
     elif isinstance(obj.aperture, gerber.Obround):
         x0, y0 = 1e-6 * np.array(obj.origin)
         if obj.aperture.x_size > obj.aperture.y_size:
-            r = 0.5 * obj.aperture.y_size
-            c1 = vertices.arc(r, -90, 90)
-            vertices.translate(c1, x0 + 0.5 * obj.aperture.x_size - r, y0)
-            c2 = vertices.arc(r, 90, 270)
-            vertices.translate(c2, x0 - 0.5 * obj.aperture.x_size + r, y0)
+            w = obj.aperture.y_size
+            x1 = 0.5 * (-obj.aperture.x_size + w)
+            x2 = 0.5 * (obj.aperture.x_size - w)
+            y1, y2 = 0, 0
         else:
-            r = 0.5 * obj.aperture.x_size
-            c1 = vertices.arc(r, 0, 180)
-            vertices.translate(c1, x0, y0 + 0.5 * obj.aperture.y_size - r)
-            c2 = vertices.arc(r, 180, 360)
-            vertices.translate(c2, x0, y0 - 0.5 * obj.aperture.y_size + r)
-        xy = np.vstack([c1, c2])
-        patches.append(mpatches.Polygon(xy))
+            w = obj.aperture.x_size
+            x1, x2 = 0, 0
+            y1 = 0.5 * (-obj.aperture.y_size + w)
+            y2 = 0.5 * (obj.aperture.y_size - w)
+        pts = vertices.rounded_line(w, x1, y1, x2, y2)
+        vertices.translate(pts, x0, y0)
+        patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Macro):
-        # TODO render macro primitives
-        patches.append(mpatches.CirclePolygon(1e-6 * np.array(obj.origin),
-                                              0.2, color='r',
-                                              resolution=10))
+        append_render_macro(patches, obj)
     elif isinstance(obj.aperture, gerber.BlockAperture):
         block_children = [copy.copy(block) for block in obj.aperture.objects]
         for child in block_children:
             child.translate(obj.origin)
             append_render(patches, child)
     else:
-        raise NotImplementedError('Unrecognized Aperture ' + str(type(obj.aperture)))
+        raise NotImplementedError('Unrecognized Aperture ' +
+                                  str(type(obj.aperture)))
+
+
+def append_render_macro(patches, obj):
+    x0, y0 = 1e-6 * np.array(obj.origin)
+    for prim in obj.aperture.primitives:
+        if isinstance(prim, gerber.MacroCircle):
+            pts = vertices.circle(prim.diameter)
+            vertices.translate(pts, prim.x + x0, prim.y + y0)
+            patches.append(mpatches.Polygon(pts))
+        elif isinstance(prim, gerber.MacroVectorLine):
+            pts = vertices.thick_line(prim.width,
+                                      prim.x1, prim.y1,
+                                      prim.x2, prim.y2)
+            vertices.translate(pts, x0, y0)
+            patches.append(mpatches.Polygon(pts))
+        elif isinstance(prim, gerber.MacroCenterLine):
+            pts = vertices.rectangle(prim.width, prim.height)
+            vertices.translate(pts, prim.x + x0, prim.y + y0)
+            patches.append(mpatches.Polygon(pts))
+        elif isinstance(prim, gerber.MacroOutline):
+            N = int(len(prim.coordinates) / 2)
+            pts = np.array(prim.coordinates)
+            pts.resize((N, 2))
+            vertices.translate(pts, x0, y0)
+            patches.append(mpatches.Polygon(pts))
+        elif isinstance(prim, gerber.MacroPolygon):
+            pts = vertices.regular_poly(prim.diameter, prim.vertices)
+            vertices.translate(pts, prim.x + x0, prim.y + y0)
+            patches.append(mpatches.Polygon(pts))
+        elif isinstance(prim, gerber.MacroThermal):
+            pts_o = vertices.circle(prim.outer_diameter)
+            vertices.translate(pts_o, x0, y0)
+            pts_i = vertices.circle(prim.inner_diameter)
+            vertices.translate(pts_i, x0, y0)
+            patches.append(mpatches.Polygon(pts_o, fill=False, lw=0.5))
+            patches.append(mpatches.Polygon(pts_i, fill=False, lw=0.5))
+        elif isinstance(prim, gerber.MacroMoire):
+            pts_o = vertices.circle(prim.outer_diameter)
+            vertices.translate(pts_o, x0, y0)
+            patches.append(mpatches.Polygon(pts_o, fill=False, lw=0.5))
+        else:
+            raise NotImplementedError('Not implemented ' + str(type(prim)))
 
 
 def append_render_step_and_repeat(patches, obj):
@@ -146,7 +188,9 @@ def append_render_step_and_repeat(patches, obj):
                 append_render(patches, child)
 
 
-def get_poly_circle_vertices(center, radius, start_angle=0.0, end_angle=90.0, max_step=10.0, is_cw: bool = False):
+def get_poly_circle_vertices(center, radius, start_angle=0.0,
+                             end_angle=90.0, max_step=10.0,
+                             is_cw: bool = False):
     assert np.abs(start_angle) <= 180.0
     assert np.abs(end_angle) <= 180.0
     if end_angle == start_angle:
@@ -200,3 +244,6 @@ if __name__ == '__main__':
     test_file('sample_macro.gbr')
     test_file('sample_macro_X1.gbr')
     test_file('SMD_prim_20.gbr')
+    test_file('SMD_prim_20_X1.gbr')
+    test_file('SMD_prim_21.gbr')
+    test_file('SMD_prim_21_X1.gbr')

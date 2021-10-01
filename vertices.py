@@ -14,8 +14,17 @@ def translate(points: np.ndarray, dx: float, dy: float):
 def circle(diameter: float, *, max_step: float = DEFAULT_MAX_STEP):
     assert diameter > 0.0
     assert max_step <= 90.0
-    N = int(1 + 360 / max_step)
-    angles = np.deg2rad(np.linspace(0, 360, N)[:-1])
+    N = int(360 / max_step)
+    angles = np.deg2rad(np.linspace(0, 360, N, endpoint=False))
+    x = 0.5 * diameter * np.cos(angles)
+    y = 0.5 * diameter * np.sin(angles)
+    return np.vstack([x, y]).T
+
+
+def regular_poly(diameter: float, N: int):
+    assert diameter > 0.0
+    assert N > 2
+    angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
     x = 0.5 * diameter * np.cos(angles)
     y = 0.5 * diameter * np.sin(angles)
     return np.vstack([x, y]).T
@@ -51,6 +60,17 @@ def rounded_line(width: float, x1: float, y1: float,
     c2 = arc(r, angle - 90, angle + 90, max_step=max_step)
     translate(c2, x2, y2)
     return np.vstack([c1, c2])
+
+
+def thick_line(width: float, x1: float, y1: float,
+               x2: float, y2: float):
+    angle = np.arctan2(y2 - y1, x2 - x1)
+    dx = 0.5 * width * np.sin(angle)
+    dy = 0.5 * width * np.cos(angle)
+    return np.array([[x1 + dx, y1 - dy],
+                     [x2 + dx, y2 - dy],
+                     [x2 - dx, y2 + dy],
+                     [x1 - dx, y1 + dy]])
 
 
 def rounded_arc(width: float, x0: float, y0: float,
