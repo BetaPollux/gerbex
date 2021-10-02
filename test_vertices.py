@@ -12,6 +12,14 @@ def test_translate():
     assert pts == approx(np.array([[0.5, 0.25], [1.5, 1.5]]))
 
 
+def test_rotate():
+    pts = np.array([[2.0, 1.0], [5.0, 1.0], [4.0, 3.0]])
+    v.rotate(pts, 90)
+    assert pts == approx(np.array([[-1.0, 2.0],
+                                   [-1.0, 5.0],
+                                   [-3.0, 4.0]]))
+
+
 def test_circle():
     pts = v.circle(2.0, max_step=30)
     assert pts.shape == (12, 2)

@@ -138,43 +138,57 @@ def append_render_flash(patches, obj):
 def append_render_macro(patches, obj):
     x0, y0 = 1e-6 * np.array(obj.origin)
     for prim in obj.aperture.primitives:
+        polys = []
+        poly_kwargs = {}
         if isinstance(prim, gerber.MacroCircle):
             pts = vertices.circle(prim.diameter)
-            vertices.translate(pts, prim.x + x0, prim.y + y0)
-            patches.append(mpatches.Polygon(pts))
+            vertices.translate(pts, prim.x, prim.y)
+            polys.append(pts)
         elif isinstance(prim, gerber.MacroVectorLine):
             pts = vertices.thick_line(prim.width,
                                       prim.x1, prim.y1,
                                       prim.x2, prim.y2)
-            vertices.translate(pts, x0, y0)
-            patches.append(mpatches.Polygon(pts))
+            polys.append(pts)
         elif isinstance(prim, gerber.MacroCenterLine):
             pts = vertices.rectangle(prim.width, prim.height)
-            vertices.translate(pts, prim.x + x0, prim.y + y0)
-            patches.append(mpatches.Polygon(pts))
+            vertices.translate(pts, prim.x, prim.y)
+            polys.append(pts)
         elif isinstance(prim, gerber.MacroOutline):
             N = int(len(prim.coordinates) / 2)
             pts = np.array(prim.coordinates)
             pts.resize((N, 2))
-            vertices.translate(pts, x0, y0)
-            patches.append(mpatches.Polygon(pts))
+            polys.append(pts)
         elif isinstance(prim, gerber.MacroPolygon):
             pts = vertices.regular_poly(prim.diameter, prim.vertices)
-            vertices.translate(pts, prim.x + x0, prim.y + y0)
-            patches.append(mpatches.Polygon(pts))
+            vertices.translate(pts, prim.x, prim.y)
+            polys.append(pts)
         elif isinstance(prim, gerber.MacroThermal):
-            pts_o = vertices.circle(prim.outer_diameter)
-            vertices.translate(pts_o, x0, y0)
-            pts_i = vertices.circle(prim.inner_diameter)
-            vertices.translate(pts_i, x0, y0)
-            patches.append(mpatches.Polygon(pts_o, fill=False, lw=0.5))
-            patches.append(mpatches.Polygon(pts_i, fill=False, lw=0.5))
+            elements = [
+                vertices.circle(prim.outer_diameter),
+                vertices.circle(prim.inner_diameter),
+                vertices.rectangle(prim.outer_diameter, prim.gap),
+                vertices.rectangle(prim.gap, prim.outer_diameter)]
+            for pts in elements:
+                vertices.translate(pts, prim.x, prim.y)
+                polys.append(pts)
+            poly_kwargs['fill'] = False
+            poly_kwargs['lw'] = 0.5
         elif isinstance(prim, gerber.MacroMoire):
-            pts_o = vertices.circle(prim.outer_diameter)
-            vertices.translate(pts_o, x0, y0)
-            patches.append(mpatches.Polygon(pts_o, fill=False, lw=0.5))
+            pts = vertices.circle(prim.outer_diameter)
+            vertices.translate(pts, prim.x, prim.y)
+            polys.append(pts)
+            poly_kwargs['fill'] = False
         else:
             raise NotImplementedError('Not implemented ' + str(type(prim)))
+
+        if hasattr(prim, 'exposure') and prim.exposure == 0:
+            poly_kwargs['fill'] = False
+            poly_kwargs['lw'] = 0.5
+            poly_kwargs['ls'] = 'dotted'
+        for pts in polys:
+            vertices.rotate(pts, prim.rotation)
+            vertices.translate(pts, x0, y0)
+            patches.append(mpatches.Polygon(pts, **poly_kwargs))
 
 
 def append_render_step_and_repeat(patches, obj):

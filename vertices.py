@@ -11,6 +11,16 @@ def translate(points: np.ndarray, dx: float, dy: float):
     points += np.array([[dx, dy]])
 
 
+def rotate(points: np.ndarray, degrees: float):
+    if degrees == 0:
+        return
+    rad = np.deg2rad(degrees)
+    rotmat = np.array([[np.cos(rad), np.sin(rad)],
+                       [-np.sin(rad), np.cos(rad)]])
+    for i, pt in enumerate(points):
+        points[i, :] = pt @ rotmat
+
+
 def circle(diameter: float, *, max_step: float = DEFAULT_MAX_STEP):
     assert diameter > 0.0
     assert max_step <= 90.0
