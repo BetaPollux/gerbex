@@ -4,11 +4,15 @@
 
 import re
 import copy
+import vertices
 
 # Meant for extracting substrings only
 # Cast to int or float will catch invalid strings
 RE_INT = r'[+-]?[0-9]+'
 RE_DEC = r'[+-]?[0-9\.]+?'
+
+EXPOSURE_ON = 1
+EXPOSURE_OFF = 0
 
 
 class Gerber():
@@ -172,6 +176,7 @@ class Gerber():
             raise ValueError(f'Mismatched format X, Y decimal digits: {statement}')
         self.format_num_int = int(match.group(1))
         self.format_num_dec = int(match.group(2))
+        self.format_scale = 10**(-self.format_num_dec)
 
     def set_interpolation(self, statement: str):
         # Set interpolation state to linear or circular
@@ -398,12 +403,21 @@ class Aperture():
         new = copy.copy(self)
         return new
 
+    def get_vertices(self, dest: list = None):
+        raise NotImplementedError('get_vertices not implemented')
+
 
 class Circle(Aperture):
     def __init__(self, diameter: float, hole_diameter: float = None):
         super().__init__()
         self.diameter = diameter
         self.hole_diameter = hole_diameter
+
+    def get_vertices(self, dest: list = None):
+        pts = vertices.circle(self.diameter)
+        if dest is not None:
+            dest.append(pts)
+        return pts
 
 
 class Rectangle(Aperture):
@@ -414,6 +428,12 @@ class Rectangle(Aperture):
         self.y_size = y_size
         self.hole_diameter = hole_diameter
 
+    def get_vertices(self, dest: list = None):
+        pts = vertices.rectangle(self.x_size, self.y_size)
+        if dest is not None:
+            dest.append(pts)
+        return pts
+
 
 class Obround(Aperture):
     def __init__(self, x_size: float, y_size: float, hole_diameter: float = None):
@@ -421,6 +441,20 @@ class Obround(Aperture):
         self.x_size = x_size
         self.y_size = y_size
         self.hole_diameter = hole_diameter
+
+    def get_vertices(self, dest: list = None):
+        w = min(self.x_size, self.y_size)
+        z = 0.5 * (max(self.x_size, self.y_size) - w)
+        if self.x_size > self.y_size:
+            x1, x2 = -z, z
+            y1, y2 = 0, 0
+        else:
+            x1, x2 = 0, 0
+            y1, y2 = -z, z
+        pts = vertices.rounded_line(w, x1, y1, x2, y2)
+        if dest is not None:
+            dest.append(pts)
+        return pts
 
 
 class Polygon(Aperture):
@@ -433,6 +467,13 @@ class Polygon(Aperture):
         self.hole_diameter = hole_diameter
         if self.vertices not in range(3, 13):
             raise ValueError('Polygon vertices must be from 3 to 12')
+
+    def get_vertices(self, dest: list = None):
+        pts = vertices.regular_poly(self.outer_diameter, self.vertices)
+        vertices.rotate(pts, self.rotation)
+        if dest is not None:
+            dest.append(pts)
+        return pts
 
 
 class Macro(Aperture):
@@ -509,8 +550,13 @@ class Macro(Aperture):
 
 
 class MacroPrimitive():
-    def __init__(self):
-        pass
+    def __init__(self, exposure, x, y, rotation):
+        if exposure not in (EXPOSURE_OFF, EXPOSURE_ON):
+            raise ValueError('Invalid exposure value')
+        self.exposure = exposure
+        self.x = x
+        self.y = y
+        self.rotation = rotation
 
     @classmethod
     def parse(cls, statement: str):
@@ -522,80 +568,64 @@ class MacroPrimitive():
 
 class MacroCircle(MacroPrimitive):
     def __init__(self, exposure, diameter, x, y, rotation=0.0):
-        self.exposure = exposure
+        super().__init__(exposure, x, y, rotation)
         self.diameter = diameter
-        self.x = x
-        self.y = y
-        self.rotation = rotation
 
 
 class MacroVectorLine(MacroPrimitive):
     def __init__(self, exposure, width, x1, y1, x2, y2, rotation=0.0):
-        self.exposure = exposure
+        super().__init__(exposure, 0, 0, rotation)
         self.width = width
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
-        self.rotation = rotation
 
 
 class MacroCenterLine(MacroPrimitive):
     def __init__(self, exposure, width, height, x, y, rotation=0.0):
-        self.exposure = exposure
+        super().__init__(exposure, x, y, rotation)
         self.width = width
         self.height = height
-        self.x = x
-        self.y = y
-        self.rotation = rotation
 
 
 class MacroPolygon(MacroPrimitive):
     def __init__(self, exposure, vertices, x, y, diameter, rotation=0.0):
-        self.exposure = exposure
+        super().__init__(exposure, x, y, rotation)
         self.vertices = vertices
-        self.x = x
-        self.y = y
         self.diameter = diameter
-        self.rotation = rotation
 
 
 class MacroThermal(MacroPrimitive):
     def __init__(self, x, y, outer_diameter, inner_diameter, gap, rotation=0.0):
-        self.x = x
-        self.y = y
+        super().__init__(EXPOSURE_ON, x, y, rotation)
         self.outer_diameter = outer_diameter
         self.inner_diameter = inner_diameter
         self.gap = gap
-        self.rotation = rotation
 
 
 class MacroMoire(MacroPrimitive):
     def __init__(self, x, y, outer_diameter, ring_thickness,
                  gap, num_rings, crosshair_thickness, crosshair_length,
                  rotation=0.0):
-        self.x = x
-        self.y = y
+        super().__init__(EXPOSURE_ON, x, y, rotation)
         self.outer_diameter = outer_diameter
         self.ring_thickness = ring_thickness
         self.gap = gap
         self.num_rings = num_rings
         self.crosshair_thickness = crosshair_thickness
         self.crosshair_length = crosshair_length
-        self.rotation = rotation
 
 
 class MacroOutline(MacroPrimitive):
     def __init__(self, exposure, vertices, x, y, *args):
-        self.exposure = exposure
-        self.vertices = vertices
-        self.x = x
-        self.y = y
-        if len(args) == 2 * vertices + 1:
+        N = 2 * vertices + 1
+        if len(args) == N:
+            super().__init__(exposure, x, y, rotation=float(args[-1]))
+            self.vertices = vertices
             self.coordinates = [*args[:-1]]
-            self.rotation = float(args[-1])
         else:
-            raise ValueError(f'Expected {2*vertices + 1} parameters but received {len(args)}')
+            raise ValueError(f'Expected {N} parameters but received {len(args)}')
 
 
 class BlockAperture(Aperture):
@@ -617,7 +647,7 @@ class GraphicalObject():
         x0, y0 = self.origin
         self.origin = (x0 + dx, y0 + dy)
 
-    def get_vertices(self, scale=1e-6):
+    def get_vertices(self, dest: list, scale: float = 1e-6):
         raise NotImplementedError('get_vertices not implemented')
 
 

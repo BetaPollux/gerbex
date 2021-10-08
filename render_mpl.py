@@ -16,7 +16,6 @@ import copy
 # TODO render holes
 # TODO render transforms
 # TODO add tests
-# TODO render primitive rotations
 
 
 def render(state):
@@ -92,35 +91,12 @@ def append_render_region(patches, obj):
 def append_render_flash(patches, obj):
     assert isinstance(obj, gerber.Flash)
     assert obj.aperture is not None
-    if isinstance(obj.aperture, gerber.Circle):
-        pts = vertices.circle(obj.aperture.diameter)
+    if type(obj.aperture) in (gerber.Circle,
+                              gerber.Rectangle,
+                              gerber.Obround,
+                              gerber.Polygon):
+        pts = obj.aperture.get_vertices()
         x0, y0 = 1e-6 * np.array(obj.origin)
-        vertices.translate(pts, x0, y0)
-        patches.append(mpatches.Polygon(pts))
-    elif isinstance(obj.aperture, gerber.Polygon):
-        pts = vertices.regular_poly(obj.aperture.outer_diameter,
-                                    obj.aperture.vertices)
-        x0, y0 = 1e-6 * np.array(obj.origin)
-        vertices.translate(pts, x0, y0)
-        patches.append(mpatches.Polygon(pts))
-    elif isinstance(obj.aperture, gerber.Rectangle):
-        pts = vertices.rectangle(obj.aperture.x_size, obj.aperture.y_size)
-        x0, y0 = 1e-6 * np.array(obj.origin)
-        vertices.translate(pts, x0, y0)
-        patches.append(mpatches.Polygon(pts))
-    elif isinstance(obj.aperture, gerber.Obround):
-        x0, y0 = 1e-6 * np.array(obj.origin)
-        if obj.aperture.x_size > obj.aperture.y_size:
-            w = obj.aperture.y_size
-            x1 = 0.5 * (-obj.aperture.x_size + w)
-            x2 = 0.5 * (obj.aperture.x_size - w)
-            y1, y2 = 0, 0
-        else:
-            w = obj.aperture.x_size
-            x1, x2 = 0, 0
-            y1 = 0.5 * (-obj.aperture.y_size + w)
-            y2 = 0.5 * (obj.aperture.y_size - w)
-        pts = vertices.rounded_line(w, x1, y1, x2, y2)
         vertices.translate(pts, x0, y0)
         patches.append(mpatches.Polygon(pts))
     elif isinstance(obj.aperture, gerber.Macro):
@@ -142,7 +118,6 @@ def append_render_macro(patches, obj):
         poly_kwargs = {}
         if isinstance(prim, gerber.MacroCircle):
             pts = vertices.circle(prim.diameter)
-            vertices.translate(pts, prim.x, prim.y)
             polys.append(pts)
         elif isinstance(prim, gerber.MacroVectorLine):
             pts = vertices.thick_line(prim.width,
@@ -151,16 +126,17 @@ def append_render_macro(patches, obj):
             polys.append(pts)
         elif isinstance(prim, gerber.MacroCenterLine):
             pts = vertices.rectangle(prim.width, prim.height)
-            vertices.translate(pts, prim.x, prim.y)
             polys.append(pts)
         elif isinstance(prim, gerber.MacroOutline):
             N = int(len(prim.coordinates) / 2)
             pts = np.array(prim.coordinates)
             pts.resize((N, 2))
+            # TODO Outline does not need translate at all
+            # This compensates for common translate later
+            vertices.translate(pts, -prim.x, -prim.y)
             polys.append(pts)
         elif isinstance(prim, gerber.MacroPolygon):
             pts = vertices.regular_poly(prim.diameter, prim.vertices)
-            vertices.translate(pts, prim.x, prim.y)
             polys.append(pts)
         elif isinstance(prim, gerber.MacroThermal):
             elements = [
@@ -169,23 +145,22 @@ def append_render_macro(patches, obj):
                 vertices.rectangle(prim.outer_diameter, prim.gap),
                 vertices.rectangle(prim.gap, prim.outer_diameter)]
             for pts in elements:
-                vertices.translate(pts, prim.x, prim.y)
                 polys.append(pts)
             poly_kwargs['fill'] = False
             poly_kwargs['lw'] = 0.5
         elif isinstance(prim, gerber.MacroMoire):
             pts = vertices.circle(prim.outer_diameter)
-            vertices.translate(pts, prim.x, prim.y)
             polys.append(pts)
             poly_kwargs['fill'] = False
         else:
             raise NotImplementedError('Not implemented ' + str(type(prim)))
 
-        if hasattr(prim, 'exposure') and prim.exposure == 0:
+        if prim.exposure == 0:
             poly_kwargs['fill'] = False
             poly_kwargs['lw'] = 0.5
             poly_kwargs['ls'] = 'dotted'
         for pts in polys:
+            vertices.translate(pts, prim.x, prim.y)
             vertices.rotate(pts, prim.rotation)
             vertices.translate(pts, x0, y0)
             patches.append(mpatches.Polygon(pts, **poly_kwargs))
@@ -233,23 +208,7 @@ def test_file(filename):
     plt.show()
 
 
-def test_hole():
-    fig, ax = plt.subplots()
-    xo = np.array([-2, 0, 2, 0, -2])
-    yo = np.array([0, 2, 0, -2, 0])
-    xi = np.array([-1, 0, 1, 0, -1])
-    yi = np.array([0, -1, 0, 1, 0])
-    x = np.concatenate([xo, xi])
-    y = np.concatenate([yo, yi])
-    xy = np.vstack([x, y]).T
-    ax.add_patch(mpatches.Polygon(xy, closed=True, edgecolor='black'))
-    ax.autoscale()
-    ax.set_aspect(1)
-    plt.show()
-
-
 if __name__ == '__main__':
-    # test_hole()
     test_file('2-13-1_Two_square_boxes.gbr')
     test_file('2-13-2_Polarities_and_Apertures.gbr')
     test_file('6-1-6-2_A_drill_file.gbr')
