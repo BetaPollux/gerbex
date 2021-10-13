@@ -4,7 +4,11 @@
 
 import re
 import copy
+import numpy as np
 import vertices
+
+# TODO replace all vertices with outline class
+
 
 # Meant for extracting substrings only
 # Cast to int or float will catch invalid strings
@@ -195,7 +199,8 @@ class Gerber():
         else:
             return None
 
-    def get_new_point(self, x, y):
+    def get_new_point(self, x: str, y: str):
+        # Parse strings, e.g. X2152000 and Y1215000
         if x and y:
             return (int(x[1:]), int(y[1:]))
         elif x:
@@ -406,6 +411,15 @@ class Aperture():
     def get_vertices(self, dest: list = None):
         raise NotImplementedError('get_vertices not implemented')
 
+    def get_hole_vertices(self, dest: list = None):
+        hole_pts = None
+        if self.hole_diameter:
+            hole_pts = vertices.circle(self.hole_diameter)
+            hole_pts = np.flip(hole_pts, 0)
+            if dest is not None:
+                dest.append(hole_pts)
+        return hole_pts
+
 
 class Circle(Aperture):
     def __init__(self, diameter: float, hole_diameter: float = None):
@@ -418,6 +432,12 @@ class Circle(Aperture):
         if dest is not None:
             dest.append(pts)
         return pts
+
+    def get_outline(self):
+        boundary = vertices.circle(self.diameter)
+        holes = []
+        self.get_hole_vertices(holes)
+        return vertices.OutlineVertices(boundary, holes)
 
 
 class Rectangle(Aperture):
@@ -436,7 +456,8 @@ class Rectangle(Aperture):
 
 
 class Obround(Aperture):
-    def __init__(self, x_size: float, y_size: float, hole_diameter: float = None):
+    def __init__(self, x_size: float, y_size: float,
+                 hole_diameter: float = None):
         super().__init__()
         self.x_size = x_size
         self.y_size = y_size
@@ -597,7 +618,8 @@ class MacroPolygon(MacroPrimitive):
 
 
 class MacroThermal(MacroPrimitive):
-    def __init__(self, x, y, outer_diameter, inner_diameter, gap, rotation=0.0):
+    def __init__(self, x, y, outer_diameter, inner_diameter,
+                 gap, rotation=0.0):
         super().__init__(EXPOSURE_ON, x, y, rotation)
         self.outer_diameter = outer_diameter
         self.inner_diameter = inner_diameter

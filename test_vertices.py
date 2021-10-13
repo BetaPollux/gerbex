@@ -6,6 +6,10 @@ import numpy as np
 import vertices as v
 
 
+# TODO test OutlineVertices translate, rotate etc.
+# TODO should endpoint=True?
+
+
 def test_translate():
     pts = np.array([[0.0, 0.0], [1.0, 1.25]])
     v.translate(pts, 0.5, 0.25)
@@ -18,6 +22,35 @@ def test_rotate():
     assert pts == approx(np.array([[-1.0, 2.0],
                                    [-1.0, 5.0],
                                    [-3.0, 4.0]]))
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        np.array([0, 1, 2]),
+        np.array([[0, 1, 2]]),
+        np.array([[0, 0]]),
+        np.array([[0, 0], [1, 1]])
+    ],
+)
+def test_outline_bad_boundary(boundary):
+    with pytest.raises(ValueError):
+        v.OutlineVertices(boundary)
+
+
+@pytest.mark.parametrize(
+    "holes",
+    [
+        [np.array([0, 1])],
+        [np.array([[0, 0]])],
+        [np.array([[0, 0], [1, 1]])],
+        [np.array([[0, 0], [1, 1], [2, 2]]), np.array([[0, 0], [1, 1]])],
+    ],
+)
+def test_outline_bad_holes(holes):
+    boundary = np.array([[0, 0], [1, 1], [2, 2]])
+    with pytest.raises(ValueError):
+        v.OutlineVertices(boundary, holes)
 
 
 def test_circle():

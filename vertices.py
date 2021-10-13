@@ -1,10 +1,44 @@
 #!/usr/bin/python3
 
 import numpy as np
-import gerber
 
 
 DEFAULT_MAX_STEP = 10.0
+
+
+def check_vertex_array(array: np.ndarray):
+    if array.ndim != 2:
+        raise ValueError('Vertex array must be 2-dimensional')
+    if array.shape[1] != 2:
+        raise ValueError('Vertex array must be Nx2')
+    if array.shape[0] < 3:
+        raise ValueError('Vertex array needs at least 3 points')
+
+
+class OutlineVertices():
+    def __init__(self, boundary: np.ndarray,
+                 holes: list = [], positive: bool = True):
+        check_vertex_array(boundary)
+        for hole in holes:
+            check_vertex_array(hole)
+        self.boundary = boundary
+        self.holes = holes
+        self.positive = positive
+
+    def total_vertices(self):
+        num = len(self.boundary)
+        for hole in self.holes:
+            num += len(hole)
+
+    def translate(self, dx: float, dy: float):
+        translate(self.boundary, dx, dy)
+        for hole in self.holes:
+            translate(hole, dx, dy)
+
+    def rotate(self, degrees: float):
+        rotate(self.boundary, degrees)
+        for hole in self.holes:
+            rotate(hole, degrees)
 
 
 def translate(points: np.ndarray, dx: float, dy: float):
@@ -105,5 +139,5 @@ def rounded_arc(width: float, x0: float, y0: float,
     outer = arc(r + dr, start, end, max_step=max_step)
     tip2 = arc(dr, end, end + 180, max_step=max_step_tip)
     translate(tip2, dx2, dy2)
-    inner = np.flip(arc(r - dr, start, end, max_step=max_step), 1)
+    inner = np.flip(arc(r - dr, start, end, max_step=max_step), 0)
     return np.vstack([tip1, outer, tip2, inner])

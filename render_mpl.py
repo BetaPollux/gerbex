@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.path as mpath
 import matplotlib as mpl
 import gerber
 import vertices
@@ -208,7 +209,36 @@ def test_file(filename):
     plt.show()
 
 
+def get_path_patch(outline: vertices.OutlineVertices):
+    def get_codes(pts):
+        return [mpath.Path.MOVETO] + \
+               [mpath.Path.LINETO] * (len(pts) - 2) + \
+               [mpath.Path.CLOSEPOLY]
+    all_vertices = np.vstack([outline.boundary,
+                              *[hole for hole in outline.holes]])
+    codes = get_codes(outline.boundary)
+    if outline.holes:
+        codes.extend(*[get_codes(hole) for hole in outline.holes])
+    path = mpath.Path(all_vertices, codes)
+    return mpatches.PathPatch(path)
+
+
+def test_path_patch():
+    donut = gerber.Circle(1.5, 0.5)
+    plate = gerber.Circle(0.2)
+    outline1 = donut.get_outline()
+    outline2 = plate.get_outline()
+    pp1 = get_path_patch(outline1)
+    pp2 = get_path_patch(outline2)
+    ax = plt.gca()
+    ax.add_patch(pp1)
+    ax.add_patch(pp2)
+    ax.autoscale()
+    plt.show()
+
+
 if __name__ == '__main__':
+    test_path_patch()
     test_file('2-13-1_Two_square_boxes.gbr')
     test_file('2-13-2_Polarities_and_Apertures.gbr')
     test_file('6-1-6-2_A_drill_file.gbr')
