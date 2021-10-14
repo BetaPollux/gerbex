@@ -420,6 +420,12 @@ class Aperture():
                 dest.append(hole_pts)
         return hole_pts
 
+    def get_outline(self) -> vertices.OutlineVertices:
+        boundary = self.get_vertices()
+        holes = []
+        self.get_hole_vertices(holes)
+        return vertices.OutlineVertices(boundary, holes)
+
 
 class Circle(Aperture):
     def __init__(self, diameter: float, hole_diameter: float = None):
@@ -432,12 +438,6 @@ class Circle(Aperture):
         if dest is not None:
             dest.append(pts)
         return pts
-
-    def get_outline(self):
-        boundary = vertices.circle(self.diameter)
-        holes = []
-        self.get_hole_vertices(holes)
-        return vertices.OutlineVertices(boundary, holes)
 
 
 class Rectangle(Aperture):
@@ -669,8 +669,8 @@ class GraphicalObject():
         x0, y0 = self.origin
         self.origin = (x0 + dx, y0 + dy)
 
-    def get_vertices(self, dest: list, scale: float = 1e-6):
-        raise NotImplementedError('get_vertices not implemented')
+    def get_outline(self, dest: list = None, scale: float = 1e-6):
+        raise NotImplementedError('get_outline not implemented')
 
 
 class Draw(GraphicalObject):
@@ -706,6 +706,17 @@ class Arc(GraphicalObject):
 class Flash(GraphicalObject):
     def __init__(self, aperture, transform, origin: tuple):
         super().__init__(aperture, transform, origin)
+
+    def get_outline(self, dest: list = None, scale: float = 1e-6):
+        outline = self.aperture.get_outline()
+        x0, y0 = scale * np.array(self.origin)
+        # TODO replace with apply transform function
+        outline.positive = self.transform.polarity == 'dark'
+        outline.rotate(self.transform.rotation)
+        outline.translate(x0, y0)
+        if dest is not None:
+            dest.append(outline)
+        return outline
 
 
 class Region(GraphicalObject):

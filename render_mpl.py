@@ -96,10 +96,8 @@ def append_render_flash(patches, obj):
                               gerber.Rectangle,
                               gerber.Obround,
                               gerber.Polygon):
-        pts = obj.aperture.get_vertices()
-        x0, y0 = 1e-6 * np.array(obj.origin)
-        vertices.translate(pts, x0, y0)
-        patches.append(mpatches.Polygon(pts))
+        outline = obj.get_outline()  # TODO apply scale factor
+        patches.append(get_path_patch(outline))
     elif isinstance(obj.aperture, gerber.Macro):
         append_render_macro(patches, obj)
     elif isinstance(obj.aperture, gerber.BlockAperture):
@@ -210,29 +208,40 @@ def test_file(filename):
 
 
 def get_path_patch(outline: vertices.OutlineVertices):
+    def pad(pts):
+        """Append dummy vertex, to allow CLOSEPOLY."""
+        return np.vstack([pts, [[0, 0]]])
+
     def get_codes(pts):
+        """Assumes pts has an added dummy vertex."""
         return [mpath.Path.MOVETO] + \
-               [mpath.Path.LINETO] * (len(pts) - 2) + \
+               [mpath.Path.LINETO] * (len(pts) - 1) + \
                [mpath.Path.CLOSEPOLY]
-    all_vertices = np.vstack([outline.boundary,
-                              *[hole for hole in outline.holes]])
+    all_vertices = np.vstack([pad(outline.boundary),
+                              *[pad(hole) for hole in outline.holes]])
     codes = get_codes(outline.boundary)
     if outline.holes:
         codes.extend(*[get_codes(hole) for hole in outline.holes])
     path = mpath.Path(all_vertices, codes)
-    return mpatches.PathPatch(path)
+    color = 'blue' if outline.positive else 'white'
+    return mpatches.PathPatch(path, color=color)
 
 
 def test_path_patch():
     donut = gerber.Circle(1.5, 0.5)
     plate = gerber.Circle(0.2)
+    rect = gerber.Rectangle(0.5, 1.2, 0.2)
     outline1 = donut.get_outline()
     outline2 = plate.get_outline()
+    outline3 = rect.get_outline()
+    outline3.translate(3.0, 0.0)
     pp1 = get_path_patch(outline1)
     pp2 = get_path_patch(outline2)
+    pp3 = get_path_patch(outline3)
     ax = plt.gca()
     ax.add_patch(pp1)
     ax.add_patch(pp2)
+    ax.add_patch(pp3)
     ax.autoscale()
     plt.show()
 
