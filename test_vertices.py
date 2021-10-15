@@ -7,7 +7,6 @@ import vertices as v
 
 
 # TODO test OutlineVertices translate, rotate etc.
-# TODO should endpoint=True?
 
 
 def test_translate():

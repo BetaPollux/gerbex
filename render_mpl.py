@@ -20,49 +20,41 @@ import copy
 
 
 def render(state):
-    patches = []
+    outlines = []
     for obj in state.objects:
-        append_render(patches, obj)
+        append_render(outlines, obj)
+    patches = [get_path_patch(outline) for outline in outlines]
     return mpl.collections.PatchCollection(patches, match_original=True)
 
 
-def append_render(patches, obj):
+def append_render(outlines, obj):
     if isinstance(obj, gerber.Draw):
-        append_render_draw(patches, obj)
+        append_render_draw(outlines, obj)
     elif isinstance(obj, gerber.Flash):
-        append_render_flash(patches, obj)
+        append_render_flash(outlines, obj)
     elif isinstance(obj, gerber.Arc):
-        append_render_arc(patches, obj)
+        append_render_arc(outlines, obj)
     elif isinstance(obj, gerber.Region):
-        append_render_region(patches, obj)
+        append_render_region(outlines, obj)
     elif isinstance(obj, gerber.StepAndRepeat):
-        append_render_step_and_repeat(patches, obj)
+        append_render_step_and_repeat(outlines, obj)
     else:
         raise TypeError('Unsupported object type for render')
 
 
-def append_render_draw(patches, obj):
+def append_render_draw(outlines, obj):
     assert isinstance(obj, gerber.Draw)
     assert isinstance(obj.aperture, gerber.Circle)
-    x0, y0 = 1e-6 * np.array(obj.origin)
-    x1, y1 = 1e-6 * np.array(obj.endpoint)
-    pts = vertices.rounded_line(obj.aperture.diameter, x0, y0, x1, y1)
-    patches.append(mpatches.Polygon(pts))
+    obj.get_outline(outlines)
 
 
-def append_render_arc(patches, obj):
+def append_render_arc(outlines, obj):
     assert isinstance(obj, gerber.Arc)
     assert isinstance(obj.aperture, gerber.Circle)
-    dx, dy = 1e-6 * np.array(obj.offset)
-    x1, y1 = 1e-6 * np.array(obj.origin)
-    x2, y2 = 1e-6 * np.array(obj.endpoint)
-    x0, y0 = x1 + dx, y1 + dy
-    pts = vertices.rounded_arc(obj.aperture.diameter, x0, y0, x1, y1, x2, y2)
-    vertices.translate(pts, x0, y0)
-    patches.append(mpatches.Polygon(pts))
+    obj.get_outline(outlines)
 
 
-def append_render_region(patches, obj):
+def append_render_region(outlines, obj):
     assert isinstance(obj, gerber.Region)
     x = []
     y = []
@@ -86,86 +78,31 @@ def append_render_region(patches, obj):
         else:
             raise TypeError('Segment not supported')
     xy = 1e-6 * np.vstack([x, y]).T
-    patches.append(mpatches.Polygon(xy, fill=False))
+    outline = vertices.OutlineVertices(xy)
+    outlines.append(outline)
 
 
-def append_render_flash(patches, obj):
+def append_render_flash(outlines, obj):
     assert isinstance(obj, gerber.Flash)
     assert obj.aperture is not None
     if type(obj.aperture) in (gerber.Circle,
                               gerber.Rectangle,
                               gerber.Obround,
-                              gerber.Polygon):
-        outline = obj.get_outline()  # TODO apply scale factor
-        patches.append(get_path_patch(outline))
-    elif isinstance(obj.aperture, gerber.Macro):
-        append_render_macro(patches, obj)
+                              gerber.Polygon,
+                              gerber.Macro):
+        obj.get_outline(outlines)  # TODO apply scale factor
     elif isinstance(obj.aperture, gerber.BlockAperture):
+        # TODO replace block aperture processing
         block_children = [copy.copy(block) for block in obj.aperture.objects]
         for child in block_children:
             child.translate(obj.origin)
-            append_render(patches, child)
+            append_render(outlines, child)
     else:
         raise NotImplementedError('Unrecognized Aperture ' +
                                   str(type(obj.aperture)))
 
 
-def append_render_macro(patches, obj):
-    x0, y0 = 1e-6 * np.array(obj.origin)
-    for prim in obj.aperture.primitives:
-        polys = []
-        poly_kwargs = {}
-        if isinstance(prim, gerber.MacroCircle):
-            pts = vertices.circle(prim.diameter)
-            polys.append(pts)
-        elif isinstance(prim, gerber.MacroVectorLine):
-            pts = vertices.thick_line(prim.width,
-                                      prim.x1, prim.y1,
-                                      prim.x2, prim.y2)
-            polys.append(pts)
-        elif isinstance(prim, gerber.MacroCenterLine):
-            pts = vertices.rectangle(prim.width, prim.height)
-            polys.append(pts)
-        elif isinstance(prim, gerber.MacroOutline):
-            N = int(len(prim.coordinates) / 2)
-            pts = np.array(prim.coordinates)
-            pts.resize((N, 2))
-            # TODO Outline does not need translate at all
-            # This compensates for common translate later
-            vertices.translate(pts, -prim.x, -prim.y)
-            polys.append(pts)
-        elif isinstance(prim, gerber.MacroPolygon):
-            pts = vertices.regular_poly(prim.diameter, prim.vertices)
-            polys.append(pts)
-        elif isinstance(prim, gerber.MacroThermal):
-            elements = [
-                vertices.circle(prim.outer_diameter),
-                vertices.circle(prim.inner_diameter),
-                vertices.rectangle(prim.outer_diameter, prim.gap),
-                vertices.rectangle(prim.gap, prim.outer_diameter)]
-            for pts in elements:
-                polys.append(pts)
-            poly_kwargs['fill'] = False
-            poly_kwargs['lw'] = 0.5
-        elif isinstance(prim, gerber.MacroMoire):
-            pts = vertices.circle(prim.outer_diameter)
-            polys.append(pts)
-            poly_kwargs['fill'] = False
-        else:
-            raise NotImplementedError('Not implemented ' + str(type(prim)))
-
-        if prim.exposure == 0:
-            poly_kwargs['fill'] = False
-            poly_kwargs['lw'] = 0.5
-            poly_kwargs['ls'] = 'dotted'
-        for pts in polys:
-            vertices.translate(pts, prim.x, prim.y)
-            vertices.rotate(pts, prim.rotation)
-            vertices.translate(pts, x0, y0)
-            patches.append(mpatches.Polygon(pts, **poly_kwargs))
-
-
-def append_render_step_and_repeat(patches, obj):
+def append_render_step_and_repeat(outlines, obj):
     for i in range(obj.nx):
         for j in range(obj.ny):
             dx = i * obj.step_x * 1e6
@@ -173,7 +110,7 @@ def append_render_step_and_repeat(patches, obj):
             children = [copy.copy(child) for child in obj.objects]
             for child in children:
                 child.translate((dx, dy))
-                append_render(patches, child)
+                append_render(outlines, child)
 
 
 def get_poly_circle_vertices(center, radius, start_angle=0.0,
@@ -208,6 +145,7 @@ def test_file(filename):
 
 
 def get_path_patch(outline: vertices.OutlineVertices):
+    assert type(outline) == vertices.OutlineVertices
     def pad(pts):
         """Append dummy vertex, to allow CLOSEPOLY."""
         return np.vstack([pts, [[0, 0]]])

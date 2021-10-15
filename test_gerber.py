@@ -8,6 +8,9 @@ from gerber import Gerber
 import vertices
 
 
+# TODO test get_outline functions
+
+
 def test_format():
     state = Gerber()
     state.set_format(r'%FSLAX36Y36*%')
@@ -716,29 +719,31 @@ def test_parse(filename):
     state.parse(os.path.join(directory, filename))
 
 
-def test_vertices_no_dest():
+def test_outline_no_dest():
     types = (gerber.Circle, gerber.Rectangle, gerber.Obround, gerber.Polygon)
-    v = [t(5, 3).get_vertices() for t in types]
+    v = [t(5, 3).get_outline() for t in types]
     for vi in v:
         assert vi is not None
 
 
-def test_vertices_circle():
+def test_outline_circle():
     aperture = gerber.Circle(1.5)
     pts_list = []
-    pts = aperture.get_vertices(pts_list)
+    pts = aperture.get_outline(pts_list)
     expected = vertices.circle(1.5)
     assert pts is pts_list[0]
-    assert pts_list[0] == approx(expected)
+    assert pts_list[0].boundary == approx(expected)
+    assert pts_list[0].holes == []
 
 
-def test_vertices_rectangle():
+def test_outline_rectangle():
     aperture = gerber.Rectangle(1.5, 1.0)
     pts_list = []
-    pts = aperture.get_vertices(pts_list)
+    pts = aperture.get_outline(pts_list)
     expected = vertices.rectangle(1.5, 1.0)
     assert pts is pts_list[0]
-    assert pts_list[0] == approx(expected)
+    assert pts_list[0].boundary == approx(expected)
+    assert pts_list[0].holes == []
 
 
 @pytest.mark.parametrize(
@@ -747,7 +752,7 @@ def test_vertices_rectangle():
         1.0, 2.0
     ],
 )
-def test_vertices_obround(x_size):
+def test_outline_obround(x_size):
     y_size = 1.5
     w = min(x_size, y_size)
     z = 0.5 * (max(x_size, y_size) - w)
@@ -759,10 +764,11 @@ def test_vertices_obround(x_size):
         y1, y2 = -z, z
     aperture = gerber.Obround(x_size, y_size)
     pts_list = []
-    pts = aperture.get_vertices(pts_list)
+    pts = aperture.get_outline(pts_list)
     expected = vertices.rounded_line(w, x1, y1, x2, y2)
     assert pts is pts_list[0]
-    assert pts_list[0] == approx(expected)
+    assert pts_list[0].boundary == approx(expected)
+    assert pts_list[0].holes == []
 
 
 @pytest.mark.parametrize(
@@ -771,11 +777,12 @@ def test_vertices_obround(x_size):
         0, 45, 135
     ],
 )
-def test_vertices_polygon(rotation):
+def test_outline_polygon(rotation):
     aperture = gerber.Polygon(1.0, 5, rotation)
     pts_list = []
-    pts = aperture.get_vertices(pts_list)
+    pts = aperture.get_outline(pts_list)
     expected = vertices.regular_poly(1.0, 5)
     vertices.rotate(expected, rotation)
     assert pts is pts_list[0]
-    assert pts_list[0] == approx(expected)
+    assert pts_list[0].boundary == approx(expected)
+    assert pts_list[0].holes == []

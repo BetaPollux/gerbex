@@ -408,9 +408,6 @@ class Aperture():
         new = copy.copy(self)
         return new
 
-    def get_vertices(self, dest: list = None):
-        raise NotImplementedError('get_vertices not implemented')
-
     def get_hole_vertices(self, dest: list = None):
         hole_pts = None
         if self.hole_diameter:
@@ -420,11 +417,8 @@ class Aperture():
                 dest.append(hole_pts)
         return hole_pts
 
-    def get_outline(self) -> vertices.OutlineVertices:
-        boundary = self.get_vertices()
-        holes = []
-        self.get_hole_vertices(holes)
-        return vertices.OutlineVertices(boundary, holes)
+    def get_outline(self, dest: list = None):
+        raise NotImplementedError('get_outline not implemented')
 
 
 class Circle(Aperture):
@@ -433,11 +427,14 @@ class Circle(Aperture):
         self.diameter = diameter
         self.hole_diameter = hole_diameter
 
-    def get_vertices(self, dest: list = None):
+    def get_outline(self, dest: list = None):
         pts = vertices.circle(self.diameter)
+        holes = []
+        self.get_hole_vertices(holes)
+        outline = vertices.OutlineVertices(pts, holes)
         if dest is not None:
-            dest.append(pts)
-        return pts
+            dest.append(outline)
+        return outline
 
 
 class Rectangle(Aperture):
@@ -448,11 +445,14 @@ class Rectangle(Aperture):
         self.y_size = y_size
         self.hole_diameter = hole_diameter
 
-    def get_vertices(self, dest: list = None):
+    def get_outline(self, dest: list = None):
         pts = vertices.rectangle(self.x_size, self.y_size)
+        holes = []
+        self.get_hole_vertices(holes)
+        outline = vertices.OutlineVertices(pts, holes)
         if dest is not None:
-            dest.append(pts)
-        return pts
+            dest.append(outline)
+        return outline
 
 
 class Obround(Aperture):
@@ -463,7 +463,7 @@ class Obround(Aperture):
         self.y_size = y_size
         self.hole_diameter = hole_diameter
 
-    def get_vertices(self, dest: list = None):
+    def get_outline(self, dest: list = None):
         w = min(self.x_size, self.y_size)
         z = 0.5 * (max(self.x_size, self.y_size) - w)
         if self.x_size > self.y_size:
@@ -473,9 +473,12 @@ class Obround(Aperture):
             x1, x2 = 0, 0
             y1, y2 = -z, z
         pts = vertices.rounded_line(w, x1, y1, x2, y2)
+        holes = []
+        self.get_hole_vertices(holes)
+        outline = vertices.OutlineVertices(pts, holes)
         if dest is not None:
-            dest.append(pts)
-        return pts
+            dest.append(outline)
+        return outline
 
 
 class Polygon(Aperture):
@@ -489,12 +492,15 @@ class Polygon(Aperture):
         if self.vertices not in range(3, 13):
             raise ValueError('Polygon vertices must be from 3 to 12')
 
-    def get_vertices(self, dest: list = None):
+    def get_outline(self, dest: list = None):
         pts = vertices.regular_poly(self.outer_diameter, self.vertices)
         vertices.rotate(pts, self.rotation)
+        holes = []
+        self.get_hole_vertices(holes)
+        outline = vertices.OutlineVertices(pts, holes)
         if dest is not None:
-            dest.append(pts)
-        return pts
+            dest.append(outline)
+        return outline
 
 
 class Macro(Aperture):
@@ -502,6 +508,12 @@ class Macro(Aperture):
         super().__init__()
         self.template_str = template_str
         self.primitives = primitives
+
+    def get_outline(self, dest: list = None):
+        outlines = []
+        for prim in self.primitives:
+            outlines.append(prim.get_outline(dest))
+        return outlines
 
     def derive_from(self, statement: str):
         # Collect parameter values from creation statement
@@ -579,6 +591,9 @@ class MacroPrimitive():
         self.y = y
         self.rotation = rotation
 
+    def get_outline(self, dest: list = None):
+        raise NotImplementedError('get_vertices not implemented')
+
     @classmethod
     def parse(cls, statement: str):
         if statement is None:
@@ -592,6 +607,16 @@ class MacroCircle(MacroPrimitive):
         super().__init__(exposure, x, y, rotation)
         self.diameter = diameter
 
+    def get_outline(self, dest: list = None):
+        pts = vertices.circle(self.diameter)
+        outline = vertices.OutlineVertices(pts)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class MacroVectorLine(MacroPrimitive):
     def __init__(self, exposure, width, x1, y1, x2, y2, rotation=0.0):
@@ -602,6 +627,18 @@ class MacroVectorLine(MacroPrimitive):
         self.x2 = x2
         self.y2 = y2
 
+    def get_outline(self, dest: list = None):
+        pts = vertices.thick_line(self.width,
+                                  self.x1, self.y1,
+                                  self.x2, self.y2)
+        outline = vertices.OutlineVertices(pts)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class MacroCenterLine(MacroPrimitive):
     def __init__(self, exposure, width, height, x, y, rotation=0.0):
@@ -609,12 +646,32 @@ class MacroCenterLine(MacroPrimitive):
         self.width = width
         self.height = height
 
+    def get_outline(self, dest: list = None):
+        pts = vertices.rectangle(self.width, self.height)
+        outline = vertices.OutlineVertices(pts)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class MacroPolygon(MacroPrimitive):
     def __init__(self, exposure, vertices, x, y, diameter, rotation=0.0):
         super().__init__(exposure, x, y, rotation)
         self.vertices = vertices
         self.diameter = diameter
+
+    def get_outline(self, dest: list = None):
+        pts = vertices.regular_poly(self.diameter, self.vertices)
+        outline = vertices.OutlineVertices(pts)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
 
 
 class MacroThermal(MacroPrimitive):
@@ -624,6 +681,19 @@ class MacroThermal(MacroPrimitive):
         self.outer_diameter = outer_diameter
         self.inner_diameter = inner_diameter
         self.gap = gap
+
+    def get_outline(self, dest: list = None):
+        pts = vertices.circle(self.outer_diameter)
+        hole_pts = vertices.circle(self.inner_diameter)
+        holes = [np.flip(hole_pts, 0)]
+        # TODO add gaps
+        outline = vertices.OutlineVertices(pts, holes)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
 
 
 class MacroMoire(MacroPrimitive):
@@ -638,6 +708,18 @@ class MacroMoire(MacroPrimitive):
         self.crosshair_thickness = crosshair_thickness
         self.crosshair_length = crosshair_length
 
+    def get_outline(self, dest: list = None):
+        pts = vertices.circle(self.outer_diameter)
+        holes = [vertices.circle(self.inner_diameter)]
+        # TODO implement properly
+        outline = vertices.OutlineVertices(pts, holes)
+        outline.positive = self.exposure == 1
+        outline.translate(self.x, self.y)
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class MacroOutline(MacroPrimitive):
     def __init__(self, exposure, vertices, x, y, *args):
@@ -649,9 +731,21 @@ class MacroOutline(MacroPrimitive):
         else:
             raise ValueError(f'Expected {N} parameters but received {len(args)}')
 
+    def get_outline(self, dest: list = None):
+        N = int(len(self.coordinates) / 2)
+        pts = np.array(self.coordinates)
+        pts.resize((N, 2))
+        outline = vertices.OutlineVertices(pts)
+        outline.positive = self.exposure == 1
+        outline.rotate(self.rotation)
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class BlockAperture(Aperture):
     def __init__(self):
+        super().__init__()
         self.objects = []
 
     def append(self, object):
@@ -685,6 +779,16 @@ class Draw(GraphicalObject):
         self.origin = (x0 + dx, y0 + dy)
         self.endpoint = (x1 + dx, y1 + dy)
 
+    def get_outline(self, dest: list = None, scale: float = 1e-6):
+        x0, y0 = scale * np.array(self.origin)
+        x1, y1 = scale * np.array(self.endpoint)
+        pts = vertices.rounded_line(self.aperture.diameter, x0, y0, x1, y1)
+        outline = vertices.OutlineVertices(pts)
+        # TODO apply transform
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 # TODO Arc needs quadrant mode
 class Arc(GraphicalObject):
@@ -702,21 +806,35 @@ class Arc(GraphicalObject):
         self.origin = (x0 + dx, y0 + dy)
         self.endpoint = (x1 + dx, y1 + dy)
 
+    def get_outline(self, dest: list = None, scale: float = 1e-6):
+        dx, dy = scale * np.array(self.offset)
+        x1, y1 = scale * np.array(self.origin)
+        x2, y2 = scale * np.array(self.endpoint)
+        x0, y0 = x1 + dx, y1 + dy
+        pts = vertices.rounded_arc(self.aperture.diameter, x0, y0, x1, y1, x2, y2)
+        vertices.translate(pts, x0, y0)
+        outline = vertices.OutlineVertices(pts)
+        # TODO apply transform
+        if dest is not None:
+            dest.append(outline)
+        return outline
+
 
 class Flash(GraphicalObject):
     def __init__(self, aperture, transform, origin: tuple):
         super().__init__(aperture, transform, origin)
 
     def get_outline(self, dest: list = None, scale: float = 1e-6):
-        outline = self.aperture.get_outline()
+        outlines = self.aperture.get_outline(dest)
+        if type(outlines) != list:
+            outlines = [outlines]
         x0, y0 = scale * np.array(self.origin)
         # TODO replace with apply transform function
-        outline.positive = self.transform.polarity == 'dark'
-        outline.rotate(self.transform.rotation)
-        outline.translate(x0, y0)
-        if dest is not None:
-            dest.append(outline)
-        return outline
+        for outline in outlines:
+            outline.positive = self.transform.polarity == 'dark'
+            outline.rotate(self.transform.rotation)
+            outline.translate(x0, y0)
+        return outlines
 
 
 class Region(GraphicalObject):
