@@ -1,0 +1,19 @@
+add_library(libgerbex
+	Aperture.cpp
+	ApertureTransformation.cpp
+	Circle.cpp
+	CommandsProcessor.cpp
+	CoordinateFormat.cpp
+	GraphicalObject.cpp
+	GraphicsState.cpp
+	Obround.cpp
+	Point.cpp
+	Polygon.cpp
+	Rectangle.cpp
+	SyntaxParser.cpp
+)
+
+target_include_directories(libgerbex
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
