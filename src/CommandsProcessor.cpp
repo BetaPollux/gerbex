@@ -23,9 +23,11 @@
 #include "Obround.h"
 #include "Polygon.h"
 #include "Rectangle.h"
+#include <stdexcept>
 
 CommandsProcessor::CommandsProcessor()
-	: m_graphicsState{},
+	: m_commandState{ CommandState::Normal },
+	  m_graphicsState{},
 	  m_objects{},
 	  m_apertures{},
 	  m_templates{}
@@ -39,4 +41,61 @@ CommandsProcessor::CommandsProcessor()
 CommandsProcessor::~CommandsProcessor() {
 	m_apertures.clear();
 	m_templates.clear();
+}
+
+void CommandsProcessor::ApertureDefinition(int ident,
+		std::shared_ptr<Aperture> aperture) {
+	if (aperture == nullptr) {
+		throw std::invalid_argument("Cannot add null aperture.");
+	}
+	if (ident < 10) {
+		throw std::invalid_argument("Aperture ident must be >= 10.");
+	}
+	m_apertures[ident] = aperture;
+}
+
+void CommandsProcessor::SetCurrentAperture(int ident) {
+	if (m_apertures.count(ident) == 0) {
+		throw std::invalid_argument("Aperture " + std::to_string(ident) + " does not exist.");
+	}
+	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
+}
+
+void CommandsProcessor::Plot(const Point &coord) {
+	//TODO plot
+}
+
+void CommandsProcessor::Plot(const Point &coord, const Point &offset) {
+	//TODO plot
+}
+
+void CommandsProcessor::Move(const Point &coord) {
+	//TODO move
+}
+
+void CommandsProcessor::Flash(const Point &coord) {
+	//TODO flash
+}
+
+std::shared_ptr<Aperture> CommandsProcessor::GetTemplate(std::string name) {
+	if (m_templates.count(name) == 0) {
+		throw std::invalid_argument("Aperture template " + name + " does not exist.");
+	}
+	return m_templates[name];
+}
+
+const GraphicsState& CommandsProcessor::GetGraphicsState() const {
+	return m_graphicsState;
+}
+
+const std::vector<std::shared_ptr<GraphicalObject> >& CommandsProcessor::GetObjects() const {
+	return m_objects;
+}
+
+CommandState CommandsProcessor::GetCommandState() const {
+	return m_commandState;
+}
+
+void CommandsProcessor::SetCommandState(CommandState commandState) {
+	m_commandState = commandState;
 }

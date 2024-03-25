@@ -35,3 +35,52 @@ GraphicsState::~GraphicsState() {
 	// Empty
 }
 
+const std::shared_ptr<Aperture>& GraphicsState::GetCurrentAperture() const {
+	return m_currentAperture;
+}
+
+void GraphicsState::SetCurrentAperture(
+		const std::shared_ptr<Aperture> &currentAperture) {
+	m_currentAperture = currentAperture;
+}
+
+const Point& GraphicsState::GetCurrentPoint() const {
+	return m_currentPoint;
+}
+
+void GraphicsState::SetCurrentPoint(const Point &currentPoint) {
+	m_currentPoint = currentPoint;
+}
+
+const CoordinateFormat& GraphicsState::GetFormat() const {
+	return m_format;
+}
+
+void GraphicsState::SetFormat(const CoordinateFormat &format) {
+	m_format = format;
+}
+
+PlotState GraphicsState::GetPlotState() const {
+	return m_plotState;
+}
+
+void GraphicsState::SetPlotState(PlotState plotState) {
+	m_plotState = plotState;
+}
+
+const ApertureTransformation& GraphicsState::GetTransformation() const {
+	return m_transformation;
+}
+
+void GraphicsState::SetTransformation(
+		const ApertureTransformation &transformation) {
+	m_transformation = transformation;
+}
+
+Unit GraphicsState::GetUnit() const {
+	return m_unit;
+}
+
+void GraphicsState::SetUnit(Unit unit) {
+	m_unit = unit;
+}

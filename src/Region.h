@@ -1,5 +1,5 @@
 /*
- * GraphicalObject.h
+ * Region.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,28 +18,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICALOBJECT_H_
-#define GRAPHICALOBJECT_H_
+#ifndef REGION_H_
+#define REGION_H_
 
-#include "Aperture.h"
-#include "ApertureTransformation.h"
-#include "Point.h"
-#include <memory>
+#include "GraphicalObject.h"
 
 /*
- * Represents a plane figure, with shape, size, position and polarity (dark/clear).
+ * A contour; closed sequence of connected linear or circular segments.
  */
-class GraphicalObject {
+class Region: public GraphicalObject {
 public:
-	GraphicalObject();
-	GraphicalObject(const Point &origin,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~GraphicalObject();
-
-protected:
-	Point m_origin;
-	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transformation;
+	Region();
+	virtual ~Region();
 };
 
-#endif /* GRAPHICALOBJECT_H_ */
+#endif /* REGION_H_ */

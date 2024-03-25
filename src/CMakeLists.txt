@@ -1,15 +1,19 @@
 add_library(libgerbex
+	Arc.cpp
 	Aperture.cpp
 	ApertureTransformation.cpp
 	Circle.cpp
 	CommandsProcessor.cpp
 	CoordinateFormat.cpp
+	Draw.cpp
+	Flash.cpp
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Obround.cpp
 	Point.cpp
 	Polygon.cpp
 	Rectangle.cpp
+	Region.cpp
 	SyntaxParser.cpp
 )
 

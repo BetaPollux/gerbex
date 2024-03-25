@@ -19,12 +19,50 @@
  */
 
 #include "CommandsProcessor.h"
+#include "Circle.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
-TEST_GROUP(CommandsProcessorTest) {
+TEST_GROUP(CommandsProcessor_Init) {
+	CommandsProcessor processor;
 };
 
-TEST(CommandsProcessorTest, NotImplemented) {
-	FAIL("CommandsProcessorTest Not Implemented");
+TEST(CommandsProcessor_Init, State) {
+	LONGS_EQUAL(CommandState::Normal, processor.GetCommandState());
+}
+
+TEST(CommandsProcessor_Init, StandardTemplates) {
+	CHECK(processor.GetTemplate("C") != nullptr);
+	CHECK(processor.GetTemplate("R") != nullptr);
+	CHECK(processor.GetTemplate("O") != nullptr);
+	CHECK(processor.GetTemplate("P") != nullptr);
+}
+
+TEST(CommandsProcessor_Init, GetTemplate_DoesNotExist) {
+	CHECK_THROWS(std::invalid_argument, processor.GetTemplate("X"));
+}
+
+TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {
+	CHECK_THROWS(std::invalid_argument, processor.SetCurrentAperture(10));
+}
+
+TEST(CommandsProcessor_Init, ApertureDefinition) {
+	std::shared_ptr<Circle> circle = std::make_unique<Circle>();
+
+	processor.ApertureDefinition(10, circle);
+	processor.SetCurrentAperture(10);
+
+	POINTERS_EQUAL(circle.get(), processor.GetGraphicsState().GetCurrentAperture().get());
+}
+
+TEST(CommandsProcessor_Init, ApertureDefinition_BadNumber) {
+	//0 through 9 are illegal
+	std::unique_ptr<Circle> circle = std::make_unique<Circle>();
+
+	CHECK_THROWS(std::invalid_argument, processor.ApertureDefinition(9, std::move(circle)));
+}
+
+TEST(CommandsProcessor_Init, ApertureDefinition_Null) {
+	CHECK_THROWS(std::invalid_argument, processor.ApertureDefinition(10, nullptr));
 }
 

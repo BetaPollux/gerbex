@@ -1,5 +1,5 @@
 /*
- * GraphicalObject.h
+ * Arc.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,28 +18,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICALOBJECT_H_
-#define GRAPHICALOBJECT_H_
+#ifndef ARC_H_
+#define ARC_H_
 
-#include "Aperture.h"
-#include "ApertureTransformation.h"
-#include "Point.h"
-#include <memory>
+#include "GraphicalObject.h"
 
-/*
- * Represents a plane figure, with shape, size, position and polarity (dark/clear).
- */
-class GraphicalObject {
-public:
-	GraphicalObject();
-	GraphicalObject(const Point &origin,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~GraphicalObject();
-
-protected:
-	Point m_origin;
-	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transformation;
+enum class ArcDirection {
+	Clockwise,
+	CounterClockwise
 };
 
-#endif /* GRAPHICALOBJECT_H_ */
+/*
+ * Circular segments drawn with a circle.
+ */
+class Arc: public GraphicalObject {
+public:
+	Arc();
+	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
+			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
+	virtual ~Arc();
+
+private:
+	ArcDirection m_direction;
+	Point m_endPoint;
+	Point m_centerOffset;
+};
+
+#endif /* ARC_H_ */

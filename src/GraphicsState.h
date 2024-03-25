@@ -25,6 +25,7 @@
 #include "ApertureTransformation.h"
 #include "CoordinateFormat.h"
 #include "Point.h"
+#include <memory>
 
 
 enum class Unit {
@@ -38,7 +39,7 @@ enum class PlotState {
 	Invalid,
 	Linear,
 	Clockwise,
-	Counter_clockwise
+	CounterClockwise
 };
 
 
@@ -49,12 +50,24 @@ class GraphicsState {
 public:
 	GraphicsState();
 	virtual ~GraphicsState();
+	const std::shared_ptr<Aperture>& GetCurrentAperture() const;
+	void SetCurrentAperture(const std::shared_ptr<Aperture> &currentAperture);
+	const Point& GetCurrentPoint() const;
+	void SetCurrentPoint(const Point &currentPoint);
+	const CoordinateFormat& GetFormat() const;
+	void SetFormat(const CoordinateFormat &format);
+	PlotState GetPlotState() const;
+	void SetPlotState(PlotState plotState);
+	const ApertureTransformation& GetTransformation() const;
+	void SetTransformation(const ApertureTransformation &transformation);
+	Unit GetUnit() const;
+	void SetUnit(Unit unit);
 
 private:
 	CoordinateFormat m_format;
 	Unit m_unit;
 	Point m_currentPoint;
-	Aperture *m_currentAperture;
+	std::shared_ptr<Aperture> m_currentAperture;
 	PlotState m_plotState;
 	ApertureTransformation m_transformation;
 };

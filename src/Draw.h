@@ -1,5 +1,5 @@
 /*
- * GraphicalObject.h
+ * Draw.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,28 +18,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICALOBJECT_H_
-#define GRAPHICALOBJECT_H_
+#ifndef DRAW_H_
+#define DRAW_H_
 
-#include "Aperture.h"
-#include "ApertureTransformation.h"
-#include "Point.h"
-#include <memory>
+#include "GraphicalObject.h"
 
 /*
- * Represents a plane figure, with shape, size, position and polarity (dark/clear).
+ * Straight line segments drawn with a circle.
  */
-class GraphicalObject {
+class Draw: public GraphicalObject {
 public:
-	GraphicalObject();
-	GraphicalObject(const Point &origin,
+	Draw();
+	Draw(const Point &origin, const Point &endPoint,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~GraphicalObject();
+	virtual ~Draw();
 
-protected:
-	Point m_origin;
-	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transformation;
+private:
+	Point m_endPoint;
+
 };
 
-#endif /* GRAPHICALOBJECT_H_ */
+#endif /* DRAW_H_ */

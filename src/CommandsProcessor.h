@@ -29,6 +29,15 @@
 #include <string>
 #include <vector>
 
+enum class CommandState {
+	Normal,
+	InsideMacro,
+	InsideRegion,
+	InsideBlock,
+	InsideStepAndRepeat,
+	EndOfFile
+};
+
 /*
  *	Processes commands as provided by the syntax parser.
  *	Maintains collection of all graphics objects
@@ -37,12 +46,24 @@ class CommandsProcessor {
 public:
 	CommandsProcessor();
 	virtual ~CommandsProcessor();
+	void ApertureDefinition(int ident, std::shared_ptr<Aperture> aperture);
+	void SetCurrentAperture(int ident);
+	void Plot(const Point &coord);
+	void Plot(const Point &coord, const Point &offset);
+	void Move(const Point &coord);
+	void Flash(const Point &coord);
+	std::shared_ptr<Aperture> GetTemplate(std::string name);
+	const GraphicsState& GetGraphicsState() const;
+	const std::vector<std::shared_ptr<GraphicalObject> >& GetObjects() const;
+	CommandState GetCommandState() const;
+	void SetCommandState(CommandState commandState);
 
 private:
+	CommandState m_commandState;
 	GraphicsState m_graphicsState;
-	std::vector<GraphicalObject> m_objects;
-	std::map<int, std::unique_ptr<Aperture>> m_apertures;
-	std::map<std::string, std::unique_ptr<Aperture>> m_templates;
+	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
+	std::map<int, std::shared_ptr<Aperture>> m_apertures;
+	std::map<std::string, std::shared_ptr<Aperture>> m_templates;
 };
 
 #endif /* COMMANDSPROCESSOR_H_ */

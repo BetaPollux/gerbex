@@ -29,7 +29,7 @@ GraphicalObject::GraphicalObject()
 }
 
 GraphicalObject::GraphicalObject(const Point &origin,
-		Aperture *aperture, const ApertureTransformation &transformation)
+		std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation)
 	: m_origin{ origin },
 	  m_aperture{ aperture },
 	  m_transformation{ transformation }

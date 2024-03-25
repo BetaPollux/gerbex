@@ -1,5 +1,5 @@
 /*
- * GraphicalObject.h
+ * Flash.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,28 +18,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICALOBJECT_H_
-#define GRAPHICALOBJECT_H_
+#ifndef FLASH_H_
+#define FLASH_H_
 
-#include "Aperture.h"
-#include "ApertureTransformation.h"
-#include "Point.h"
-#include <memory>
+#include "GraphicalObject.h"
 
 /*
- * Represents a plane figure, with shape, size, position and polarity (dark/clear).
+ * Replication of an aperture in the image plane.
  */
-class GraphicalObject {
+class Flash: public GraphicalObject {
 public:
-	GraphicalObject();
-	GraphicalObject(const Point &origin,
+	Flash();
+	Flash(const Point &origin,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~GraphicalObject();
-
-protected:
-	Point m_origin;
-	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transformation;
+	virtual ~Flash();
 };
 
-#endif /* GRAPHICALOBJECT_H_ */
+#endif /* FLASH_H_ */
