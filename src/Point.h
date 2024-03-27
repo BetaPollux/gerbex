@@ -38,6 +38,10 @@ public:
 	Point();
 	Point(int64_t x, int64_t y);
 	virtual ~Point();
+	bool operator==	(const Point& rhs) const;
+	bool operator!=	(const Point& rhs) const;
+	int64_t GetX() const;
+	int64_t GetY() const;
 
 private:
 	int64_t m_x;

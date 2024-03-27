@@ -28,3 +28,4 @@ TEST(ApertureTransformationTest, NotImplemented) {
 	FAIL("ApertureTransformationTest Not Implemented");
 }
 
+//TODO test operator == and !=

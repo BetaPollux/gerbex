@@ -48,8 +48,9 @@ public:
 	virtual ~CommandsProcessor();
 	void ApertureDefinition(int ident, std::shared_ptr<Aperture> aperture);
 	void SetCurrentAperture(int ident);
-	void Plot(const Point &coord);
-	void Plot(const Point &coord, const Point &offset);
+	void SetPlotState(PlotState state);
+	void PlotDraw(const Point &coord);
+	void PlotArc(const Point &coord, const Point &offset);
 	void Move(const Point &coord);
 	void Flash(const Point &coord);
 	std::shared_ptr<Aperture> GetTemplate(std::string name);

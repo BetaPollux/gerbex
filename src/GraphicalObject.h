@@ -35,6 +35,9 @@ public:
 	GraphicalObject(const Point &origin,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~GraphicalObject();
+	const std::shared_ptr<Aperture>& GetAperture() const;
+	const Point& GetOrigin() const;
+	const ApertureTransformation& GetTransformation() const;
 
 protected:
 	Point m_origin;

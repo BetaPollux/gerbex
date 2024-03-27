@@ -24,7 +24,29 @@
 TEST_GROUP(PointTest) {
 };
 
-TEST(PointTest, NotImplemented) {
-	FAIL("PointTest Not Implemented");
+TEST(PointTest, Equal) {
+	Point pt1(100, -300);
+	Point pt2(100, -300);
+	Point pt3(200, -300);
+	Point pt4(100, -200);
+	Point pt5(200, -200);
+
+	CHECK(pt1 == pt2);
+	CHECK(!(pt1 == pt3));
+	CHECK(!(pt1 == pt4));
+	CHECK(!(pt1 == pt5));
+}
+
+TEST(PointTest, NotEqual) {
+	Point pt1(100, -300);
+	Point pt2(100, -300);
+	Point pt3(200, -300);
+	Point pt4(100, -200);
+	Point pt5(200, -200);
+
+	CHECK(!(pt1 != pt2));
+	CHECK(pt1 != pt3);
+	CHECK(pt1 != pt4);
+	CHECK(pt1 != pt5);
 }
 

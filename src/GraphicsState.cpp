@@ -23,6 +23,7 @@
 GraphicsState::GraphicsState()
 	: m_format{},
 	  m_unit{ Unit::Invalid },
+	  m_currentPoint{},
 	  m_currentAperture{ nullptr },
 	  m_plotState{ PlotState::Invalid },
 	  m_transformation{}

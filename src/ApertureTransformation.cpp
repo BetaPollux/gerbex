@@ -35,3 +35,50 @@ ApertureTransformation::~ApertureTransformation() {
 	// Empty
 }
 
+bool ApertureTransformation::operator ==(
+		const ApertureTransformation &rhs) const {
+	return (m_polarity == rhs.m_polarity) &&
+			(m_mirroring == rhs.m_mirroring) &&
+			(m_rotation_degrees == rhs.m_rotation_degrees) &&
+			(m_scaling_factor == rhs.m_scaling_factor);
+}
+
+bool ApertureTransformation::operator !=(
+		const ApertureTransformation &rhs) const {
+	return (m_polarity != rhs.m_polarity) ||
+			(m_mirroring != rhs.m_mirroring) ||
+			(m_rotation_degrees != rhs.m_rotation_degrees) ||
+			(m_scaling_factor != rhs.m_scaling_factor);
+}
+
+LoadMirroring ApertureTransformation::GetMirroring() const {
+	return m_mirroring;
+}
+
+void ApertureTransformation::SetMirroring(LoadMirroring mirroring) {
+	m_mirroring = mirroring;
+}
+
+LoadPolarity ApertureTransformation::GetPolarity() const {
+	return m_polarity;
+}
+
+void ApertureTransformation::SetPolarity(LoadPolarity polarity) {
+	m_polarity = polarity;
+}
+
+double ApertureTransformation::GetRotationDegrees() const {
+	return m_rotation_degrees;
+}
+
+void ApertureTransformation::SetRotationDegrees(double rotationDegrees) {
+	m_rotation_degrees = rotationDegrees;
+}
+
+double ApertureTransformation::GetScalingFactor() const {
+	return m_scaling_factor;
+}
+
+void ApertureTransformation::SetScalingFactor(double scalingFactor) {
+	m_scaling_factor = scalingFactor;
+}

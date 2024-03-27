@@ -47,6 +47,16 @@ class ApertureTransformation {
 public:
 	ApertureTransformation();
 	virtual ~ApertureTransformation();
+	bool operator==	(const ApertureTransformation& rhs) const;
+	bool operator!=	(const ApertureTransformation& rhs) const;
+	LoadMirroring GetMirroring() const;
+	void SetMirroring(LoadMirroring mirroring);
+	LoadPolarity GetPolarity() const;
+	void SetPolarity(LoadPolarity polarity);
+	double GetRotationDegrees() const;
+	void SetRotationDegrees(double rotationDegrees);
+	double GetScalingFactor() const;
+	void SetScalingFactor(double scalingFactor);
 
 private:
 	LoadPolarity m_polarity;

@@ -41,3 +41,18 @@ Point::~Point() {
 	// Empty
 }
 
+bool Point::operator ==(const Point& rhs) const {
+	return (m_x == rhs.m_x) && (m_y == rhs.m_y);
+}
+
+bool Point::operator !=(const Point& rhs) const {
+	return (m_x != rhs.m_x) || (m_y != rhs.m_y);
+}
+
+int64_t Point::GetX() const {
+	return m_x;
+}
+
+int64_t Point::GetY() const {
+	return m_y;
+}

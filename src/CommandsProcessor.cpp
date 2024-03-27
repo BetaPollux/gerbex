@@ -18,8 +18,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Arc.h"
 #include "Circle.h"
 #include "CommandsProcessor.h"
+#include "Draw.h"
+#include "Flash.h"
 #include "Obround.h"
 #include "Polygon.h"
 #include "Rectangle.h"
@@ -61,20 +64,31 @@ void CommandsProcessor::SetCurrentAperture(int ident) {
 	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
 }
 
-void CommandsProcessor::Plot(const Point &coord) {
+void CommandsProcessor::PlotDraw(const Point &coord) {
+	if (m_graphicsState.GetPlotState() != PlotState::Linear) {
+		throw std::logic_error("Can only plot Draw in Linear plot state.");
+	}
 	//TODO plot
 }
 
-void CommandsProcessor::Plot(const Point &coord, const Point &offset) {
+void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
+	if (m_graphicsState.GetPlotState() != PlotState::Clockwise &&
+			m_graphicsState.GetPlotState() != PlotState::CounterClockwise ) {
+		throw std::logic_error("Can only plot Arc in CW or CCW plot state.");
+	}
 	//TODO plot
 }
 
 void CommandsProcessor::Move(const Point &coord) {
-	//TODO move
+	m_graphicsState.SetCurrentPoint(coord);
 }
 
 void CommandsProcessor::Flash(const Point &coord) {
-	//TODO flash
+	//Flash requires explicit namespace due to same method name
+	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(coord,
+			m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
+	m_objects.push_back(std::move(obj));
+	m_graphicsState.SetCurrentPoint(coord);
 }
 
 std::shared_ptr<Aperture> CommandsProcessor::GetTemplate(std::string name) {
@@ -94,6 +108,10 @@ const std::vector<std::shared_ptr<GraphicalObject> >& CommandsProcessor::GetObje
 
 CommandState CommandsProcessor::GetCommandState() const {
 	return m_commandState;
+}
+
+void CommandsProcessor::SetPlotState(PlotState state) {
+	m_graphicsState.SetPlotState(state);
 }
 
 void CommandsProcessor::SetCommandState(CommandState commandState) {

@@ -41,3 +41,14 @@ GraphicalObject::~GraphicalObject() {
 	// Empty
 }
 
+const std::shared_ptr<Aperture>& GraphicalObject::GetAperture() const {
+	return m_aperture;
+}
+
+const Point& GraphicalObject::GetOrigin() const {
+	return m_origin;
+}
+
+const ApertureTransformation& GraphicalObject::GetTransformation() const {
+	return m_transformation;
+}
