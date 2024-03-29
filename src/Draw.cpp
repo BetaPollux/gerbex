@@ -39,3 +39,6 @@ Draw::~Draw() {
 	// Empty
 }
 
+const Point& Draw::GetEndPoint() const {
+	return m_endPoint;
+}

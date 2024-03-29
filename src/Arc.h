@@ -37,6 +37,9 @@ public:
 	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Arc();
+	const Point& GetCenterOffset() const;
+	ArcDirection GetDirection() const;
+	const Point& GetEndPoint() const;
 
 private:
 	ArcDirection m_direction;

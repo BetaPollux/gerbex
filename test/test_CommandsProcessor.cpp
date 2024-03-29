@@ -154,3 +154,55 @@ TEST(CommandsProcessor, Flash_SetsCurrentPoint) {
 	CHECK(pt == processor.GetGraphicsState().GetCurrentPoint());
 }
 
+TEST(CommandsProcessor, Draw_RequiresLinearState) {
+	Point pt(-250, 0);
+
+	processor.Move(pt);
+
+	//Plot state is invalid
+	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
+}
+
+TEST(CommandsProcessor, Draw_RequiresCurrentPoint) {
+	Point pt(-250, 0);
+
+	processor.SetPlotState(PlotState::Linear);
+	//Current point is invalid on initialization
+	processor.PlotDraw(pt);
+
+	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
+}
+
+TEST(CommandsProcessor, Draw) {
+	Point pt1(500, 2500);
+	Point pt2(750, -500);
+
+	processor.SetPlotState(PlotState::Linear);
+	processor.Move(pt1);
+	processor.PlotDraw(pt2);
+
+	LONGS_EQUAL(1, processor.GetObjects().size());
+
+	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
+	std::shared_ptr<Draw> draw = std::dynamic_pointer_cast<Draw>(obj);
+
+	CHECK(draw != nullptr);
+	CHECK(pt1 == draw->GetOrigin());
+	CHECK(pt2 == draw->GetEndPoint());
+	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
+			draw->GetAperture().get());
+	CHECK(processor.GetGraphicsState().GetTransformation() ==
+				draw->GetTransformation());
+}
+
+TEST(CommandsProcessor, Draw_SetsCurrentPoint) {
+	Point pt1(-250, 0);
+	Point pt2(0, 100);
+
+	processor.SetPlotState(PlotState::Linear);
+	processor.Move(pt1);
+	processor.PlotDraw(pt2);
+
+	CHECK(pt2 == processor.GetGraphicsState().GetCurrentPoint());
+}
+

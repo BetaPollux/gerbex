@@ -68,7 +68,11 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 	if (m_graphicsState.GetPlotState() != PlotState::Linear) {
 		throw std::logic_error("Can only plot Draw in Linear plot state.");
 	}
-	//TODO plot
+
+	std::unique_ptr<Draw> obj = std::make_unique<Draw>(m_graphicsState.GetCurrentPoint(), coord,
+				m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
+		m_objects.push_back(std::move(obj));
+	m_graphicsState.SetCurrentPoint(coord);
 }
 
 void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {

@@ -60,6 +60,7 @@ public:
 	void SetCommandState(CommandState commandState);
 
 private:
+	//TODO check for G75, check if currentpoint was set
 	CommandState m_commandState;
 	GraphicsState m_graphicsState;
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

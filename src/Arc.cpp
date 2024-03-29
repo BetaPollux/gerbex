@@ -43,3 +43,14 @@ Arc::~Arc() {
 	// TODO Auto-generated destructor stub
 }
 
+const Point& Arc::GetCenterOffset() const {
+	return m_centerOffset;
+}
+
+ArcDirection Arc::GetDirection() const {
+	return m_direction;
+}
+
+const Point& Arc::GetEndPoint() const {
+	return m_endPoint;
+}
