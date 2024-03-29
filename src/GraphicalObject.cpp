@@ -41,7 +41,7 @@ GraphicalObject::~GraphicalObject() {
 	// Empty
 }
 
-const std::shared_ptr<Aperture>& GraphicalObject::GetAperture() const {
+const std::shared_ptr<Aperture> GraphicalObject::GetAperture() const {
 	return m_aperture;
 }
 

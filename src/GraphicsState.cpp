@@ -19,11 +19,12 @@
  */
 
 #include "GraphicsState.h"
+#include <stdexcept>
 
 GraphicsState::GraphicsState()
-	: m_format{},
+	: m_format{ nullptr },
 	  m_unit{ Unit::Invalid },
-	  m_currentPoint{},
+	  m_currentPoint{ nullptr },
 	  m_currentAperture{ nullptr },
 	  m_plotState{ PlotState::Invalid },
 	  m_transformation{}
@@ -36,29 +37,36 @@ GraphicsState::~GraphicsState() {
 	// Empty
 }
 
-const std::shared_ptr<Aperture>& GraphicsState::GetCurrentAperture() const {
+const std::shared_ptr<Aperture> GraphicsState::GetCurrentAperture() const {
 	return m_currentAperture;
 }
 
-void GraphicsState::SetCurrentAperture(
-		const std::shared_ptr<Aperture> &currentAperture) {
+void GraphicsState::SetCurrentAperture(std::shared_ptr<Aperture> currentAperture) {
 	m_currentAperture = currentAperture;
 }
 
-const Point& GraphicsState::GetCurrentPoint() const {
+const std::shared_ptr<Point> GraphicsState::GetCurrentPoint() const {
 	return m_currentPoint;
 }
 
-void GraphicsState::SetCurrentPoint(const Point &currentPoint) {
+void GraphicsState::SetCurrentPoint(std::shared_ptr<Point> currentPoint) {
 	m_currentPoint = currentPoint;
 }
 
-const CoordinateFormat& GraphicsState::GetFormat() const {
+void GraphicsState::SetCurrentPoint(const Point &currentPoint) {
+	m_currentPoint = std::make_shared<Point>(currentPoint);
+}
+
+const std::shared_ptr<CoordinateFormat> GraphicsState::GetFormat() const {
 	return m_format;
 }
 
-void GraphicsState::SetFormat(const CoordinateFormat &format) {
+void GraphicsState::SetFormat(std::shared_ptr<CoordinateFormat> format) {
 	m_format = format;
+}
+
+void GraphicsState::SetFormat(const CoordinateFormat &format) {
+	m_format = std::make_shared<CoordinateFormat>(format);
 }
 
 PlotState GraphicsState::GetPlotState() const {
@@ -85,3 +93,4 @@ Unit GraphicsState::GetUnit() const {
 void GraphicsState::SetUnit(Unit unit) {
 	m_unit = unit;
 }
+

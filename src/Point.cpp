@@ -56,3 +56,11 @@ int64_t Point::GetX() const {
 int64_t Point::GetY() const {
 	return m_y;
 }
+
+Point Point::operator +(const Point &rhs) const {
+	return Point(m_x + rhs.m_x, m_y + rhs.m_y);
+}
+
+Point Point::operator -(const Point &rhs) const {
+	return Point(m_x - rhs.m_x, m_y - rhs.m_y);
+}

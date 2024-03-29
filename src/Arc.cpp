@@ -29,10 +29,10 @@ Arc::Arc()
 }
 
 Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
-		std::shared_ptr<Aperture> aperture,
+		ArcDirection direction, std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)
 	: GraphicalObject(origin, aperture, transformation),
-	  m_direction{ ArcDirection::Clockwise },
+	  m_direction{ direction },
 	  m_endPoint{ endPoint },
 	  m_centerOffset{ centerOffset }
 {

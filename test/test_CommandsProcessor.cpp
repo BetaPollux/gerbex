@@ -107,6 +107,32 @@ TEST(CommandsProcessor_Init, PlotArc_BadState) {
 	}
 }
 
+TEST(CommandsProcessor_Init, Flash_NeedsCurrentAperture) {
+	Point pt(250, 1200);
+	CHECK_THROWS(std::logic_error, processor.Flash(pt));
+}
+
+TEST(CommandsProcessor_Init, Draw_NeedsCurrentAperture) {
+	Point pt1(500, 2500);
+	Point pt2(750, -500);
+
+	processor.SetPlotState(PlotState::Linear);
+	processor.Move(pt1);
+
+	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt2));
+}
+
+TEST(CommandsProcessor_Init, Arc_NeedsCurrentAperture) {
+	Point pt1(3000, -2000);
+	Point pt2(-3000, 4000);
+	Point pt3(-3000, -2000);
+
+	processor.SetPlotState(PlotState::Clockwise);
+	processor.Move(pt1);
+
+	CHECK_THROWS(std::logic_error, processor.PlotArc(pt2, pt3));
+}
+
 /***
  * Tests for operations post initialization
  */
@@ -127,7 +153,7 @@ TEST(CommandsProcessor, Move) {
 	processor.Move(pt);
 
 	LONGS_EQUAL(0, processor.GetObjects().size());
-	CHECK(pt == processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 TEST(CommandsProcessor, Flash) {
@@ -151,16 +177,7 @@ TEST(CommandsProcessor, Flash_SetsCurrentPoint) {
 	Point pt(250, 1200);
 	processor.Flash(pt);
 
-	CHECK(pt == processor.GetGraphicsState().GetCurrentPoint());
-}
-
-TEST(CommandsProcessor, Draw_RequiresLinearState) {
-	Point pt(-250, 0);
-
-	processor.Move(pt);
-
-	//Plot state is invalid
-	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
+	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 TEST(CommandsProcessor, Draw_RequiresCurrentPoint) {
@@ -168,8 +185,6 @@ TEST(CommandsProcessor, Draw_RequiresCurrentPoint) {
 
 	processor.SetPlotState(PlotState::Linear);
 	//Current point is invalid on initialization
-	processor.PlotDraw(pt);
-
 	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
 }
 
@@ -203,6 +218,71 @@ TEST(CommandsProcessor, Draw_SetsCurrentPoint) {
 	processor.Move(pt1);
 	processor.PlotDraw(pt2);
 
-	CHECK(pt2 == processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(pt2 == *processor.GetGraphicsState().GetCurrentPoint());
+}
+
+TEST(CommandsProcessor, Arc_RequiresCurrentPoint) {
+	Point pt2(-3000, 4000);
+	Point pt3(-3000, -2000);
+
+	processor.SetPlotState(PlotState::Clockwise);
+	//Current point is invalid on initialization
+
+	CHECK_THROWS(std::logic_error, processor.PlotArc(pt2, pt3));
+}
+
+TEST(CommandsProcessor, Arc) {
+	Point pt1(3000, -2000);
+	Point pt2(-3000, 4000);
+	Point pt3(-3000, -2000);
+
+	processor.SetPlotState(PlotState::Clockwise);
+	processor.Move(pt1);
+	processor.PlotArc(pt2, pt3);
+
+	LONGS_EQUAL(1, processor.GetObjects().size());
+
+	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
+	std::shared_ptr<Arc> arc = std::dynamic_pointer_cast<Arc>(obj);
+
+	CHECK(arc != nullptr);
+	CHECK(pt1 == arc->GetOrigin());
+	CHECK(pt2 == arc->GetEndPoint());
+	CHECK(pt3 == arc->GetCenterOffset());
+	CHECK(ArcDirection::Clockwise == arc->GetDirection());
+	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
+			arc->GetAperture().get());
+	CHECK(processor.GetGraphicsState().GetTransformation() ==
+				arc->GetTransformation());
+}
+
+TEST(CommandsProcessor, Arc_CCW) {
+	Point pt1(3000, -2000);
+	Point pt2(-3000, 4000);
+	Point pt3(-3000, -2000);
+
+	processor.SetPlotState(PlotState::CounterClockwise);
+	processor.Move(pt1);
+	processor.PlotArc(pt2, pt3);
+
+	LONGS_EQUAL(1, processor.GetObjects().size());
+
+	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
+	std::shared_ptr<Arc> arc = std::dynamic_pointer_cast<Arc>(obj);
+
+	CHECK(arc != nullptr);
+	CHECK(ArcDirection::CounterClockwise == arc->GetDirection());
+}
+
+TEST(CommandsProcessor, Arc_SetsCurrentPoint) {
+	Point pt1(3000, -2000);
+	Point pt2(-3000, 4000);
+	Point pt3(-3000, -2000);
+
+	processor.SetPlotState(PlotState::Clockwise);
+	processor.Move(pt1);
+	processor.PlotArc(pt2, pt3);
+
+	CHECK(pt2 == *processor.GetGraphicsState().GetCurrentPoint());
 }
 

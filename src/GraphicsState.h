@@ -50,11 +50,13 @@ class GraphicsState {
 public:
 	GraphicsState();
 	virtual ~GraphicsState();
-	const std::shared_ptr<Aperture>& GetCurrentAperture() const;
-	void SetCurrentAperture(const std::shared_ptr<Aperture> &currentAperture);
-	const Point& GetCurrentPoint() const;
+	const std::shared_ptr<Aperture> GetCurrentAperture() const;
+	void SetCurrentAperture(std::shared_ptr<Aperture> currentAperture);
 	void SetCurrentPoint(const Point &currentPoint);
-	const CoordinateFormat& GetFormat() const;
+	void SetCurrentPoint(std::shared_ptr<Point> currentPoint);
+	const std::shared_ptr<Point> GetCurrentPoint() const;
+	const std::shared_ptr<CoordinateFormat> GetFormat() const;
+	void SetFormat(std::shared_ptr<CoordinateFormat> format);
 	void SetFormat(const CoordinateFormat &format);
 	PlotState GetPlotState() const;
 	void SetPlotState(PlotState plotState);
@@ -64,9 +66,9 @@ public:
 	void SetUnit(Unit unit);
 
 private:
-	CoordinateFormat m_format;
+	std::shared_ptr<CoordinateFormat> m_format;
 	Unit m_unit;
-	Point m_currentPoint;
+	std::shared_ptr<Point> m_currentPoint;
 	std::shared_ptr<Aperture> m_currentAperture;
 	PlotState m_plotState;
 	ApertureTransformation m_transformation;

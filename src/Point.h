@@ -40,6 +40,8 @@ public:
 	virtual ~Point();
 	bool operator==	(const Point& rhs) const;
 	bool operator!=	(const Point& rhs) const;
+	Point operator+	(const Point& rhs) const;
+	Point operator-	(const Point& rhs) const;
 	int64_t GetX() const;
 	int64_t GetY() const;
 

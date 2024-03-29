@@ -69,18 +69,43 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		throw std::logic_error("Can only plot Draw in Linear plot state.");
 	}
 
-	std::unique_ptr<Draw> obj = std::make_unique<Draw>(m_graphicsState.GetCurrentPoint(), coord,
+	if (m_graphicsState.GetCurrentPoint() == nullptr) {
+		throw std::logic_error("Draw requires valid current point.");
+	}
+
+	if (m_graphicsState.GetCurrentAperture() == nullptr) {
+		throw std::logic_error("Draw requires valid current aperture.");
+	}
+
+	std::unique_ptr<Draw> obj = std::make_unique<Draw>(*m_graphicsState.GetCurrentPoint(), coord,
 				m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
 		m_objects.push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
 void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
-	if (m_graphicsState.GetPlotState() != PlotState::Clockwise &&
-			m_graphicsState.GetPlotState() != PlotState::CounterClockwise ) {
+	ArcDirection direction;
+
+	if (m_graphicsState.GetPlotState() == PlotState::Clockwise) {
+		direction = ArcDirection::Clockwise;
+	} else if (m_graphicsState.GetPlotState() == PlotState::CounterClockwise) {
+		direction = ArcDirection::CounterClockwise;
+	} else {
 		throw std::logic_error("Can only plot Arc in CW or CCW plot state.");
 	}
-	//TODO plot
+
+	if (m_graphicsState.GetCurrentPoint() == nullptr) {
+		throw std::logic_error("Arc requires valid current point.");
+	}
+
+	if (m_graphicsState.GetCurrentAperture() == nullptr) {
+		throw std::logic_error("Arc requires valid current aperture.");
+	}
+
+	std::unique_ptr<Arc> obj = std::make_unique<Arc>(*m_graphicsState.GetCurrentPoint(), coord, offset,
+			direction, m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
+		m_objects.push_back(std::move(obj));
+	m_graphicsState.SetCurrentPoint(coord);
 }
 
 void CommandsProcessor::Move(const Point &coord) {
@@ -88,6 +113,10 @@ void CommandsProcessor::Move(const Point &coord) {
 }
 
 void CommandsProcessor::Flash(const Point &coord) {
+	if (m_graphicsState.GetCurrentAperture() == nullptr) {
+		throw std::logic_error("Flash requires defined current aperture");
+	}
+
 	//Flash requires explicit namespace due to same method name
 	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(coord,
 			m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());

@@ -21,10 +21,15 @@
 #include "CoordinateFormat.h"
 
 CoordinateFormat::CoordinateFormat()
-	: m_x_integer{ 3 },
-	  m_x_decimal{ 6 },
-	  m_y_integer{ 3 },
-	  m_y_decimal{ 6 }
+	: 	m_integer{ 3 },
+		m_decimal{ 6 }
+{
+	// Empty
+}
+
+CoordinateFormat::CoordinateFormat(int integer, int decimal)
+	: 	m_integer{ integer },
+		m_decimal{ decimal }
 {
 	// Empty
 }

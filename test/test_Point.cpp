@@ -50,3 +50,17 @@ TEST(PointTest, NotEqual) {
 	CHECK(pt1 != pt5);
 }
 
+TEST(PointTest, Add) {
+	Point pt1(100, -300);
+	Point pt2(100, -300);
+
+	CHECK((pt1 + pt2) == Point(200, -600));
+}
+
+TEST(PointTest, Subtract) {
+	Point pt1(100, -300);
+	Point pt2(100, -300);
+
+	CHECK((pt1 - pt2) == Point(0, 0));
+}
+

@@ -28,13 +28,12 @@
 class CoordinateFormat {
 public:
 	CoordinateFormat();
+	CoordinateFormat(int integer, int decimal);
 	virtual ~CoordinateFormat();
 
 private:
-	int m_x_integer;	//1 to 6
-	int m_x_decimal;	//5 to 6
-	int m_y_integer;	//1 to 6
-	int m_y_decimal;	//5 to 6
+	int m_integer;	//1 to 6
+	int m_decimal;	//6
 };
 
 #endif /* COORDINATEFORMAT_H_ */

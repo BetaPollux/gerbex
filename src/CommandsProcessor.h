@@ -55,12 +55,12 @@ public:
 	void Flash(const Point &coord);
 	std::shared_ptr<Aperture> GetTemplate(std::string name);
 	const GraphicsState& GetGraphicsState() const;
-	const std::vector<std::shared_ptr<GraphicalObject> >& GetObjects() const;
+	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	CommandState GetCommandState() const;
 	void SetCommandState(CommandState commandState);
 
 private:
-	//TODO check for G75, check if currentpoint was set
+	//TODO check for G75
 	CommandState m_commandState;
 	GraphicsState m_graphicsState;
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
