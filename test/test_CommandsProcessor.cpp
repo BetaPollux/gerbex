@@ -27,6 +27,28 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+/**
+ * Helper functions
+ */
+
+template <typename T> void MakeAndSetAperture(CommandsProcessor &processor, int id) {
+	std::shared_ptr<T> ap = std::make_unique<T>();
+
+	processor.ApertureDefinition(id, ap);
+	processor.SetCurrentAperture(id);
+}
+
+template <typename T> std::shared_ptr<T> GetGraphicalObject(CommandsProcessor &processor) {
+	CHECK(processor.GetObjects().size() > 0);
+
+	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
+	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
+
+	CHECK(result != nullptr);
+
+	return result;
+}
+
 /***
  * Tests from a clean initialization.
  */
@@ -78,8 +100,136 @@ TEST(CommandsProcessor_Init, PlotState) {
 	LONGS_EQUAL(PlotState::Invalid, processor.GetGraphicsState().GetPlotState());
 }
 
-TEST(CommandsProcessor_Init, PlotDraw_BadState) {
-	Point pt;
+TEST(CommandsProcessor_Init, Flash_NeedsCurrentAperture) {
+	Point origin(250, 1200);
+
+	CHECK_THROWS(std::logic_error, processor.Flash(origin));
+}
+
+TEST(CommandsProcessor_Init, Draw_NeedsCurrentAperture) {
+	Point origin(500, 2500);
+	Point end(750, -500);
+
+	processor.SetPlotState(PlotState::Linear);
+	processor.Move(origin);
+
+	CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
+}
+
+TEST(CommandsProcessor_Init, Arc_NeedsCurrentAperture) {
+	Point origin(3000, -2000);
+	Point end(-3000, 4000);
+	Point offset(-3000, -2000);
+
+	processor.SetPlotState(PlotState::Clockwise);
+	processor.Move(origin);
+
+	CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
+}
+
+TEST(CommandsProcessor_Init, Move) {
+	Point pt(1000, 3000);
+
+	MakeAndSetAperture<Circle>(processor, 10);
+	processor.Move(pt);
+
+	LONGS_EQUAL(0, processor.GetObjects().size());
+	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
+}
+
+TEST(CommandsProcessor_Init, Draw_RequiresCurrentPoint) {
+	Point end(-250, 0);
+
+	MakeAndSetAperture<Circle>(processor, 10);
+	processor.SetPlotState(PlotState::Linear);
+	//Current point is invalid on initialization
+
+	CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
+}
+
+TEST(CommandsProcessor_Init, Arc_RequiresCurrentPoint) {
+	Point end(-3000, 4000);
+	Point offset(-3000, -2000);
+
+	MakeAndSetAperture<Circle>(processor, 10);
+	processor.SetPlotState(PlotState::Clockwise);
+	//Current point is invalid on initialization
+
+	CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
+}
+
+/***
+ * Tests for Flash operation
+ */
+
+TEST_GROUP(CommandsProcessor_Flash) {
+	Point origin;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+
+		MakeAndSetAperture<Circle>(processor, 10);
+	}
+};
+
+TEST(CommandsProcessor_Flash, MakesOne) {
+	processor.Flash(origin);
+
+	LONGS_EQUAL(1, processor.GetObjects().size());
+}
+
+TEST(CommandsProcessor_Flash, Origin) {
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
+
+	CHECK(origin == flash->GetOrigin());
+}
+
+TEST(CommandsProcessor_Flash, Aperture) {
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
+
+	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
+			flash->GetAperture().get());
+}
+
+TEST(CommandsProcessor_Flash, Transform) {
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
+
+	CHECK(processor.GetGraphicsState().GetTransformation() ==
+				flash->GetTransformation());
+}
+
+TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
+	processor.Flash(origin);
+
+	CHECK(origin == *processor.GetGraphicsState().GetCurrentPoint());
+}
+
+/***
+ * Tests for Plot Draw operation
+ */
+
+TEST_GROUP(CommandsProcessor_PlotDraw) {
+	Point origin, end;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(750, -500);
+
+		MakeAndSetAperture<Circle>(processor, 10);
+		processor.SetPlotState(PlotState::Linear);
+		processor.Move(origin);
+	}
+};
+
+TEST(CommandsProcessor_PlotDraw, BadState) {
 	std::array<PlotState, 3> state = {
 			PlotState::Invalid,
 			//Omit Linear
@@ -89,12 +239,76 @@ TEST(CommandsProcessor_Init, PlotDraw_BadState) {
 
 	for(PlotState st : state) {
 		processor.SetPlotState(st);
-		CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
+		CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
 	}
 }
 
-TEST(CommandsProcessor_Init, PlotArc_BadState) {
-	Point pt, pt2;
+TEST(CommandsProcessor_PlotDraw, MakesOne) {
+	processor.PlotDraw(end);
+
+	LONGS_EQUAL(1, processor.GetObjects().size());
+}
+
+TEST(CommandsProcessor_PlotDraw, Origin) {
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
+
+	CHECK(origin == draw->GetOrigin());
+}
+
+TEST(CommandsProcessor_PlotDraw, End) {
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
+
+	CHECK(end == draw->GetEndPoint());
+}
+
+TEST(CommandsProcessor_PlotDraw, Aperture) {
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
+
+	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
+			draw->GetAperture().get());
+}
+
+TEST(CommandsProcessor_PlotDraw, Transform) {
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
+
+	CHECK(processor.GetGraphicsState().GetTransformation() ==
+				draw->GetTransformation());
+}
+
+TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
+	processor.PlotDraw(end);
+
+	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
+}
+
+/***
+ * Tests for Plot Arc operation
+ */
+
+TEST_GROUP(CommandsProcessor_PlotArc) {
+	Point origin, end, offset;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(-3000, 4000);
+		offset = Point(-3000, -2000);
+
+		MakeAndSetAperture<Circle>(processor, 10);
+		processor.SetPlotState(PlotState::Clockwise);
+		processor.Move(origin);
+	}
+};
+
+TEST(CommandsProcessor_PlotArc, BadState) {
 	std::array<PlotState, 2> state = {
 			PlotState::Invalid,
 			PlotState::Linear,
@@ -103,186 +317,78 @@ TEST(CommandsProcessor_Init, PlotArc_BadState) {
 
 	for(PlotState st : state) {
 		processor.SetPlotState(st);
-		CHECK_THROWS(std::logic_error, processor.PlotArc(pt, pt2));
+		CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
 	}
 }
 
-TEST(CommandsProcessor_Init, Flash_NeedsCurrentAperture) {
-	Point pt(250, 1200);
-	CHECK_THROWS(std::logic_error, processor.Flash(pt));
-}
-
-TEST(CommandsProcessor_Init, Draw_NeedsCurrentAperture) {
-	Point pt1(500, 2500);
-	Point pt2(750, -500);
-
-	processor.SetPlotState(PlotState::Linear);
-	processor.Move(pt1);
-
-	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt2));
-}
-
-TEST(CommandsProcessor_Init, Arc_NeedsCurrentAperture) {
-	Point pt1(3000, -2000);
-	Point pt2(-3000, 4000);
-	Point pt3(-3000, -2000);
-
-	processor.SetPlotState(PlotState::Clockwise);
-	processor.Move(pt1);
-
-	CHECK_THROWS(std::logic_error, processor.PlotArc(pt2, pt3));
-}
-
-/***
- * Tests for operations post initialization
- */
-
-TEST_GROUP(CommandsProcessor) {
-	CommandsProcessor processor;
-
-	void setup() {
-		std::shared_ptr<Circle> circle = std::make_unique<Circle>();
-
-		processor.ApertureDefinition(10, circle);
-		processor.SetCurrentAperture(10);
-	}
-};
-
-TEST(CommandsProcessor, Move) {
-	Point pt(1000, 3000);
-	processor.Move(pt);
-
-	LONGS_EQUAL(0, processor.GetObjects().size());
-	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
-}
-
-TEST(CommandsProcessor, Flash) {
-	Point pt(500, 2500);
-	processor.Flash(pt);
+TEST(CommandsProcessor_PlotArc, MakesOne) {
+	processor.PlotArc(end, offset);
 
 	LONGS_EQUAL(1, processor.GetObjects().size());
-
-	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
-	std::shared_ptr<Flash> flash = std::dynamic_pointer_cast<Flash>(obj);
-
-	CHECK(flash != nullptr);
-	CHECK(pt == flash->GetOrigin());
-	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
-			flash->GetAperture().get());
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				flash->GetTransformation());
 }
 
-TEST(CommandsProcessor, Flash_SetsCurrentPoint) {
-	Point pt(250, 1200);
-	processor.Flash(pt);
+TEST(CommandsProcessor_PlotArc, SetsCurrentPoint) {
+	processor.PlotArc(end, offset);
 
-	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
-TEST(CommandsProcessor, Draw_RequiresCurrentPoint) {
-	Point pt(-250, 0);
+TEST(CommandsProcessor_PlotArc, Origin) {
+	processor.PlotArc(end, offset);
 
-	processor.SetPlotState(PlotState::Linear);
-	//Current point is invalid on initialization
-	CHECK_THROWS(std::logic_error, processor.PlotDraw(pt));
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
+
+	CHECK(origin == arc->GetOrigin());
 }
 
-TEST(CommandsProcessor, Draw) {
-	Point pt1(500, 2500);
-	Point pt2(750, -500);
+TEST(CommandsProcessor_PlotArc, End) {
+	processor.PlotArc(end, offset);
 
-	processor.SetPlotState(PlotState::Linear);
-	processor.Move(pt1);
-	processor.PlotDraw(pt2);
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	LONGS_EQUAL(1, processor.GetObjects().size());
-
-	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
-	std::shared_ptr<Draw> draw = std::dynamic_pointer_cast<Draw>(obj);
-
-	CHECK(draw != nullptr);
-	CHECK(pt1 == draw->GetOrigin());
-	CHECK(pt2 == draw->GetEndPoint());
-	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
-			draw->GetAperture().get());
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				draw->GetTransformation());
+	CHECK(end == arc->GetEndPoint());
 }
 
-TEST(CommandsProcessor, Draw_SetsCurrentPoint) {
-	Point pt1(-250, 0);
-	Point pt2(0, 100);
+TEST(CommandsProcessor_PlotArc, Offset) {
+	processor.PlotArc(end, offset);
 
-	processor.SetPlotState(PlotState::Linear);
-	processor.Move(pt1);
-	processor.PlotDraw(pt2);
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	CHECK(pt2 == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(offset == arc->GetCenterOffset());
 }
 
-TEST(CommandsProcessor, Arc_RequiresCurrentPoint) {
-	Point pt2(-3000, 4000);
-	Point pt3(-3000, -2000);
+TEST(CommandsProcessor_PlotArc, Direction_CW) {
+	processor.PlotArc(end, offset);
 
-	processor.SetPlotState(PlotState::Clockwise);
-	//Current point is invalid on initialization
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	CHECK_THROWS(std::logic_error, processor.PlotArc(pt2, pt3));
-}
-
-TEST(CommandsProcessor, Arc) {
-	Point pt1(3000, -2000);
-	Point pt2(-3000, 4000);
-	Point pt3(-3000, -2000);
-
-	processor.SetPlotState(PlotState::Clockwise);
-	processor.Move(pt1);
-	processor.PlotArc(pt2, pt3);
-
-	LONGS_EQUAL(1, processor.GetObjects().size());
-
-	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
-	std::shared_ptr<Arc> arc = std::dynamic_pointer_cast<Arc>(obj);
-
-	CHECK(arc != nullptr);
-	CHECK(pt1 == arc->GetOrigin());
-	CHECK(pt2 == arc->GetEndPoint());
-	CHECK(pt3 == arc->GetCenterOffset());
 	CHECK(ArcDirection::Clockwise == arc->GetDirection());
-	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
-			arc->GetAperture().get());
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				arc->GetTransformation());
 }
 
-TEST(CommandsProcessor, Arc_CCW) {
-	Point pt1(3000, -2000);
-	Point pt2(-3000, 4000);
-	Point pt3(-3000, -2000);
-
+TEST(CommandsProcessor_PlotArc, Direction_CCW) {
 	processor.SetPlotState(PlotState::CounterClockwise);
-	processor.Move(pt1);
-	processor.PlotArc(pt2, pt3);
+	processor.PlotArc(end, offset);
 
-	LONGS_EQUAL(1, processor.GetObjects().size());
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
-	std::shared_ptr<Arc> arc = std::dynamic_pointer_cast<Arc>(obj);
-
-	CHECK(arc != nullptr);
 	CHECK(ArcDirection::CounterClockwise == arc->GetDirection());
 }
 
-TEST(CommandsProcessor, Arc_SetsCurrentPoint) {
-	Point pt1(3000, -2000);
-	Point pt2(-3000, 4000);
-	Point pt3(-3000, -2000);
+TEST(CommandsProcessor_PlotArc, Aperture) {
+	processor.PlotArc(end, offset);
 
-	processor.SetPlotState(PlotState::Clockwise);
-	processor.Move(pt1);
-	processor.PlotArc(pt2, pt3);
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	CHECK(pt2 == *processor.GetGraphicsState().GetCurrentPoint());
+	POINTERS_EQUAL(processor.GetGraphicsState().GetCurrentAperture().get(),
+			arc->GetAperture().get());
+}
+
+TEST(CommandsProcessor_PlotArc, Transform) {
+	processor.PlotArc(end, offset);
+
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
+
+	CHECK(processor.GetGraphicsState().GetTransformation() ==
+				arc->GetTransformation());
 }
 
