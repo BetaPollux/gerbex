@@ -22,7 +22,6 @@
 
 Arc::Arc()
 	: m_direction{ ArcDirection::Clockwise },
-	  m_endPoint{},
 	  m_centerOffset{}
 {
 	// Empty
@@ -31,16 +30,15 @@ Arc::Arc()
 Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
 		ArcDirection direction, std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)
-	: GraphicalObject(origin, aperture, transformation),
+	: Segment(origin, endPoint, aperture, transformation),
 	  m_direction{ direction },
-	  m_endPoint{ endPoint },
 	  m_centerOffset{ centerOffset }
 {
 	// Empty
 }
 
 Arc::~Arc() {
-	// TODO Auto-generated destructor stub
+	// Empty
 }
 
 const Point& Arc::GetCenterOffset() const {
@@ -51,6 +49,3 @@ ArcDirection Arc::GetDirection() const {
 	return m_direction;
 }
 
-const Point& Arc::GetEndPoint() const {
-	return m_endPoint;
-}

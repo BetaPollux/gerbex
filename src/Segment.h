@@ -1,7 +1,7 @@
 /*
- * Draw.h
+ * Segment.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DRAW_H_
-#define DRAW_H_
+#ifndef SEGMENT_H_
+#define SEGMENT_H_
 
-#include "Segment.h"
+#include "GraphicalObject.h"
 
 /*
- * Straight line segments drawn with a circle.
+ * A graphical object that can be used to define a contour.
  */
-class Draw: public Segment {
+class Segment: public GraphicalObject {
 public:
-	Draw();
-	Draw(const Point &origin, const Point &endPoint,
+	Segment();
+	Segment(const Point &origin, const Point &endPoint,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~Draw();
+	virtual ~Segment();
+	const Point& GetEndPoint() const;
 
+protected:
+	Point m_endPoint;
 };
 
-#endif /* DRAW_H_ */
+#endif /* SEGMENT_H_ */

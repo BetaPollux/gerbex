@@ -14,6 +14,8 @@ add_library(libgerbex
 	Polygon.cpp
 	Rectangle.cpp
 	Region.cpp
+	RegionContour.cpp
+	Segment.cpp
 	SyntaxParser.cpp
 )
 

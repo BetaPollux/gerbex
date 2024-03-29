@@ -1,7 +1,7 @@
 /*
- * Draw.h
+ * RegionContour.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DRAW_H_
-#define DRAW_H_
+#ifndef REGIONCONTOUR_H_
+#define REGIONCONTOUR_H_
 
 #include "Segment.h"
+#include <memory>
+#include <vector>
 
 /*
- * Straight line segments drawn with a circle.
+ * A sequence of connected linear or circular segments.
+ * Each segment must start where the previous ends.
+ * Valid contours are closed, where the end point of the last segment coincides
+ * with the start point of the first segment.
  */
-class Draw: public Segment {
+class RegionContour {
 public:
-	Draw();
-	Draw(const Point &origin, const Point &endPoint,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~Draw();
+	RegionContour();
+	virtual ~RegionContour();
+	bool IsClosed();
+	void AddSegment(std::shared_ptr<Segment> object);
+	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
+
+private:
+	std::vector<std::shared_ptr<Segment>> m_segments;
 
 };
 
-#endif /* DRAW_H_ */
+#endif /* REGIONCONTOUR_H_ */

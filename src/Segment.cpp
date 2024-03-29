@@ -1,7 +1,7 @@
 /*
- * Draw.h
+ * Segment.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,26 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DRAW_H_
-#define DRAW_H_
-
 #include "Segment.h"
 
-/*
- * Straight line segments drawn with a circle.
- */
-class Draw: public Segment {
-public:
-	Draw();
-	Draw(const Point &origin, const Point &endPoint,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~Draw();
+Segment::Segment() {
+	// Empty
 
-};
+}
 
-#endif /* DRAW_H_ */
+Segment::Segment(const Point &origin, const Point &endPoint,
+		std::shared_ptr<Aperture> aperture,
+		const ApertureTransformation &transformation)
+	: GraphicalObject(origin, aperture, transformation),
+	  m_endPoint{ endPoint }
+{
+	// Empty
+}
+
+Segment::~Segment() {
+	// Empty
+}
+
+const Point& Segment::GetEndPoint() const {
+	return m_endPoint;
+}

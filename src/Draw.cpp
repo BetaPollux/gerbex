@@ -20,25 +20,18 @@
 
 #include "Draw.h"
 
-Draw::Draw()
-	: m_endPoint{}
-{
+Draw::Draw() {
 	// Empty
 }
 
 Draw::Draw(const Point &origin, const Point &endPoint,
 		std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)
-	: GraphicalObject(origin, aperture, transformation),
-	  m_endPoint{ endPoint }
+	: Segment(origin, endPoint, aperture, transformation)
 {
 	// Empty
 }
 
 Draw::~Draw() {
 	// Empty
-}
-
-const Point& Draw::GetEndPoint() const {
-	return m_endPoint;
 }

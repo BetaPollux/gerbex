@@ -21,7 +21,7 @@
 #ifndef ARC_H_
 #define ARC_H_
 
-#include "GraphicalObject.h"
+#include "Segment.h"
 
 enum class ArcDirection {
 	Clockwise,
@@ -31,7 +31,7 @@ enum class ArcDirection {
 /*
  * Circular segments drawn with a circle.
  */
-class Arc: public GraphicalObject {
+class Arc: public Segment {
 public:
 	Arc();
 	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset, ArcDirection direction,
@@ -39,11 +39,9 @@ public:
 	virtual ~Arc();
 	const Point& GetCenterOffset() const;
 	ArcDirection GetDirection() const;
-	const Point& GetEndPoint() const;
 
 private:
 	ArcDirection m_direction;
-	Point m_endPoint;
 	Point m_centerOffset;
 };
 

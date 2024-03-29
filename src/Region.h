@@ -22,14 +22,21 @@
 #define REGION_H_
 
 #include "GraphicalObject.h"
+#include "RegionContour.h"
+#include <memory>
+#include <vector>
 
 /*
- * A contour; closed sequence of connected linear or circular segments.
+ * Graphical object defined by a collection of contours.
  */
 class Region: public GraphicalObject {
 public:
 	Region();
 	virtual ~Region();
+
+private:
+	std::vector<std::shared_ptr<RegionContour>> m_contours;
+
 };
 
 #endif /* REGION_H_ */
