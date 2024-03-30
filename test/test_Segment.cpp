@@ -18,13 +18,41 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Circle.h"
 #include "Segment.h"
 #include "CppUTest/TestHarness.h"
 
-TEST_GROUP(SegmentTest) {
+TEST_GROUP(Segment) {
 };
 
-TEST(SegmentTest, NotImplemented) {
-	FAIL("SegmentTest Not Implemented");
+TEST(Segment, DefaultCtor) {
+	Segment segment;
+
+	CHECK(nullptr == segment.GetAperture());
+}
+
+TEST(Segment, PointsCtor) {
+	Point origin(2500, 5000);
+	Point endPoint(7500, 1500);
+
+	Segment segment(origin, endPoint);
+
+	CHECK(origin == segment.GetOrigin());
+	CHECK(endPoint == segment.GetEndPoint());
+	CHECK(nullptr == segment.GetAperture());
+}
+
+TEST(Segment, FullCtor) {
+	Point origin(2500, 5000);
+	Point endPoint(7500, 1500);
+	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
+	ApertureTransformation transform(LoadPolarity::Clear, LoadMirroring::XY, 45.0, 1.5);
+
+	Segment segment(origin, endPoint, circle, transform);
+
+	CHECK(origin == segment.GetOrigin());
+	CHECK(endPoint == segment.GetEndPoint());
+	CHECK(circle == segment.GetAperture());
+	CHECK(transform == segment.GetTransformation());
 }
 

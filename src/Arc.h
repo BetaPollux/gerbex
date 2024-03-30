@@ -34,6 +34,7 @@ enum class ArcDirection {
 class Arc: public Segment {
 public:
 	Arc();
+	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset, ArcDirection direction);
 	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset, ArcDirection direction,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Arc();

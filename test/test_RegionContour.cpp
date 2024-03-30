@@ -53,10 +53,8 @@ TEST(RegionContourTest, IsClosed_TwoSegments) {
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
 
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt1, circle, ApertureTransformation()));
+	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Draw>(pt2, pt1));
 
 	LONGS_EQUAL(2, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
@@ -69,11 +67,9 @@ TEST(RegionContourTest, IsClosed_Triangle) {
 	Point pt2 = Point(100, 0);
 	Point pt3 = Point(50, 100);
 
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt3, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt1, circle, ApertureTransformation()));
+	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Draw>(pt2, pt3));
+	contour.AddSegment(std::make_shared<Draw>(pt3, pt1));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(contour.IsClosed());
@@ -87,11 +83,9 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenEnd) {
 	Point pt3 = Point(50, 100);
 	Point pt4 = Point(5, 5);
 
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt3, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt4, circle, ApertureTransformation()));
+	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Draw>(pt2, pt3));
+	contour.AddSegment(std::make_shared<Draw>(pt3, pt4));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
@@ -105,11 +99,9 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenTop) {
 	Point pt3 = Point(105, 0);
 	Point pt4 = Point(50, 100);
 
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt4, circle, ApertureTransformation()));
-	contour.AddSegment(std::make_shared<Draw>(pt4, pt1, circle, ApertureTransformation()));
+	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Draw>(pt3, pt4));
+	contour.AddSegment(std::make_shared<Draw>(pt4, pt1));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());

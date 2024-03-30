@@ -24,11 +24,12 @@
 #include "GraphicalObject.h"
 
 /*
- * A graphical object that can be used to define a contour.
+ * A graphical object with an origin and end point that can be used to define a contour.
  */
 class Segment: public GraphicalObject {
 public:
 	Segment();
+	Segment(const Point &origin, const Point &endPoint);
 	Segment(const Point &origin, const Point &endPoint,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Segment();

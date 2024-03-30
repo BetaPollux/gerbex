@@ -21,10 +21,38 @@
 #include "GraphicsState.h"
 #include "CppUTest/TestHarness.h"
 
-TEST_GROUP (GraphicsStateTest) { };
+TEST_GROUP (GraphicsStateTest) {
+	GraphicsState state;
+};
 
-TEST(GraphicsStateTest, NotImplemented)
+TEST(GraphicsStateTest, Format)
 {
-	FAIL("GraphicsStateTest Not Implemented");
+	CHECK(nullptr == state.GetFormat());
 }
+
+TEST(GraphicsStateTest, Unit)
+{
+	CHECK(Unit::Undefined == state.GetUnit());
+}
+
+TEST(GraphicsStateTest, CurrentPoint)
+{
+	CHECK(nullptr == state.GetCurrentPoint());
+}
+
+TEST(GraphicsStateTest, CurrentAperture)
+{
+	CHECK(nullptr == state.GetCurrentAperture());
+}
+
+TEST(GraphicsStateTest, PlotState)
+{
+	CHECK(PlotState::Undefined == state.GetPlotState());
+}
+
+TEST(GraphicsStateTest, Transform)
+{
+	CHECK(ApertureTransformation() == state.GetTransformation());
+}
+
 

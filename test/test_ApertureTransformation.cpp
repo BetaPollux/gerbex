@@ -22,10 +22,61 @@
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(ApertureTransformationTest) {
+	ApertureTransformation transform;
 };
 
-TEST(ApertureTransformationTest, NotImplemented) {
-	FAIL("ApertureTransformationTest Not Implemented");
+TEST(ApertureTransformationTest, Polarity) {
+	CHECK(LoadPolarity::Dark == transform.GetPolarity());
 }
 
-//TODO test operator == and !=
+TEST(ApertureTransformationTest, Mirroring) {
+	CHECK(LoadMirroring::None == transform.GetMirroring());
+}
+
+TEST(ApertureTransformationTest, Rotation) {
+	CHECK(0.0 == transform.GetRotationDegrees());
+}
+
+TEST(ApertureTransformationTest, Scaling) {
+	CHECK(1.0 == transform.GetScalingFactor());
+}
+
+TEST(ApertureTransformationTest, Equal) {
+	ApertureTransformation other;
+
+	CHECK(other == transform);
+	CHECK(!(other != transform));
+}
+
+TEST(ApertureTransformationTest, NotEqual_Polarity) {
+	ApertureTransformation other;
+	other.SetPolarity(LoadPolarity::Clear);
+
+	CHECK(!(other == transform));
+	CHECK(other != transform);
+}
+
+TEST(ApertureTransformationTest, NotEqual_Mirroring) {
+	ApertureTransformation other;
+	other.SetMirroring(LoadMirroring::X);
+
+	CHECK(!(other == transform));
+	CHECK(other != transform);
+}
+
+TEST(ApertureTransformationTest, NotEqual_Rotation) {
+	ApertureTransformation other;
+	other.SetRotationDegrees(30.0);
+
+	CHECK(!(other == transform));
+	CHECK(other != transform);
+}
+
+TEST(ApertureTransformationTest, NotEqual_Scaling) {
+	ApertureTransformation other;
+	other.SetScalingFactor(2.25);
+
+	CHECK(!(other == transform));
+	CHECK(other != transform);
+}
+

@@ -23,10 +23,10 @@
 
 GraphicsState::GraphicsState()
 	: m_format{ nullptr },
-	  m_unit{ Unit::Invalid },
+	  m_unit{ Unit::Undefined },
 	  m_currentPoint{ nullptr },
 	  m_currentAperture{ nullptr },
-	  m_plotState{ PlotState::Invalid },
+	  m_plotState{ PlotState::Undefined },
 	  m_transformation{}
 {
 	// Empty

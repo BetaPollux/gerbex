@@ -29,14 +29,14 @@
 
 
 enum class Unit {
-	Invalid,
+	Undefined,
 	Millimeter,
 	Inch
 };
 
 
 enum class PlotState {
-	Invalid,
+	Undefined,
 	Linear,
 	Clockwise,
 	CounterClockwise

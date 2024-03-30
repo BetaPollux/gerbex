@@ -29,6 +29,7 @@
 class Draw: public Segment {
 public:
 	Draw();
+	Draw(const Point &origin, const Point &endPoint);
 	Draw(const Point &origin, const Point &endPoint,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Draw();

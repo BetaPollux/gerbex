@@ -97,7 +97,7 @@ TEST(CommandsProcessor_Init, ApertureDefinition_Null) {
 }
 
 TEST(CommandsProcessor_Init, PlotState) {
-	LONGS_EQUAL(PlotState::Invalid, processor.GetGraphicsState().GetPlotState());
+	LONGS_EQUAL(PlotState::Undefined, processor.GetGraphicsState().GetPlotState());
 }
 
 TEST(CommandsProcessor_Init, Flash_NeedsCurrentAperture) {
@@ -231,7 +231,7 @@ TEST_GROUP(CommandsProcessor_PlotDraw) {
 
 TEST(CommandsProcessor_PlotDraw, BadState) {
 	std::array<PlotState, 3> state = {
-			PlotState::Invalid,
+			PlotState::Undefined,
 			//Omit Linear
 			PlotState::Clockwise,
 			PlotState::CounterClockwise
@@ -310,7 +310,7 @@ TEST_GROUP(CommandsProcessor_PlotArc) {
 
 TEST(CommandsProcessor_PlotArc, BadState) {
 	std::array<PlotState, 2> state = {
-			PlotState::Invalid,
+			PlotState::Undefined,
 			PlotState::Linear,
 			//Omit Clockwise and CounterClockwise
 	};

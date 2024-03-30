@@ -29,7 +29,7 @@ enum class LoadPolarity {
 
 
 enum class LoadMirroring {
-	N,	// None
+	None,	// None
 	X,	// X-axis
 	Y,	// Y-axis
 	XY	// Both X and Y axes
@@ -46,6 +46,7 @@ enum class LoadMirroring {
 class ApertureTransformation {
 public:
 	ApertureTransformation();
+	ApertureTransformation(LoadPolarity polarity, LoadMirroring mirroring, double rotation, double scaling);
 	virtual ~ApertureTransformation();
 	bool operator==	(const ApertureTransformation& rhs) const;
 	bool operator!=	(const ApertureTransformation& rhs) const;

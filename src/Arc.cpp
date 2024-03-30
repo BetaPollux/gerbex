@@ -27,6 +27,15 @@ Arc::Arc()
 	// Empty
 }
 
+Arc::Arc(const Point &origin, const Point &endPoint,
+		const Point &centerOffset, ArcDirection direction)
+	: Segment(origin, endPoint),
+	  m_direction{ direction },
+	  m_centerOffset{ centerOffset }
+{
+	// Empty
+}
+
 Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
 		ArcDirection direction, std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)

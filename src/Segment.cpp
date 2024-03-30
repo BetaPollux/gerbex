@@ -25,6 +25,12 @@ Segment::Segment() {
 
 }
 
+Segment::Segment(const Point &origin, const Point &endPoint)
+{
+	m_origin = origin;
+	m_endPoint = endPoint;
+}
+
 Segment::Segment(const Point &origin, const Point &endPoint,
 		std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)

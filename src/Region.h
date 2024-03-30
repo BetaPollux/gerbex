@@ -21,7 +21,6 @@
 #ifndef REGION_H_
 #define REGION_H_
 
-#include "GraphicalObject.h"
 #include "RegionContour.h"
 #include <memory>
 #include <vector>
@@ -33,6 +32,9 @@ class Region: public GraphicalObject {
 public:
 	Region();
 	virtual ~Region();
+	void StartContour();
+	void AddSegment(std::shared_ptr<Segment> segment);
+	const std::vector<std::shared_ptr<RegionContour>>& GetContours() const;
 
 private:
 	std::vector<std::shared_ptr<RegionContour>> m_contours;

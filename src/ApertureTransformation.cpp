@@ -22,9 +22,21 @@
 
 ApertureTransformation::ApertureTransformation()
 	: m_polarity{ LoadPolarity::Dark },
-	  m_mirroring{ LoadMirroring::N },
+	  m_mirroring{ LoadMirroring::None },
 	  m_rotation_degrees{ 0.0 },
 	  m_scaling_factor{ 1.0 }
+
+{
+	// Empty
+
+}
+
+ApertureTransformation::ApertureTransformation(
+		LoadPolarity polarity, LoadMirroring mirroring, double rotation, double scaling)
+	: m_polarity{ polarity },
+	  m_mirroring{ mirroring },
+	  m_rotation_degrees{ rotation },
+	  m_scaling_factor{ scaling }
 
 {
 	// Empty

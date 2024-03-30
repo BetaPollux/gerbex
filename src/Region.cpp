@@ -19,13 +19,28 @@
  */
 
 #include "Region.h"
+#include <stdexcept>
 
 Region::Region() {
-	// TODO Auto-generated constructor stub
+	// Empty
 
 }
 
 Region::~Region() {
-	// TODO Auto-generated destructor stub
+	// Empty
 }
 
+void Region::StartContour() {
+	m_contours.push_back(std::make_shared<RegionContour>());
+}
+
+void Region::AddSegment(std::shared_ptr<Segment> segment) {
+	if (m_contours.size() == 0) {
+		throw std::logic_error("Need to start a contour before adding segment.");
+	}
+	m_contours.back()->AddSegment(segment);
+}
+
+const std::vector<std::shared_ptr<RegionContour> >& Region::GetContours() const {
+	return m_contours;
+}

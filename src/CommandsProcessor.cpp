@@ -77,9 +77,12 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		throw std::logic_error("Draw requires valid current aperture.");
 	}
 
-	std::unique_ptr<Draw> obj = std::make_unique<Draw>(*m_graphicsState.GetCurrentPoint(), coord,
-				m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
-		m_objects.push_back(std::move(obj));
+	std::unique_ptr<Draw> obj = std::make_unique<Draw>(
+			*m_graphicsState.GetCurrentPoint(),
+			coord,
+			m_graphicsState.GetCurrentAperture(),
+			m_graphicsState.GetTransformation());
+	m_objects.push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -102,9 +105,12 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 		throw std::logic_error("Arc requires valid current aperture.");
 	}
 
-	std::unique_ptr<Arc> obj = std::make_unique<Arc>(*m_graphicsState.GetCurrentPoint(), coord, offset,
-			direction, m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
-		m_objects.push_back(std::move(obj));
+	std::unique_ptr<Arc> obj = std::make_unique<Arc>(
+			*m_graphicsState.GetCurrentPoint(),
+			coord, offset, direction,
+			m_graphicsState.GetCurrentAperture(),
+			m_graphicsState.GetTransformation());
+	m_objects.push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -118,8 +124,10 @@ void CommandsProcessor::Flash(const Point &coord) {
 	}
 
 	//Flash requires explicit namespace due to same method name
-	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(coord,
-			m_graphicsState.GetCurrentAperture(), m_graphicsState.GetTransformation());
+	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(
+			coord,
+			m_graphicsState.GetCurrentAperture(),
+			m_graphicsState.GetTransformation());
 	m_objects.push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }

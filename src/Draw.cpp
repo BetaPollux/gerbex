@@ -24,6 +24,12 @@ Draw::Draw() {
 	// Empty
 }
 
+Draw::Draw(const Point &origin, const Point &endPoint)
+	: Segment(origin, endPoint)
+{
+	// Empty
+}
+
 Draw::Draw(const Point &origin, const Point &endPoint,
 		std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation)
