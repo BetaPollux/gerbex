@@ -35,7 +35,7 @@
 template <typename T> void MakeAndSetAperture(CommandsProcessor &processor, int id) {
 	std::shared_ptr<T> ap = std::make_unique<T>();
 
-	processor.ApertureDefinition(id, ap);
+	processor.ApertureDefine(id, ap);
 	processor.SetCurrentAperture(id);
 }
 
@@ -77,24 +77,24 @@ TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {
 	CHECK_THROWS(std::invalid_argument, processor.SetCurrentAperture(10));
 }
 
-TEST(CommandsProcessor_Init, ApertureDefinition) {
+TEST(CommandsProcessor_Init, ApertureDefine) {
 	std::shared_ptr<Circle> circle = std::make_unique<Circle>();
 
-	processor.ApertureDefinition(10, circle);
+	processor.ApertureDefine(10, circle);
 	processor.SetCurrentAperture(10);
 
 	POINTERS_EQUAL(circle.get(), processor.GetGraphicsState().GetCurrentAperture().get());
 }
 
-TEST(CommandsProcessor_Init, ApertureDefinition_BadNumber) {
+TEST(CommandsProcessor_Init, ApertureDefine_BadNumber) {
 	//0 through 9 are illegal
 	std::unique_ptr<Circle> circle = std::make_unique<Circle>();
 
-	CHECK_THROWS(std::invalid_argument, processor.ApertureDefinition(9, std::move(circle)));
+	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(9, std::move(circle)));
 }
 
-TEST(CommandsProcessor_Init, ApertureDefinition_Null) {
-	CHECK_THROWS(std::invalid_argument, processor.ApertureDefinition(10, nullptr));
+TEST(CommandsProcessor_Init, ApertureDefine_Null) {
+	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(10, nullptr));
 }
 
 TEST(CommandsProcessor_Init, PlotState) {
@@ -505,5 +505,26 @@ TEST(CommandsProcessor_AfterRegion, CreatesRegion) {
 
 TEST(CommandsProcessor_AfterRegion, CannotEndRegion) {
 	CHECK_THROWS(std::logic_error, processor.EndRegion());
+}
+
+/***
+ * Tests for Aperture Block -- Open
+ */
+
+TEST_GROUP(CommandsProcessor_OpenApertureBlock) {
+	Point origin, end;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(750, -500);
+
+		processor.SetPlotState(PlotState::Linear);
+		processor.OpenApertureBlock(12);
+	}
+};
+
+TEST(CommandsProcessor_OpenApertureBlock, NotImplemented) {
+	FAIL("Implement Aperture Block tests");
 }
 

@@ -1,7 +1,7 @@
 /*
- * Obround.h
+ * test_ObroundTemplate.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBROUND_H_
-#define OBROUND_H_
+#include "ObroundTemplate.h"
+#include "CppUTest/TestHarness.h"
 
-#include "Aperture.h"
-
-/*
- * Obround aperture with optional hole.
- * An obround is a rectangle where the smallest side is rounded to a half-circle.
- */
-class Obround: public Aperture {
-public:
-	Obround();
-	Obround(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Obround();
-
-private:
-	double m_xSize;
-	double m_ySize;
-	double m_holeDiameter;
+TEST_GROUP(ObroundTemplateTest) {
 };
 
-#endif /* OBROUND_H_ */
+TEST(ObroundTemplateTest, NotImplemented) {
+	FAIL("ObroundTemplateTest Not Implemented");
+}
+

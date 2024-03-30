@@ -1,7 +1,7 @@
 /*
- * Obround.h
+ * ObroundTemplate.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,26 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBROUND_H_
-#define OBROUND_H_
+#include "Obround.h"
+#include "ObroundTemplate.h"
+#include <stdexcept>
 
-#include "Aperture.h"
+ObroundTemplate::ObroundTemplate() {
+	// Empty
 
-/*
- * Obround aperture with optional hole.
- * An obround is a rectangle where the smallest side is rounded to a half-circle.
- */
-class Obround: public Aperture {
-public:
-	Obround();
-	Obround(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Obround();
+}
 
-private:
-	double m_xSize;
-	double m_ySize;
-	double m_holeDiameter;
-};
+ObroundTemplate::~ObroundTemplate() {
+	// Empty
+}
 
-#endif /* OBROUND_H_ */
+std::unique_ptr<Aperture> ObroundTemplate::Call(int numParameters, double *parameters) {
+	if (numParameters == 2) {
+		return std::make_unique<Obround>(parameters[0], parameters[1]);
+	} else if (numParameters == 3) {
+		return std::make_unique<Obround>(parameters[0], parameters[1], parameters[2]);
+	}
+	else {
+		throw std::invalid_argument("Requires 2 or 3 parameters");
+	}
+}

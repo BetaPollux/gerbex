@@ -22,13 +22,13 @@
 #define APERTURETRANSFORMATION_H_
 
 
-enum class LoadPolarity {
+enum class Polarity {
 	Dark,
 	Clear
 };
 
 
-enum class LoadMirroring {
+enum class Mirroring {
 	None,	// None
 	X,	// X-axis
 	Y,	// Y-axis
@@ -46,22 +46,22 @@ enum class LoadMirroring {
 class ApertureTransformation {
 public:
 	ApertureTransformation();
-	ApertureTransformation(LoadPolarity polarity, LoadMirroring mirroring, double rotation, double scaling);
+	ApertureTransformation(Polarity polarity, Mirroring mirroring, double rotation, double scaling);
 	virtual ~ApertureTransformation();
 	bool operator==	(const ApertureTransformation& rhs) const;
 	bool operator!=	(const ApertureTransformation& rhs) const;
-	LoadMirroring GetMirroring() const;
-	void SetMirroring(LoadMirroring mirroring);
-	LoadPolarity GetPolarity() const;
-	void SetPolarity(LoadPolarity polarity);
+	Mirroring GetMirroring() const;
+	void SetMirroring(Mirroring mirroring);
+	Polarity GetPolarity() const;
+	void SetPolarity(Polarity polarity);
 	double GetRotationDegrees() const;
 	void SetRotationDegrees(double rotationDegrees);
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
 
 private:
-	LoadPolarity m_polarity;
-	LoadMirroring m_mirroring;
+	Polarity m_polarity;
+	Mirroring m_mirroring;
 	double m_rotation_degrees;
 	double m_scaling_factor;
 };

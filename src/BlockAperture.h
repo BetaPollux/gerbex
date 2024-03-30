@@ -1,7 +1,7 @@
 /*
- * Obround.h
+ * BlockAperture.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBROUND_H_
-#define OBROUND_H_
+#ifndef BLOCKAPERTURE_H_
+#define BLOCKAPERTURE_H_
 
 #include "Aperture.h"
+#include "GraphicalObject.h"
+#include <memory>
+#include <vector>
 
 /*
- * Obround aperture with optional hole.
- * An obround is a rectangle where the smallest side is rounded to a half-circle.
+ *
  */
-class Obround: public Aperture {
+class BlockAperture: public Aperture {
 public:
-	Obround();
-	Obround(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Obround();
+	BlockAperture();
+	virtual ~BlockAperture();
+	std::vector<std::shared_ptr<GraphicalObject>> *GetObjects();
 
 private:
-	double m_xSize;
-	double m_ySize;
-	double m_holeDiameter;
+	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 };
 
-#endif /* OBROUND_H_ */
+#endif /* BLOCKAPERTURE_H_ */

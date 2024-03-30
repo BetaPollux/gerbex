@@ -1,8 +1,11 @@
 add_library(libgerbex
-	Arc.cpp
 	Aperture.cpp
+	ApertureTemplate.cpp
 	ApertureTransformation.cpp
+	Arc.cpp
+	BlockAperture.cpp
 	Circle.cpp
+	CircleTemplate.cpp
 	CommandsProcessor.cpp
 	CoordinateFormat.cpp
 	Draw.cpp
@@ -10,9 +13,12 @@ add_library(libgerbex
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Obround.cpp
+	ObroundTemplate.cpp
 	Point.cpp
 	Polygon.cpp
+	PolygonTemplate.cpp
 	Rectangle.cpp
+	RectangleTemplate.cpp
 	Region.cpp
 	RegionContour.cpp
 	Segment.cpp

@@ -45,14 +45,4 @@ Circle::~Circle() {
 	// Empty
 }
 
-std::unique_ptr<Aperture> Circle::DeriveFrom(int numParameters, double *parameters) {
-	if (numParameters == 1) {
-		return std::make_unique<Circle>(parameters[0]);
-	} else if (numParameters == 2) {
-		return std::make_unique<Circle>(parameters[0], parameters[1]);
-	}
-	else {
-		throw std::invalid_argument("Requires 1 or 2 parameters");
-	}
-}
 

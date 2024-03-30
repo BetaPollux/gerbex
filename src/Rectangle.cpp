@@ -46,14 +46,3 @@ Rectangle::Rectangle(double xSize, double ySize, double holeDiameter)
 Rectangle::~Rectangle() {
 	// Empty
 }
-
-std::unique_ptr<Aperture> Rectangle::DeriveFrom(int numParameters, double *parameters) {
-	if (numParameters == 2) {
-		return std::make_unique<Rectangle>(parameters[0], parameters[1]);
-	} else if (numParameters == 3) {
-		return std::make_unique<Rectangle>(parameters[0], parameters[1], parameters[2]);
-	}
-	else {
-		throw std::invalid_argument("Requires 2 or 3 parameters");
-	}
-}

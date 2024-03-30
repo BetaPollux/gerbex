@@ -54,13 +54,3 @@ Polygon::~Polygon() {
 	// Empty
 }
 
-std::unique_ptr<Aperture> Polygon::DeriveFrom(int numParameters, double *parameters) {
-	if (numParameters == 3) {
-		return std::make_unique<Polygon>(parameters[0], parameters[1], parameters[2]);
-	} else if (numParameters == 4) {
-		return std::make_unique<Polygon>(parameters[0], parameters[1], parameters[2], parameters[3]);
-	}
-	else {
-		throw std::invalid_argument("Requires 3 or 4 parameters");
-	}
-}

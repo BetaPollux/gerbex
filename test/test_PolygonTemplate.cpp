@@ -1,7 +1,7 @@
 /*
- * test_Aperture.cpp
+ * test_PolygonTemplate.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Aperture.h"
+#include "PolygonTemplate.h"
 #include "CppUTest/TestHarness.h"
 
-TEST_GROUP(ApertureTest) {
+TEST_GROUP(PolygonTemplateTest) {
 };
 
-TEST(ApertureTest, NotImplemented) {
-	FAIL("ApertureTest Not Implemented");
+TEST(PolygonTemplateTest, NotImplemented) {
+	FAIL("PolygonTemplateTest Not Implemented");
 }
 

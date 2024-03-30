@@ -32,7 +32,6 @@ public:
 	Polygon();
 	Polygon(double outerDiameter, int numVertices, double rotation, double holeDiameter = 0.0);
 	virtual ~Polygon();
-	virtual std::unique_ptr<Aperture> DeriveFrom(int numParameters, double *parameters);
 
 private:
 	double m_outerDiameter;

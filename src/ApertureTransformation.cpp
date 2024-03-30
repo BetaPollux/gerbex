@@ -21,8 +21,8 @@
 #include "ApertureTransformation.h"
 
 ApertureTransformation::ApertureTransformation()
-	: m_polarity{ LoadPolarity::Dark },
-	  m_mirroring{ LoadMirroring::None },
+	: m_polarity{ Polarity::Dark },
+	  m_mirroring{ Mirroring::None },
 	  m_rotation_degrees{ 0.0 },
 	  m_scaling_factor{ 1.0 }
 
@@ -32,7 +32,7 @@ ApertureTransformation::ApertureTransformation()
 }
 
 ApertureTransformation::ApertureTransformation(
-		LoadPolarity polarity, LoadMirroring mirroring, double rotation, double scaling)
+		Polarity polarity, Mirroring mirroring, double rotation, double scaling)
 	: m_polarity{ polarity },
 	  m_mirroring{ mirroring },
 	  m_rotation_degrees{ rotation },
@@ -63,19 +63,19 @@ bool ApertureTransformation::operator !=(
 			(m_scaling_factor != rhs.m_scaling_factor);
 }
 
-LoadMirroring ApertureTransformation::GetMirroring() const {
+Mirroring ApertureTransformation::GetMirroring() const {
 	return m_mirroring;
 }
 
-void ApertureTransformation::SetMirroring(LoadMirroring mirroring) {
+void ApertureTransformation::SetMirroring(Mirroring mirroring) {
 	m_mirroring = mirroring;
 }
 
-LoadPolarity ApertureTransformation::GetPolarity() const {
+Polarity ApertureTransformation::GetPolarity() const {
 	return m_polarity;
 }
 
-void ApertureTransformation::SetPolarity(LoadPolarity polarity) {
+void ApertureTransformation::SetPolarity(Polarity polarity) {
 	m_polarity = polarity;
 }
 

@@ -32,7 +32,6 @@ public:
 	Circle();
 	Circle(double diameter, double holeDiameter = 0.0);
 	virtual ~Circle();
-	virtual std::unique_ptr<Aperture> DeriveFrom(int numParameters, double *parameters) override;
 
 private:
 	double m_diameter;

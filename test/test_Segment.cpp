@@ -46,7 +46,7 @@ TEST(Segment, FullCtor) {
 	Point origin(2500, 5000);
 	Point endPoint(7500, 1500);
 	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-	ApertureTransformation transform(LoadPolarity::Clear, LoadMirroring::XY, 45.0, 1.5);
+	ApertureTransformation transform(Polarity::Clear, Mirroring::XY, 45.0, 1.5);
 
 	Segment segment(origin, endPoint, circle, transform);
 

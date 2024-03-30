@@ -20,12 +20,8 @@
 
 #include "Aperture.h"
 
-Aperture::Aperture() {
-	// Empty
-
-}
-
 Aperture::~Aperture() {
 	// Empty
 }
+
 

@@ -26,11 +26,11 @@ TEST_GROUP(ApertureTransformationTest) {
 };
 
 TEST(ApertureTransformationTest, Polarity) {
-	CHECK(LoadPolarity::Dark == transform.GetPolarity());
+	CHECK(Polarity::Dark == transform.GetPolarity());
 }
 
 TEST(ApertureTransformationTest, Mirroring) {
-	CHECK(LoadMirroring::None == transform.GetMirroring());
+	CHECK(Mirroring::None == transform.GetMirroring());
 }
 
 TEST(ApertureTransformationTest, Rotation) {
@@ -50,7 +50,7 @@ TEST(ApertureTransformationTest, Equal) {
 
 TEST(ApertureTransformationTest, NotEqual_Polarity) {
 	ApertureTransformation other;
-	other.SetPolarity(LoadPolarity::Clear);
+	other.SetPolarity(Polarity::Clear);
 
 	CHECK(!(other == transform));
 	CHECK(other != transform);
@@ -58,7 +58,7 @@ TEST(ApertureTransformationTest, NotEqual_Polarity) {
 
 TEST(ApertureTransformationTest, NotEqual_Mirroring) {
 	ApertureTransformation other;
-	other.SetMirroring(LoadMirroring::X);
+	other.SetMirroring(Mirroring::X);
 
 	CHECK(!(other == transform));
 	CHECK(other != transform);

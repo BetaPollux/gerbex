@@ -22,6 +22,7 @@
 #define COMMANDSPROCESSOR_H_
 
 #include "Aperture.h"
+#include "ApertureTemplate.h"
 #include "GraphicalObject.h"
 #include "GraphicsState.h"
 #include "Region.h"
@@ -45,7 +46,9 @@ class CommandsProcessor {
 public:
 	CommandsProcessor();
 	virtual ~CommandsProcessor();
-	void ApertureDefinition(int ident, std::shared_ptr<Aperture> aperture);
+	void ApertureDefine(int ident, std::shared_ptr<Aperture> aperture);
+	void OpenApertureBlock(int ident);
+	void CloseApertureBlock();
 	void SetCurrentAperture(int ident);
 	void SetPlotState(PlotState state);
 	void PlotDraw(const Point &coord);
@@ -54,7 +57,7 @@ public:
 	void Flash(const Point &coord);
 	void StartRegion();
 	void EndRegion();
-	std::shared_ptr<Aperture> GetTemplate(std::string name);
+	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
 	const GraphicsState& GetGraphicsState() const;
 	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	CommandState GetCommandState() const;
@@ -67,7 +70,7 @@ private:
 	std::stack<std::vector<std::shared_ptr<GraphicalObject>>*> m_objectDest;
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 	std::map<int, std::shared_ptr<Aperture>> m_apertures;
-	std::map<std::string, std::shared_ptr<Aperture>> m_templates;
+	std::map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
 	std::unique_ptr<Region> m_activeRegion;
 };
 

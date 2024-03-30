@@ -21,17 +21,13 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
-#include <memory>
-
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
  * They can be rotated, mirrored or scaled.
  */
 class Aperture {
 public:
-	Aperture();
 	virtual ~Aperture();
-	virtual std::unique_ptr<Aperture> DeriveFrom(int numParameters, double *parameters) = 0;
 };
 
 #endif /* APERTURE_H_ */

@@ -31,7 +31,6 @@ public:
 	Rectangle();
 	Rectangle(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Rectangle();
-	virtual std::unique_ptr<Aperture> DeriveFrom(int numParameters, double *parameters) override;
 
 private:
 	double m_xSize;

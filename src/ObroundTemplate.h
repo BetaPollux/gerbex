@@ -1,7 +1,7 @@
 /*
- * Obround.h
+ * ObroundTemplate.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBROUND_H_
-#define OBROUND_H_
+#ifndef OBROUNDTEMPLATE_H_
+#define OBROUNDTEMPLATE_H_
 
-#include "Aperture.h"
+#include "ApertureTemplate.h"
 
 /*
- * Obround aperture with optional hole.
- * An obround is a rectangle where the smallest side is rounded to a half-circle.
+ *
  */
-class Obround: public Aperture {
+class ObroundTemplate: public ApertureTemplate {
 public:
-	Obround();
-	Obround(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Obround();
-
-private:
-	double m_xSize;
-	double m_ySize;
-	double m_holeDiameter;
+	ObroundTemplate();
+	virtual ~ObroundTemplate();
+	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
 };
 
-#endif /* OBROUND_H_ */
+#endif /* OBROUNDTEMPLATE_H_ */

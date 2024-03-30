@@ -19,13 +19,14 @@
  */
 
 #include "Arc.h"
-#include "Circle.h"
+#include "BlockAperture.h"
+#include "CircleTemplate.h"
 #include "CommandsProcessor.h"
 #include "Draw.h"
 #include "Flash.h"
-#include "Obround.h"
-#include "Polygon.h"
-#include "Rectangle.h"
+#include "ObroundTemplate.h"
+#include "PolygonTemplate.h"
+#include "RectangleTemplate.h"
 #include "Region.h"
 #include <stdexcept>
 
@@ -37,10 +38,10 @@ CommandsProcessor::CommandsProcessor()
 	  m_templates{},
 	  m_activeRegion{ nullptr }
 {
-	m_templates["C"] = std::make_unique<Circle>();
-	m_templates["R"] = std::make_unique<Rectangle>();
-	m_templates["O"] = std::make_unique<Obround>();
-	m_templates["P"] = std::make_unique<Polygon>();
+	m_templates["C"] = std::make_unique<CircleTemplate>();
+	m_templates["R"] = std::make_unique<RectangleTemplate>();
+	m_templates["O"] = std::make_unique<ObroundTemplate>();
+	m_templates["P"] = std::make_unique<PolygonTemplate>();
 	m_objectDest.push(&m_objects);
 }
 
@@ -49,7 +50,7 @@ CommandsProcessor::~CommandsProcessor() {
 	m_templates.clear();
 }
 
-void CommandsProcessor::ApertureDefinition(int ident,
+void CommandsProcessor::ApertureDefine(int ident,
 		std::shared_ptr<Aperture> aperture) {
 	if (aperture == nullptr) {
 		throw std::invalid_argument("Cannot add null aperture.");
@@ -150,7 +151,7 @@ void CommandsProcessor::Flash(const Point &coord) {
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
-std::shared_ptr<Aperture> CommandsProcessor::GetTemplate(std::string name) {
+std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(std::string name) {
 	if (m_templates.count(name) == 0) {
 		throw std::invalid_argument("Aperture template " + name + " does not exist.");
 	}
@@ -187,6 +188,17 @@ void CommandsProcessor::EndRegion() {
 	}
 	m_objectDest.top()->push_back(std::move(m_activeRegion));
 	m_commandState = CommandState::Normal;
+}
+
+void CommandsProcessor::OpenApertureBlock(int ident) {
+	std::shared_ptr<BlockAperture> block = std::make_shared<BlockAperture>();
+	ApertureDefine(ident, block);
+	m_objectDest.push(block->GetObjects());
+}
+
+void CommandsProcessor::CloseApertureBlock() {
+	//TODO confirm there is an open AB to close
+	m_objectDest.pop();
 }
 
 void CommandsProcessor::SetCommandState(CommandState commandState) {
