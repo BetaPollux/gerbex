@@ -26,6 +26,7 @@
 #include "Obround.h"
 #include "Polygon.h"
 #include "Rectangle.h"
+#include "Region.h"
 #include <stdexcept>
 
 CommandsProcessor::CommandsProcessor()
@@ -33,12 +34,14 @@ CommandsProcessor::CommandsProcessor()
 	  m_graphicsState{},
 	  m_objects{},
 	  m_apertures{},
-	  m_templates{}
+	  m_templates{},
+	  m_activeRegion{ nullptr }
 {
 	m_templates["C"] = std::make_unique<Circle>();
 	m_templates["R"] = std::make_unique<Rectangle>();
 	m_templates["O"] = std::make_unique<Obround>();
 	m_templates["P"] = std::make_unique<Polygon>();
+	m_objectDest.push(&m_objects);
 }
 
 CommandsProcessor::~CommandsProcessor() {
@@ -73,16 +76,22 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		throw std::logic_error("Draw requires valid current point.");
 	}
 
-	if (m_graphicsState.GetCurrentAperture() == nullptr) {
+	if (m_commandState != CommandState::InsideRegion && m_graphicsState.GetCurrentAperture() == nullptr) {
 		throw std::logic_error("Draw requires valid current aperture.");
 	}
 
-	std::unique_ptr<Draw> obj = std::make_unique<Draw>(
+	std::shared_ptr<Draw> obj = std::make_shared<Draw>(
 			*m_graphicsState.GetCurrentPoint(),
 			coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
-	m_objects.push_back(std::move(obj));
+
+	if (m_commandState != CommandState::InsideRegion) {
+		m_objectDest.top()->push_back(obj);
+	} else {
+		m_activeRegion->AddSegment(obj);
+	}
+
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -101,20 +110,29 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 		throw std::logic_error("Arc requires valid current point.");
 	}
 
-	if (m_graphicsState.GetCurrentAperture() == nullptr) {
+	if (m_commandState != CommandState::InsideRegion && m_graphicsState.GetCurrentAperture() == nullptr) {
 		throw std::logic_error("Arc requires valid current aperture.");
 	}
 
-	std::unique_ptr<Arc> obj = std::make_unique<Arc>(
+	std::shared_ptr<Arc> obj = std::make_shared<Arc>(
 			*m_graphicsState.GetCurrentPoint(),
 			coord, offset, direction,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
-	m_objects.push_back(std::move(obj));
+
+	if (m_commandState != CommandState::InsideRegion) {
+		m_objectDest.top()->push_back(obj);
+	} else {
+		m_activeRegion->AddSegment(obj);
+	}
+
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
 void CommandsProcessor::Move(const Point &coord) {
+	if (m_commandState == CommandState::InsideRegion) {
+		m_activeRegion->StartContour();
+	}
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -128,7 +146,7 @@ void CommandsProcessor::Flash(const Point &coord) {
 			coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
-	m_objects.push_back(std::move(obj));
+	m_objectDest.top()->push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -155,6 +173,23 @@ void CommandsProcessor::SetPlotState(PlotState state) {
 	m_graphicsState.SetPlotState(state);
 }
 
+void CommandsProcessor::StartRegion() {
+	if (m_commandState == CommandState::InsideRegion){
+		throw std::logic_error("Cannot start a region inside a region.");
+	}
+	m_activeRegion = std::make_unique<Region>();
+	m_commandState = CommandState::InsideRegion;
+}
+
+void CommandsProcessor::EndRegion() {
+	if (m_commandState != CommandState::InsideRegion){
+		throw std::logic_error("Can't end region; not inside a region");
+	}
+	m_objectDest.top()->push_back(std::move(m_activeRegion));
+	m_commandState = CommandState::Normal;
+}
+
 void CommandsProcessor::SetCommandState(CommandState commandState) {
 	m_commandState = commandState;
 }
+

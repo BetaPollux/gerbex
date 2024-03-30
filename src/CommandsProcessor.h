@@ -24,17 +24,16 @@
 #include "Aperture.h"
 #include "GraphicalObject.h"
 #include "GraphicsState.h"
+#include "Region.h"
 #include <map>
 #include <memory>
+#include <stack>
 #include <string>
 #include <vector>
 
 enum class CommandState {
 	Normal,
-	InsideMacro,
 	InsideRegion,
-	InsideBlock,
-	InsideStepAndRepeat,
 	EndOfFile
 };
 
@@ -53,6 +52,8 @@ public:
 	void PlotArc(const Point &coord, const Point &offset);
 	void Move(const Point &coord);
 	void Flash(const Point &coord);
+	void StartRegion();
+	void EndRegion();
 	std::shared_ptr<Aperture> GetTemplate(std::string name);
 	const GraphicsState& GetGraphicsState() const;
 	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
@@ -63,9 +64,11 @@ private:
 	//TODO check for G75
 	CommandState m_commandState;
 	GraphicsState m_graphicsState;
+	std::stack<std::vector<std::shared_ptr<GraphicalObject>>*> m_objectDest;
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 	std::map<int, std::shared_ptr<Aperture>> m_apertures;
 	std::map<std::string, std::shared_ptr<Aperture>> m_templates;
+	std::unique_ptr<Region> m_activeRegion;
 };
 
 #endif /* COMMANDSPROCESSOR_H_ */

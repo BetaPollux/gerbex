@@ -23,6 +23,7 @@
 #include "Circle.h"
 #include "Draw.h"
 #include "Flash.h"
+#include "Region.h"
 #include <array>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -390,5 +391,119 @@ TEST(CommandsProcessor_PlotArc, Transform) {
 
 	CHECK(processor.GetGraphicsState().GetTransformation() ==
 				arc->GetTransformation());
+}
+
+/***
+ * Tests for Region operation -- inside region
+ */
+
+TEST_GROUP(CommandsProcessor_InsideRegion) {
+	Point origin, end, offset;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(750, -500);
+		offset = Point(-2000, 1000);
+
+		processor.SetPlotState(PlotState::Linear);
+		processor.StartRegion();
+	}
+};
+
+TEST(CommandsProcessor_InsideRegion, SetsState) {
+	CHECK(CommandState::InsideRegion == processor.GetCommandState());
+}
+
+TEST(CommandsProcessor_InsideRegion, CannotStartRegion) {
+	CHECK_THROWS(std::logic_error, processor.StartRegion());
+}
+
+TEST(CommandsProcessor_InsideRegion, CreatesRegion_NoContour) {
+	processor.EndRegion();
+
+	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor);
+	LONGS_EQUAL(0, region->GetContours().size());
+}
+
+TEST(CommandsProcessor_InsideRegion, StartsContour) {
+	processor.Move(origin);
+	processor.EndRegion();
+
+	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor);
+	LONGS_EQUAL(1, region->GetContours().size());
+}
+
+TEST(CommandsProcessor_InsideRegion, AddsSegment_Draw) {
+	processor.Move(origin);
+	processor.PlotDraw(end);
+	processor.EndRegion();
+
+	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor);
+	LONGS_EQUAL(1, region->GetContours().size());
+	std::shared_ptr<RegionContour> contour = region->GetContours().back();
+
+	CHECK(nullptr != contour);
+	LONGS_EQUAL(1, contour->GetSegments().size());
+}
+
+TEST(CommandsProcessor_InsideRegion, AddsSegment_Arc) {
+	processor.Move(origin);
+	processor.SetPlotState(PlotState::Clockwise);
+	processor.PlotArc(end, offset);
+	processor.EndRegion();
+
+	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor);
+	LONGS_EQUAL(1, region->GetContours().size());
+	std::shared_ptr<RegionContour> contour = region->GetContours().back();
+
+	CHECK(nullptr != contour);
+	LONGS_EQUAL(1, contour->GetSegments().size());
+}
+
+/***
+ * Tests for Region operation -- after region
+ */
+
+TEST_GROUP(CommandsProcessor_AfterRegion) {
+	Point origin, end;
+	CommandsProcessor processor;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(750, -500);
+
+		processor.SetPlotState(PlotState::Linear);
+		processor.StartRegion();
+		processor.Move(origin);
+		processor.PlotDraw(end);
+		processor.PlotDraw(end);
+		processor.PlotDraw(end);
+		processor.EndRegion();
+	}
+};
+
+TEST(CommandsProcessor_AfterRegion, AddsDrawsAgain) {
+	MakeAndSetAperture<Circle>(processor, 10);
+	processor.Move(origin);
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
+	CHECK(nullptr != draw);
+	CHECK(end == draw->GetEndPoint());
+}
+
+TEST(CommandsProcessor_AfterRegion, ClearsState) {
+	CHECK(CommandState::Normal == processor.GetCommandState());
+}
+
+TEST(CommandsProcessor_AfterRegion, CreatesRegion) {
+	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor);
+
+	CHECK(nullptr != region);
+}
+
+TEST(CommandsProcessor_AfterRegion, CannotEndRegion) {
+	CHECK_THROWS(std::logic_error, processor.EndRegion());
 }
 
