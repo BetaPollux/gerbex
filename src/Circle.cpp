@@ -22,8 +22,7 @@
 #include <stdexcept>
 
 Circle::Circle()
-	: m_diameter{ 1.0 },
-	  m_holeDiameter{ 0.0 }
+	: Circle{ 1.0 }
 {
 	// Empty
 }
@@ -45,4 +44,10 @@ Circle::~Circle() {
 	// Empty
 }
 
+double Circle::GetDiameter() const {
+	return m_diameter;
+}
 
+double Circle::GetHoleDiameter() const {
+	return m_holeDiameter;
+}

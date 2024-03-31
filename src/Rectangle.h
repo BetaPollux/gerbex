@@ -31,6 +31,9 @@ public:
 	Rectangle();
 	Rectangle(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Rectangle();
+	double GetHoleDiameter() const;
+	double GetXSize() const;
+	double GetYSize() const;
 
 private:
 	double m_xSize;

@@ -19,12 +19,44 @@
  */
 
 #include "Polygon.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(PolygonTest) {
 };
 
-TEST(PolygonTest, NotImplemented) {
-	FAIL("PolygonTest Not Implemented");
+TEST(PolygonTest, ZeroDiameter) {
+	CHECK_THROWS(std::invalid_argument, Polygon(0.0, 3));
 }
 
+TEST(PolygonTest, TooFewVertices) {
+	CHECK_THROWS(std::invalid_argument, Polygon(1.0, 2));
+}
+
+TEST(PolygonTest, TooManyVertices) {
+	CHECK_THROWS(std::invalid_argument, Polygon(1.0, 13));
+}
+
+TEST(PolygonTest, NegativeHoleSize) {
+	CHECK_THROWS(std::invalid_argument, Polygon(1.0, 3, 0.0, -0.25));
+}
+
+TEST(PolygonTest, DefaultRotation) {
+	Polygon poly(1.0, 3);
+	CHECK(0.0 == poly.GetRotation());
+}
+
+TEST(PolygonTest, Diameter) {
+	Polygon poly(2.5, 3);
+	CHECK(2.5 == poly.GetOuterDiameter());
+}
+
+TEST(PolygonTest, Rotation) {
+	Polygon poly(1.0, 3, 45.0);
+	CHECK(45.0 == poly.GetRotation());
+}
+
+TEST(PolygonTest, DefaultHole) {
+	Polygon poly(1.0, 3);
+	CHECK(0.0 == poly.GetHoleDiameter());
+}

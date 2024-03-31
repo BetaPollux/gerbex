@@ -22,6 +22,7 @@
 #define POLYGONTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "Polygon.h"
 
 /*
  *

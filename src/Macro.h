@@ -1,7 +1,7 @@
 /*
- * test_GraphicalObject.cpp
+ * Macro.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GraphicalObject.h"
-#include "CppUTest/TestHarness.h"
+#ifndef MACRO_H_
+#define MACRO_H_
 
-TEST_GROUP(GraphicalObjectTest) {
+#include "Aperture.h"
+
+/*
+ * A compound aperture made of primitives using expressions and variables.
+ */
+class Macro: public Aperture {
+public:
+	Macro();
+	virtual ~Macro();
 };
 
-TEST(GraphicalObjectTest, NotImplemented) {
-	FAIL("GraphicalObjectTest Not Implemented");
-}
-
+#endif /* MACRO_H_ */

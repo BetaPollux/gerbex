@@ -22,6 +22,7 @@
 #define CIRCLETEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "Circle.h"
 
 /*
  *

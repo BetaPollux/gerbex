@@ -18,13 +18,35 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Circle.h"
 #include "Flash.h"
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(FlashTest) {
+	Point origin;
+	std::shared_ptr<Circle> aperture;
+	ApertureTransformation transform;
+	Flash flash;
+
+	void setup() {
+		origin = Point(2500, -1500);
+		aperture = std::make_shared<Circle>(0.75);
+		transform.SetRotationDegrees(45.0);
+
+		flash = Flash(origin, aperture, transform);
+	}
+
 };
 
-TEST(FlashTest, NotImplemented) {
-	FAIL("FlashTest Not Implemented");
+TEST(FlashTest, Origin) {
+	CHECK(origin == flash.GetOrigin());
+}
+
+TEST(FlashTest, Aperture) {
+	CHECK(aperture == flash.GetAperture());
+}
+
+TEST(FlashTest, Transform) {
+	CHECK(transform == flash.GetTransformation());
 }
 

@@ -32,6 +32,8 @@ public:
 	Circle();
 	Circle(double diameter, double holeDiameter = 0.0);
 	virtual ~Circle();
+	double GetDiameter() const;
+	double GetHoleDiameter() const;
 
 private:
 	double m_diameter;

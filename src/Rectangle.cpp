@@ -22,9 +22,7 @@
 #include <stdexcept>
 
 Rectangle::Rectangle()
-	: m_xSize{ 1.0 },
-	  m_ySize{ 1.0 },
-	  m_holeDiameter{ 0.0 }
+	: Rectangle{ 1.0, 1.0 }
 {
 	// Empty
 }
@@ -45,4 +43,16 @@ Rectangle::Rectangle(double xSize, double ySize, double holeDiameter)
 
 Rectangle::~Rectangle() {
 	// Empty
+}
+
+double Rectangle::GetHoleDiameter() const {
+	return m_holeDiameter;
+}
+
+double Rectangle::GetXSize() const {
+	return m_xSize;
+}
+
+double Rectangle::GetYSize() const {
+	return m_ySize;
 }

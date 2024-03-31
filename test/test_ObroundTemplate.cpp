@@ -19,12 +19,39 @@
  */
 
 #include "ObroundTemplate.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(ObroundTemplateTest) {
+	ObroundTemplate tmp;
 };
 
-TEST(ObroundTemplateTest, NotImplemented) {
-	FAIL("ObroundTemplateTest Not Implemented");
+TEST(ObroundTemplateTest, TooFewParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(1, nullptr));
 }
 
+TEST(ObroundTemplateTest, TooManyParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(4, nullptr));
+}
+
+TEST(ObroundTemplateTest, AllParams) {
+	double params[] = { 1.0, 0.5, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(3, params);
+	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
+
+	CHECK(nullptr != obround);
+	CHECK(params[0] == obround->GetXSize());
+	CHECK(params[1] == obround->GetYSize());
+	CHECK(params[2] == obround->GetHoleDiameter());
+}
+
+TEST(ObroundTemplateTest, DefaultHole) {
+	double params[] = { 1.0, 0.5 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
+
+	CHECK(nullptr != obround);
+	CHECK(params[0] == obround->GetXSize());
+	CHECK(params[1] == obround->GetYSize());
+	CHECK(0.0 == obround->GetHoleDiameter());
+}

@@ -19,12 +19,39 @@
  */
 
 #include "RectangleTemplate.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(RectangleTemplateTest) {
+	RectangleTemplate tmp;
 };
 
-TEST(RectangleTemplateTest, NotImplemented) {
-	FAIL("RectangleTemplateTest Not Implemented");
+TEST(RectangleTemplateTest, TooFewParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(1, nullptr));
 }
 
+TEST(RectangleTemplateTest, TooManyParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(4, nullptr));
+}
+
+TEST(RectangleTemplateTest, AllParams) {
+	double params[] = { 1.0, 0.5, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(3, params);
+	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
+
+	CHECK(nullptr != rect);
+	CHECK(params[0] == rect->GetXSize());
+	CHECK(params[1] == rect->GetYSize());
+	CHECK(params[2] == rect->GetHoleDiameter());
+}
+
+TEST(RectangleTemplateTest, DefaultHole) {
+	double params[] = { 1.0, 0.5 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
+
+	CHECK(nullptr != rect);
+	CHECK(params[0] == rect->GetXSize());
+	CHECK(params[1] == rect->GetYSize());
+	CHECK(0.0 == rect->GetHoleDiameter());
+}

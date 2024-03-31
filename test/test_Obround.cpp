@@ -19,12 +19,36 @@
  */
 
 #include "Obround.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(ObroundTest) {
 };
 
-TEST(ObroundTest, NotImplemented) {
-	FAIL("ObroundTest Not Implemented");
+TEST(ObroundTest, ZeroXSize) {
+	CHECK_THROWS(std::invalid_argument, Obround(0.0, 1.0));
+}
+
+TEST(ObroundTest, ZeroYSize) {
+	CHECK_THROWS(std::invalid_argument, Obround(1.0, 0.0));
+}
+
+TEST(ObroundTest, NegativeHoleSize) {
+	CHECK_THROWS(std::invalid_argument, Obround(1.0, 1.0, -0.25));
+}
+
+TEST(ObroundTest, XSize) {
+	Obround obround(1.0, 0.5);
+	CHECK(1.0 == obround.GetXSize());
+}
+
+TEST(ObroundTest, YSize) {
+	Obround obround(1.0, 0.5);
+	CHECK(0.5 == obround.GetYSize());
+}
+
+TEST(ObroundTest, DefaultHole) {
+	Obround obround(1.0, 0.5);
+	CHECK(0.0 == obround.GetHoleDiameter());
 }
 

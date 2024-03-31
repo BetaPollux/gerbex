@@ -22,6 +22,7 @@
 #define OBROUNDTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "Obround.h"
 
 /*
  *

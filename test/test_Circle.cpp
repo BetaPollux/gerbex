@@ -19,12 +19,32 @@
  */
 
 #include "Circle.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(CircleTest) {
 };
 
-TEST(CircleTest, NotImplemented) {
-	FAIL("CircleTest Not Implemented");
+TEST(CircleTest, NegativeDiameter) {
+	CHECK_THROWS(std::invalid_argument, Circle(-0.5));
+}
+
+TEST(CircleTest, NegativeHoleDiameter) {
+	CHECK_THROWS(std::invalid_argument, Circle(1.25, -0.5));
+}
+
+TEST(CircleTest, Diameter) {
+	Circle circle(2.3);
+	CHECK(2.3 == circle.GetDiameter());
+}
+
+TEST(CircleTest, ZeroDiameter) {
+	Circle circle(0.0);
+	CHECK(0.0 == circle.GetDiameter());
+}
+
+TEST(CircleTest, DefaultHole) {
+	Circle circle(1.5);
+	CHECK(0.0 == circle.GetHoleDiameter());
 }
 

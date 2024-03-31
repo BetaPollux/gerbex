@@ -22,9 +22,7 @@
 #include <stdexcept>
 
 Obround::Obround()
-	: m_xSize{ 1.0 },
-	  m_ySize{ 1.0 },
-	  m_holeDiameter{ 0.0 }
+	: Obround{ 1.0, 1.0 }
 {
 	// Empty
 }
@@ -47,3 +45,14 @@ Obround::~Obround() {
 	// Empty
 }
 
+double Obround::GetHoleDiameter() const {
+	return m_holeDiameter;
+}
+
+double Obround::GetXSize() const {
+	return m_xSize;
+}
+
+double Obround::GetYSize() const {
+	return m_ySize;
+}

@@ -19,12 +19,38 @@
  */
 
 #include "CircleTemplate.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(CircleTemplateTest) {
+	CircleTemplate tmp;
 };
 
-TEST(CircleTemplateTest, NotImplemented) {
-	FAIL("CircleTemplateTest Not Implemented");
+TEST(CircleTemplateTest, TooFewParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(0, nullptr));
+}
+
+TEST(CircleTemplateTest, TooManyParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(3, nullptr));
+}
+
+TEST(CircleTemplateTest, AllParams) {
+	double params[] = { 1.0, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
+
+	CHECK(nullptr != circle);
+	CHECK(params[0] == circle->GetDiameter());
+	CHECK(params[1] == circle->GetHoleDiameter());
+}
+
+TEST(CircleTemplateTest, DefaultHole) {
+	double params[] = { 1.0 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(1, params);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
+
+	CHECK(nullptr != circle);
+	CHECK(params[0] == circle->GetDiameter());
+	CHECK(0.0 == circle->GetHoleDiameter());
 }
 

@@ -12,6 +12,8 @@ add_library(libgerbex
 	Flash.cpp
 	GraphicalObject.cpp
 	GraphicsState.cpp
+	Macro.cpp
+	MacroTemplate.cpp
 	Obround.cpp
 	ObroundTemplate.cpp
 	Point.cpp

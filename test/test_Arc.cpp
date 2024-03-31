@@ -19,12 +19,50 @@
  */
 
 #include "Arc.h"
+#include "Circle.h"
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(ArcTest) {
+	Point origin, end, offset;
+	std::shared_ptr<Circle> aperture;
+	ApertureTransformation transform;
+	ArcDirection direction;
+	Arc arc;
+
+	void setup() {
+		origin = Point(2500, -1500);
+		end = Point(3750, 0);
+		offset = Point(500, 500);
+		aperture = std::make_shared<Circle>(0.75);
+		direction = ArcDirection::CounterClockwise;
+		transform.SetRotationDegrees(45.0);
+
+		arc = Arc(origin, end, offset, direction, aperture, transform);
+	}
+
 };
 
-TEST(ArcTest, NotImplemented) {
-	FAIL("ArcTest Not Implemented");
+TEST(ArcTest, Origin) {
+	CHECK(origin == arc.GetOrigin());
+}
+
+TEST(ArcTest, End) {
+	CHECK(end == arc.GetEndPoint());
+}
+
+TEST(ArcTest, Offset) {
+	CHECK(offset == arc.GetCenterOffset());
+}
+
+TEST(ArcTest, Direction) {
+	CHECK(direction == arc.GetDirection());
+}
+
+TEST(ArcTest, Aperture) {
+	CHECK(aperture == arc.GetAperture());
+}
+
+TEST(ArcTest, Transform) {
+	CHECK(transform == arc.GetTransformation());
 }
 

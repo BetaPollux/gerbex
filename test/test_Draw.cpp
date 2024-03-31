@@ -18,13 +18,39 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Circle.h"
 #include "Draw.h"
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(DrawTest) {
+	Point origin, end;
+	std::shared_ptr<Circle> aperture;
+	ApertureTransformation transform;
+	Draw draw;
+
+	void setup() {
+		origin = Point(2500, -1500);
+		end = Point(3750, 0);
+		aperture = std::make_shared<Circle>(0.75);
+		transform.SetRotationDegrees(45.0);
+
+		draw = Draw(origin, end, aperture, transform);
+	}
+
 };
 
-TEST(DrawTest, NotImplemented) {
-	FAIL("DrawTest Not Implemented");
+TEST(DrawTest, Origin) {
+	CHECK(origin == draw.GetOrigin());
 }
 
+TEST(DrawTest, End) {
+	CHECK(end == draw.GetEndPoint());
+}
+
+TEST(DrawTest, Aperture) {
+	CHECK(aperture == draw.GetAperture());
+}
+
+TEST(DrawTest, Transform) {
+	CHECK(transform == draw.GetTransformation());
+}

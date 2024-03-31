@@ -22,10 +22,7 @@
 #include <stdexcept>
 
 Polygon::Polygon()
-	: m_outerDiameter{ 1.0 },
-	  m_numVertices{ 3 },
-	  m_rotation{ 0.0 },
-	  m_holeDiameter{ 0.0 }
+	: Polygon(1.0, 3)
 {
 	// Empty
 }
@@ -54,3 +51,18 @@ Polygon::~Polygon() {
 	// Empty
 }
 
+double Polygon::GetHoleDiameter() const {
+	return m_holeDiameter;
+}
+
+int Polygon::GetNumVertices() const {
+	return m_numVertices;
+}
+
+double Polygon::GetOuterDiameter() const {
+	return m_outerDiameter;
+}
+
+double Polygon::GetRotation() const {
+	return m_rotation;
+}

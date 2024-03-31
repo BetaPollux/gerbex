@@ -10,8 +10,9 @@ add_executable(test_gerbex
 	test_CoordinateFormat.cpp
 	test_Draw.cpp
 	test_Flash.cpp
-	test_GraphicalObject.cpp
 	test_GraphicsState.cpp
+	test_Macro.cpp
+	test_MacroTemplate.cpp
 	test_Obround.cpp
 	test_ObroundTemplate.cpp
 	test_Point.cpp

@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Polygon.h"
 #include "PolygonTemplate.h"
 #include <stdexcept>
 
@@ -32,12 +31,14 @@ PolygonTemplate::~PolygonTemplate() {
 }
 
 std::unique_ptr<Aperture> PolygonTemplate::Call(int numParameters, double *parameters) {
-	if (numParameters == 3) {
-		return std::make_unique<Polygon>(parameters[0], parameters[1], parameters[2]);
+	if (numParameters == 2) {
+			return std::make_unique<Polygon>(parameters[0], (int)parameters[1]);
+	} else if (numParameters == 3) {
+		return std::make_unique<Polygon>(parameters[0], (int)parameters[1], parameters[2]);
 	} else if (numParameters == 4) {
-		return std::make_unique<Polygon>(parameters[0], parameters[1], parameters[2], parameters[3]);
+		return std::make_unique<Polygon>(parameters[0], (int)parameters[1], parameters[2], parameters[3]);
 	}
 	else {
-		throw std::invalid_argument("Requires 3 or 4 parameters");
+		throw std::invalid_argument("Requires 2 to 4 parameters");
 	}
 }

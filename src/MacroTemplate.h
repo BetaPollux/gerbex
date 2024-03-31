@@ -1,7 +1,7 @@
 /*
- * RectangleTemplate.h
+ * MacroTemplate.h
  *
- *  Created on: Mar. 29, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECTANGLETEMPLATE_H_
-#define RECTANGLETEMPLATE_H_
+#ifndef MACROTEMPLATE_H_
+#define MACROTEMPLATE_H_
 
 #include "ApertureTemplate.h"
-#include "Rectangle.h"
 
 /*
  *
  */
-class RectangleTemplate: public ApertureTemplate {
+class MacroTemplate: public ApertureTemplate {
 public:
-	RectangleTemplate();
-	virtual ~RectangleTemplate();
+	MacroTemplate();
+	virtual ~MacroTemplate();
 	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
 };
 
-#endif /* RECTANGLETEMPLATE_H_ */
+#endif /* MACROTEMPLATE_H_ */

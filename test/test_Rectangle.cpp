@@ -19,12 +19,37 @@
  */
 
 #include "Rectangle.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(RectangleTest) {
 };
 
-TEST(RectangleTest, NotImplemented) {
-	FAIL("RectangleTest Not Implemented");
+TEST(RectangleTest, ZeroXSize) {
+	CHECK_THROWS(std::invalid_argument, Rectangle(0.0, 1.0));
 }
+
+TEST(RectangleTest, ZeroYSize) {
+	CHECK_THROWS(std::invalid_argument, Rectangle(1.0, 0.0));
+}
+
+TEST(RectangleTest, NegativeHoleSize) {
+	CHECK_THROWS(std::invalid_argument, Rectangle(1.0, 1.0, -0.25));
+}
+
+TEST(RectangleTest, XSize) {
+	Rectangle rect(1.0, 0.5);
+	CHECK(1.0 == rect.GetXSize());
+}
+
+TEST(RectangleTest, YSize) {
+	Rectangle rect(1.0, 0.5);
+	CHECK(0.5 == rect.GetYSize());
+}
+
+TEST(RectangleTest, DefaultHole) {
+	Rectangle rect(1.0, 0.5);
+	CHECK(0.0 == rect.GetHoleDiameter());
+}
+
 

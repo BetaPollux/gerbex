@@ -32,6 +32,9 @@ public:
 	Obround();
 	Obround(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Obround();
+	double GetHoleDiameter() const;
+	double GetXSize() const;
+	double GetYSize() const;
 
 private:
 	double m_xSize;

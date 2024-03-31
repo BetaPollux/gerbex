@@ -30,8 +30,12 @@
 class Polygon: public Aperture {
 public:
 	Polygon();
-	Polygon(double outerDiameter, int numVertices, double rotation, double holeDiameter = 0.0);
+	Polygon(double outerDiameter, int numVertices, double rotation = 0.0, double holeDiameter = 0.0);
 	virtual ~Polygon();
+	double GetHoleDiameter() const;
+	int GetNumVertices() const;
+	double GetOuterDiameter() const;
+	double GetRotation() const;
 
 private:
 	double m_outerDiameter;

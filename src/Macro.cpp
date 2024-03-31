@@ -1,7 +1,7 @@
 /*
- * RectangleTemplate.h
+ * Macro.cpp
  *
- *  Created on: Mar. 29, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECTANGLETEMPLATE_H_
-#define RECTANGLETEMPLATE_H_
+#include "Macro.h"
 
-#include "ApertureTemplate.h"
-#include "Rectangle.h"
+Macro::Macro() {
+	// TODO Auto-generated constructor stub
 
-/*
- *
- */
-class RectangleTemplate: public ApertureTemplate {
-public:
-	RectangleTemplate();
-	virtual ~RectangleTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
-};
+}
 
-#endif /* RECTANGLETEMPLATE_H_ */
+Macro::~Macro() {
+	// TODO Auto-generated destructor stub
+}
+

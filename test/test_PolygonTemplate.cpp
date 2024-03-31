@@ -19,12 +19,54 @@
  */
 
 #include "PolygonTemplate.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(PolygonTemplateTest) {
+	PolygonTemplate tmp;
 };
 
-TEST(PolygonTemplateTest, NotImplemented) {
-	FAIL("PolygonTemplateTest Not Implemented");
+TEST(PolygonTemplateTest, TooFewParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(1, nullptr));
+}
+
+TEST(PolygonTemplateTest, TooManyParams) {
+	CHECK_THROWS(std::invalid_argument, tmp.Call(5, nullptr));
+}
+
+TEST(PolygonTemplateTest, AllParams) {
+	double params[] = { 1.0, 3, 45.0, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(4, params);
+	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
+
+	CHECK(nullptr != poly);
+	CHECK(params[0] == poly->GetOuterDiameter());
+	CHECK((int)params[1] == poly->GetNumVertices());
+	CHECK(params[2] == poly->GetRotation());
+	CHECK(params[3] == poly->GetHoleDiameter());
+}
+
+TEST(PolygonTemplateTest, DefaultHole) {
+	double params[] = { 1.0, 3, 45.0 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(3, params);
+	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
+
+	CHECK(nullptr != poly);
+	CHECK(params[0] == poly->GetOuterDiameter());
+	CHECK((int)params[1] == poly->GetNumVertices());
+	CHECK(params[2] == poly->GetRotation());
+	CHECK(0.0 == poly->GetHoleDiameter());
+}
+
+TEST(PolygonTemplateTest, NoRotation) {
+	double params[] = { 1.0, 3 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
+
+	CHECK(nullptr != poly);
+	CHECK(params[0] == poly->GetOuterDiameter());
+	CHECK((int)params[1] == poly->GetNumVertices());
+	CHECK(0.0 == poly->GetRotation());
+	CHECK(0.0 == poly->GetHoleDiameter());
 }
 
