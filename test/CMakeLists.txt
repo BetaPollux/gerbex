@@ -22,6 +22,7 @@ add_executable(test_gerbex
 	test_Region.cpp
 	test_RegionContour.cpp
 	test_Segment.cpp
+	test_StepAndRepeat.cpp
 	test_SyntaxParser.cpp
 )
 

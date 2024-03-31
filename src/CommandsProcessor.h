@@ -26,6 +26,7 @@
 #include "GraphicalObject.h"
 #include "GraphicsState.h"
 #include "Region.h"
+#include "StepAndRepeat.h"
 #include <map>
 #include <memory>
 #include <stack>
@@ -50,6 +51,7 @@ public:
 	void OpenApertureBlock(int ident);
 	void CloseApertureBlock();
 	void SetCurrentAperture(int ident);
+	std::shared_ptr<Aperture> GetAperture(int ident);
 	void SetPlotState(PlotState state);
 	void PlotDraw(const Point &coord);
 	void PlotArc(const Point &coord, const Point &offset);
@@ -62,6 +64,8 @@ public:
 	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	CommandState GetCommandState() const;
 	void SetCommandState(CommandState commandState);
+	void OpenStepAndRepeat(int nx, int ny, double dx, double dy);
+	void CloseStepAndRepeat();
 
 private:
 	//TODO check for G75
@@ -72,6 +76,8 @@ private:
 	std::map<int, std::shared_ptr<Aperture>> m_apertures;
 	std::map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
 	std::unique_ptr<Region> m_activeRegion;
+	std::unique_ptr<StepAndRepeat> m_activeStepAndRepeat;
+	int m_openBlocks;
 };
 
 #endif /* COMMANDSPROCESSOR_H_ */

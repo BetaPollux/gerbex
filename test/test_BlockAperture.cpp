@@ -19,13 +19,19 @@
  */
 
 #include "BlockAperture.h"
+#include "Flash.h"
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(BlockApertureTest) {
 	BlockAperture block;
 };
 
-TEST(BlockApertureTest, GetObjects) {
-	CHECK(nullptr != block.GetObjects());
+TEST(BlockApertureTest, GetObjectList) {
+	CHECK(nullptr != block.GetObjectList());
 }
 
+TEST(BlockApertureTest, AddObject) {
+	std::shared_ptr<Flash> flash = std::make_shared<Flash>();
+	block.AddObject(flash);
+	LONGS_EQUAL(1, block.GetObjectList()->size());
+}

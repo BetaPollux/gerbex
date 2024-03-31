@@ -22,6 +22,7 @@ add_library(libgerbex
 	Region.cpp
 	RegionContour.cpp
 	Segment.cpp
+	StepAndRepeat.cpp
 	SyntaxParser.cpp
 )
 

@@ -30,7 +30,11 @@ BlockAperture::~BlockAperture() {
 	// Empty
 }
 
-std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjects() {
+void BlockAperture::AddObject(std::shared_ptr<GraphicalObject> object) {
+	m_objects.push_back(object);
+}
+
+std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 

@@ -28,6 +28,7 @@
 #include "PolygonTemplate.h"
 #include "RectangleTemplate.h"
 #include "Region.h"
+#include "StepAndRepeat.h"
 #include <stdexcept>
 
 CommandsProcessor::CommandsProcessor()
@@ -36,7 +37,8 @@ CommandsProcessor::CommandsProcessor()
 	  m_objects{},
 	  m_apertures{},
 	  m_templates{},
-	  m_activeRegion{ nullptr }
+	  m_activeRegion{ nullptr },
+	  m_openBlocks{ 0 }
 {
 	m_templates["C"] = std::make_unique<CircleTemplate>();
 	m_templates["R"] = std::make_unique<RectangleTemplate>();
@@ -66,6 +68,13 @@ void CommandsProcessor::SetCurrentAperture(int ident) {
 		throw std::invalid_argument("Aperture " + std::to_string(ident) + " does not exist.");
 	}
 	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
+}
+
+std::shared_ptr<Aperture> CommandsProcessor::GetAperture(int ident) {
+	if (m_apertures.count(ident) == 0) {
+		throw std::invalid_argument("Aperture " + std::to_string(ident) + " does not exist.");
+	}
+	return m_apertures[ident];
 }
 
 void CommandsProcessor::PlotDraw(const Point &coord) {
@@ -170,6 +179,10 @@ CommandState CommandsProcessor::GetCommandState() const {
 	return m_commandState;
 }
 
+void CommandsProcessor::SetCommandState(CommandState commandState) {
+	m_commandState = commandState;
+}
+
 void CommandsProcessor::SetPlotState(PlotState state) {
 	m_graphicsState.SetPlotState(state);
 }
@@ -193,15 +206,37 @@ void CommandsProcessor::EndRegion() {
 void CommandsProcessor::OpenApertureBlock(int ident) {
 	std::shared_ptr<BlockAperture> block = std::make_shared<BlockAperture>();
 	ApertureDefine(ident, block);
-	m_objectDest.push(block->GetObjects());
+	m_objectDest.push(block->GetObjectList());
+	m_openBlocks++;
 }
 
 void CommandsProcessor::CloseApertureBlock() {
-	//TODO confirm there is an open AB to close
-	m_objectDest.pop();
+	if (m_openBlocks > 0) {
+		m_objectDest.pop();
+		m_graphicsState.SetCurrentPoint(nullptr);
+		m_openBlocks--;
+	} else {
+		throw std::logic_error("Cannot close aperture block; none open.");
+	}
 }
 
-void CommandsProcessor::SetCommandState(CommandState commandState) {
-	m_commandState = commandState;
+void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx, double dy) {
+	if (m_activeStepAndRepeat == nullptr) {
+		m_activeStepAndRepeat = std::make_unique<StepAndRepeat>(nx, ny, dx, dy);
+		m_objectDest.push(m_activeStepAndRepeat->GetObjectList());
+	} else {
+		throw std::logic_error("Cannot open step and repeat; already open.");
+	}
 }
+
+void CommandsProcessor::CloseStepAndRepeat() {
+	if (m_activeStepAndRepeat != nullptr) {
+		m_objectDest.pop();
+		m_objectDest.top()->push_back(std::move(m_activeStepAndRepeat));
+		m_graphicsState.SetCurrentPoint(nullptr);
+	} else {
+		throw std::logic_error("Cannot close step and repeat; not opened.");
+	}
+}
+
 

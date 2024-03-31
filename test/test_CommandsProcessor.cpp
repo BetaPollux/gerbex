@@ -19,11 +19,13 @@
  */
 
 #include "Arc.h"
+#include "BlockAperture.h"
 #include "CommandsProcessor.h"
 #include "Circle.h"
 #include "Draw.h"
 #include "Flash.h"
 #include "Region.h"
+#include "StepAndRepeat.h"
 #include <array>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -43,6 +45,15 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(CommandsProcessor &p
 	CHECK(processor.GetObjects().size() > 0);
 
 	std::shared_ptr<GraphicalObject> obj = processor.GetObjects().back();
+	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
+
+	CHECK(result != nullptr);
+
+	return result;
+}
+
+template <typename T> std::shared_ptr<T> GetAperture(CommandsProcessor &processor) {
+	std::shared_ptr<Aperture> obj = processor.GetGraphicsState().GetCurrentAperture();
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
 
 	CHECK(result != nullptr);
@@ -508,23 +519,156 @@ TEST(CommandsProcessor_AfterRegion, CannotEndRegion) {
 }
 
 /***
- * Tests for Aperture Block -- Open
+ * Tests for Aperture Block
  */
 
-TEST_GROUP(CommandsProcessor_OpenApertureBlock) {
+TEST_GROUP(CommandsProcessor_ApertureBlock) {
 	Point origin, end;
 	CommandsProcessor processor;
+	int blockId, circleId;
 
 	void setup() {
 		origin = Point(3000, -2000);
 		end = Point(750, -500);
+		circleId = 10;
+		blockId = 12;
 
 		processor.SetPlotState(PlotState::Linear);
-		processor.OpenApertureBlock(12);
+		MakeAndSetAperture<Circle>(processor, circleId);
+		processor.OpenApertureBlock(blockId);
+		processor.Move(origin);
+		processor.PlotDraw(end);
+		processor.Flash(origin);
+		processor.CloseApertureBlock();
+		processor.SetCurrentAperture(blockId);
 	}
 };
 
-TEST(CommandsProcessor_OpenApertureBlock, NotImplemented) {
-	FAIL("Implement Aperture Block tests");
+TEST(CommandsProcessor_ApertureBlock, CantCloseAgain) {
+	CHECK_THROWS(std::logic_error, processor.CloseApertureBlock());
 }
 
+TEST(CommandsProcessor_ApertureBlock, DoesNotFlash) {
+	LONGS_EQUAL(0, processor.GetObjects().size());
+}
+
+TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
+	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(processor);
+
+	LONGS_EQUAL(2, block->GetObjectList()->size());
+	CHECK(origin == block->GetObjectList()->at(0)->GetOrigin());
+}
+
+TEST(CommandsProcessor_ApertureBlock, ClearsCurrentPoint) {
+	CHECK(nullptr == processor.GetGraphicsState().GetCurrentPoint());
+}
+
+TEST(CommandsProcessor_ApertureBlock, FlashBlock) {
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
+	std::shared_ptr<BlockAperture> block =
+			std::dynamic_pointer_cast<BlockAperture>(flash->GetAperture());
+
+	CHECK(nullptr != block);
+}
+
+/***
+ * Tests for Aperture Block, nested definitions
+ */
+
+TEST_GROUP(CommandsProcessor_NestedApertureBlock) {
+	Point origin, end;
+	CommandsProcessor processor;
+	int outerBlockId, innerBlockId, circleId;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		end = Point(750, -500);
+		circleId = 10;
+		outerBlockId = 100;
+		innerBlockId = 101;
+
+		processor.SetPlotState(PlotState::Linear);
+		MakeAndSetAperture<Circle>(processor, circleId);
+		processor.OpenApertureBlock(outerBlockId);
+		processor.OpenApertureBlock(innerBlockId);
+		processor.Move(origin);
+		processor.PlotDraw(end);					//Plot to inner block
+		processor.CloseApertureBlock();				//End inner block
+		processor.SetCurrentAperture(innerBlockId);
+		processor.Flash(origin);					//Flash inner block into outer block
+		processor.CloseApertureBlock();				//End outer block
+		processor.SetCurrentAperture(outerBlockId);
+	}
+};
+
+TEST(CommandsProcessor_NestedApertureBlock, DoesNotFlash) {
+	LONGS_EQUAL(0, processor.GetObjects().size());
+}
+
+TEST(CommandsProcessor_NestedApertureBlock, OuterContainsInner) {
+	std::shared_ptr<BlockAperture> outerBlock =
+			std::dynamic_pointer_cast<BlockAperture>(processor.GetAperture(outerBlockId));
+	std::shared_ptr<BlockAperture> innerBlock =
+			std::dynamic_pointer_cast<BlockAperture>(processor.GetAperture(innerBlockId));
+
+	CHECK(nullptr != outerBlock);
+	CHECK(nullptr != innerBlock);
+
+	std::shared_ptr<GraphicalObject> obj = outerBlock->GetObjectList()->at(0);
+	std::shared_ptr<BlockAperture> aperture =
+			std::dynamic_pointer_cast<BlockAperture>(obj->GetAperture());
+	CHECK(innerBlock == aperture);
+}
+
+TEST(CommandsProcessor_NestedApertureBlock, FlashBlock) {
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
+	std::shared_ptr<BlockAperture> outerBlock =
+			std::dynamic_pointer_cast<BlockAperture>(flash->GetAperture());
+
+	CHECK(processor.GetGraphicsState().GetCurrentAperture() == outerBlock);
+}
+
+/***
+ * Tests for StepAndRepeat
+ */
+
+TEST_GROUP(CommandsProcessor_StepAndRepeat) {
+	Point origin;
+	CommandsProcessor processor;
+	int nx, ny;
+
+	void setup() {
+		origin = Point(3000, -2000);
+		nx = 2;
+		ny = 3;
+
+		MakeAndSetAperture<Circle>(processor, 10);
+		processor.SetPlotState(PlotState::Linear);
+		processor.OpenStepAndRepeat(nx, ny, 0.5, 1.5);
+		processor.Flash(origin);
+		processor.CloseStepAndRepeat();
+	}
+};
+
+TEST(CommandsProcessor_StepAndRepeat, CantOpenTwice) {
+	processor.OpenStepAndRepeat(1, 1, 0.0, 0.0);
+	CHECK_THROWS(std::logic_error, processor.OpenStepAndRepeat(1, 1, 0.0, 0.0));
+}
+
+TEST(CommandsProcessor_StepAndRepeat, CantCloseAgain) {
+	CHECK_THROWS(std::logic_error, processor.CloseStepAndRepeat());
+}
+
+TEST(CommandsProcessor_StepAndRepeat, ClearsCurrentPoint) {
+	CHECK(nullptr == processor.GetGraphicsState().GetCurrentPoint());
+}
+
+TEST(CommandsProcessor_StepAndRepeat, CreatesObject) {
+	std::shared_ptr<StepAndRepeat> sr = GetGraphicalObject<StepAndRepeat>(processor);
+	CHECK(nullptr != sr);
+	LONGS_EQUAL(1, processor.GetObjects().size());
+}

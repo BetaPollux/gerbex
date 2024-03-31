@@ -1,7 +1,7 @@
 /*
- * BlockAperture.h
+ * StepAndRepeat.h
  *
- *  Created on: Mar. 29, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,26 +18,34 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BLOCKAPERTURE_H_
-#define BLOCKAPERTURE_H_
+#ifndef STEPANDREPEAT_H_
+#define STEPANDREPEAT_H_
 
-#include "Aperture.h"
 #include "GraphicalObject.h"
 #include <memory>
 #include <vector>
 
 /*
- *
+ * Takes an object list and duplicates them in the desired amount.
+ * Each replication is at an dx, dy offset.
+ * Copies are first in positive Y then positive X direction.
  */
-class BlockAperture: public Aperture {
+class StepAndRepeat: public GraphicalObject {
 public:
-	BlockAperture();
-	virtual ~BlockAperture();
-	void AddObject(std::shared_ptr<GraphicalObject> object);
+	StepAndRepeat();
+	StepAndRepeat(int nx, int ny, double dx, double dy);
+	virtual ~StepAndRepeat();
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
+	void AddObject(std::shared_ptr<GraphicalObject> object);
+	double GetDx() const;
+	double GetDy() const;
+	int GetNx() const;
+	int GetNy() const;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
+	int m_nx, m_ny;
+	double m_dx, m_dy;
 };
 
-#endif /* BLOCKAPERTURE_H_ */
+#endif /* STEPANDREPEAT_H_ */
