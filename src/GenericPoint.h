@@ -1,7 +1,7 @@
 /*
- * Point.h
+ * GenericPoint.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 31, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef POINT_H_
-#define POINT_H_
+#ifndef GENERICPOINT_H_
+#define GENERICPOINT_H_
 
 #include <cstdint>
 
 /*
  *	Point in the plane.
- *
- *	Point:
  *  Coordinates are in fixed format decimals, to be converted to real units based on
  *  the Coordinate Format and Unit options. Each coordinate is up to 12 digits.
- *
- *	RealPoint:
- *	Coordinates in real units, e.g. inches or millimeters.
  *
  *  Orientation:
  *		Origin is bottom-left.
@@ -48,7 +43,6 @@ public:
 	bool operator!=	(const GenericPoint<T>& rhs) const { return (m_x != rhs.m_x) || (m_y != rhs.m_y); }
 	GenericPoint operator+	(const GenericPoint<T>& rhs) const { return GenericPoint<T>(m_x + rhs.m_x, m_y + rhs.m_y); }
 	GenericPoint operator-	(const GenericPoint<T>& rhs) const { return GenericPoint<T>(m_x - rhs.m_x, m_y - rhs.m_y); }
-	GenericPoint operator*	(T factor) const { return GenericPoint<T>(m_x * factor, m_y * factor); }
 	T GetX() const { return m_x; }
 	T GetY() const { return m_y; }
 
@@ -57,6 +51,6 @@ private:
 };
 
 using Point = GenericPoint<int64_t>;
-using RealPoint = GenericPoint<double>;
 
-#endif /* POINT_H_ */
+
+#endif /* GENERICPOINT_H_ */

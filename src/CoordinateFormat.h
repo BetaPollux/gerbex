@@ -21,6 +21,8 @@
 #ifndef COORDINATEFORMAT_H_
 #define COORDINATEFORMAT_H_
 
+#include "Point.h"
+
 /*
  * Specifies the number of integer and decimal places when interpreting coordinate data.
  * e.g., format of X36Y36 means 3+6 digits, or "X123123456" is 123.123456 mm
@@ -30,10 +32,12 @@ public:
 	CoordinateFormat();
 	CoordinateFormat(int integer, int decimal);
 	virtual ~CoordinateFormat();
+	RealPoint Convert(const Point &point);
 
 private:
 	int m_integer;	//1 to 6
 	int m_decimal;	//6
+	double m_resolution;
 };
 
 #endif /* COORDINATEFORMAT_H_ */

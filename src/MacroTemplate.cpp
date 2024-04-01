@@ -25,9 +25,20 @@ MacroTemplate::MacroTemplate() {
 
 }
 
+MacroTemplate::MacroTemplate(std::string body)
+	: m_body{ body }
+{
+	// Empty
+}
+
 MacroTemplate::~MacroTemplate() {
 	// Empty
 }
 
+
 std::unique_ptr<Aperture> MacroTemplate::Call(int numParameters, double *parameters) {
+	//TODO create Macro
+	//TODO insert parameters into body
+	//TODO parse body
+	//TODO add primitives
 }

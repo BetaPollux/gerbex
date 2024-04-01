@@ -34,10 +34,10 @@ public:
 	virtual ~Region();
 	void StartContour();
 	void AddSegment(std::shared_ptr<Segment> segment);
-	const std::vector<std::shared_ptr<RegionContour>>& GetContours() const;
+	const std::vector<RegionContour>& GetContours() const;
 
 private:
-	std::vector<std::shared_ptr<RegionContour>> m_contours;
+	std::vector<RegionContour> m_contours;
 
 };
 

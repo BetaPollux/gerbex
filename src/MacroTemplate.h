@@ -22,15 +22,20 @@
 #define MACROTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include <string>
 
 /*
- *
+ * Creates a Macro aperture using parameters, variables and expressions.
  */
 class MacroTemplate: public ApertureTemplate {
 public:
 	MacroTemplate();
+	MacroTemplate(std::string body);
 	virtual ~MacroTemplate();
 	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+
+private:
+	std::string m_body;
 };
 
 #endif /* MACROTEMPLATE_H_ */

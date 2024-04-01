@@ -22,14 +22,23 @@
 #define MACRO_H_
 
 #include "Aperture.h"
+#include "MacroPrimitive.h"
+#include <memory>
+#include <vector>
 
 /*
- * A compound aperture made of primitives using expressions and variables.
+ * A compound aperture made of primitives.
  */
 class Macro: public Aperture {
 public:
 	Macro();
 	virtual ~Macro();
+	void AddPrimitive(std::shared_ptr<MacroPrimitive> primitive);
+	const std::vector<std::shared_ptr<MacroPrimitive>>& GetPrimitives() const;
+
+private:
+	std::vector<std::shared_ptr<MacroPrimitive>> m_primitives;
+
 };
 
 #endif /* MACRO_H_ */

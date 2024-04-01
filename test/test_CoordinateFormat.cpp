@@ -19,12 +19,46 @@
  */
 
 #include "CoordinateFormat.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(CoordinateFormatTest) {
 };
 
-TEST(CoordinateFormatTest, NotImplemented) {
-	FAIL("CoordinateFormatTest Not Implemented");
+TEST(CoordinateFormatTest, IntegerTooSmall) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat(0, 6));
 }
 
+TEST(CoordinateFormatTest, IntegerTooLarge) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat(7, 6));
+}
+
+TEST(CoordinateFormatTest, DecimalTooSmall) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat(3, 4));
+}
+
+TEST(CoordinateFormatTest, DecimalTooLarge) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat(3, 7));
+}
+
+TEST(CoordinateFormatTest, Convert_6decimal) {
+	Point point(123123456, 23456);
+	RealPoint expected(123.123456, 0.023456);
+
+	CoordinateFormat format(3, 6);
+	RealPoint actual = format.Convert(point);
+
+	DOUBLES_EQUAL(expected.GetX(), actual.GetX(), 1e-9);
+	DOUBLES_EQUAL(expected.GetY(), actual.GetY(), 1e-9);
+}
+
+TEST(CoordinateFormatTest, Convert5decimal) {
+	Point point(123123456, 23456);
+	RealPoint expected(1231.23456, 0.23456);
+
+	CoordinateFormat format(3, 5);
+	RealPoint actual = format.Convert(point);
+
+	DOUBLES_EQUAL(expected.GetX(), actual.GetX(), 1e-9);
+	DOUBLES_EQUAL(expected.GetY(), actual.GetY(), 1e-9);
+}

@@ -61,7 +61,7 @@ TEST(Region_OneContour, AddSegment) {
 
 	region.AddSegment(draw);
 
-	auto segments = region.GetContours().back()->GetSegments();
+	auto segments = region.GetContours().back().GetSegments();
 
 	LONGS_EQUAL(1, segments.size());
 	POINTERS_EQUAL(draw.get(), segments.back().get());
@@ -76,7 +76,7 @@ TEST(Region_OneContour, AddMultiSegments) {
 	region.AddSegment(arc);
 	region.AddSegment(draw2);
 
-	auto segments = region.GetContours().back()->GetSegments();
+	auto segments = region.GetContours().back().GetSegments();
 
 	LONGS_EQUAL(3, segments.size());
 	POINTERS_EQUAL(draw.get(), segments[0].get());
@@ -105,8 +105,8 @@ TEST(Region_MultiContour, AddSegment) {
 
 	region.AddSegment(draw);
 
-	auto segments0 = region.GetContours()[0]->GetSegments();
-	auto segments1 = region.GetContours()[1]->GetSegments();
+	auto segments0 = region.GetContours()[0].GetSegments();
+	auto segments1 = region.GetContours()[1].GetSegments();
 
 	LONGS_EQUAL(0, segments0.size());
 	LONGS_EQUAL(1, segments1.size());

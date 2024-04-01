@@ -1,7 +1,7 @@
 /*
- * Point.cpp
+ * MacroPrimitive.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,49 +18,23 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Point.h"
+#include "MacroPrimitive.h"
 
-Point::Point()
-	: m_x{ 0 },
-	  m_y{ 0 }
-{
-	// Empty
-
-}
-
-
-Point::Point(int64_t x, int64_t y)
-	: m_x{ x },
-	  m_y{ y }
+MacroPrimitive::MacroPrimitive()
+	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
 {
 	// Empty
 }
 
-
-Point::~Point() {
+MacroPrimitive::MacroPrimitive(MacroExposure exposure, RealPoint coord, double rotation)
+	: m_exposure{ exposure },
+	  m_coord{ coord },
+	  m_rotation{ rotation }
+{
 	// Empty
 }
 
-bool Point::operator ==(const Point& rhs) const {
-	return (m_x == rhs.m_x) && (m_y == rhs.m_y);
+MacroPrimitive::~MacroPrimitive() {
+	// Empty
 }
 
-bool Point::operator !=(const Point& rhs) const {
-	return (m_x != rhs.m_x) || (m_y != rhs.m_y);
-}
-
-int64_t Point::GetX() const {
-	return m_x;
-}
-
-int64_t Point::GetY() const {
-	return m_y;
-}
-
-Point Point::operator +(const Point &rhs) const {
-	return Point(m_x + rhs.m_x, m_y + rhs.m_y);
-}
-
-Point Point::operator -(const Point &rhs) const {
-	return Point(m_x - rhs.m_x, m_y - rhs.m_y);
-}

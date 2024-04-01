@@ -64,3 +64,33 @@ TEST(PointTest, Subtract) {
 	CHECK((pt1 - pt2) == Point(0, 0));
 }
 
+TEST(PointTest, Scale) {
+	Point pt1(100, -300);
+
+	CHECK((pt1 * 3) == Point(300, -900));
+}
+
+
+TEST_GROUP(RealPointTest) {
+};
+
+TEST(RealPointTest, Add) {
+	RealPoint pt1(1.00, -3.00);
+	RealPoint pt2(1.00, -3.00);
+
+	CHECK((pt1 + pt2) == RealPoint(2.00, -6.00));
+}
+
+TEST(RealPointTest, Subtract) {
+	RealPoint pt1(1.00, -3.00);
+	RealPoint pt2(1.00, -3.00);
+
+	CHECK((pt1 - pt2) == RealPoint(0.0, 0.0));
+}
+
+TEST(RealPointTest, Scale) {
+	RealPoint pt1(1.00, -3.00);
+
+	CHECK((pt1 * 2.5) == RealPoint(2.50, -7.50));
+}
+

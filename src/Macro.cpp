@@ -21,11 +21,18 @@
 #include "Macro.h"
 
 Macro::Macro() {
-	// TODO Auto-generated constructor stub
+	// Empty
 
 }
 
 Macro::~Macro() {
-	// TODO Auto-generated destructor stub
+	// Empty
 }
 
+void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
+	m_primitives.push_back(primitive);
+}
+
+const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() const {
+	return m_primitives;
+}

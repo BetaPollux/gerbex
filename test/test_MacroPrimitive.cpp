@@ -1,7 +1,7 @@
 /*
- * Region.cpp
+ * test_MacroPrimitive.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,29 +18,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Region.h"
-#include <stdexcept>
+#include "MacroPrimitive.h"
+#include "CppUTest/TestHarness.h"
 
-Region::Region() {
-	// Empty
+TEST_GROUP(MacroPrimitiveTest) {
+};
 
+TEST(MacroPrimitiveTest, NotImplemented) {
+	FAIL("MacroPrimitiveTest Not Implemented");
 }
 
-Region::~Region() {
-	// Empty
-}
-
-void Region::StartContour() {
-	m_contours.push_back(RegionContour());
-}
-
-void Region::AddSegment(std::shared_ptr<Segment> segment) {
-	if (m_contours.size() == 0) {
-		throw std::logic_error("Need to start a contour before adding segment.");
-	}
-	m_contours.back().AddSegment(segment);
-}
-
-const std::vector<RegionContour>& Region::GetContours() const {
-	return m_contours;
-}

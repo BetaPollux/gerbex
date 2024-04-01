@@ -19,10 +19,10 @@
  */
 
 #include "CoordinateFormat.h"
+#include <stdexcept>
 
 CoordinateFormat::CoordinateFormat()
-	: 	m_integer{ 3 },
-		m_decimal{ 6 }
+	: 	CoordinateFormat(3, 6)
 {
 	// Empty
 }
@@ -31,9 +31,27 @@ CoordinateFormat::CoordinateFormat(int integer, int decimal)
 	: 	m_integer{ integer },
 		m_decimal{ decimal }
 {
-	// Empty
+	if (integer < 1 || integer > 6) {
+		throw std::invalid_argument("Integer must be from 1 to 6.");
+	}
+
+	switch (m_decimal) {
+	case 5:
+		m_resolution = 1e-5;
+		break;
+	case 6:
+		m_resolution = 1e-6;
+		break;
+	default:
+		throw std::invalid_argument("Decimal must be either 5 or 6.");
+	}
 }
 
 CoordinateFormat::~CoordinateFormat() {
 	// Empty
 }
+
+RealPoint CoordinateFormat::Convert(const Point &point) {
+	return RealPoint(m_resolution * point.GetX(), m_resolution * point.GetY());
+}
+

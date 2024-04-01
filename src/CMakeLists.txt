@@ -13,10 +13,10 @@ add_library(libgerbex
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Macro.cpp
+	MacroPrimitive.cpp
 	MacroTemplate.cpp
 	Obround.cpp
 	ObroundTemplate.cpp
-	Point.cpp
 	Polygon.cpp
 	PolygonTemplate.cpp
 	Rectangle.cpp

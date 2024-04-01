@@ -1,7 +1,7 @@
 /*
- * Region.cpp
+ * MacroPrimitive.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Mar. 30, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,29 +18,29 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Region.h"
-#include <stdexcept>
+#ifndef MACROPRIMITIVE_H_
+#define MACROPRIMITIVE_H_
 
-Region::Region() {
-	// Empty
+#include "Point.h"
 
-}
+enum class MacroExposure {
+	OFF,
+	ON
+};
 
-Region::~Region() {
-	// Empty
-}
+/*
+ * A simple shape used to build a Macro aperture.
+ */
+class MacroPrimitive {
+public:
+	MacroPrimitive();
+	MacroPrimitive(MacroExposure exposure, RealPoint coord, double rotation);
+	virtual ~MacroPrimitive();
 
-void Region::StartContour() {
-	m_contours.push_back(RegionContour());
-}
+private:
+	MacroExposure m_exposure;
+	RealPoint m_coord;
+	double m_rotation;
+};
 
-void Region::AddSegment(std::shared_ptr<Segment> segment) {
-	if (m_contours.size() == 0) {
-		throw std::logic_error("Need to start a contour before adding segment.");
-	}
-	m_contours.back().AddSegment(segment);
-}
-
-const std::vector<RegionContour>& Region::GetContours() const {
-	return m_contours;
-}
+#endif /* MACROPRIMITIVE_H_ */
