@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * test_MacroCircle.cpp
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "MacroPrimitive.h"
+#include "MacroCircle.h"
+#include <stdexcept>
+#include "CppUTest/TestHarness.h"
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
-{
-	// Empty
+TEST_GROUP(MacroCircleTest) {
+};
+
+TEST(MacroCircleTest, Default) {
+	MacroCircle circle;
+	CHECK(circle.GetDiameter() > 0.0);
 }
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
-{
-	// Empty
+TEST(MacroCircleTest, Ctor) {
+	RealPoint center(0.5, -0.25);
+
+	MacroCircle circle(MacroExposure::OFF, 1.25, center, 45.0);
+
+	LONGS_EQUAL(MacroExposure::OFF, circle.GetExposure());
+	DOUBLES_EQUAL(1.25, circle.GetDiameter(), 1e-9);
+	CHECK(center == circle.GetCoord());
+	DOUBLES_EQUAL(45.0, circle.GetRotation(), 1e-9);
 }
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
+TEST(MacroCircleTest, NegativeDiameter) {
+	CHECK_THROWS(std::invalid_argument, MacroCircle(MacroExposure::ON, -1.0, RealPoint()));
 }
 
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
-}

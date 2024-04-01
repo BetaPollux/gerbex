@@ -30,14 +30,18 @@ enum class MacroExposure {
 
 /*
  * A simple shape used to build a Macro aperture.
+ * Primitives always rotate around the parent Macro origin.
  */
 class MacroPrimitive {
 public:
 	MacroPrimitive();
-	MacroPrimitive(MacroExposure exposure, RealPoint coord, double rotation);
+	MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation);
 	virtual ~MacroPrimitive();
+	const RealPoint& GetCoord() const;
+	MacroExposure GetExposure() const;
+	double GetRotation() const;
 
-private:
+protected:
 	MacroExposure m_exposure;
 	RealPoint m_coord;
 	double m_rotation;

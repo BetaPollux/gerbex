@@ -12,8 +12,13 @@ add_executable(test_gerbex
 	test_Flash.cpp
 	test_GraphicsState.cpp
 	test_Macro.cpp
-	test_MacroPrimitive.cpp
+	test_MacroCenterLine.cpp
+	test_MacroCircle.cpp
+	test_MacroOutline.cpp
+	test_MacroPolygon.cpp
 	test_MacroTemplate.cpp
+	test_MacroThermal.cpp
+	test_MacroVectorLine.cpp
 	test_Obround.cpp
 	test_ObroundTemplate.cpp
 	test_Point.cpp

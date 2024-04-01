@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroThermal.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,26 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MACROTHERMAL_H_
+#define MACROTHERMAL_H_
+
 #include "MacroPrimitive.h"
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
-{
-	// Empty
-}
+/*
+ * A thermal pad primitive, being a ring interrupted by four gaps.
+ */
+class MacroThermal: public MacroPrimitive {
+public:
+	MacroThermal();
+	MacroThermal(const RealPoint &center, double outerDiameter, double innerDiameter,
+			double gapThickness, double rotation);
+	virtual ~MacroThermal();
+	double GetGapThickness() const;
+	double GetInnerDiameter() const;
+	double GetOuterDiameter() const;
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
-{
-	// Empty
-}
+private:
+	double m_outerDiameter, m_innerDiameter, m_gapThickness;
+};
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
-}
-
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
-}
+#endif /* MACROTHERMAL_H_ */

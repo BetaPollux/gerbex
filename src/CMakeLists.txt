@@ -13,8 +13,14 @@ add_library(libgerbex
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Macro.cpp
+	MacroCenterLine.cpp
+	MacroCircle.cpp
+	MacroOutline.cpp
+	MacroPolygon.cpp
 	MacroPrimitive.cpp
 	MacroTemplate.cpp
+	MacroThermal.cpp
+	MacroVectorLine.cpp
 	Obround.cpp
 	ObroundTemplate.cpp
 	Polygon.cpp

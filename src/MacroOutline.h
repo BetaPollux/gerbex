@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroOutline.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MACROOUTLINE_H_
+#define MACROOUTLINE_H_
+
 #include "MacroPrimitive.h"
+#include <memory>
+#include <vector>
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
-{
-	// Empty
-}
+/*
+ * A polygon primitive defined by its outline or contour. It must be closed.
+ */
+class MacroOutline: public MacroPrimitive {
+public:
+	MacroOutline();
+	MacroOutline(MacroExposure exposure, const std::vector<RealPoint> &vertices, double rotation);
+	virtual ~MacroOutline();
+	const std::vector<RealPoint>& GetVertices() const;
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
-{
-	// Empty
-}
+private:
+	std::vector<RealPoint> m_vertices;
+};
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
-}
-
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
-}
+#endif /* MACROOUTLINE_H_ */

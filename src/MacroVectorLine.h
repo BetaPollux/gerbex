@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroVectorLine.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,26 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MACROVECTORLINE_H_
+#define MACROVECTORLINE_H_
+
 #include "MacroPrimitive.h"
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
-{
-	// Empty
-}
+/*
+ * A rectangle primitive defined by its line width, start and end points.
+ */
+class MacroVectorLine: public MacroPrimitive {
+public:
+	MacroVectorLine();
+	MacroVectorLine(MacroExposure exposure, double width,
+			const RealPoint &start, const RealPoint &end, double rotation);
+	virtual ~MacroVectorLine();
+	const RealPoint& GetEnd() const;
+	double GetWidth() const;
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
-{
-	// Empty
-}
+private:
+	double m_width;
+	RealPoint m_end;
+};
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
-}
-
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
-}
+#endif /* MACROVECTORLINE_H_ */

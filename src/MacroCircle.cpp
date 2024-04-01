@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroCircle.cpp
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,29 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "MacroPrimitive.h"
+#include "MacroCircle.h"
+#include <stdexcept>
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
+MacroCircle::MacroCircle()
+	: MacroCircle(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), 0.0)
 {
 	// Empty
 }
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
+MacroCircle::MacroCircle(MacroExposure exposure, double diameter,
+		const RealPoint &center, double rotation)
+	: MacroPrimitive(exposure, center, rotation),
+	  m_diameter{ diameter }
 {
+	if (diameter < 0.0) {
+		throw std::invalid_argument("Diameter must be >= 0.0");
+	}
+}
+
+MacroCircle::~MacroCircle() {
 	// Empty
 }
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
-}
-
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
+double MacroCircle::GetDiameter() const {
+	return m_diameter;
 }

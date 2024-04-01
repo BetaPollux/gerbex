@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroPolygon.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,27 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MACROPOLYGON_H_
+#define MACROPOLYGON_H_
+
 #include "MacroPrimitive.h"
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
-{
-	// Empty
-}
+/*
+ * A regular polygon primitive, which circumscribes a circle, defined by the number of vertices,
+ * center point and its outer diameter.
+ */
+class MacroPolygon: public MacroPrimitive {
+public:
+	MacroPolygon();
+	MacroPolygon(MacroExposure exposure, int numVertices,
+			const RealPoint &center, double diameter, double rotation);
+	virtual ~MacroPolygon();
+	double GetDiameter() const;
+	int GetNumVertices() const;
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
-{
-	// Empty
-}
+private:
+	int m_numVertices;
+	double m_diameter;
+};
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
-}
-
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
-}
+#endif /* MACROPOLYGON_H_ */

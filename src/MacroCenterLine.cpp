@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.cpp
+ * MacroCenterLine.cpp
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,34 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "MacroPrimitive.h"
+#include "MacroCenterLine.h"
+#include <stdexcept>
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
+MacroCenterLine::MacroCenterLine()
+	: MacroCenterLine(MacroExposure::ON, 1.0, 0.5, RealPoint(0.0, 0.0), 0.0)
 {
 	// Empty
 }
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
-	: m_exposure{ exposure },
-	  m_coord{ coord },
-	  m_rotation{ rotation }
+MacroCenterLine::MacroCenterLine(MacroExposure exposure, double width,
+		double height, const RealPoint &start, double rotation)
+	: MacroPrimitive(exposure, start, rotation),
+	  m_width{ width},
+	  m_height{ height }
 {
+	if (width < 0.0 || height < 0.0) {
+		throw std::invalid_argument("Width and height must be >= 0.0");
+	}
+}
+
+MacroCenterLine::~MacroCenterLine() {
 	// Empty
 }
 
-MacroPrimitive::~MacroPrimitive() {
-	// Empty
+double MacroCenterLine::GetHeight() const {
+	return m_height;
 }
 
-const RealPoint& MacroPrimitive::GetCoord() const {
-	return m_coord;
-}
-
-MacroExposure MacroPrimitive::GetExposure() const {
-	return m_exposure;
-}
-
-double MacroPrimitive::GetRotation() const {
-	return m_rotation;
+double MacroCenterLine::GetWidth() const {
+	return m_width;
 }

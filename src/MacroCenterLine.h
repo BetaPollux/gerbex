@@ -1,7 +1,7 @@
 /*
- * test_MacroPrimitive.cpp
+ * MacroCenterLine.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Apr. 1, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "MacroPrimitive.h"
-#include "CppUTest/TestHarness.h"
+#ifndef MACROCENTERLINE_H_
+#define MACROCENTERLINE_H_
 
-TEST_GROUP(MacroPrimitiveTest) {
+#include "MacroPrimitive.h"
+
+/*
+ * Rectangle primitive defined by its width, height and center point.
+ */
+class MacroCenterLine: public MacroPrimitive {
+public:
+	MacroCenterLine();
+	MacroCenterLine(MacroExposure exposure, double width, double height,
+			const RealPoint &start, double rotation);
+	virtual ~MacroCenterLine();
+	double GetHeight() const;
+	double GetWidth() const;
+
+private:
+	double m_width, m_height;
 };
 
-TEST(MacroPrimitiveTest, NotImplemented) {
-	FAIL("MacroPrimitiveTest Not Implemented");
-}
-
+#endif /* MACROCENTERLINE_H_ */
