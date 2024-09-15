@@ -131,3 +131,19 @@ TEST(SyntaxParserTest, ExtendedMulti_Multiline) {
 	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", words[1].c_str());
 }
 
+TEST(SyntaxParserTest, Empty) {
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(words.empty());
+}
+
+TEST(SyntaxParserTest, Finish) {
+	setIstream(parser, "D10*");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+	std::vector<std::string> final = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	CHECK(final.empty());
+}
+

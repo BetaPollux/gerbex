@@ -62,6 +62,12 @@ std::vector<std::string> SyntaxParser::GetNextCommand() {
 	while (isspace(m_istream->peek())) {
 		m_istream->get();	// Discard all leading space
 	}
+
+	if (m_istream->eof()) {
+		// Return empty vector on EOF
+		return std::vector<std::string>();
+	}
+
 	if (m_istream->peek() == EXT_DELIM) {
 		// Handle extended command
 		std::string extended;
