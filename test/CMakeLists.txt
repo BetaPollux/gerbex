@@ -6,10 +6,12 @@ add_executable(test_gerbex
 	test_BlockAperture.cpp
 	test_Circle.cpp
 	test_CircleTemplate.cpp
+	test_CommandParser.cpp
 	test_CommandsProcessor.cpp
 	test_CoordinateFormat.cpp
 	test_Draw.cpp
 	test_Flash.cpp
+	test_GerberFileProcessor.cpp
 	test_GraphicsState.cpp
 	test_Macro.cpp
 	test_MacroCenterLine.cpp

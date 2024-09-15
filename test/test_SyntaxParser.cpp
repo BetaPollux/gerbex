@@ -131,6 +131,46 @@ TEST(SyntaxParserTest, ExtendedMulti_Multiline) {
 	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", words[1].c_str());
 }
 
+TEST(SyntaxParserTest, CurrentLine_One) {
+	LONGS_EQUAL(1, parser.GetCurrentLine());
+}
+
+TEST(SyntaxParserTest, CurrentLine_ReadOne) {
+	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+
+	parser.GetNextCommand();
+
+	LONGS_EQUAL(1, parser.GetCurrentLine());
+}
+
+TEST(SyntaxParserTest, CurrentLine_ReadTwo) {
+	setIstream(parser, "D10*\nX0Y0D02*");
+
+	parser.GetNextCommand();
+	parser.GetNextCommand();
+
+	LONGS_EQUAL(2, parser.GetCurrentLine());
+}
+
+TEST(SyntaxParserTest, SetStreamResetsCount) {
+	setIstream(parser, "\n\n\nD10*");
+
+	parser.GetNextCommand();
+	parser.GetNextCommand();
+
+	setIstream(parser, "");
+	LONGS_EQUAL(1, parser.GetCurrentLine());
+}
+
+TEST(SyntaxParserTest, CurrentLine_Many) {
+	setIstream(parser,
+			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+
+	parser.GetNextCommand();
+
+	LONGS_EQUAL(8, parser.GetCurrentLine());
+}
+
 TEST(SyntaxParserTest, Empty) {
 	std::vector<std::string> words = parser.GetNextCommand();
 
@@ -145,5 +185,17 @@ TEST(SyntaxParserTest, Finish) {
 
 	CHECK(!words.empty());
 	CHECK(final.empty());
+}
+
+TEST(SyntaxParserTest, NoDelimiter) {
+	setIstream(parser, "WHAT");
+
+	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());
+}
+
+TEST(SyntaxParserTest, OpenExtended) {
+	setIstream(parser, "%OHNO*");
+
+	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());
 }
 

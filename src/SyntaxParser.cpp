@@ -19,48 +19,66 @@
  */
 
 #include "SyntaxParser.h"
-#include <iterator>
-#include <regex>
+#include <sstream>
 
 const char EXT_DELIM = '%';
 const char WORD_DELIM = '*';
 
 SyntaxParser::SyntaxParser() :
-		m_istream { std::make_unique<std::istringstream>("") } {
+		SyntaxParser(std::make_unique<std::istringstream>("")) {
 	// Empty
 }
 
-SyntaxParser::SyntaxParser(std::unique_ptr<std::istream> stream) :
-		m_istream { std::move(stream) } {
-	// Empty
+SyntaxParser::SyntaxParser(std::unique_ptr<std::istream> stream) {
+	SetIstream(std::move(stream));
 }
 
 SyntaxParser::~SyntaxParser() {
 	// Empty
 }
 
-std::string removeWhitespace(std::string &str) {
-	// Whitespace in Gerber is just newlines
-	return std::regex_replace(str, std::regex("[\r\n]+"), "");
+int removeNewlines(std::string &str) {
+	// Removes newlines in the string argument and return how many were removed
+	std::string result;
+	int count = 0;
+	for (char &c : str) {
+		if (c == '\n') {
+			count++;
+			continue;
+		} else if (c == '\r') {
+			continue;
+		}
+		result += c;
+	}
+
+	str = result;
+	return count;
 }
 
-std::vector<std::string> splitWords(std::string &str) {
+std::vector<std::string> split(std::string &str, char delim) {
 	std::vector<std::string> result;
-	std::regex words_regex("[^\\*]+");	//TODO build this using WORD_DELIM const
-	auto words_begin = std::sregex_iterator(str.begin(), str.end(),
-			words_regex);
-	auto words_end = std::sregex_iterator();
-
-	for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
-		result.push_back(i->str());
+	std::string new_str;
+	for (char &c : str) {
+		if (c == delim) {
+			result.push_back(new_str);
+			new_str = "";
+		} else {
+			new_str += c;
+		}
+	}
+	if (!new_str.empty()) {
+		result.push_back(new_str);
 	}
 	return result;
 }
 
 std::vector<std::string> SyntaxParser::GetNextCommand() {
-	std::vector<std::string> command;
+	// Discard all leading space, and count new lines
 	while (isspace(m_istream->peek())) {
-		m_istream->get();	// Discard all leading space
+		int space = m_istream->get();
+		if (space == '\n') {
+			m_currentLine++;
+		}
 	}
 
 	if (m_istream->eof()) {
@@ -68,23 +86,32 @@ std::vector<std::string> SyntaxParser::GetNextCommand() {
 		return std::vector<std::string>();
 	}
 
+	std::string command_str;
+	char delim;
 	if (m_istream->peek() == EXT_DELIM) {
 		// Handle extended command
-		std::string extended;
 		m_istream->get();	// Discard the leading EXT_DELIM
-		std::getline(*m_istream, extended, EXT_DELIM);
-		extended = removeWhitespace(extended);
-		command = splitWords(extended);
+		delim = EXT_DELIM;
 	} else {
 		// Handle word command
-		std::string word;
-		std::getline(*m_istream, word, WORD_DELIM);
-		word = removeWhitespace(word);
-		command.push_back(word);
+		delim = WORD_DELIM;
 	}
-	return command;
+
+	std::getline(*m_istream, command_str, delim);
+	if (m_istream->eof()) {
+		throw std::runtime_error("reached EOF without a delimiter");
+	}
+	m_currentLine += removeNewlines(command_str);
+
+	return split(command_str, WORD_DELIM);
 }
 
 void SyntaxParser::SetIstream(std::unique_ptr<std::istream> istream) {
 	m_istream = std::move(istream);
+	m_currentLine = 1;
 }
+
+int SyntaxParser::GetCurrentLine() const {
+	return m_currentLine;
+}
+

@@ -6,10 +6,12 @@ add_library(libgerbex
 	BlockAperture.cpp
 	Circle.cpp
 	CircleTemplate.cpp
+	CommandParser.cpp
 	CommandsProcessor.cpp
 	CoordinateFormat.cpp
 	Draw.cpp
 	Flash.cpp
+	GerberFileProcessor.cpp
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Macro.cpp
