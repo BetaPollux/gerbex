@@ -19,12 +19,115 @@
  */
 
 #include "SyntaxParser.h"
+#include <memory>
+#include <sstream>
 #include "CppUTest/TestHarness.h"
 
+void setIstream(SyntaxParser &parser, std::string const &str) {
+	parser.SetIstream(std::make_unique<std::istringstream>(str));
+}
+
 TEST_GROUP(SyntaxParserTest) {
+	SyntaxParser parser;
 };
 
-TEST(SyntaxParserTest, NotImplemented) {
-	FAIL("SyntaxParserTest Not Implemented");
+TEST(SyntaxParserTest, Word) {
+	setIstream(parser, "D10*");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("D10", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Word_LeadingWhitespace) {
+	setIstream(parser, "\n\nD10*");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("D10", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Word_LeadingWhitespace_Dos) {
+	setIstream(parser, "\r\n\r\nD10*");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("D10", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Two_Word) {
+	setIstream(parser, "D10*X0Y0D02*");
+
+	std::vector<std::string> first = parser.GetNextCommand();
+	std::vector<std::string> second = parser.GetNextCommand();
+
+	CHECK(!first.empty());
+	STRCMP_EQUAL("D10", first[0].c_str());
+	CHECK(!second.empty());
+	STRCMP_EQUAL("X0Y0D02", second[0].c_str());
+}
+
+TEST(SyntaxParserTest, Extended) {
+	setIstream(parser, "%FSLAX26Y26*%");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Extended_LeadingWhitespace) {
+	setIstream(parser, "\n\n%FSLAX26Y26*%");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Extended_LeadingWhitespace_Dos) {
+	setIstream(parser, "\r\n\r\n%FSLAX26Y26*%");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	CHECK(!words.empty());
+	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
+}
+
+TEST(SyntaxParserTest, Two_Extended) {
+	setIstream(parser, "%FSLAX26Y26*%%MOMM*%");
+
+	std::vector<std::string> first = parser.GetNextCommand();
+	std::vector<std::string> second = parser.GetNextCommand();
+
+	CHECK(!first.empty());
+	STRCMP_EQUAL("FSLAX26Y26", first[0].c_str());
+	CHECK(!second.empty());
+	STRCMP_EQUAL("MOMM", second[0].c_str());
+}
+
+TEST(SyntaxParserTest, ExtendedMulti) {
+	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	LONGS_EQUAL(3, words.size());
+	STRCMP_EQUAL("AMDONUTVAR", words[0].c_str());
+	STRCMP_EQUAL("1,1,$1,$2,$3", words[1].c_str());
+	STRCMP_EQUAL("1,0,$4,$2,$3", words[2].c_str());
+}
+
+TEST(SyntaxParserTest, ExtendedMulti_Multiline) {
+	setIstream(parser,
+			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+
+	std::vector<std::string> words = parser.GetNextCommand();
+
+	LONGS_EQUAL(2, words.size());
+	STRCMP_EQUAL("AMTriangle_30", words[0].c_str());
+	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", words[1].c_str());
 }
 

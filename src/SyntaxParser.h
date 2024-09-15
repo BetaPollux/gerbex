@@ -21,13 +21,26 @@
 #ifndef SYNTAXPARSER_H_
 #define SYNTAXPARSER_H_
 
+#include <istream>
+#include <memory>
+#include <string>
+#include <vector>
+
 /*
- *
+ * Takes an input stream and returns Gerber words
  */
 class SyntaxParser {
 public:
 	SyntaxParser();
+	SyntaxParser(std::unique_ptr<std::istream> stream);
 	virtual ~SyntaxParser();
+	// Get the next command from the stream. Word commands are a single word, whereas extended commands can have multiple words.
+	// Commands can span multiple lines in the file.
+	std::vector<std::string> GetNextCommand();
+	void SetIstream(std::unique_ptr<std::istream> istream);
+
+private:
+	std::unique_ptr<std::istream> m_istream;
 };
 
 #endif /* SYNTAXPARSER_H_ */
