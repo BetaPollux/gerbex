@@ -8,6 +8,7 @@ add_library(libgerbex
 	CircleTemplate.cpp
 	CommandParser.cpp
 	CommandsProcessor.cpp
+	Coordinate.cpp
 	CoordinateFormat.cpp
 	Draw.cpp
 	Flash.cpp

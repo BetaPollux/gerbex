@@ -38,25 +38,44 @@
  *		X points to the right.
  *		Y points upwards.
  */
-template <typename T>
+template<typename T>
 class GenericPoint {
 public:
-	GenericPoint() {}
-	GenericPoint(T x, T y) : m_x{ x }, m_y{ y } {}
-	virtual ~GenericPoint() {}
-	bool operator==	(const GenericPoint<T>& rhs) const { return (m_x == rhs.m_x) && (m_y == rhs.m_y); }
-	bool operator!=	(const GenericPoint<T>& rhs) const { return (m_x != rhs.m_x) || (m_y != rhs.m_y); }
-	GenericPoint operator+	(const GenericPoint<T>& rhs) const { return GenericPoint<T>(m_x + rhs.m_x, m_y + rhs.m_y); }
-	GenericPoint operator-	(const GenericPoint<T>& rhs) const { return GenericPoint<T>(m_x - rhs.m_x, m_y - rhs.m_y); }
-	GenericPoint operator*	(T factor) const { return GenericPoint<T>(m_x * factor, m_y * factor); }
-	T GetX() const { return m_x; }
-	T GetY() const { return m_y; }
+	GenericPoint() {
+	}
+	GenericPoint(T x, T y) :
+			m_x { x }, m_y { y } {
+	}
+	virtual ~GenericPoint() {
+	}
+	bool operator==(const GenericPoint<T> &rhs) const {
+		return (m_x == rhs.m_x) && (m_y == rhs.m_y);
+	}
+	bool operator!=(const GenericPoint<T> &rhs) const {
+		return (m_x != rhs.m_x) || (m_y != rhs.m_y);
+	}
+	GenericPoint operator+(const GenericPoint<T> &rhs) const {
+		return GenericPoint<T>(m_x + rhs.m_x, m_y + rhs.m_y);
+	}
+	GenericPoint operator-(const GenericPoint<T> &rhs) const {
+		return GenericPoint<T>(m_x - rhs.m_x, m_y - rhs.m_y);
+	}
+	GenericPoint operator*(T factor) const {
+		return GenericPoint<T>(m_x * factor, m_y * factor);
+	}
+	T GetX() const {
+		return m_x;
+	}
+	T GetY() const {
+		return m_y;
+	}
 
 private:
 	T m_x, m_y;
 };
 
-using Point = GenericPoint<int64_t>;
+using PointCoordType = int64_t;
+using Point = GenericPoint<PointCoordType>;
 using RealPoint = GenericPoint<double>;
 
 #endif /* POINT_H_ */

@@ -18,6 +18,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+#include <vector>
+
 #include "CommandParser.h"
 #include "CppUTest/TestHarness.h"
 
@@ -89,24 +92,33 @@ TEST(CommandParserTest, G03) {
 }
 
 TEST(CommandParserTest, D01) {
-	//TODO test variants X, Y, I, J
-	std::string code = CommandParser::GetCommandCode("X5000000Y0D01");
+	std::vector<std::string> words = { "X250000Y155000D01", "Y155000D01",
+			"X250000D01", "D01", "X75000Y50000I40000J0D01", "I40000J0D01" };
+	for (std::string &w : words) {
+		std::string code = CommandParser::GetCommandCode(w);
 
-	STRCMP_EQUAL("D01", code.c_str());
+		STRCMP_EQUAL("D01", code.c_str());
+	}
 }
 
 TEST(CommandParserTest, D02) {
-	//TODO test variants X, Y, I, J
-	std::string code = CommandParser::GetCommandCode("X0Y0D02");
+	std::vector<std::string> words = { "X2152000Y1215000D02", "Y1215000D02",
+			"X2152000D02", "D02" };
+	for (std::string &w : words) {
+		std::string code = CommandParser::GetCommandCode(w);
 
-	STRCMP_EQUAL("D02", code.c_str());
+		STRCMP_EQUAL("D02", code.c_str());
+	}
 }
 
 TEST(CommandParserTest, D03) {
-	//TODO test variants X, Y, I, J
-	std::string code = CommandParser::GetCommandCode("X10000000Y10000000D03");
+	std::vector<std::string> words = { "X1215000Y2152000D03", "Y2152000D03",
+			"X1215000D03", "D03" };
+	for (std::string &w : words) {
+		std::string code = CommandParser::GetCommandCode(w);
 
-	STRCMP_EQUAL("D03", code.c_str());
+		STRCMP_EQUAL("D03", code.c_str());
+	}
 }
 
 TEST(CommandParserTest, LP) {
@@ -173,5 +185,9 @@ TEST(CommandParserTest, M02) {
 	std::string code = CommandParser::GetCommandCode("M02");
 
 	STRCMP_EQUAL("M02", code.c_str());
+}
+
+TEST(CommandParserTest, Unknown) {
+	CHECK_THROWS(std::invalid_argument, CommandParser::GetCommandCode("Z"));
 }
 

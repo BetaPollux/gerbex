@@ -19,36 +19,29 @@
  */
 
 #include "CommandParser.h"
+#include <regex>
 #include <stdexcept>
 
 std::string CommandParser::GetCommandCode(const std::string &word) {
-	char c = word[0];
-	if (c == 'G') {
-		return word.substr(0, 3);
-	} else if (c == 'D') {
-		return "Dnn";
-	} else if (c == 'X' || c == 'Y' || c == 'I' || c == 'J') {
-		return word.substr(word.length() - 3, 3);
-	} else if (c == 'L' || c == 'F') {
-		return word.substr(0, 2);
-	}
-
-	std::string cc = word.substr(0, 2);
-	if (cc == "SR") {
-		if (word.length() == 2) {
-			return "SR_close";
+	std::smatch match;
+	if (std::regex_search(word, match, std::regex("^[XYIJ0-9]*(D\\d{2})$"))) {
+		if (match[1].str()[1] == '0') {
+			return match[1].str();	// D0n
 		} else {
-			return "SR_open";
+			return "Dnn";
 		}
-	} else if (cc == "AB") {
-		if (word.length() == 2) {
-			return "AB_close";
+	} else if (std::regex_search(word, match, std::regex("^(AB|SR)(\\S+)?"))) {
+		if (match[2].matched) {
+			return match[1].str() + "_open";
 		} else {
-			return "AB_open";
+			return match[1].str() + "_close";
 		}
-	} else if (cc == "AM" || cc == "AD" || cc == "MO") {
-		return cc;
+	} else if (std::regex_search(word, match, std::regex("^A[DM]"))) {
+		return match[0].str();
+	} else if (std::regex_search(word, match, std::regex("^[GM]\\d{2}"))) {
+		return match[0].str();
+	} else if (std::regex_search(word, match, std::regex("^(L\\w|MO|FS)"))) {
+		return match[0].str();
 	}
-
-	return word;
+	throw std::invalid_argument("unrecognized word");
 }
