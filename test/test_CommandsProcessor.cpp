@@ -155,7 +155,7 @@ TEST(CommandsProcessor_Init, Move) {
 	processor.Move(pt);
 
 	LONGS_EQUAL(0, processor.GetObjects().size());
-	CHECK(pt == processor.GetGraphicsState().GetCurrentPoint().value());
+	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 TEST(CommandsProcessor_Init, Draw_RequiresCurrentPoint) {
@@ -229,7 +229,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
 	processor.Flash(origin);
 
-	CHECK(origin == processor.GetGraphicsState().GetCurrentPoint().value());
+	CHECK(origin == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 /***
@@ -307,7 +307,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
 	processor.PlotDraw(end);
 
-	CHECK(end == processor.GetGraphicsState().GetCurrentPoint().value());
+	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 /***
@@ -351,7 +351,7 @@ TEST(CommandsProcessor_PlotArc, MakesOne) {
 TEST(CommandsProcessor_PlotArc, SetsCurrentPoint) {
 	processor.PlotArc(end, offset);
 
-	CHECK(end == processor.GetGraphicsState().GetCurrentPoint().value());
+	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 TEST(CommandsProcessor_PlotArc, Origin) {

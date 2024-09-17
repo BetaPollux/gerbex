@@ -28,23 +28,22 @@
 class CoordinateData {
 public:
 	CoordinateData(std::optional<PointCoordType> x,
-			std::optional<PointCoordType> y, std::optional<Point> offset =
+			std::optional<PointCoordType> y, std::optional<Point> ij =
 					std::nullopt);
 	CoordinateData();
 	virtual ~CoordinateData();
 	static CoordinateData FromString(const std::string &str);
-	static std::optional<Point> FromDefaults(const CoordinateData &newData,
-			const std::optional<Point> &defaultPt = std::nullopt);
+	std::optional<Point> GetXY(const std::optional<Point> &defaultPt = std::nullopt) const;
 	bool HasXY() const;
-	bool HasOffset() const;
-	const std::optional<Point>& GetOffset() const;
+	bool HasIJ() const;
+	const std::optional<Point>& GetIJ() const;
 	const std::optional<PointCoordType>& GetX() const;
 	const std::optional<PointCoordType>& GetY() const;
 
 private:
 	std::optional<PointCoordType> m_x;
 	std::optional<PointCoordType> m_y;
-	std::optional<Point> m_offset;
+	std::optional<Point> m_ij;
 
 };
 

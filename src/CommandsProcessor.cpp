@@ -98,7 +98,7 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 	}
 
 	std::shared_ptr<Draw> obj = std::make_shared<Draw>(
-			m_graphicsState.GetCurrentPoint().value(), coord,
+			*m_graphicsState.GetCurrentPoint(), coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 
@@ -132,7 +132,7 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 	}
 
 	std::shared_ptr<Arc> obj = std::make_shared<Arc>(
-			m_graphicsState.GetCurrentPoint().value(), coord, offset, direction,
+			*m_graphicsState.GetCurrentPoint(), coord, offset, direction,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 

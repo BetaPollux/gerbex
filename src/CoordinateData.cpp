@@ -28,8 +28,8 @@ CoordinateData::CoordinateData() :
 }
 
 CoordinateData::CoordinateData(std::optional<PointCoordType> x,
-		std::optional<PointCoordType> y, std::optional<Point> offset) :
-		m_x { x }, m_y { y }, m_offset { offset } {
+		std::optional<PointCoordType> y, std::optional<Point> ij) :
+		m_x { x }, m_y { y }, m_ij { ij } {
 	// Empty
 }
 
@@ -43,7 +43,7 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	std::regex_search(str, match, pattern);
 
 	std::optional<PointCoordType> x, y;
-	std::optional<Point> offset;
+	std::optional<Point> ij;
 	// X-value
 	if (match[2].matched) {
 		x = std::stoi(match[2].str());
@@ -58,19 +58,19 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	if (match[5].matched) {
 		PointCoordType i = std::stoi(match[6].str());
 		PointCoordType j = std::stoi(match[7].str());
-		offset = Point(i, j);
+		ij = Point(i, j);
 	}
 
-	return CoordinateData(x, y, offset);
+	return CoordinateData(x, y, ij);
 }
 
-std::optional<Point> CoordinateData::FromDefaults(const CoordinateData &newData, const std::optional<Point> &defaultPt) {
-	if (!newData.HasXY() && !defaultPt.has_value()) {
+std::optional<Point> CoordinateData::GetXY(const std::optional<Point> &defaultPt) const {
+	if (!HasXY() && !defaultPt.has_value()) {
 		return std::nullopt;
 	}
 
-	PointCoordType newX = newData.GetX().value_or(defaultPt->GetX());
-	PointCoordType newY = newData.GetY().value_or(defaultPt->GetY());
+	PointCoordType newX = GetX().value_or(defaultPt->GetX());
+	PointCoordType newY = GetY().value_or(defaultPt->GetY());
 
 	return Point(newX, newY);
 }
@@ -79,12 +79,12 @@ bool CoordinateData::HasXY() const {
 	return m_x.has_value() && m_y.has_value();
 }
 
-bool CoordinateData::HasOffset() const {
-	return m_offset.has_value();
+bool CoordinateData::HasIJ() const {
+	return m_ij.has_value();
 }
 
-const std::optional<Point>& CoordinateData::GetOffset() const {
-	return m_offset;
+const std::optional<Point>& CoordinateData::GetIJ() const {
+	return m_ij;
 }
 
 const std::optional<PointCoordType>& CoordinateData::GetX() const {

@@ -19,8 +19,7 @@
  */
 
 #include "CppUTest/TestHarness.h"
-
-#include "../src/CoordinateData.h"
+#include "CoordinateData.h"
 
 TEST_GROUP(CoordinateDataTest) {
 };
@@ -41,9 +40,9 @@ TEST(CoordinateDataTest, HasOffset) {
 	CoordinateData xy(0, 0, std::nullopt);
 	CoordinateData xyij(0, 0, Point(0, 0));
 	CoordinateData ij(std::nullopt, std::nullopt, Point(0, 0));
-	CHECK(!xy.HasOffset());
-	CHECK(xyij.HasOffset());
-	CHECK(ij.HasOffset());
+	CHECK(!xy.HasIJ());
+	CHECK(xyij.HasIJ());
+	CHECK(ij.HasIJ());
 }
 
 TEST(CoordinateDataTest, FromString_None) {
@@ -53,94 +52,89 @@ TEST(CoordinateDataTest, FromString_None) {
 
 TEST(CoordinateDataTest, FromString_XY) {
 	CoordinateData coord = CoordinateData::FromString("X2152000Y1215000D02");
-	LONGS_EQUAL(2152000, coord.GetX().value());
-	LONGS_EQUAL(1215000, coord.GetY().value());
+	LONGS_EQUAL(2152000, *coord.GetX());
+	LONGS_EQUAL(1215000, *coord.GetY());
 }
 
 TEST(CoordinateDataTest, FromString_X) {
 	CoordinateData coord = CoordinateData::FromString("X2152000D02");
-	LONGS_EQUAL(2152000, coord.GetX().value());
+	LONGS_EQUAL(2152000, *coord.GetX());
 }
 
 TEST(CoordinateDataTest, FromString_Y) {
 	CoordinateData coord = CoordinateData::FromString("Y1215000D02");
-	LONGS_EQUAL(1215000, coord.GetY().value());
+	LONGS_EQUAL(1215000, *coord.GetY());
 }
 
 TEST(CoordinateDataTest, FromString_IJ) {
 	CoordinateData coord = CoordinateData::FromString("I3000J0D01");
-	CHECK(coord.HasOffset());
-	LONGS_EQUAL(3000, coord.GetOffset().value().GetX());
-	LONGS_EQUAL(0, coord.GetOffset().value().GetY());
+	CHECK(coord.HasIJ());
+	LONGS_EQUAL(3000, coord.GetIJ()->GetX());
+	LONGS_EQUAL(0, coord.GetIJ()->GetY());
 }
 
 TEST(CoordinateDataTest, FromString_I) {
 	CoordinateData coord = CoordinateData::FromString("I3000D01");
-	CHECK(!coord.HasOffset());
+	CHECK(!coord.HasIJ());
 }
 
 TEST(CoordinateDataTest, FromString_J) {
 	CoordinateData coord = CoordinateData::FromString("J0D01");
-	CHECK(!coord.HasOffset());
+	CHECK(!coord.HasIJ());
 }
 
 TEST(CoordinateDataTest, FromString_XYIJ) {
 	CoordinateData coord = CoordinateData::FromString(
 			"X5005000Y3506000I3000J0D01");
 	CHECK(coord.HasXY());
-	CHECK(coord.HasOffset());
-	LONGS_EQUAL(5005000, coord.GetX().value());
-	LONGS_EQUAL(3506000, coord.GetY().value());
-	LONGS_EQUAL(3000, coord.GetOffset().value().GetX());
-	LONGS_EQUAL(0, coord.GetOffset().value().GetY());
+	CHECK(coord.HasIJ());
+	LONGS_EQUAL(5005000, *coord.GetX());
+	LONGS_EQUAL(3506000, *coord.GetY());
+	LONGS_EQUAL(3000, coord.GetIJ()->GetX());
+	LONGS_EQUAL(0, coord.GetIJ()->GetY());
 }
 
 TEST_GROUP(CoordinateData_FromDefaults) {
 	Point defaultPt;
+	const PointCoordType kDefX = 1000;
+	const PointCoordType kDefY = 2500;
 
 	void setup() {
-		defaultPt = Point(1000, 2500);
+		defaultPt = Point(kDefX, kDefY);
 	}
 };
 
 TEST(CoordinateData_FromDefaults, NoData) {
-	CoordinateData newData(std::nullopt, std::nullopt);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData, defaultPt);
-	CHECK(result.value() == defaultPt);
+	std::optional<Point> result = CoordinateData(std::nullopt, std::nullopt).GetXY(defaultPt);
+	CHECK(*result == defaultPt);
 }
 
 TEST(CoordinateData_FromDefaults, JustX) {
-	CoordinateData newData(125, std::nullopt);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData, defaultPt);
-	CHECK(result.value() == Point(125, 2500));
+	std::optional<Point> result = CoordinateData(125, std::nullopt).GetXY(defaultPt);
+	CHECK(*result == Point(125, kDefY));
 }
 
 TEST(CoordinateData_FromDefaults, JustY) {
-	CoordinateData newData(std::nullopt, -500);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData, defaultPt);
-	CHECK(result.value() == Point(1000, -500));
+	std::optional<Point> result = CoordinateData(std::nullopt, -500).GetXY(defaultPt);
+	CHECK(*result == Point(kDefX, -500));
 }
 
 TEST(CoordinateData_FromDefaults, NoDefault) {
-	CoordinateData newData(125, 500);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData);
-	CHECK(result.value() == Point(125, 500));
+	std::optional<Point> result = CoordinateData(125, 500).GetXY();
+	CHECK(*result == Point(125, 500));
 }
 
 TEST(CoordinateData_FromDefaults, MissingX) {
-	CoordinateData newData(std::nullopt, 500);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData);
+	std::optional<Point> result = CoordinateData(std::nullopt, -500).GetXY();
 	CHECK(!result.has_value());
 }
 
 TEST(CoordinateData_FromDefaults, MissingY) {
-	CoordinateData newData(125, std::nullopt);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData);
+	std::optional<Point> result = CoordinateData(125, std::nullopt).GetXY();
 	CHECK(!result.has_value());
 }
 
 TEST(CoordinateData_FromDefaults, MissingXY) {
-	CoordinateData newData(std::nullopt, std::nullopt);
-	std::optional<Point> result = CoordinateData::FromDefaults(newData);
+	std::optional<Point> result = CoordinateData(std::nullopt, std::nullopt).GetXY();
 	CHECK(!result.has_value());
 }
