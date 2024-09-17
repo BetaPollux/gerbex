@@ -41,4 +41,5 @@ std::unique_ptr<Aperture> MacroTemplate::Call(int numParameters, double *paramet
 	//TODO insert parameters into body
 	//TODO parse body
 	//TODO add primitives
+	return nullptr;
 }

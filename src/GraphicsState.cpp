@@ -24,7 +24,7 @@
 GraphicsState::GraphicsState()
 	: m_format{ nullptr },
 	  m_unit{ Unit::Undefined },
-	  m_currentPoint{ nullptr },
+	  m_currentPoint{ std::nullopt },
 	  m_currentAperture{ nullptr },
 	  m_plotState{ PlotState::Undefined },
 	  m_transformation{}
@@ -45,16 +45,12 @@ void GraphicsState::SetCurrentAperture(std::shared_ptr<Aperture> currentAperture
 	m_currentAperture = currentAperture;
 }
 
-const std::shared_ptr<Point> GraphicsState::GetCurrentPoint() const {
+const std::optional<Point> GraphicsState::GetCurrentPoint() const {
 	return m_currentPoint;
 }
 
-void GraphicsState::SetCurrentPoint(std::shared_ptr<Point> currentPoint) {
+void GraphicsState::SetCurrentPoint(std::optional<Point> currentPoint) {
 	m_currentPoint = currentPoint;
-}
-
-void GraphicsState::SetCurrentPoint(const Point &currentPoint) {
-	m_currentPoint = std::make_shared<Point>(currentPoint);
 }
 
 const std::shared_ptr<CoordinateFormat> GraphicsState::GetFormat() const {

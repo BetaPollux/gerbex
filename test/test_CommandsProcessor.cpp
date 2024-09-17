@@ -104,6 +104,15 @@ TEST(CommandsProcessor_Init, ApertureDefine_BadNumber) {
 	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(9, std::move(circle)));
 }
 
+TEST(CommandsProcessor_Init, ApertureDefine_CannotReassign) {
+	int ident = 11;
+	std::unique_ptr<Circle> circle = std::make_unique<Circle>();
+	std::unique_ptr<Circle> other_circle = std::make_unique<Circle>();
+
+	processor.ApertureDefine(ident, std::move(circle));
+	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(ident, std::move(other_circle)));
+}
+
 TEST(CommandsProcessor_Init, ApertureDefine_Null) {
 	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(10, nullptr));
 }
@@ -146,7 +155,7 @@ TEST(CommandsProcessor_Init, Move) {
 	processor.Move(pt);
 
 	LONGS_EQUAL(0, processor.GetObjects().size());
-	CHECK(pt == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(pt == processor.GetGraphicsState().GetCurrentPoint().value());
 }
 
 TEST(CommandsProcessor_Init, Draw_RequiresCurrentPoint) {
@@ -220,7 +229,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
 	processor.Flash(origin);
 
-	CHECK(origin == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(origin == processor.GetGraphicsState().GetCurrentPoint().value());
 }
 
 /***
@@ -298,7 +307,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
 	processor.PlotDraw(end);
 
-	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(end == processor.GetGraphicsState().GetCurrentPoint().value());
 }
 
 /***
@@ -342,7 +351,7 @@ TEST(CommandsProcessor_PlotArc, MakesOne) {
 TEST(CommandsProcessor_PlotArc, SetsCurrentPoint) {
 	processor.PlotArc(end, offset);
 
-	CHECK(end == *processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(end == processor.GetGraphicsState().GetCurrentPoint().value());
 }
 
 TEST(CommandsProcessor_PlotArc, Origin) {
@@ -558,7 +567,7 @@ TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
 }
 
 TEST(CommandsProcessor_ApertureBlock, ClearsCurrentPoint) {
-	CHECK(nullptr == processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(!processor.GetGraphicsState().GetCurrentPoint().has_value());
 }
 
 TEST(CommandsProcessor_ApertureBlock, FlashBlock) {
@@ -662,7 +671,7 @@ TEST(CommandsProcessor_StepAndRepeat, CantCloseAgain) {
 }
 
 TEST(CommandsProcessor_StepAndRepeat, ClearsCurrentPoint) {
-	CHECK(nullptr == processor.GetGraphicsState().GetCurrentPoint());
+	CHECK(!processor.GetGraphicsState().GetCurrentPoint().has_value());
 }
 
 TEST(CommandsProcessor_StepAndRepeat, CreatesObject) {

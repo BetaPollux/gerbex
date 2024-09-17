@@ -1,5 +1,5 @@
 /*
- * Coordinate.h
+ * CoordinateData.h
  *
  *  Created on: Sep. 15, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,20 +18,23 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COORDINATE_H_
-#define COORDINATE_H_
+#ifndef COORDINATEDATA_H_
+#define COORDINATEDATA_H_
 
 #include <optional>
 #include <string>
 #include "Point.h"
 
-class Coordinate {
+class CoordinateData {
 public:
-	Coordinate(std::optional<PointCoordType> x, std::optional<PointCoordType> y,
-			std::optional<Point> offset = std::nullopt);
-	Coordinate();
-	virtual ~Coordinate();
-	static Coordinate FromString(const std::string &str);
+	CoordinateData(std::optional<PointCoordType> x,
+			std::optional<PointCoordType> y, std::optional<Point> offset =
+					std::nullopt);
+	CoordinateData();
+	virtual ~CoordinateData();
+	static CoordinateData FromString(const std::string &str);
+	static std::optional<Point> FromDefaults(const CoordinateData &newData,
+			const std::optional<Point> &defaultPt = std::nullopt);
 	bool HasXY() const;
 	bool HasOffset() const;
 	const std::optional<Point>& GetOffset() const;
@@ -45,4 +48,4 @@ private:
 
 };
 
-#endif /* COORDINATE_H_ */
+#endif /* COORDINATEDATA_H_ */

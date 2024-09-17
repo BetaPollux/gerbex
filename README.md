@@ -5,7 +5,7 @@ Return a collection of objects representing Gerber Draws, Flashes and other elem
 
 Planned exports:
 - bitmap
-- image array
+- svg
 - mesh
 
 The Python code is obsolete; the project is moving to C++.

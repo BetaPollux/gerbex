@@ -31,15 +31,14 @@
 #include "StepAndRepeat.h"
 #include <stdexcept>
 
-CommandsProcessor::CommandsProcessor()
-	: m_commandState{ CommandState::Normal },
-	  m_graphicsState{},
-	  m_objects{},
-	  m_apertures{},
-	  m_templates{},
-	  m_activeRegion{ nullptr },
-	  m_openBlocks{ 0 }
-{
+CommandsProcessor::CommandsProcessor() :
+		m_commandState { CommandState::Normal },
+		m_graphicsState { },
+		m_objects { },
+		m_apertures { },
+		m_templates { },
+		m_activeRegion { nullptr },
+		m_openBlocks { 0 } {
 	m_templates["C"] = std::make_unique<CircleTemplate>();
 	m_templates["R"] = std::make_unique<RectangleTemplate>();
 	m_templates["O"] = std::make_unique<ObroundTemplate>();
@@ -60,21 +59,28 @@ void CommandsProcessor::ApertureDefine(int ident,
 	if (ident < 10) {
 		throw std::invalid_argument("Aperture ident must be >= 10.");
 	}
-	m_apertures[ident] = aperture;
+	if (m_apertures.find(ident) == m_apertures.end()) {
+		m_apertures[ident] = aperture;
+	} else {
+		throw std::invalid_argument("Aperture ident already used.");
+	}
 }
 
 void CommandsProcessor::SetCurrentAperture(int ident) {
-	if (m_apertures.count(ident) == 0) {
-		throw std::invalid_argument("Aperture " + std::to_string(ident) + " does not exist.");
+	if (m_apertures.find(ident) == m_apertures.end()) {
+		throw std::invalid_argument(
+				"Aperture " + std::to_string(ident) + " does not exist.");
 	}
 	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
 }
 
 std::shared_ptr<Aperture> CommandsProcessor::GetAperture(int ident) {
-	if (m_apertures.count(ident) == 0) {
-		throw std::invalid_argument("Aperture " + std::to_string(ident) + " does not exist.");
+	auto result = m_apertures.find(ident);
+	if (result == m_apertures.end()) {
+		throw std::invalid_argument(
+				"Aperture " + std::to_string(ident) + " does not exist.");
 	}
-	return m_apertures[ident];
+	return result->second;
 }
 
 void CommandsProcessor::PlotDraw(const Point &coord) {
@@ -82,17 +88,17 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		throw std::logic_error("Can only plot Draw in Linear plot state.");
 	}
 
-	if (m_graphicsState.GetCurrentPoint() == nullptr) {
+	if (!m_graphicsState.GetCurrentPoint().has_value()) {
 		throw std::logic_error("Draw requires valid current point.");
 	}
 
-	if (m_commandState != CommandState::InsideRegion && m_graphicsState.GetCurrentAperture() == nullptr) {
+	if (m_commandState != CommandState::InsideRegion
+			&& m_graphicsState.GetCurrentAperture() == nullptr) {
 		throw std::logic_error("Draw requires valid current aperture.");
 	}
 
 	std::shared_ptr<Draw> obj = std::make_shared<Draw>(
-			*m_graphicsState.GetCurrentPoint(),
-			coord,
+			m_graphicsState.GetCurrentPoint().value(), coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 
@@ -116,17 +122,17 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 		throw std::logic_error("Can only plot Arc in CW or CCW plot state.");
 	}
 
-	if (m_graphicsState.GetCurrentPoint() == nullptr) {
+	if (!m_graphicsState.GetCurrentPoint().has_value()) {
 		throw std::logic_error("Arc requires valid current point.");
 	}
 
-	if (m_commandState != CommandState::InsideRegion && m_graphicsState.GetCurrentAperture() == nullptr) {
+	if (m_commandState != CommandState::InsideRegion
+			&& m_graphicsState.GetCurrentAperture() == nullptr) {
 		throw std::logic_error("Arc requires valid current aperture.");
 	}
 
 	std::shared_ptr<Arc> obj = std::make_shared<Arc>(
-			*m_graphicsState.GetCurrentPoint(),
-			coord, offset, direction,
+			m_graphicsState.GetCurrentPoint().value(), coord, offset, direction,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 
@@ -152,19 +158,21 @@ void CommandsProcessor::Flash(const Point &coord) {
 	}
 
 	//Flash requires explicit namespace due to same method name
-	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(
-			coord,
+	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 	m_objectDest.top()->push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
-std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(std::string name) {
-	if (m_templates.count(name) == 0) {
-		throw std::invalid_argument("Aperture template " + name + " does not exist.");
+std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(
+		std::string name) {
+	auto result = m_templates.find(name);
+	if (result == m_templates.end()) {
+		throw std::invalid_argument(
+				"Aperture template " + name + " does not exist.");
 	}
-	return m_templates[name];
+	return result->second;
 }
 
 const GraphicsState& CommandsProcessor::GetGraphicsState() const {
@@ -188,7 +196,7 @@ void CommandsProcessor::SetPlotState(PlotState state) {
 }
 
 void CommandsProcessor::StartRegion() {
-	if (m_commandState == CommandState::InsideRegion){
+	if (m_commandState == CommandState::InsideRegion) {
 		throw std::logic_error("Cannot start a region inside a region.");
 	}
 	m_activeRegion = std::make_unique<Region>();
@@ -196,7 +204,7 @@ void CommandsProcessor::StartRegion() {
 }
 
 void CommandsProcessor::EndRegion() {
-	if (m_commandState != CommandState::InsideRegion){
+	if (m_commandState != CommandState::InsideRegion) {
 		throw std::logic_error("Can't end region; not inside a region");
 	}
 	m_objectDest.top()->push_back(std::move(m_activeRegion));
@@ -213,14 +221,15 @@ void CommandsProcessor::OpenApertureBlock(int ident) {
 void CommandsProcessor::CloseApertureBlock() {
 	if (m_openBlocks > 0) {
 		m_objectDest.pop();
-		m_graphicsState.SetCurrentPoint(nullptr);
+		m_graphicsState.SetCurrentPoint(std::nullopt);
 		m_openBlocks--;
 	} else {
 		throw std::logic_error("Cannot close aperture block; none open.");
 	}
 }
 
-void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx, double dy) {
+void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
+		double dy) {
 	if (m_activeStepAndRepeat == nullptr) {
 		m_activeStepAndRepeat = std::make_unique<StepAndRepeat>(nx, ny, dx, dy);
 		m_objectDest.push(m_activeStepAndRepeat->GetObjectList());
@@ -233,10 +242,9 @@ void CommandsProcessor::CloseStepAndRepeat() {
 	if (m_activeStepAndRepeat != nullptr) {
 		m_objectDest.pop();
 		m_objectDest.top()->push_back(std::move(m_activeStepAndRepeat));
-		m_graphicsState.SetCurrentPoint(nullptr);
+		m_graphicsState.SetCurrentPoint(std::nullopt);
 	} else {
 		throw std::logic_error("Cannot close step and repeat; not opened.");
 	}
 }
-
 

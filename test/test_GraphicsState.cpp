@@ -37,7 +37,7 @@ TEST(GraphicsStateTest, Unit)
 
 TEST(GraphicsStateTest, CurrentPoint)
 {
-	CHECK(nullptr == state.GetCurrentPoint());
+	CHECK(!state.GetCurrentPoint().has_value());
 }
 
 TEST(GraphicsStateTest, CurrentAperture)

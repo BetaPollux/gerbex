@@ -27,7 +27,7 @@
 #include "GraphicsState.h"
 #include "Region.h"
 #include "StepAndRepeat.h"
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <stack>
 #include <string>
@@ -73,8 +73,8 @@ private:
 	GraphicsState m_graphicsState;
 	std::stack<std::vector<std::shared_ptr<GraphicalObject>>*> m_objectDest;
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
-	std::map<int, std::shared_ptr<Aperture>> m_apertures;
-	std::map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
+	std::unordered_map<int, std::shared_ptr<Aperture>> m_apertures;
+	std::unordered_map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
 	std::unique_ptr<Region> m_activeRegion;
 	std::unique_ptr<StepAndRepeat> m_activeStepAndRepeat;
 	int m_openBlocks;

@@ -1,5 +1,5 @@
 /*
- * Coordinate.cpp
+ * CoordinateData.cpp
  *
  *  Created on: Sep. 15, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,24 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <regex>
-#include "Coordinate.h"
+#include "CoordinateData.h"
 
-Coordinate::Coordinate() :
-		Coordinate(0, 0) {
+#include <regex>
+
+CoordinateData::CoordinateData() :
+		CoordinateData(0, 0) {
 	// Empty
 }
 
-Coordinate::Coordinate(std::optional<PointCoordType> x,
+CoordinateData::CoordinateData(std::optional<PointCoordType> x,
 		std::optional<PointCoordType> y, std::optional<Point> offset) :
 		m_x { x }, m_y { y }, m_offset { offset } {
 	// Empty
 }
 
-Coordinate::~Coordinate() {
+CoordinateData::~CoordinateData() {
 }
 
-Coordinate Coordinate::FromString(const std::string &str) {
+CoordinateData CoordinateData::FromString(const std::string &str) {
 	std::smatch match;
 	// Find [X][Y][I J]
 	std::regex pattern("(X(\\d+))?(Y(\\d+))?(I(\\d+)J(\\d+))?");
@@ -60,25 +61,36 @@ Coordinate Coordinate::FromString(const std::string &str) {
 		offset = Point(i, j);
 	}
 
-	return Coordinate(x, y, offset);
+	return CoordinateData(x, y, offset);
 }
 
-bool Coordinate::HasXY() const {
+std::optional<Point> CoordinateData::FromDefaults(const CoordinateData &newData, const std::optional<Point> &defaultPt) {
+	if (!newData.HasXY() && !defaultPt.has_value()) {
+		return std::nullopt;
+	}
+
+	PointCoordType newX = newData.GetX().value_or(defaultPt->GetX());
+	PointCoordType newY = newData.GetY().value_or(defaultPt->GetY());
+
+	return Point(newX, newY);
+}
+
+bool CoordinateData::HasXY() const {
 	return m_x.has_value() && m_y.has_value();
 }
 
-bool Coordinate::HasOffset() const {
+bool CoordinateData::HasOffset() const {
 	return m_offset.has_value();
 }
 
-const std::optional<Point>& Coordinate::GetOffset() const {
+const std::optional<Point>& CoordinateData::GetOffset() const {
 	return m_offset;
 }
 
-const std::optional<PointCoordType>& Coordinate::GetX() const {
+const std::optional<PointCoordType>& CoordinateData::GetX() const {
 	return m_x;
 }
 
-const std::optional<PointCoordType>& Coordinate::GetY() const {
+const std::optional<PointCoordType>& CoordinateData::GetY() const {
 	return m_y;
 }
