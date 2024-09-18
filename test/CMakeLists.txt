@@ -10,6 +10,7 @@ add_executable(test_gerbex
 	test_CommandsProcessor.cpp
 	test_CoordinateData.cpp
 	test_CoordinateFormat.cpp
+	test_DataTypeParser.cpp
 	test_Draw.cpp
 	test_Flash.cpp
 	test_GerberFileProcessor.cpp

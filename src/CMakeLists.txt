@@ -10,6 +10,7 @@ add_library(libgerbex
 	CommandsProcessor.cpp
 	CoordinateData.cpp
 	CoordinateFormat.cpp
+	DataTypeParser.cpp
 	Draw.cpp
 	Flash.cpp
 	GerberFileProcessor.cpp

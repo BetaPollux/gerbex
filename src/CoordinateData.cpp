@@ -19,7 +19,9 @@
  */
 
 #include "CoordinateData.h"
+#include "DataTypeParser.h"
 
+#include <ostream>
 #include <regex>
 
 CoordinateData::CoordinateData() :
@@ -37,27 +39,34 @@ CoordinateData::~CoordinateData() {
 }
 
 CoordinateData CoordinateData::FromString(const std::string &str) {
+	// Parse [X int][Y int][I int J int]
+	DataTypeParser parser;
+	std::string int_re = parser.GetPattern("integer");
+	std::ostringstream pattern;
+	pattern << "(X(" << int_re << "))?";
+	pattern << "(Y(" << int_re << "))?";
+	pattern << "(I(" << int_re << ")J(" << int_re << "))?";
+
+	std::regex regex(pattern.str());
 	std::smatch match;
-	// Find [X][Y][I J]
-	std::regex pattern("(X(\\d+))?(Y(\\d+))?(I(\\d+)J(\\d+))?");
-	std::regex_search(str, match, pattern);
+	std::regex_search(str, match, regex);
 
 	std::optional<PointCoordType> x, y;
 	std::optional<Point> ij;
 	// X-value
 	if (match[2].matched) {
-		x = std::stoi(match[2].str());
+		x = parser.Integer(match[2].str());
 	}
 
 	// Y-value
 	if (match[4].matched) {
-		y = std::stoi(match[4].str());
+		y = parser.Integer(match[4].str());
 	}
 
 	// IJ-value
 	if (match[5].matched) {
-		PointCoordType i = std::stoi(match[6].str());
-		PointCoordType j = std::stoi(match[7].str());
+		PointCoordType i = parser.Integer(match[6].str());
+		PointCoordType j = parser.Integer(match[7].str());
 		ij = Point(i, j);
 	}
 

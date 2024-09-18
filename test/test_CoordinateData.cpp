@@ -94,6 +94,17 @@ TEST(CoordinateDataTest, FromString_XYIJ) {
 	LONGS_EQUAL(0, coord.GetIJ()->GetY());
 }
 
+TEST(CoordinateDataTest, FromString_XYIJ_WithSign) {
+	CoordinateData coord = CoordinateData::FromString(
+			"X+5005000Y-3506000I-3000J+0D01");
+	CHECK(coord.HasXY());
+	CHECK(coord.HasIJ());
+	LONGS_EQUAL(5005000, *coord.GetX());
+	LONGS_EQUAL(-3506000, *coord.GetY());
+	LONGS_EQUAL(-3000, coord.GetIJ()->GetX());
+	LONGS_EQUAL(0, coord.GetIJ()->GetY());
+}
+
 TEST_GROUP(CoordinateData_FromDefaults) {
 	Point defaultPt;
 	const PointCoordType kDefX = 1000;

@@ -28,7 +28,7 @@
  *
  *	Point:
  *  Coordinates are in fixed format decimals, to be converted to real units based on
- *  the Coordinate Format and Unit options. Each coordinate is up to 12 digits.
+ *  the Coordinate Format and Unit options.
  *
  *	RealPoint:
  *	Coordinates in real units, e.g. inches or millimeters.
@@ -74,7 +74,7 @@ private:
 	T m_x, m_y;
 };
 
-using PointCoordType = int64_t;
+using PointCoordType = int32_t;
 using Point = GenericPoint<PointCoordType>;
 using RealPoint = GenericPoint<double>;
 
