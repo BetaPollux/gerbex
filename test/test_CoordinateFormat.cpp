@@ -41,6 +41,12 @@ TEST(CoordinateFormatTest, DecimalTooLarge) {
 	CHECK_THROWS(std::invalid_argument, CoordinateFormat(3, 7));
 }
 
+TEST(CoordinateFormatTest, Getters) {
+	CoordinateFormat format(3, 6);
+	LONGS_EQUAL(3, format.GetInteger());
+	LONGS_EQUAL(6, format.GetDecimal());
+}
+
 TEST(CoordinateFormatTest, Convert_6decimal) {
 	Point point(123123456, 23456);
 	RealPoint expected(123.123456, 0.023456);

@@ -55,9 +55,8 @@ public:
 	void SetCurrentAperture(std::shared_ptr<Aperture> currentAperture);
 	void SetCurrentPoint(std::optional<Point> currentPoint);
 	const std::optional<Point> GetCurrentPoint() const;
-	const std::shared_ptr<CoordinateFormat> GetFormat() const;
-	void SetFormat(std::shared_ptr<CoordinateFormat> format);
-	void SetFormat(const CoordinateFormat &format);
+	const std::optional<CoordinateFormat> GetFormat() const;
+	void SetFormat(std::optional<CoordinateFormat> format);
 	PlotState GetPlotState() const;
 	void SetPlotState(PlotState plotState);
 	const ApertureTransformation& GetTransformation() const;
@@ -66,7 +65,7 @@ public:
 	void SetUnit(Unit unit);
 
 private:
-	std::shared_ptr<CoordinateFormat> m_format;
+	std::optional<CoordinateFormat> m_format;
 	Unit m_unit;
 	std::optional<Point> m_currentPoint;
 	std::shared_ptr<Aperture> m_currentAperture;

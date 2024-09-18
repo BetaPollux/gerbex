@@ -22,6 +22,7 @@
 #define GERBERFILEPROCESSOR_H_
 
 #include "CommandsProcessor.h"
+#include <memory>
 
 /*
  *
@@ -31,7 +32,7 @@ public:
 	GerberFileProcessor();
 	virtual ~GerberFileProcessor();
 	void Process(std::unique_ptr<std::istream> stream);
-	const CommandsProcessor& GetProcess() const;
+	const CommandsProcessor& GetProcessor() const;
 
 private:
 	CommandsProcessor m_processor;

@@ -34,6 +34,6 @@ void GerberFileProcessor::Process(std::unique_ptr<std::istream> stream) {
 	//TODO run syntax parser
 }
 
-const CommandsProcessor& GerberFileProcessor::GetProcess() const {
+const CommandsProcessor& GerberFileProcessor::GetProcessor() const {
 	return m_processor;
 }

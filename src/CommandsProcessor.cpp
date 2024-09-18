@@ -74,7 +74,7 @@ void CommandsProcessor::SetCurrentAperture(int ident) {
 	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
 }
 
-std::shared_ptr<Aperture> CommandsProcessor::GetAperture(int ident) {
+std::shared_ptr<Aperture> CommandsProcessor::GetAperture(int ident) const {
 	auto result = m_apertures.find(ident);
 	if (result == m_apertures.end()) {
 		throw std::invalid_argument(

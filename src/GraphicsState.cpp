@@ -22,7 +22,7 @@
 #include <stdexcept>
 
 GraphicsState::GraphicsState()
-	: m_format{ nullptr },
+	: m_format{ std::nullopt },
 	  m_unit{ Unit::Undefined },
 	  m_currentPoint{ std::nullopt },
 	  m_currentAperture{ nullptr },
@@ -53,16 +53,12 @@ void GraphicsState::SetCurrentPoint(std::optional<Point> currentPoint) {
 	m_currentPoint = currentPoint;
 }
 
-const std::shared_ptr<CoordinateFormat> GraphicsState::GetFormat() const {
+const std::optional<CoordinateFormat> GraphicsState::GetFormat() const {
 	return m_format;
 }
 
-void GraphicsState::SetFormat(std::shared_ptr<CoordinateFormat> format) {
+void GraphicsState::SetFormat(std::optional<CoordinateFormat> format) {
 	m_format = format;
-}
-
-void GraphicsState::SetFormat(const CoordinateFormat &format) {
-	m_format = std::make_shared<CoordinateFormat>(format);
 }
 
 PlotState GraphicsState::GetPlotState() const {

@@ -32,7 +32,9 @@ public:
 	CoordinateFormat();
 	CoordinateFormat(int integer, int decimal);
 	virtual ~CoordinateFormat();
-	RealPoint Convert(const Point &point);
+	RealPoint Convert(const Point &point) const;
+	int GetInteger() const;
+	int GetDecimal() const;
 
 private:
 	int m_integer;	//1 to 6

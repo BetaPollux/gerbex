@@ -27,7 +27,7 @@ TEST_GROUP (GraphicsStateTest) {
 
 TEST(GraphicsStateTest, Format)
 {
-	CHECK(nullptr == state.GetFormat());
+	CHECK(!state.GetFormat().has_value());
 }
 
 TEST(GraphicsStateTest, Unit)

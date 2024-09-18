@@ -51,7 +51,17 @@ CoordinateFormat::~CoordinateFormat() {
 	// Empty
 }
 
-RealPoint CoordinateFormat::Convert(const Point &point) {
+int CoordinateFormat::GetInteger() const
+{
+    return m_integer;
+}
+
+int CoordinateFormat::GetDecimal() const
+{
+    return m_decimal;
+}
+
+RealPoint CoordinateFormat::Convert(const Point &point) const {
 	return RealPoint(m_resolution * point.GetX(), m_resolution * point.GetY());
 }
 

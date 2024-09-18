@@ -51,7 +51,7 @@ public:
 	void OpenApertureBlock(int ident);
 	void CloseApertureBlock();
 	void SetCurrentAperture(int ident);
-	std::shared_ptr<Aperture> GetAperture(int ident);
+	std::shared_ptr<Aperture> GetAperture(int ident) const;
 	void SetPlotState(PlotState state);
 	void PlotDraw(const Point &coord);
 	void PlotArc(const Point &coord, const Point &offset);
