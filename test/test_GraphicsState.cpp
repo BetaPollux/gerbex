@@ -18,12 +18,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include "GraphicsState.h"
 #include "CppUTest/TestHarness.h"
+
 
 TEST_GROUP (GraphicsStateTest) {
 	GraphicsState state;
 };
+
+TEST(GraphicsStateTest, UnitFromCommand)
+{
+	CHECK(Unit::Millimeter == GraphicsState::UnitFromCommand("MOMM"));
+	CHECK(Unit::Inch == GraphicsState::UnitFromCommand("MOIN"));
+	CHECK_THROWS(std::invalid_argument, GraphicsState::UnitFromCommand("MOX"));
+}
 
 TEST(GraphicsStateTest, Format)
 {

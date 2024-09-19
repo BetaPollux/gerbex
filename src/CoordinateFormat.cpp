@@ -19,7 +19,9 @@
  */
 
 #include "CoordinateFormat.h"
+#include <regex>
 #include <stdexcept>
+#include <iostream>
 
 CoordinateFormat::CoordinateFormat()
 	: 	CoordinateFormat(3, 6)
@@ -65,3 +67,19 @@ RealPoint CoordinateFormat::Convert(const Point &point) const {
 	return RealPoint(m_resolution * point.GetX(), m_resolution * point.GetY());
 }
 
+CoordinateFormat CoordinateFormat::FromCommand(const std::string &str) {
+	std::regex pattern("FS([A-Z]{2})X([0-9]{2})Y([0-9]{2})");
+	std::smatch match;
+	if (std::regex_search(str, match, pattern)) {
+		if (match[1].str() != "LA") {
+			throw std::invalid_argument("format options must be LA");
+		}
+		if (match[2].str() != match[3].str()) {
+			throw std::invalid_argument("format digits must be the same for X and Y");
+		}
+		int integer = std::stoi(match[2].str().substr(0, 1));
+		int decimal = std::stoi(match[2].str().substr(1, 1));
+		return CoordinateFormat(integer, decimal);
+	}
+	throw std::invalid_argument("invalid format specification");
+}

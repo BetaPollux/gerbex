@@ -18,8 +18,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "CommandParser.h"
 #include "GerberFileProcessor.h"
 #include "SyntaxParser.h"
+
+#include <iostream>
 
 GerberFileProcessor::GerberFileProcessor() {
 	// Empty
@@ -30,10 +33,29 @@ GerberFileProcessor::~GerberFileProcessor() {
 }
 
 void GerberFileProcessor::Process(std::unique_ptr<std::istream> stream) {
-	SyntaxParser parser;
-	//TODO run syntax parser
+	SyntaxParser parser(std::move(stream));
+	while (true) {
+		std::vector<std::string> words = parser.GetNextCommand();
+
+		if (words.size() == 0) {
+			break;	// EOF
+		}
+		try {
+			std::string code = CommandParser::GetCommandCode(words[0]);
+			if (code == "FS") {
+				m_processor.SetFormat(CoordinateFormat::FromCommand(words[0]));
+			} else if (code == "MO") {
+				m_processor.SetUnit(GraphicsState::UnitFromCommand(words[0]));
+			} else if (code == "M02") {
+				m_processor.SetEndOfFile();
+			}
+		} catch (const std::invalid_argument &ex) {
+			std::cerr << "WARNING line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
+			continue;
+		}
+	}
 }
 
-const CommandsProcessor& GerberFileProcessor::GetProcessor() const {
+CommandsProcessor& GerberFileProcessor::GetProcessor() {
 	return m_processor;
 }

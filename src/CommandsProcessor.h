@@ -53,6 +53,8 @@ public:
 	void SetCurrentAperture(int ident);
 	std::shared_ptr<Aperture> GetAperture(int ident) const;
 	void SetPlotState(PlotState state);
+	void SetFormat(const CoordinateFormat &format);
+	void SetUnit(Unit unit);
 	void PlotDraw(const Point &coord);
 	void PlotArc(const Point &coord, const Point &offset);
 	void Move(const Point &coord);
@@ -61,9 +63,10 @@ public:
 	void EndRegion();
 	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
 	const GraphicsState& GetGraphicsState() const;
+	ApertureTransformation& GetTransformation();
 	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	CommandState GetCommandState() const;
-	void SetCommandState(CommandState commandState);
+	void SetEndOfFile();
 	void OpenStepAndRepeat(int nx, int ny, double dx, double dy);
 	void CloseStepAndRepeat();
 

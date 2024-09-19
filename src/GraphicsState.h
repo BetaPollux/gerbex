@@ -43,7 +43,6 @@ enum class PlotState {
 	CounterClockwise
 };
 
-
 /*
  * Graphics state is a set of parameters affecting the result of operation codes.
  */
@@ -59,10 +58,11 @@ public:
 	void SetFormat(std::optional<CoordinateFormat> format);
 	PlotState GetPlotState() const;
 	void SetPlotState(PlotState plotState);
-	const ApertureTransformation& GetTransformation() const;
+	ApertureTransformation& GetTransformation();
 	void SetTransformation(const ApertureTransformation &transformation);
 	Unit GetUnit() const;
 	void SetUnit(Unit unit);
+	static Unit UnitFromCommand(const std::string &str);
 
 private:
 	std::optional<CoordinateFormat> m_format;

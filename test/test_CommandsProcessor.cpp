@@ -73,6 +73,11 @@ TEST(CommandsProcessor_Init, State) {
 	LONGS_EQUAL(CommandState::Normal, processor.GetCommandState());
 }
 
+TEST(CommandsProcessor_Init, SetEndOfFile) {
+	processor.SetEndOfFile();
+	LONGS_EQUAL(CommandState::EndOfFile, processor.GetCommandState());
+}
+
 TEST(CommandsProcessor_Init, StandardTemplates) {
 	CHECK(processor.GetTemplate("C") != nullptr);
 	CHECK(processor.GetTemplate("R") != nullptr);
@@ -86,6 +91,25 @@ TEST(CommandsProcessor_Init, GetTemplate_DoesNotExist) {
 
 TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {
 	CHECK_THROWS(std::invalid_argument, processor.SetCurrentAperture(10));
+}
+
+TEST(CommandsProcessor_Init, SetFormat) {
+	CoordinateFormat format;
+	processor.SetFormat(format);
+
+	CHECK(processor.GetGraphicsState().GetFormat().has_value());
+}
+
+TEST(CommandsProcessor_Init, SetUnit) {
+	processor.SetUnit(Unit::Inch);
+
+	CHECK(Unit::Inch == processor.GetGraphicsState().GetUnit());
+}
+
+TEST(CommandsProcessor_Init, SetPlotState) {
+	processor.SetPlotState(PlotState::CounterClockwise);
+
+	CHECK(PlotState::CounterClockwise == processor.GetGraphicsState().GetPlotState());
 }
 
 TEST(CommandsProcessor_Init, ApertureDefine) {
@@ -222,8 +246,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
 
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				flash->GetTransformation());
+	CHECK(processor.GetTransformation() == flash->GetTransformation());
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
@@ -300,8 +323,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
 
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				draw->GetTransformation());
+	CHECK(processor.GetTransformation() == draw->GetTransformation());
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
@@ -409,8 +431,7 @@ TEST(CommandsProcessor_PlotArc, Transform) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	CHECK(processor.GetGraphicsState().GetTransformation() ==
-				arc->GetTransformation());
+	CHECK(processor.GetTransformation() == arc->GetTransformation());
 }
 
 /***

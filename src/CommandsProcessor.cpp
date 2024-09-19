@@ -179,6 +179,10 @@ const GraphicsState& CommandsProcessor::GetGraphicsState() const {
 	return m_graphicsState;
 }
 
+ApertureTransformation& CommandsProcessor::GetTransformation() {
+	return m_graphicsState.GetTransformation();
+}
+
 const std::vector<std::shared_ptr<GraphicalObject> >& CommandsProcessor::GetObjects() const {
 	return m_objects;
 }
@@ -187,8 +191,8 @@ CommandState CommandsProcessor::GetCommandState() const {
 	return m_commandState;
 }
 
-void CommandsProcessor::SetCommandState(CommandState commandState) {
-	m_commandState = commandState;
+void CommandsProcessor::SetEndOfFile() {
+	m_commandState = CommandState::EndOfFile;
 }
 
 void CommandsProcessor::SetPlotState(PlotState state) {
@@ -236,6 +240,14 @@ void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
 	} else {
 		throw std::logic_error("Cannot open step and repeat; already open.");
 	}
+}
+
+void CommandsProcessor::SetFormat(const CoordinateFormat &format) {
+	m_graphicsState.SetFormat(format);
+}
+
+void CommandsProcessor::SetUnit(Unit unit) {
+	m_graphicsState.SetUnit(unit);
 }
 
 void CommandsProcessor::CloseStepAndRepeat() {

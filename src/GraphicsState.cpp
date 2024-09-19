@@ -69,7 +69,7 @@ void GraphicsState::SetPlotState(PlotState plotState) {
 	m_plotState = plotState;
 }
 
-const ApertureTransformation& GraphicsState::GetTransformation() const {
+ApertureTransformation& GraphicsState::GetTransformation() {
 	return m_transformation;
 }
 
@@ -84,5 +84,14 @@ Unit GraphicsState::GetUnit() const {
 
 void GraphicsState::SetUnit(Unit unit) {
 	m_unit = unit;
+}
+
+Unit GraphicsState::UnitFromCommand(const std::string &str) {
+	if (str == "MOMM") {
+		return Unit::Millimeter;
+	} else if (str == "MOIN") {
+		return Unit::Inch;
+	}
+	throw std::invalid_argument("invalid unit");
 }
 

@@ -22,6 +22,7 @@
 #define COORDINATEFORMAT_H_
 
 #include "Point.h"
+#include <string>
 
 /*
  * Specifies the number of integer and decimal places when interpreting coordinate data.
@@ -35,10 +36,11 @@ public:
 	RealPoint Convert(const Point &point) const;
 	int GetInteger() const;
 	int GetDecimal() const;
+	static CoordinateFormat FromCommand(const std::string &str);
 
 private:
-	int m_integer;	//1 to 6
-	int m_decimal;	//6
+	int m_integer;
+	int m_decimal;
 	double m_resolution;
 };
 

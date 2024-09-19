@@ -68,3 +68,27 @@ TEST(CoordinateFormatTest, Convert5decimal) {
 	DOUBLES_EQUAL(expected.GetX(), actual.GetX(), 1e-9);
 	DOUBLES_EQUAL(expected.GetY(), actual.GetY(), 1e-9);
 }
+
+TEST(CoordinateFormatTest, FromCommand) {
+	CoordinateFormat format = CoordinateFormat::FromCommand("FSLAX15Y15");
+	LONGS_EQUAL(1, format.GetInteger());
+	LONGS_EQUAL(5, format.GetDecimal());
+}
+
+TEST(CoordinateFormatTest, FromString_Mismatched) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat::FromCommand("FSLAX26Y36"));
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat::FromCommand("FSLAX36Y35"));
+}
+
+TEST(CoordinateFormatTest, FromString_WrongStr) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat::FromCommand("MOMM"));
+}
+
+TEST(CoordinateFormatTest, FromString_TrailingZero) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat::FromCommand("FSTAX26Y26"));
+}
+
+TEST(CoordinateFormatTest, FromString_Incremental) {
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat::FromCommand("FSLIX26Y26"));
+}
+

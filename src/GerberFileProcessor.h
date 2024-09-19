@@ -32,7 +32,7 @@ public:
 	GerberFileProcessor();
 	virtual ~GerberFileProcessor();
 	void Process(std::unique_ptr<std::istream> stream);
-	const CommandsProcessor& GetProcessor() const;
+	CommandsProcessor& GetProcessor();
 
 private:
 	CommandsProcessor m_processor;
