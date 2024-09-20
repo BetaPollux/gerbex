@@ -81,7 +81,6 @@ TEST(GerberTwoSquareBoxes, SetPolarity) {
 }
 
 TEST(GerberTwoSquareBoxes, DefinedAperture) {
-	FAIL("not implemented");
 	auto aperture = processor->GetAperture(10);
 	CHECK(aperture != nullptr);
 }

@@ -19,6 +19,7 @@
  */
 
 #include "ApertureTransformation.h"
+#include <stdexcept>
 
 ApertureTransformation::ApertureTransformation()
 	: m_polarity{ Polarity::Dark },
@@ -93,4 +94,28 @@ double ApertureTransformation::GetScalingFactor() const {
 
 void ApertureTransformation::SetScalingFactor(double scalingFactor) {
 	m_scaling_factor = scalingFactor;
+}
+
+Polarity ApertureTransformation::PolarityFromCommand(const std::string &str) {
+	if (str == "C") {
+		return Polarity::Clear;
+	} else if (str == "D") {
+		return Polarity::Dark;
+	} else {
+		throw std::invalid_argument("invalid polarity");
+	}
+}
+
+Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
+	if (str == "N") {
+		return Mirroring::None;
+	} else if (str == "X") {
+		return Mirroring::X;
+	} else if (str == "Y") {
+		return Mirroring::Y;
+	} else if (str == "XY") {
+		return Mirroring::XY;
+	} else {
+		throw std::invalid_argument("invalid mirroring");
+	}
 }

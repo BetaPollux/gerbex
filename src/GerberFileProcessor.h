@@ -21,8 +21,10 @@
 #ifndef GERBERFILEPROCESSOR_H_
 #define GERBERFILEPROCESSOR_H_
 
+#include "CommandParser.h"
 #include "CommandsProcessor.h"
 #include <memory>
+#include <unordered_map>
 
 /*
  *
@@ -36,6 +38,7 @@ public:
 
 private:
 	CommandsProcessor m_processor;
+	std::unordered_map<std::string, commandHandler> m_handlers;
 };
 
 #endif /* GERBERFILEPROCESSOR_H_ */

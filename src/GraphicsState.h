@@ -63,6 +63,7 @@ public:
 	Unit GetUnit() const;
 	void SetUnit(Unit unit);
 	static Unit UnitFromCommand(const std::string &str);
+	static PlotState PlotStateFromCommand(const std::string &str);
 
 private:
 	std::optional<CoordinateFormat> m_format;

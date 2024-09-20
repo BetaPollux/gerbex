@@ -35,6 +35,14 @@ TEST(GraphicsStateTest, UnitFromCommand)
 	CHECK_THROWS(std::invalid_argument, GraphicsState::UnitFromCommand("MOX"));
 }
 
+TEST(GraphicsStateTest, PlotStateFromCommand)
+{
+	CHECK(PlotState::Linear == GraphicsState::PlotStateFromCommand("G01"));
+	CHECK(PlotState::Clockwise  == GraphicsState::PlotStateFromCommand("G02"));
+	CHECK(PlotState::CounterClockwise  == GraphicsState::PlotStateFromCommand("G03"));
+	CHECK_THROWS(std::invalid_argument, GraphicsState::PlotStateFromCommand("G55"));
+}
+
 TEST(GraphicsStateTest, Format)
 {
 	CHECK(!state.GetFormat().has_value());

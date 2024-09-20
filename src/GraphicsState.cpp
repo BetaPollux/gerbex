@@ -95,3 +95,15 @@ Unit GraphicsState::UnitFromCommand(const std::string &str) {
 	throw std::invalid_argument("invalid unit");
 }
 
+PlotState GraphicsState::PlotStateFromCommand(const std::string &str) {
+	if (str == "G01") {
+		return PlotState::Linear;
+	} else if (str == "G02") {
+		return PlotState::Clockwise;
+	} else if (str == "G03") {
+		return PlotState::CounterClockwise;
+	} else {
+		throw std::invalid_argument("invalid plot state");
+	}
+}
+

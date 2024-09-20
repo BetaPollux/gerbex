@@ -24,170 +24,90 @@
 #include "CommandParser.h"
 #include "CppUTest/TestHarness.h"
 
-TEST_GROUP(CommandParserTest) {
+TEST_GROUP(GetCommandCode) {
 };
 
-/*
- * TODO: TF, TA, TO, TD
- *
- */
 
-TEST(CommandParserTest, G04) {
-	std::string code = CommandParser::GetCommandCode("G04 Comment");
-
-	STRCMP_EQUAL("G04", code.c_str());
+TEST(GetCommandCode, G04) {
+	STRCMP_EQUAL("G04", CommandParser::GetCommandCode("G04 Comment").c_str());
 }
 
-TEST(CommandParserTest, MO) {
-	std::string code = CommandParser::GetCommandCode("MOMM");
-
-	STRCMP_EQUAL("MO", code.c_str());
+TEST(GetCommandCode, MO) {
+	STRCMP_EQUAL("MO", CommandParser::GetCommandCode("MOMM").c_str());
 }
 
-TEST(CommandParserTest, FS) {
-	std::string code = CommandParser::GetCommandCode("FSLAX26Y26");
-
-	STRCMP_EQUAL("FS", code.c_str());
+TEST(GetCommandCode, FS) {
+	STRCMP_EQUAL("FS", CommandParser::GetCommandCode("FSLAX26Y26").c_str());
 }
 
-TEST(CommandParserTest, AD) {
-	std::string code = CommandParser::GetCommandCode("ADD10C,0.010");
-
-	STRCMP_EQUAL("AD", code.c_str());
+TEST(GetCommandCode, AD) {
+	STRCMP_EQUAL("AD", CommandParser::GetCommandCode("ADD10C,0.010").c_str());
 }
 
-TEST(CommandParserTest, AM) {
-	std::string code = CommandParser::GetCommandCode("AMTHERMAL80");
-	STRCMP_EQUAL("AM", code.c_str());
+TEST(GetCommandCode, AM) {
+	STRCMP_EQUAL("AM", CommandParser::GetCommandCode("AMTHERMAL80").c_str());
 }
 
-TEST(CommandParserTest, Dnn) {
-	std::string code = CommandParser::GetCommandCode("D10");
-
-	STRCMP_EQUAL("Dnn", code.c_str());
+TEST(GetCommandCode, Dnn) {
+	STRCMP_EQUAL("Dnn", CommandParser::GetCommandCode("D10").c_str());
+	STRCMP_EQUAL("Dnn", CommandParser::GetCommandCode("D99").c_str());
+	STRCMP_EQUAL("Dnn", CommandParser::GetCommandCode("D2147483647").c_str());
 }
 
-TEST(CommandParserTest, G75) {
-	std::string code = CommandParser::GetCommandCode("G75");
-
-	STRCMP_EQUAL("G75", code.c_str());
+TEST(GetCommandCode, PlotState) {
+	STRCMP_EQUAL("G75", CommandParser::GetCommandCode("G75").c_str());
+	STRCMP_EQUAL("G01", CommandParser::GetCommandCode("G01").c_str());
+	STRCMP_EQUAL("G02", CommandParser::GetCommandCode("G02").c_str());
+	STRCMP_EQUAL("G03", CommandParser::GetCommandCode("G03").c_str());
 }
 
-TEST(CommandParserTest, G01) {
-	std::string code = CommandParser::GetCommandCode("G01");
-
-	STRCMP_EQUAL("G01", code.c_str());
-}
-
-TEST(CommandParserTest, G02) {
-	std::string code = CommandParser::GetCommandCode("G02");
-
-	STRCMP_EQUAL("G02", code.c_str());
-}
-
-TEST(CommandParserTest, G03) {
-	std::string code = CommandParser::GetCommandCode("G03");
-
-	STRCMP_EQUAL("G03", code.c_str());
-}
-
-TEST(CommandParserTest, D01) {
-	std::vector<std::string> words = { "X250000Y155000D01", "Y155000D01",
-			"X250000D01", "D01", "X75000Y50000I40000J0D01", "I40000J0D01" };
-	for (std::string &w : words) {
-		std::string code = CommandParser::GetCommandCode(w);
-
-		STRCMP_EQUAL("D01", code.c_str());
+TEST(GetCommandCode, Operations) {
+	std::vector<std::string> opcodes = { "D01", "D02", "D03" };
+	for (std::string &op : opcodes) {
+		std::vector<std::string> words = { "X250000Y155000", "Y155000",
+				"X250000", "", "X75000Y50000I40000J0", "I40000J0" };
+		for (std::string &w : words) {
+			STRCMP_EQUAL(op.c_str(), CommandParser::GetCommandCode(w + op).c_str());
+		}
 	}
 }
 
-TEST(CommandParserTest, D02) {
-	std::vector<std::string> words = { "X2152000Y1215000D02", "Y1215000D02",
-			"X2152000D02", "D02" };
-	for (std::string &w : words) {
-		std::string code = CommandParser::GetCommandCode(w);
-
-		STRCMP_EQUAL("D02", code.c_str());
-	}
+TEST(GetCommandCode, ApertureTransformations) {
+	STRCMP_EQUAL("LP", CommandParser::GetCommandCode("LPC").c_str());
+	STRCMP_EQUAL("LM", CommandParser::GetCommandCode("LMN").c_str());
+	STRCMP_EQUAL("LR", CommandParser::GetCommandCode("LR90").c_str());
+	STRCMP_EQUAL("LS", CommandParser::GetCommandCode("LS0.8").c_str());
 }
 
-TEST(CommandParserTest, D03) {
-	std::vector<std::string> words = { "X1215000Y2152000D03", "Y2152000D03",
-			"X1215000D03", "D03" };
-	for (std::string &w : words) {
-		std::string code = CommandParser::GetCommandCode(w);
-
-		STRCMP_EQUAL("D03", code.c_str());
-	}
+TEST(GetCommandCode, RegionStatement) {
+	STRCMP_EQUAL("G36", CommandParser::GetCommandCode("G36").c_str());
+	STRCMP_EQUAL("G37", CommandParser::GetCommandCode("G37").c_str());
 }
 
-TEST(CommandParserTest, LP) {
-	std::string code = CommandParser::GetCommandCode("LPC");
-
-	STRCMP_EQUAL("LP", code.c_str());
+TEST(GetCommandCode, BlockAperture) {
+	STRCMP_EQUAL("AB", CommandParser::GetCommandCode("ABD12").c_str());
+	STRCMP_EQUAL("AB", CommandParser::GetCommandCode("AB").c_str());
 }
 
-TEST(CommandParserTest, LM) {
-	std::string code = CommandParser::GetCommandCode("LMN");
-
-	STRCMP_EQUAL("LM", code.c_str());
+TEST(GetCommandCode, StepAndRepeat) {
+	STRCMP_EQUAL("SR", CommandParser::GetCommandCode("SRX2Y3I2.0J3.0").c_str());
+	STRCMP_EQUAL("SR", CommandParser::GetCommandCode("SR").c_str());
 }
 
-TEST(CommandParserTest, LR) {
-	std::string code = CommandParser::GetCommandCode("LR90");
-
-	STRCMP_EQUAL("LR", code.c_str());
+TEST(GetCommandCode, EndOfFile) {
+	STRCMP_EQUAL("M02", CommandParser::GetCommandCode("M02").c_str());
 }
 
-TEST(CommandParserTest, LS) {
-	std::string code = CommandParser::GetCommandCode("LS0.8");
-
-	STRCMP_EQUAL("LS", code.c_str());
+TEST(GetCommandCode, Attributes) {
+	STRCMP_EQUAL("TF", CommandParser::GetCommandCode("TFMyAttribute,Yes").c_str());
+	STRCMP_EQUAL("TA", CommandParser::GetCommandCode("TA.AperFunction,ComponentPad").c_str());
+	STRCMP_EQUAL("TO", CommandParser::GetCommandCode("TO.C,R6").c_str());
+	STRCMP_EQUAL("TD", CommandParser::GetCommandCode("TD.AperFunction").c_str());
 }
 
-TEST(CommandParserTest, G36) {
-	std::string code = CommandParser::GetCommandCode("G36");
-
-	STRCMP_EQUAL("G36", code.c_str());
-}
-
-TEST(CommandParserTest, G37) {
-	std::string code = CommandParser::GetCommandCode("G37");
-
-	STRCMP_EQUAL("G37", code.c_str());
-}
-
-TEST(CommandParserTest, AB_open) {
-	std::string code = CommandParser::GetCommandCode("ABD12");
-
-	STRCMP_EQUAL("AB_open", code.c_str());
-}
-
-TEST(CommandParserTest, AB_close) {
-	std::string code = CommandParser::GetCommandCode("AB");
-
-	STRCMP_EQUAL("AB_close", code.c_str());
-}
-
-TEST(CommandParserTest, SR_open) {
-	std::string code = CommandParser::GetCommandCode("SRX2Y3I2.0J3.0");
-
-	STRCMP_EQUAL("SR_open", code.c_str());
-}
-
-TEST(CommandParserTest, SR_close) {
-	std::string code = CommandParser::GetCommandCode("SR");
-
-	STRCMP_EQUAL("SR_close", code.c_str());
-}
-
-TEST(CommandParserTest, M02) {
-	std::string code = CommandParser::GetCommandCode("M02");
-
-	STRCMP_EQUAL("M02", code.c_str());
-}
-
-TEST(CommandParserTest, Unknown) {
+TEST(GetCommandCode, Unknown) {
 	CHECK_THROWS(std::invalid_argument, CommandParser::GetCommandCode("Z"));
 }
+
+//TODO test handlers
 

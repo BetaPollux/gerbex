@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include "ApertureTransformation.h"
 #include "CppUTest/TestHarness.h"
 
@@ -80,3 +82,18 @@ TEST(ApertureTransformationTest, NotEqual_Scaling) {
 	CHECK(other != transform);
 }
 
+TEST(ApertureTransformationTest, PolarityFromCommand)
+{
+	CHECK(Polarity::Clear == ApertureTransformation::PolarityFromCommand("C"));
+	CHECK(Polarity::Dark  == ApertureTransformation::PolarityFromCommand("D"));
+	CHECK_THROWS(std::invalid_argument, ApertureTransformation::PolarityFromCommand("Q"));
+}
+
+TEST(ApertureTransformationTest, MirroringFromCommand)
+{
+	CHECK(Mirroring::None == ApertureTransformation::MirroringFromCommand("N"));
+	CHECK(Mirroring::X  == ApertureTransformation::MirroringFromCommand("X"));
+	CHECK(Mirroring::Y  == ApertureTransformation::MirroringFromCommand("Y"));
+	CHECK(Mirroring::XY  == ApertureTransformation::MirroringFromCommand("XY"));
+	CHECK_THROWS(std::invalid_argument, ApertureTransformation::MirroringFromCommand("Q"));
+}

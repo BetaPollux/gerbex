@@ -21,6 +21,7 @@
 #ifndef APERTURETRANSFORMATION_H_
 #define APERTURETRANSFORMATION_H_
 
+#include <string>
 
 enum class Polarity {
 	Dark,
@@ -58,6 +59,8 @@ public:
 	void SetRotationDegrees(double rotationDegrees);
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
+	static Polarity PolarityFromCommand(const std::string &str);
+	static Mirroring MirroringFromCommand(const std::string &str);
 
 private:
 	Polarity m_polarity;

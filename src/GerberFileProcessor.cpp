@@ -25,7 +25,32 @@
 #include <iostream>
 
 GerberFileProcessor::GerberFileProcessor() {
-	// Empty
+	m_handlers["G04"] = CommandParser::HandleComment;
+	m_handlers["MO"] = CommandParser::HandleUnit;
+	m_handlers["FS"] = CommandParser::HandleFormat;
+	m_handlers["AD"] = CommandParser::HandleApertureDefine;
+	m_handlers["AM"] = CommandParser::HandleApertureMacro;
+	m_handlers["Dnn"] = CommandParser::HandleSetCurrentAperture;
+	m_handlers["G75"] = CommandParser::NotImplemented;
+	m_handlers["G01"] = CommandParser::HandlePlotState;
+	m_handlers["G02"] = CommandParser::HandlePlotState;
+	m_handlers["G03"] = CommandParser::HandlePlotState;
+	m_handlers["D01"] = CommandParser::HandlePlot;
+	m_handlers["D02"] = CommandParser::HandleMove;
+	m_handlers["D03"] = CommandParser::HandleFlash;
+	m_handlers["LP"] = CommandParser::HandleApertureTransformations;
+	m_handlers["LM"] = CommandParser::HandleApertureTransformations;
+	m_handlers["LR"] = CommandParser::HandleApertureTransformations;
+	m_handlers["LS"] = CommandParser::HandleApertureTransformations;
+	m_handlers["G36"] = CommandParser::HandleRegionStatement;
+	m_handlers["G37"] = CommandParser::HandleRegionStatement;
+	m_handlers["AB"] = CommandParser::HandleBlockAperture;
+	m_handlers["SR"] = CommandParser::HandleStepAndRepeat;
+	m_handlers["M02"] = CommandParser::HandleEndOfFile;
+	m_handlers["TF"] = CommandParser::NotImplemented;
+	m_handlers["TA"] = CommandParser::NotImplemented;
+	m_handlers["TO"] = CommandParser::NotImplemented;
+	m_handlers["TD"] = CommandParser::NotImplemented;
 }
 
 GerberFileProcessor::~GerberFileProcessor() {
@@ -42,12 +67,11 @@ void GerberFileProcessor::Process(std::unique_ptr<std::istream> stream) {
 		}
 		try {
 			std::string code = CommandParser::GetCommandCode(words[0]);
-			if (code == "FS") {
-				m_processor.SetFormat(CoordinateFormat::FromCommand(words[0]));
-			} else if (code == "MO") {
-				m_processor.SetUnit(GraphicsState::UnitFromCommand(words[0]));
-			} else if (code == "M02") {
-				m_processor.SetEndOfFile();
+			auto handler = m_handlers.find(code);
+			if (handler != m_handlers.end()) {
+				handler->second(m_processor, words);
+			} else {
+				throw std::invalid_argument("unsupported command " + code);
 			}
 		} catch (const std::invalid_argument &ex) {
 			std::cerr << "WARNING line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
@@ -59,3 +83,4 @@ void GerberFileProcessor::Process(std::unique_ptr<std::istream> stream) {
 CommandsProcessor& GerberFileProcessor::GetProcessor() {
 	return m_processor;
 }
+

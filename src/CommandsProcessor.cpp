@@ -54,22 +54,22 @@ CommandsProcessor::~CommandsProcessor() {
 void CommandsProcessor::ApertureDefine(int ident,
 		std::shared_ptr<Aperture> aperture) {
 	if (aperture == nullptr) {
-		throw std::invalid_argument("Cannot add null aperture.");
+		throw std::invalid_argument("cannot add null aperture");
 	}
 	if (ident < 10) {
-		throw std::invalid_argument("Aperture ident must be >= 10.");
+		throw std::invalid_argument("aperture ident must be >= 10");
 	}
 	if (m_apertures.find(ident) == m_apertures.end()) {
 		m_apertures[ident] = aperture;
 	} else {
-		throw std::invalid_argument("Aperture ident already used.");
+		throw std::invalid_argument("aperture ident already used");
 	}
 }
 
 void CommandsProcessor::SetCurrentAperture(int ident) {
 	if (m_apertures.find(ident) == m_apertures.end()) {
 		throw std::invalid_argument(
-				"Aperture " + std::to_string(ident) + " does not exist.");
+				"aperture " + std::to_string(ident) + " does not exist");
 	}
 	m_graphicsState.SetCurrentAperture(m_apertures[ident]);
 }
@@ -78,23 +78,23 @@ std::shared_ptr<Aperture> CommandsProcessor::GetAperture(int ident) const {
 	auto result = m_apertures.find(ident);
 	if (result == m_apertures.end()) {
 		throw std::invalid_argument(
-				"Aperture " + std::to_string(ident) + " does not exist.");
+				"aperture " + std::to_string(ident) + " does not exist");
 	}
 	return result->second;
 }
 
 void CommandsProcessor::PlotDraw(const Point &coord) {
 	if (m_graphicsState.GetPlotState() != PlotState::Linear) {
-		throw std::logic_error("Can only plot Draw in Linear plot state.");
+		throw std::logic_error("can only plot Draw in Linear plot state");
 	}
 
 	if (!m_graphicsState.GetCurrentPoint().has_value()) {
-		throw std::logic_error("Draw requires valid current point.");
+		throw std::logic_error("draw requires valid current point");
 	}
 
 	if (m_commandState != CommandState::InsideRegion
 			&& m_graphicsState.GetCurrentAperture() == nullptr) {
-		throw std::logic_error("Draw requires valid current aperture.");
+		throw std::logic_error("draw requires valid current aperture");
 	}
 
 	std::shared_ptr<Draw> obj = std::make_shared<Draw>(
@@ -119,16 +119,16 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 	} else if (m_graphicsState.GetPlotState() == PlotState::CounterClockwise) {
 		direction = ArcDirection::CounterClockwise;
 	} else {
-		throw std::logic_error("Can only plot Arc in CW or CCW plot state.");
+		throw std::logic_error("can only plot Arc in CW or CCW plot state");
 	}
 
 	if (!m_graphicsState.GetCurrentPoint().has_value()) {
-		throw std::logic_error("Arc requires valid current point.");
+		throw std::logic_error("arc requires valid current point");
 	}
 
 	if (m_commandState != CommandState::InsideRegion
 			&& m_graphicsState.GetCurrentAperture() == nullptr) {
-		throw std::logic_error("Arc requires valid current aperture.");
+		throw std::logic_error("arc requires valid current aperture");
 	}
 
 	std::shared_ptr<Arc> obj = std::make_shared<Arc>(
@@ -154,7 +154,7 @@ void CommandsProcessor::Move(const Point &coord) {
 
 void CommandsProcessor::Flash(const Point &coord) {
 	if (m_graphicsState.GetCurrentAperture() == nullptr) {
-		throw std::logic_error("Flash requires defined current aperture");
+		throw std::logic_error("flash requires defined current aperture");
 	}
 
 	//Flash requires explicit namespace due to same method name
@@ -170,7 +170,7 @@ std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(
 	auto result = m_templates.find(name);
 	if (result == m_templates.end()) {
 		throw std::invalid_argument(
-				"Aperture template " + name + " does not exist.");
+				"aperture template " + name + " does not exist");
 	}
 	return result->second;
 }
@@ -201,7 +201,7 @@ void CommandsProcessor::SetPlotState(PlotState state) {
 
 void CommandsProcessor::StartRegion() {
 	if (m_commandState == CommandState::InsideRegion) {
-		throw std::logic_error("Cannot start a region inside a region.");
+		throw std::logic_error("cannot start a region inside a region");
 	}
 	m_activeRegion = std::make_unique<Region>();
 	m_commandState = CommandState::InsideRegion;
@@ -209,7 +209,7 @@ void CommandsProcessor::StartRegion() {
 
 void CommandsProcessor::EndRegion() {
 	if (m_commandState != CommandState::InsideRegion) {
-		throw std::logic_error("Can't end region; not inside a region");
+		throw std::logic_error("cannot end region; not inside a region");
 	}
 	m_objectDest.top()->push_back(std::move(m_activeRegion));
 	m_commandState = CommandState::Normal;
@@ -228,7 +228,7 @@ void CommandsProcessor::CloseApertureBlock() {
 		m_graphicsState.SetCurrentPoint(std::nullopt);
 		m_openBlocks--;
 	} else {
-		throw std::logic_error("Cannot close aperture block; none open.");
+		throw std::logic_error("cannot close aperture block; none open");
 	}
 }
 
@@ -238,7 +238,7 @@ void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
 		m_activeStepAndRepeat = std::make_unique<StepAndRepeat>(nx, ny, dx, dy);
 		m_objectDest.push(m_activeStepAndRepeat->GetObjectList());
 	} else {
-		throw std::logic_error("Cannot open step and repeat; already open.");
+		throw std::logic_error("cannot open step and repeat; already open");
 	}
 }
 
@@ -256,7 +256,7 @@ void CommandsProcessor::CloseStepAndRepeat() {
 		m_objectDest.top()->push_back(std::move(m_activeStepAndRepeat));
 		m_graphicsState.SetCurrentPoint(std::nullopt);
 	} else {
-		throw std::logic_error("Cannot close step and repeat; not opened.");
+		throw std::logic_error("cannot close step and repeat; not opened");
 	}
 }
 

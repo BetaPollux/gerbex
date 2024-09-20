@@ -22,6 +22,9 @@
 #define COMMANDPARSER_H_
 
 #include <string>
+#include "CommandsProcessor.h"
+
+typedef void (*commandHandler)(CommandsProcessor &, const std::vector<std::string> &);
 
 /*
  *
@@ -29,6 +32,24 @@
 class CommandParser {
 public:
 	static std::string GetCommandCode(const std::string &word);
+	static void AssertWordCommand(const std::vector<std::string> &words);
+	static void AssertCode(const std::string &code, const std::string &expected);
+	static void NotImplemented(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleComment(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleUnit(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleFormat(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleApertureDefine(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleApertureMacro(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleSetCurrentAperture(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandlePlotState(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandlePlot(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleMove(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleFlash(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleApertureTransformations(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleRegionStatement(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleBlockAperture(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleStepAndRepeat(CommandsProcessor &processor, const std::vector<std::string> &words);
+	static void HandleEndOfFile(CommandsProcessor &processor, const std::vector<std::string> &words);
 };
 
 #endif /* COMMANDPARSER_H_ */
