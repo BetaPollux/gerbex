@@ -213,6 +213,14 @@ TEST(GetCommandCode, Unknown) {
 TEST_GROUP(SplitFields) {
 };
 
+TEST(SplitFields, Empty) {
+	std::string word = "";
+	std::vector<std::string> fields = DataTypeParser::SplitFields(word);
+
+	LONGS_EQUAL(1, fields.size());
+	STRCMP_EQUAL("", fields[0].c_str());
+}
+
 TEST(SplitFields, OneField) {
 	std::string word = "123";
 	std::vector<std::string> fields = DataTypeParser::SplitFields(word);

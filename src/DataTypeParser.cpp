@@ -122,6 +122,14 @@ std::string DataTypeParser::GetCommandCode(const std::string &word) {
 }
 
 std::vector<std::string> DataTypeParser::SplitFields(const std::string &word) {
-	std::vector<std::string> fields = { word };
+	std::vector<std::string> fields;
+    std::istringstream istr(word);
+
+	while (!istr.eof()) {
+        std::string field;
+        std::getline(istr, field, ',');
+		fields.push_back(field);
+	}
+
 	return fields;
 }
