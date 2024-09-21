@@ -1,5 +1,5 @@
 /*
- * SyntaxParser.h
+ * FileParser.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYNTAXPARSER_H_
-#define SYNTAXPARSER_H_
+#ifndef FILEPARSER_H_
+#define FILEPARSER_H_
 
 #include <istream>
 #include <memory>
@@ -29,11 +29,11 @@
 /*
  * Takes an input stream and returns Gerber words
  */
-class SyntaxParser {
+class FileParser {
 public:
-	SyntaxParser();
-	SyntaxParser(std::unique_ptr<std::istream> stream);
-	virtual ~SyntaxParser();
+	FileParser();
+	FileParser(std::unique_ptr<std::istream> stream);
+	virtual ~FileParser();
 	// Get the next command from the stream. Word commands are a single word, whereas extended commands can have multiple words.
 	// Commands can span multiple lines in the file.
 	// Words always end in *. Returns an empty vector on EOF.
@@ -46,4 +46,4 @@ private:
 	int m_currentLine;
 };
 
-#endif /* SYNTAXPARSER_H_ */
+#endif /* FILEPARSER_H_ */

@@ -1,5 +1,5 @@
 /*
- * test_SyntaxParser.cpp
+ * test_FileParser.cpp
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,20 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SyntaxParser.h"
+#include "FileParser.h"
 #include <memory>
 #include <sstream>
 #include "CppUTest/TestHarness.h"
 
-void setIstream(SyntaxParser &parser, std::string const &str) {
+
+void setIstream(FileParser &parser, std::string const &str) {
 	parser.SetIstream(std::make_unique<std::istringstream>(str));
 }
 
-TEST_GROUP(SyntaxParserTest) {
-	SyntaxParser parser;
+/**
+ * Get Next Command
+ */
+
+TEST_GROUP(FileParser_GetNext) {
+	FileParser parser;
 };
 
-TEST(SyntaxParserTest, Word) {
+TEST(FileParser_GetNext, Word) {
 	setIstream(parser, "D10*");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -40,7 +45,7 @@ TEST(SyntaxParserTest, Word) {
 	STRCMP_EQUAL("D10", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Word_LeadingWhitespace) {
+TEST(FileParser_GetNext, Word_LeadingWhitespace) {
 	setIstream(parser, "\n\nD10*");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -49,7 +54,7 @@ TEST(SyntaxParserTest, Word_LeadingWhitespace) {
 	STRCMP_EQUAL("D10", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Word_LeadingWhitespace_Dos) {
+TEST(FileParser_GetNext, Word_LeadingWhitespace_Dos) {
 	setIstream(parser, "\r\n\r\nD10*");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -58,7 +63,7 @@ TEST(SyntaxParserTest, Word_LeadingWhitespace_Dos) {
 	STRCMP_EQUAL("D10", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Two_Word) {
+TEST(FileParser_GetNext, Two_Word) {
 	setIstream(parser, "D10*X0Y0D02*");
 
 	std::vector<std::string> first = parser.GetNextCommand();
@@ -70,7 +75,7 @@ TEST(SyntaxParserTest, Two_Word) {
 	STRCMP_EQUAL("X0Y0D02", second[0].c_str());
 }
 
-TEST(SyntaxParserTest, Extended) {
+TEST(FileParser_GetNext, Extended) {
 	setIstream(parser, "%FSLAX26Y26*%");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -79,7 +84,7 @@ TEST(SyntaxParserTest, Extended) {
 	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Extended_LeadingWhitespace) {
+TEST(FileParser_GetNext, Extended_LeadingWhitespace) {
 	setIstream(parser, "\n\n%FSLAX26Y26*%");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -88,7 +93,7 @@ TEST(SyntaxParserTest, Extended_LeadingWhitespace) {
 	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Extended_LeadingWhitespace_Dos) {
+TEST(FileParser_GetNext, Extended_LeadingWhitespace_Dos) {
 	setIstream(parser, "\r\n\r\n%FSLAX26Y26*%");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -97,7 +102,7 @@ TEST(SyntaxParserTest, Extended_LeadingWhitespace_Dos) {
 	STRCMP_EQUAL("FSLAX26Y26", words[0].c_str());
 }
 
-TEST(SyntaxParserTest, Two_Extended) {
+TEST(FileParser_GetNext, Two_Extended) {
 	setIstream(parser, "%FSLAX26Y26*%%MOMM*%");
 
 	std::vector<std::string> first = parser.GetNextCommand();
@@ -109,7 +114,7 @@ TEST(SyntaxParserTest, Two_Extended) {
 	STRCMP_EQUAL("MOMM", second[0].c_str());
 }
 
-TEST(SyntaxParserTest, ExtendedMulti) {
+TEST(FileParser_GetNext, ExtendedMulti) {
 	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -120,7 +125,7 @@ TEST(SyntaxParserTest, ExtendedMulti) {
 	STRCMP_EQUAL("1,0,$4,$2,$3", words[2].c_str());
 }
 
-TEST(SyntaxParserTest, ExtendedMulti_Multiline) {
+TEST(FileParser_GetNext, ExtendedMulti_Multiline) {
 	setIstream(parser,
 			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
 
@@ -131,11 +136,11 @@ TEST(SyntaxParserTest, ExtendedMulti_Multiline) {
 	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", words[1].c_str());
 }
 
-TEST(SyntaxParserTest, CurrentLine_One) {
+TEST(FileParser_GetNext, CurrentLine_One) {
 	LONGS_EQUAL(1, parser.GetCurrentLine());
 }
 
-TEST(SyntaxParserTest, CurrentLine_ReadOne) {
+TEST(FileParser_GetNext, CurrentLine_ReadOne) {
 	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
 
 	parser.GetNextCommand();
@@ -143,7 +148,7 @@ TEST(SyntaxParserTest, CurrentLine_ReadOne) {
 	LONGS_EQUAL(1, parser.GetCurrentLine());
 }
 
-TEST(SyntaxParserTest, CurrentLine_ReadTwo) {
+TEST(FileParser_GetNext, CurrentLine_ReadTwo) {
 	setIstream(parser, "D10*\nX0Y0D02*");
 
 	parser.GetNextCommand();
@@ -152,7 +157,7 @@ TEST(SyntaxParserTest, CurrentLine_ReadTwo) {
 	LONGS_EQUAL(2, parser.GetCurrentLine());
 }
 
-TEST(SyntaxParserTest, SetStreamResetsCount) {
+TEST(FileParser_GetNext, SetStreamResetsCount) {
 	setIstream(parser, "\n\n\nD10*");
 
 	parser.GetNextCommand();
@@ -162,7 +167,7 @@ TEST(SyntaxParserTest, SetStreamResetsCount) {
 	LONGS_EQUAL(1, parser.GetCurrentLine());
 }
 
-TEST(SyntaxParserTest, CurrentLine_Many) {
+TEST(FileParser_GetNext, CurrentLine_Many) {
 	setIstream(parser,
 			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
 
@@ -171,13 +176,13 @@ TEST(SyntaxParserTest, CurrentLine_Many) {
 	LONGS_EQUAL(8, parser.GetCurrentLine());
 }
 
-TEST(SyntaxParserTest, Empty) {
+TEST(FileParser_GetNext, Empty) {
 	std::vector<std::string> words = parser.GetNextCommand();
 
 	CHECK(words.empty());
 }
 
-TEST(SyntaxParserTest, Finish) {
+TEST(FileParser_GetNext, Finish) {
 	setIstream(parser, "D10*");
 
 	std::vector<std::string> words = parser.GetNextCommand();
@@ -187,13 +192,13 @@ TEST(SyntaxParserTest, Finish) {
 	CHECK(final.empty());
 }
 
-TEST(SyntaxParserTest, NoDelimiter) {
+TEST(FileParser_GetNext, NoDelimiter) {
 	setIstream(parser, "WHAT");
 
 	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());
 }
 
-TEST(SyntaxParserTest, OpenExtended) {
+TEST(FileParser_GetNext, OpenExtended) {
 	setIstream(parser, "%OHNO*");
 
 	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());

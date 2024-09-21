@@ -35,6 +35,7 @@ public:
 	void StartContour();
 	void AddSegment(std::shared_ptr<Segment> segment);
 	const std::vector<RegionContour>& GetContours() const;
+	bool AreContoursClosed() const;
 
 private:
 	std::vector<RegionContour> m_contours;

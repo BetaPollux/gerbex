@@ -22,6 +22,7 @@
 #include "Draw.h"
 #include "RegionContour.h"
 #include <memory>
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(RegionContourTest) {
@@ -34,12 +35,23 @@ TEST(RegionContourTest, Initial) {
 
 TEST(RegionContourTest, AddSegment) {
 	RegionContour contour;
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>();
+	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0),
+			Point(0, 100));
 
 	contour.AddSegment(draw);
 
 	LONGS_EQUAL(1, contour.GetSegments().size());
 	POINTERS_EQUAL(draw.get(), contour.GetSegments().back().get());
+}
+
+TEST(RegionContourTest, AddSegment_ZeroLength) {
+	RegionContour contour;
+
+	Point pt1 = Point(0, 0);
+	Point pt2 = Point(0, 0);
+
+	CHECK_THROWS(std::invalid_argument,
+			contour.AddSegment(std::make_shared<Draw>(pt1, pt2)));
 }
 
 TEST(RegionContourTest, IsClosed_Empty) {

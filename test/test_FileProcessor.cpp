@@ -18,10 +18,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "FileProcessor.h"
+#include <fstream>
 #include <sstream>
-
-#include "GerberFileProcessor.h"
 #include "CppUTest/TestHarness.h"
+
 
 TEST_GROUP(GerberBasics) {
 };
@@ -29,37 +30,22 @@ TEST_GROUP(GerberBasics) {
 TEST(GerberBasics, ThrowsRuntimeError) {
 	// Reaches EOF without closing delimiter
 	std::unique_ptr<std::istream> gerber = std::make_unique<std::istringstream>("%MOMM*\n");
-	GerberFileProcessor fileProcessor;
+
+	FileProcessor fileProcessor;
 	CHECK_THROWS(std::runtime_error, fileProcessor.Process(std::move(gerber)));
 }
 
 TEST_GROUP(GerberTwoSquareBoxes) {
-	GerberFileProcessor fileProcessor;
+	FileProcessor fileProcessor;
 	CommandsProcessor *processor;
 	const GraphicsState *graphicsState;
 
 	void setup() {
-		std::unique_ptr<std::istream> gerber = std::make_unique<std::istringstream>(
-			"G04 Ucamco ex. 1: Two square boxes*\n"
-			"%FSLAX26Y26*%\n"
-			"%MOMM*%\n"
-			"%TF.Part,Other,example*%\n"
-			"%LPD*%\n"
-			"%ADD10C,0.010*%\n"
-			"D10*\n"
-			"X0Y0D02*\n"
-			"G01*\n"
-			"X5000000Y0D01*\n"
-			"Y5000000D01*\n"
-			"X0D01*\n"
-			"Y0D01*\n"
-			"X6000000D02*\n"
-			"X11000000D01*\n"
-			"Y5000000D01*\n"
-			"X6000000D01*\n"
-			"Y0D01*\n"
-			"M02*\n");
-		
+		//TODO make this path use a variable
+		std::string path = "../Gerber_File_Format_Examples 20210409/2-13-1_Two_square_boxes.gbr";
+		std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path, std::ifstream::in);
+		CHECK_TEXT(gerber->good(), "could not open Gerber file; run exec from build directory as ./bin/test_gerbex");
+
 		fileProcessor.Process(std::move(gerber));
 		processor = &fileProcessor.GetProcessor();
 		graphicsState = &processor->GetGraphicsState();

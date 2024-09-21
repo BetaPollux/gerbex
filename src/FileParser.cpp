@@ -1,5 +1,5 @@
 /*
- * SyntaxParser.cpp
+ * FileParser.cpp
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,22 +18,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SyntaxParser.h"
+#include "FileParser.h"
 #include <sstream>
 
 const char EXT_DELIM = '%';
 const char WORD_DELIM = '*';
 
-SyntaxParser::SyntaxParser() :
-		SyntaxParser(std::make_unique<std::istringstream>("")) {
+FileParser::FileParser() :
+		FileParser(std::make_unique<std::istringstream>("")) {
 	// Empty
 }
 
-SyntaxParser::SyntaxParser(std::unique_ptr<std::istream> stream) {
+FileParser::FileParser(std::unique_ptr<std::istream> stream) {
 	SetIstream(std::move(stream));
 }
 
-SyntaxParser::~SyntaxParser() {
+FileParser::~FileParser() {
 	// Empty
 }
 
@@ -72,7 +72,7 @@ std::vector<std::string> split(std::string &str, char delim) {
 	return result;
 }
 
-std::vector<std::string> SyntaxParser::GetNextCommand() {
+std::vector<std::string> FileParser::GetNextCommand() {
 	// Discard all leading space, and count new lines
 	while (isspace(m_istream->peek())) {
 		int space = m_istream->get();
@@ -106,12 +106,12 @@ std::vector<std::string> SyntaxParser::GetNextCommand() {
 	return split(command_str, WORD_DELIM);
 }
 
-void SyntaxParser::SetIstream(std::unique_ptr<std::istream> istream) {
+void FileParser::SetIstream(std::unique_ptr<std::istream> istream) {
 	m_istream = std::move(istream);
 	m_currentLine = 1;
 }
 
-int SyntaxParser::GetCurrentLine() const {
+int FileParser::GetCurrentLine() const {
 	return m_currentLine;
 }
 

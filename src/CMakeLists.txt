@@ -6,14 +6,15 @@ add_library(libgerbex
 	BlockAperture.cpp
 	Circle.cpp
 	CircleTemplate.cpp
-	CommandParser.cpp
+	CommandHandler.cpp
 	CommandsProcessor.cpp
 	CoordinateData.cpp
 	CoordinateFormat.cpp
 	DataTypeParser.cpp
 	Draw.cpp
 	Flash.cpp
-	GerberFileProcessor.cpp
+	FileParser.cpp
+	FileProcessor.cpp
 	GraphicalObject.cpp
 	GraphicsState.cpp
 	Macro.cpp
@@ -35,7 +36,6 @@ add_library(libgerbex
 	RegionContour.cpp
 	Segment.cpp
 	StepAndRepeat.cpp
-	SyntaxParser.cpp
 )
 
 target_include_directories(libgerbex

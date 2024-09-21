@@ -1,5 +1,5 @@
 /*
- * GerberFileProcessor.h
+ * FileProcessor.h
  *
  *  Created on: Sep. 15, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,27 +18,27 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GERBERFILEPROCESSOR_H_
-#define GERBERFILEPROCESSOR_H_
+#ifndef FILEPROCESSOR_H_
+#define FILEPROCESSOR_H_
 
-#include "CommandParser.h"
 #include "CommandsProcessor.h"
 #include <memory>
 #include <unordered_map>
+#include "CommandHandler.h"
 
 /*
  *
  */
-class GerberFileProcessor {
+class FileProcessor {
 public:
-	GerberFileProcessor();
-	virtual ~GerberFileProcessor();
+	FileProcessor();
+	virtual ~FileProcessor();
 	void Process(std::unique_ptr<std::istream> stream);
 	CommandsProcessor& GetProcessor();
 
 private:
 	CommandsProcessor m_processor;
-	std::unordered_map<std::string, commandHandler> m_handlers;
+	std::unordered_map<std::string, callHandler> m_handlers;
 };
 
-#endif /* GERBERFILEPROCESSOR_H_ */
+#endif /* FILEPROCESSOR_H_ */

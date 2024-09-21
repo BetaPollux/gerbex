@@ -505,19 +505,20 @@ TEST(CommandsProcessor_InsideRegion, AddsSegment_Arc) {
  */
 
 TEST_GROUP(CommandsProcessor_AfterRegion) {
-	Point origin, end;
+	Point origin, mid, end;
 	CommandsProcessor processor;
 
 	void setup() {
 		origin = Point(3000, -2000);
+		mid = Point(1500, 1000);
 		end = Point(750, -500);
 
 		processor.SetPlotState(PlotState::Linear);
 		processor.StartRegion();
 		processor.Move(origin);
+		processor.PlotDraw(mid);
 		processor.PlotDraw(end);
-		processor.PlotDraw(end);
-		processor.PlotDraw(end);
+		processor.PlotDraw(origin);
 		processor.EndRegion();
 	}
 };

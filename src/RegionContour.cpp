@@ -19,6 +19,7 @@
  */
 
 #include "RegionContour.h"
+#include <stdexcept>
 
 RegionContour::RegionContour() {
 	// Empty
@@ -29,7 +30,7 @@ RegionContour::~RegionContour() {
 	// Empty
 }
 
-bool RegionContour::IsClosed() {
+bool RegionContour::IsClosed() const {
 	//Checks that all segments are connected.
 	//Does NOT check for more complex conditions which are invalid.
 	if (m_segments.size() > 2) {
@@ -45,6 +46,9 @@ bool RegionContour::IsClosed() {
 }
 
 void RegionContour::AddSegment(std::shared_ptr<Segment> segment) {
+	if (segment->GetOrigin() == segment->GetEndPoint()) {
+		throw std::invalid_argument("contour cannot have zero-length segment");
+	}
 	m_segments.push_back(segment);
 }
 

@@ -1,7 +1,7 @@
 /*
- * RegionContour.h
+ * test_CommandHandler.cpp
  *
- *  Created on: Mar. 29, 2024
+ *  Created on: Sep. 15, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef REGIONCONTOUR_H_
-#define REGIONCONTOUR_H_
-
-#include "Segment.h"
-#include <memory>
+#include <stdexcept>
 #include <vector>
 
-/*
- * A sequence of connected linear or circular segments.
- * Each segment must start where the previous ends.
- * Valid contours are closed, where the end point of the last segment coincides
- * with the start point of the first segment.
- */
-class RegionContour {
-public:
-	RegionContour();
-	virtual ~RegionContour();
-	bool IsClosed() const;
-	void AddSegment(std::shared_ptr<Segment> object);
-	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
+#include "CommandHandler.h"
+#include "CppUTest/TestHarness.h"
 
-private:
-	std::vector<std::shared_ptr<Segment>> m_segments;
-
+TEST_GROUP(CommandHandlerTest) {
 };
 
-#endif /* REGIONCONTOUR_H_ */
+
+TEST(CommandHandlerTest, NotImplemented) {
+	FAIL("CommandHandlerTest Not Implemented");
+}
+

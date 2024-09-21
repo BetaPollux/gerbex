@@ -23,6 +23,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 /*
  *
@@ -41,6 +42,10 @@ public:
 	std::string Field(const std::string &word) const;
 	std::string Name(const std::string &word) const;
 	std::string Match(const std::string &word, const std::string &dtype) const;
+	static std::vector<std::string> SplitFields(const std::string &word);
+	static std::string GetCommandCode(const std::string &word);
+
+
 private:
 	const std::unordered_map<std::string, std::string> m_patterns;
 

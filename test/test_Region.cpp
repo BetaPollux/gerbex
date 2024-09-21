@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+
 /***
  * From clean initialization
  */
@@ -57,7 +58,7 @@ TEST(Region_OneContour, ContourSize) {
 }
 
 TEST(Region_OneContour, AddSegment) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>();
+	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
 
 	region.AddSegment(draw);
 
@@ -68,9 +69,10 @@ TEST(Region_OneContour, AddSegment) {
 }
 
 TEST(Region_OneContour, AddMultiSegments) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>();
-	std::shared_ptr<Arc> arc = std::make_shared<Arc>();
-	std::shared_ptr<Draw> draw2 = std::make_shared<Draw>();
+	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
+	std::shared_ptr<Arc> arc = std::make_shared<Arc>(Point(0, 100), Point(100, 0),
+			Point(0, 0), ArcDirection::Clockwise);
+	std::shared_ptr<Draw> draw2 = std::make_shared<Draw>(Point(100, 0), Point(0, 0));
 
 	region.AddSegment(draw);
 	region.AddSegment(arc);
@@ -84,6 +86,15 @@ TEST(Region_OneContour, AddMultiSegments) {
 	POINTERS_EQUAL(draw2.get(), segments[2].get());
 }
 
+TEST(Region_OneContour, StartNextContour_NotClosed) {
+	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
+
+	//Open contour
+	region.AddSegment(draw);
+
+	CHECK_THROWS(std::logic_error, region.StartContour());
+}
+
 /***
  * Region with multiple contours
  */
@@ -92,6 +103,9 @@ TEST_GROUP(Region_MultiContour) {
 
 	void setup() {
 		region.StartContour();
+		region.AddSegment(std::make_shared<Draw>(Point(0, 0), Point(0, 100)));
+		region.AddSegment(std::make_shared<Draw>(Point(0, 100), Point(100, 0)));
+		region.AddSegment(std::make_shared<Draw>(Point(100, 0), Point(0, 0)));
 		region.StartContour();
 	}
 };
@@ -101,14 +115,15 @@ TEST(Region_MultiContour, ContourSize) {
 }
 
 TEST(Region_MultiContour, AddSegment) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>();
+	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
 
+	int segments0_size = region.GetContours()[0].GetSegments().size();
 	region.AddSegment(draw);
 
 	auto segments0 = region.GetContours()[0].GetSegments();
 	auto segments1 = region.GetContours()[1].GetSegments();
 
-	LONGS_EQUAL(0, segments0.size());
+	LONGS_EQUAL(segments0_size, segments0.size());
 	LONGS_EQUAL(1, segments1.size());
 	POINTERS_EQUAL(draw.get(), segments1.back().get());
 }

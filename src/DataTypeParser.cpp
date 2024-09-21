@@ -104,3 +104,24 @@ std::string DataTypeParser::Match(const std::string &word, const std::string &dt
     }
     throw std::invalid_argument("invalid " + dtype);
 }
+
+
+std::string DataTypeParser::GetCommandCode(const std::string &word) {
+	std::smatch match;
+	if (std::regex_search(word, match, std::regex("^([A-Z]{2}|[GM][0-9]{2})"))) {
+			return match[0].str();
+	} else if (std::regex_search(word, match, std::regex("D([0-9]+)$"))) {
+		int ident = std::stoi(match[1].str());
+		if (ident < 10) {
+			return match[0].str();	// D0n
+		} else {
+			return "Dnn";
+		}
+	}
+	throw std::invalid_argument("unrecognized word");
+}
+
+std::vector<std::string> DataTypeParser::SplitFields(const std::string &word) {
+	std::vector<std::string> fields = { word };
+	return fields;
+}

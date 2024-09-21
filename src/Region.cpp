@@ -31,16 +31,28 @@ Region::~Region() {
 }
 
 void Region::StartContour() {
+	if (!m_contours.empty() && !m_contours.back().IsClosed()) {
+		throw std::logic_error("need to close contour before starting next");
+	}
 	m_contours.push_back(RegionContour());
 }
 
 void Region::AddSegment(std::shared_ptr<Segment> segment) {
-	if (m_contours.size() == 0) {
-		throw std::logic_error("Need to start a contour before adding segment.");
+	if (m_contours.empty()) {
+		throw std::logic_error("need to start a contour before adding segment");
 	}
 	m_contours.back().AddSegment(segment);
 }
 
 const std::vector<RegionContour>& Region::GetContours() const {
 	return m_contours;
+}
+
+bool Region::AreContoursClosed() const {
+	for (const RegionContour &c: m_contours) {
+		if (!c.IsClosed()) {
+			return false;
+		}
+	}
+	return true;
 }
