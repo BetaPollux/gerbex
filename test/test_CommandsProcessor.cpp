@@ -30,6 +30,8 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
 /**
  * Helper functions
  */

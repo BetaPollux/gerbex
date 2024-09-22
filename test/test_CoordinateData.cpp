@@ -21,6 +21,8 @@
 #include "CppUTest/TestHarness.h"
 #include "CoordinateData.h"
 
+using namespace gerbex;
+
 TEST_GROUP(CoordinateDataTest) {
 };
 

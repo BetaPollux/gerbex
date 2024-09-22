@@ -21,6 +21,8 @@
 #include "StepAndRepeat.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 StepAndRepeat::StepAndRepeat()
 	: StepAndRepeat(1, 1, 0.0, 0.0)
 {
@@ -68,3 +70,5 @@ int StepAndRepeat::GetNx() const {
 int StepAndRepeat::GetNy() const {
 	return m_ny;
 }
+
+} /* namespace gerbex */

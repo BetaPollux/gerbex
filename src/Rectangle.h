@@ -23,6 +23,8 @@
 
 #include "Aperture.h"
 
+namespace gerbex {
+
 /*
  * Rectangle aperture with optional hole.
  */
@@ -40,5 +42,7 @@ private:
 	double m_ySize;
 	double m_holeDiameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* RECTANGLE_H_ */

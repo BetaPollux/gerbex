@@ -24,6 +24,9 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 
 /***
  * From clean initialization

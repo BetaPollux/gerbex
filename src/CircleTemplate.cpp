@@ -21,6 +21,8 @@
 #include "CircleTemplate.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 CircleTemplate::CircleTemplate() {
 	// Empty
 
@@ -41,3 +43,5 @@ std::unique_ptr<Aperture> CircleTemplate::Call(
 		throw std::invalid_argument("Requires 1 or 2 parameters");
 	}
 }
+
+} /* namespace gerbex */

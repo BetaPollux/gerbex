@@ -31,6 +31,8 @@
 #include "StepAndRepeat.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 CommandsProcessor::CommandsProcessor() :
 		m_commandState { CommandState::Normal },
 		m_graphicsState { },
@@ -157,8 +159,7 @@ void CommandsProcessor::Flash(const Point &coord) {
 		throw std::logic_error("flash requires defined current aperture");
 	}
 
-	//Flash requires explicit namespace due to same method name
-	std::unique_ptr<::Flash> obj = std::make_unique<::Flash>(coord,
+	std::unique_ptr<gerbex::Flash> obj = std::make_unique<gerbex::Flash>(coord,
 			m_graphicsState.GetCurrentAperture(),
 			m_graphicsState.GetTransformation());
 	m_objectDest.top()->push_back(std::move(obj));
@@ -260,3 +261,4 @@ void CommandsProcessor::CloseStepAndRepeat() {
 	}
 }
 
+} /* namespace gerbex */

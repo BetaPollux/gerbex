@@ -24,6 +24,8 @@
 #include <string>
 #include "CommandsProcessor.h"
 
+namespace gerbex {
+
 typedef void (*callHandler)(CommandsProcessor &, const std::vector<std::string> &);
 
 /*
@@ -50,5 +52,7 @@ public:
 	static void StepAndRepeat(CommandsProcessor &processor, const std::vector<std::string> &words);
 	static void EndOfFile(CommandsProcessor &processor, const std::vector<std::string> &words);
 };
+
+} /* namespace gerbex */
 
 #endif /* COMMANDHANDLER_H_ */

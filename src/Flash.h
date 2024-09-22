@@ -23,6 +23,8 @@
 
 #include "GraphicalObject.h"
 
+namespace gerbex {
+
 /*
  * Replication of an aperture in the image plane.
  */
@@ -33,5 +35,7 @@ public:
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Flash();
 };
+
+} /* namespace gerbex */
 
 #endif /* FLASH_H_ */

@@ -24,6 +24,7 @@
 #include "FileParser.h"
 #include "FileProcessor.h"
 
+namespace gerbex {
 
 FileProcessor::FileProcessor() {
 	m_handlers = {
@@ -86,4 +87,6 @@ void FileProcessor::Process(std::unique_ptr<std::istream> stream) {
 CommandsProcessor& FileProcessor::GetProcessor() {
 	return m_processor;
 }
+
+} /* namespace gerbex */
 

@@ -20,6 +20,8 @@
 
 #include "MacroTemplate.h"
 
+namespace gerbex {
+
 MacroTemplate::MacroTemplate() {
 	// Empty
 
@@ -43,3 +45,5 @@ std::unique_ptr<Aperture> MacroTemplate::Call(const std::vector<double> &paramet
 	//TODO add primitives
 	return nullptr;
 }
+
+} /* namespace gerbex */

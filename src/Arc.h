@@ -23,6 +23,8 @@
 
 #include "Segment.h"
 
+namespace gerbex {
+
 enum class ArcDirection {
 	Clockwise,
 	CounterClockwise
@@ -45,5 +47,7 @@ private:
 	ArcDirection m_direction;
 	Point m_centerOffset;
 };
+
+} /* namespace gerbex */
 
 #endif /* ARC_H_ */

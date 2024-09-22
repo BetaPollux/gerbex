@@ -21,6 +21,8 @@
 #include "Rectangle.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 Rectangle::Rectangle()
 	: Rectangle{ 1.0, 1.0 }
 {
@@ -56,3 +58,6 @@ double Rectangle::GetXSize() const {
 double Rectangle::GetYSize() const {
 	return m_ySize;
 }
+
+} /* namespace gerbex */
+

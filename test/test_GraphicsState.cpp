@@ -23,6 +23,8 @@
 #include "GraphicsState.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
 
 TEST_GROUP (GraphicsStateTest) {
 	GraphicsState state;

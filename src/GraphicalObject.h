@@ -26,6 +26,8 @@
 #include "Point.h"
 #include <memory>
 
+namespace gerbex {
+
 /*
  * Represents a plane figure, with shape, size, position and polarity (dark/clear).
  */
@@ -44,5 +46,7 @@ protected:
 	std::shared_ptr<Aperture> m_aperture;
 	ApertureTransformation m_transformation;
 };
+
+} /* namespace gerbex */
 
 #endif /* GRAPHICALOBJECT_H_ */

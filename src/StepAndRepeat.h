@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * Takes an object list and duplicates them in the desired amount.
  * Each replication is at an dx, dy offset.
@@ -47,5 +49,7 @@ private:
 	int m_nx, m_ny;
 	double m_dx, m_dy;
 };
+
+} /* namespace gerbex */
 
 #endif /* STEPANDREPEAT_H_ */

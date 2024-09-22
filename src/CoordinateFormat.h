@@ -24,6 +24,8 @@
 #include "Point.h"
 #include <string>
 
+namespace gerbex {
+
 /*
  * Specifies the number of integer and decimal places when interpreting coordinate data.
  * e.g., format of X36Y36 means 3+6 digits, or "X123123456" is 123.123456 mm
@@ -43,5 +45,7 @@ private:
 	int m_decimal;
 	double m_resolution;
 };
+
+} /* namespace gerbex */
 
 #endif /* COORDINATEFORMAT_H_ */

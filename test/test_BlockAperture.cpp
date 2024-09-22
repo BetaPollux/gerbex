@@ -22,6 +22,8 @@
 #include "Flash.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
 TEST_GROUP(BlockApertureTest) {
 	BlockAperture block;
 };

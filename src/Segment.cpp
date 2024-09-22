@@ -20,6 +20,8 @@
 
 #include "Segment.h"
 
+namespace gerbex {
+
 Segment::Segment() {
 	// Empty
 
@@ -47,3 +49,5 @@ Segment::~Segment() {
 const Point& Segment::GetEndPoint() const {
 	return m_endPoint;
 }
+
+} /* namespace gerbex */

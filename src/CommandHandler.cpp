@@ -24,6 +24,7 @@
 #include <regex>
 #include <stdexcept>
 
+namespace gerbex {
 
 void CommandHandler::AssertWordCommand(const std::vector<std::string> &words) {
 	if (words.size() != 1) {
@@ -109,7 +110,7 @@ void CommandHandler::PlotState(CommandsProcessor &processor,
 		const std::vector<std::string> &words) {
 	AssertWordCommand(words);
 
-	::PlotState state = GraphicsState::PlotStateFromCommand(words[0]);
+	gerbex::PlotState state = GraphicsState::PlotStateFromCommand(words[0]);
 	processor.SetPlotState(state);
 }
 
@@ -246,3 +247,4 @@ void CommandHandler::EndOfFile(CommandsProcessor &processor, const std::vector<s
 	}
 }
 
+} /* namespace gerbex */

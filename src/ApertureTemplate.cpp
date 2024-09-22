@@ -19,8 +19,10 @@
  */
 
 #include "ApertureTemplate.h"
+namespace gerbex {
 
 ApertureTemplate::~ApertureTemplate() {
 	// Empty
 }
 
+} /* namespace gerbex */

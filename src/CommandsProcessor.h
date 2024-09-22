@@ -33,6 +33,8 @@
 #include <string>
 #include <vector>
 
+namespace gerbex {
+
 enum class CommandState {
 	Normal,
 	InsideRegion,
@@ -82,5 +84,7 @@ private:
 	std::unique_ptr<StepAndRepeat> m_activeStepAndRepeat;
 	int m_openBlocks;
 };
+
+} /* namespace gerbex */
 
 #endif /* COMMANDSPROCESSOR_H_ */

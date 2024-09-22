@@ -20,6 +20,8 @@
 
 #include "Draw.h"
 
+namespace gerbex {
+
 Draw::Draw() {
 	// Empty
 }
@@ -41,3 +43,5 @@ Draw::Draw(const Point &origin, const Point &endPoint,
 Draw::~Draw() {
 	// Empty
 }
+
+} /* namespace gerbex */

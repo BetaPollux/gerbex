@@ -23,6 +23,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 /*
  * Rectangle primitive defined by its width, height and center point.
  */
@@ -38,5 +40,7 @@ public:
 private:
 	double m_width, m_height;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROCENTERLINE_H_ */

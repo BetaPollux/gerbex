@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * Graphical object defined by a collection of contours.
  */
@@ -41,5 +43,7 @@ private:
 	std::vector<RegionContour> m_contours;
 
 };
+
+} /* namespace gerbex */
 
 #endif /* REGION_H_ */

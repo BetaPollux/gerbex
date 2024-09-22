@@ -22,6 +22,9 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 TEST_GROUP(CoordinateFormatTest) {
 };
 

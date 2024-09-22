@@ -21,6 +21,8 @@
 #include "FileParser.h"
 #include <sstream>
 
+namespace gerbex {
+
 const char EXT_DELIM = '%';
 const char WORD_DELIM = '*';
 
@@ -115,3 +117,4 @@ int FileParser::GetCurrentLine() const {
 	return m_currentLine;
 }
 
+} /* namespace gerbex */

@@ -23,6 +23,8 @@
 
 #include "GraphicalObject.h"
 
+namespace gerbex {
+
 /*
  * A graphical object with an origin and end point that can be used to define a contour.
  */
@@ -38,5 +40,7 @@ public:
 protected:
 	Point m_endPoint;
 };
+
+} /* namespace gerbex */
 
 #endif /* SEGMENT_H_ */

@@ -23,6 +23,8 @@
 
 #include <cstdint>
 
+namespace gerbex {
+
 /*
  *	Point in the plane.
  *
@@ -77,5 +79,7 @@ private:
 using PointCoordType = int32_t;
 using Point = GenericPoint<PointCoordType>;
 using RealPoint = GenericPoint<double>;
+
+} /* namespace gerbex */
 
 #endif /* POINT_H_ */

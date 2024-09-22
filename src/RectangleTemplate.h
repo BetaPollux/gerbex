@@ -24,6 +24,8 @@
 #include "ApertureTemplate.h"
 #include "Rectangle.h"
 
+namespace gerbex {
+
 /*
  *
  */
@@ -33,5 +35,7 @@ public:
 	virtual ~RectangleTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
+
+} /* namespace gerbex */
 
 #endif /* RECTANGLETEMPLATE_H_ */

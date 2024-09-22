@@ -22,6 +22,9 @@
 #include "Segment.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 TEST_GROUP(Segment) {
 };
 

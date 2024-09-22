@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * A sequence of connected linear or circular segments.
  * Each segment must start where the previous ends.
@@ -43,5 +45,7 @@ private:
 	std::vector<std::shared_ptr<Segment>> m_segments;
 
 };
+
+} /* namespace gerbex */
 
 #endif /* REGIONCONTOUR_H_ */

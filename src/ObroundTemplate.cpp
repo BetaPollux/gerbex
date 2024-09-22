@@ -21,6 +21,8 @@
 #include "ObroundTemplate.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 ObroundTemplate::ObroundTemplate() {
 	// Empty
 
@@ -40,3 +42,5 @@ std::unique_ptr<Aperture> ObroundTemplate::Call(const std::vector<double> &param
 		throw std::invalid_argument("Requires 2 or 3 parameters");
 	}
 }
+
+} /* namespace gerbex */

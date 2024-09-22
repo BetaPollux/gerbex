@@ -21,6 +21,8 @@
 #include "MacroCenterLine.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroCenterLine::MacroCenterLine()
 	: MacroCenterLine(MacroExposure::ON, 1.0, 0.5, RealPoint(0.0, 0.0), 0.0)
 {
@@ -49,3 +51,5 @@ double MacroCenterLine::GetHeight() const {
 double MacroCenterLine::GetWidth() const {
 	return m_width;
 }
+
+} /* namespace gerbex */

@@ -21,6 +21,8 @@
 #include "RectangleTemplate.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 RectangleTemplate::RectangleTemplate() {
 	// Empty
 
@@ -42,3 +44,4 @@ std::unique_ptr<Aperture> RectangleTemplate::Call(
 	}
 }
 
+} /* namespace gerbex */

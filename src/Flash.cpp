@@ -20,6 +20,8 @@
 
 #include "Flash.h"
 
+namespace gerbex {
+
 Flash::Flash() {
 	// Empty
 
@@ -36,3 +38,4 @@ Flash::~Flash() {
 	// Empty
 }
 
+} /* namespace gerbex */

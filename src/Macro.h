@@ -26,6 +26,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * A compound aperture made of primitives.
  */
@@ -40,5 +42,7 @@ private:
 	std::vector<std::shared_ptr<MacroPrimitive>> m_primitives;
 
 };
+
+} /* namespace gerbex */
 
 #endif /* MACRO_H_ */

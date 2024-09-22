@@ -21,6 +21,8 @@
 #include "Obround.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 Obround::Obround()
 	: Obround{ 1.0, 1.0 }
 {
@@ -56,3 +58,5 @@ double Obround::GetXSize() const {
 double Obround::GetYSize() const {
 	return m_ySize;
 }
+
+} /* namespace gerbex */

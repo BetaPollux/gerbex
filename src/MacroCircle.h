@@ -23,6 +23,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 /*
  * Circle primitive defined by its center point and diameter.
  */
@@ -37,5 +39,7 @@ public:
 private:
 	double m_diameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROCIRCLE_H_ */

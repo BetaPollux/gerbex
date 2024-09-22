@@ -24,6 +24,8 @@
 #include "ApertureTemplate.h"
 #include "Circle.h"
 
+namespace gerbex {
+
 /*
  *
  */
@@ -33,5 +35,7 @@ public:
 	virtual ~CircleTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
+
+} /* namespace gerbex */
 
 #endif /* CIRCLETEMPLATE_H_ */

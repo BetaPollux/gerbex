@@ -22,6 +22,8 @@
 #include <regex>
 #include <stdexcept>
 
+namespace gerbex {
+
 DataTypeParser::DataTypeParser() : m_patterns{{"unsigned_integer", "[0-9]+"},
                                               {"positive_integer", "[0-9]*[1-9][0-9]*"},
                                               {"integer", "[+-]?[0-9]+"},
@@ -150,4 +152,6 @@ std::vector<double> DataTypeParser::SplitParams(const std::string &field) {
 
 	return params;
 }
+
+} /* namespace gerbex */
 

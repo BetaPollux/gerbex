@@ -21,6 +21,8 @@
 #include "BlockAperture.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 BlockAperture::BlockAperture() {
 	// Empty
 
@@ -38,3 +40,4 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
+} /* namespace gerbex */

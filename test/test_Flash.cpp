@@ -22,6 +22,9 @@
 #include "Flash.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 TEST_GROUP(FlashTest) {
 	Point origin;
 	std::shared_ptr<Circle> aperture;

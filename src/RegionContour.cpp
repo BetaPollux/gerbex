@@ -21,6 +21,8 @@
 #include "RegionContour.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 RegionContour::RegionContour() {
 	// Empty
 
@@ -55,3 +57,6 @@ void RegionContour::AddSegment(std::shared_ptr<Segment> segment) {
 const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const {
 	return m_segments;
 }
+
+} /* namespace gerbex */
+

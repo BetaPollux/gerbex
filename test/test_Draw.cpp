@@ -22,6 +22,9 @@
 #include "Draw.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 TEST_GROUP(DrawTest) {
 	Point origin, end;
 	std::shared_ptr<Circle> aperture;

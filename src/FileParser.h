@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * Takes an input stream and returns Gerber words
  */
@@ -45,5 +47,7 @@ private:
 	std::unique_ptr<std::istream> m_istream;
 	int m_currentLine;
 };
+
+} /* namespace gerbex */
 
 #endif /* FILEPARSER_H_ */

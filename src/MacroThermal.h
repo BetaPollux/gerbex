@@ -23,6 +23,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 /*
  * A thermal pad primitive, being a ring interrupted by four gaps.
  */
@@ -39,5 +41,7 @@ public:
 private:
 	double m_outerDiameter, m_innerDiameter, m_gapThickness;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROTHERMAL_H_ */

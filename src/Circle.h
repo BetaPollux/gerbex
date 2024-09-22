@@ -23,6 +23,8 @@
 
 #include "Aperture.h"
 
+namespace gerbex {
+
 /*
  * A circle aperture with optional hole.
  * Diameter may be 0.
@@ -39,5 +41,7 @@ private:
 	double m_diameter;
 	double m_holeDiameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* CIRCLE_H_ */

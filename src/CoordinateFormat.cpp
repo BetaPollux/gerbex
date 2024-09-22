@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include <iostream>
 
+namespace gerbex {
+
 CoordinateFormat::CoordinateFormat()
 	: 	CoordinateFormat(3, 6)
 {
@@ -83,3 +85,6 @@ CoordinateFormat CoordinateFormat::FromCommand(const std::string &str) {
 	}
 	throw std::invalid_argument("invalid format specification");
 }
+
+} /* namespace gerbex */
+

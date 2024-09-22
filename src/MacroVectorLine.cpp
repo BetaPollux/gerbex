@@ -21,6 +21,8 @@
 #include "MacroVectorLine.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroVectorLine::MacroVectorLine()
 	: MacroVectorLine(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), RealPoint(1.0, 0.0), 0.0)
 {
@@ -49,3 +51,5 @@ const RealPoint& MacroVectorLine::GetEnd() const {
 double MacroVectorLine::GetWidth() const {
 	return m_width;
 }
+
+} /* namespace gerbex */

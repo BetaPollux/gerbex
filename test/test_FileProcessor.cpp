@@ -23,6 +23,9 @@
 #include <sstream>
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 
 TEST_GROUP(GerberBasics) {
 };

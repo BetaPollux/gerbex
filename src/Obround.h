@@ -23,6 +23,8 @@
 
 #include "Aperture.h"
 
+namespace gerbex {
+
 /*
  * Obround aperture with optional hole.
  * An obround is a rectangle where the smallest side is rounded to a half-circle.
@@ -41,5 +43,7 @@ private:
 	double m_ySize;
 	double m_holeDiameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* OBROUND_H_ */

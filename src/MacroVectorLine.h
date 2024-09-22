@@ -23,6 +23,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 /*
  * A rectangle primitive defined by its line width, start and end points.
  */
@@ -39,5 +41,7 @@ private:
 	double m_width;
 	RealPoint m_end;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROVECTORLINE_H_ */

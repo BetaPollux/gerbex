@@ -23,6 +23,8 @@
 #include "ApertureTransformation.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
 TEST_GROUP(ApertureTransformationTest) {
 	ApertureTransformation transform;
 };

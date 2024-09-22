@@ -21,6 +21,8 @@
 #include "MacroCircle.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroCircle::MacroCircle()
 	: MacroCircle(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), 0.0)
 {
@@ -44,3 +46,5 @@ MacroCircle::~MacroCircle() {
 double MacroCircle::GetDiameter() const {
 	return m_diameter;
 }
+
+} /* namespace gerbex */

@@ -25,6 +25,8 @@
 #include <string>
 #include "Point.h"
 
+namespace gerbex {
+
 class CoordinateData {
 public:
 	CoordinateData(std::optional<PointCoordType> x,
@@ -46,5 +48,7 @@ private:
 	std::optional<Point> m_ij;
 
 };
+
+} /* namespace gerbex */
 
 #endif /* COORDINATEDATA_H_ */

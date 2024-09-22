@@ -25,6 +25,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace gerbex {
+
 /*
  *
  */
@@ -50,5 +52,7 @@ private:
 	const std::unordered_map<std::string, std::string> m_patterns;
 
 };
+
+} /* namespace gerbex */
 
 #endif /* DATATYPEPARSER_H_ */

@@ -20,6 +20,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 MacroPrimitive::MacroPrimitive()
 	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
 {
@@ -49,3 +51,5 @@ MacroExposure MacroPrimitive::GetExposure() const {
 double MacroPrimitive::GetRotation() const {
 	return m_rotation;
 }
+
+} /* namespace gerbex */

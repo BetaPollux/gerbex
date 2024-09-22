@@ -23,6 +23,8 @@
 
 #include "MacroPrimitive.h"
 
+namespace gerbex {
+
 /*
  * A regular polygon primitive, which circumscribes a circle, defined by the number of vertices,
  * center point and its outer diameter.
@@ -40,5 +42,7 @@ private:
 	int m_numVertices;
 	double m_diameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROPOLYGON_H_ */

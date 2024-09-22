@@ -22,6 +22,8 @@
 #include "Circle.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
 TEST_GROUP(ArcTest) {
 	Point origin, end, offset;
 	std::shared_ptr<Circle> aperture;

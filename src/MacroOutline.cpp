@@ -21,6 +21,8 @@
 #include "MacroOutline.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroOutline::MacroOutline()
 	: MacroOutline(MacroExposure::ON,
 			{RealPoint(0.0, 0.0), RealPoint(1.0, 0.0), RealPoint(0.0, 1.0)}, 0.0)
@@ -46,3 +48,6 @@ MacroOutline::~MacroOutline() {
 const std::vector<RealPoint>& MacroOutline::GetVertices() const {
 	return m_vertices;
 }
+
+} /* namespace gerbex */
+

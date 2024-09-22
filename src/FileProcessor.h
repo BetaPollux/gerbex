@@ -26,6 +26,8 @@
 #include <unordered_map>
 #include "CommandHandler.h"
 
+namespace gerbex {
+
 /*
  *
  */
@@ -40,5 +42,7 @@ private:
 	CommandsProcessor m_processor;
 	std::unordered_map<std::string, callHandler> m_handlers;
 };
+
+} /* namespace gerbex */
 
 #endif /* FILEPROCESSOR_H_ */

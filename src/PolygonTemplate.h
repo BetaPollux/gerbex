@@ -24,6 +24,8 @@
 #include "ApertureTemplate.h"
 #include "Polygon.h"
 
+namespace gerbex {
+
 /*
  *
  */
@@ -33,5 +35,7 @@ public:
 	virtual ~PolygonTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
+
+} /* namespace gerbex */
 
 #endif /* POLYGONTEMPLATE_H_ */

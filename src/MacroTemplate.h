@@ -24,6 +24,8 @@
 #include "ApertureTemplate.h"
 #include <string>
 
+namespace gerbex {
+
 /*
  * Creates a Macro aperture using parameters, variables and expressions.
  */
@@ -37,5 +39,7 @@ public:
 private:
 	std::string m_body;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROTEMPLATE_H_ */

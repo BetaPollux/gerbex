@@ -20,6 +20,8 @@
 
 #include "Macro.h"
 
+namespace gerbex {
+
 Macro::Macro() {
 	// Empty
 
@@ -36,3 +38,5 @@ void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
 const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() const {
 	return m_primitives;
 }
+
+} /* namespace gerbex */

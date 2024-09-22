@@ -23,6 +23,8 @@
 
 #include "Segment.h"
 
+namespace gerbex {
+
 /*
  * Straight line segments drawn with a circle.
  */
@@ -35,5 +37,7 @@ public:
 	virtual ~Draw();
 
 };
+
+} /* namespace gerbex */
 
 #endif /* DRAW_H_ */

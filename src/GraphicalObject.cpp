@@ -20,6 +20,8 @@
 
 #include "GraphicalObject.h"
 
+namespace gerbex {
+
 GraphicalObject::GraphicalObject()
 	: m_origin{},
 	  m_aperture{ nullptr },
@@ -52,3 +54,5 @@ const Point& GraphicalObject::GetOrigin() const {
 const ApertureTransformation& GraphicalObject::GetTransformation() const {
 	return m_transformation;
 }
+
+} /* namespace gerbex */

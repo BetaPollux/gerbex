@@ -21,6 +21,8 @@
 #include "Polygon.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 Polygon::Polygon()
 	: Polygon(1.0, 3)
 {
@@ -66,3 +68,6 @@ double Polygon::GetOuterDiameter() const {
 double Polygon::GetRotation() const {
 	return m_rotation;
 }
+
+} /* namespace gerbex */
+

@@ -24,6 +24,8 @@
 #include "ApertureTemplate.h"
 #include "Obround.h"
 
+namespace gerbex {
+
 /*
  *
  */
@@ -33,5 +35,7 @@ public:
 	virtual ~ObroundTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
+
+} /* namespace gerbex */
 
 #endif /* OBROUNDTEMPLATE_H_ */

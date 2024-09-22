@@ -21,6 +21,8 @@
 #include "Circle.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 Circle::Circle()
 	: Circle{ 1.0 }
 {
@@ -51,3 +53,6 @@ double Circle::GetDiameter() const {
 double Circle::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
+
+} /* namespace gerbex */
+

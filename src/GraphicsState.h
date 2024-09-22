@@ -28,6 +28,7 @@
 #include <memory>
 #include <optional>
 
+namespace gerbex {
 
 enum class Unit {
 	Undefined,
@@ -73,5 +74,7 @@ private:
 	PlotState m_plotState;
 	ApertureTransformation m_transformation;
 };
+
+} /* namespace gerbex */
 
 #endif /* GRAPHICSSTATE_H_ */

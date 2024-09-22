@@ -21,6 +21,8 @@
 #include "GraphicsState.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 GraphicsState::GraphicsState()
 	: m_format{ std::nullopt },
 	  m_unit{ Unit::Undefined },
@@ -106,4 +108,6 @@ PlotState GraphicsState::PlotStateFromCommand(const std::string &str) {
 		throw std::invalid_argument("invalid plot state");
 	}
 }
+
+} /* namespace gerbex */
 

@@ -26,6 +26,9 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
+
 /*
  * An Aperture Template is used to create Apertures
  */
@@ -34,5 +37,7 @@ public:
 	virtual ~ApertureTemplate();
 	virtual std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) = 0;
 };
+
+} /* namespace gerbex */
 
 #endif /* APERTURETEMPLATE_H_ */

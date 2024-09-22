@@ -24,6 +24,9 @@
 #include "DataTypeParser.h"
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 #define DBL_TOL 1e-5
 
 TEST_GROUP(DataTypeParserTest) {

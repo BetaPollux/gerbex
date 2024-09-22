@@ -21,6 +21,8 @@
 #include "PolygonTemplate.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 PolygonTemplate::PolygonTemplate() {
 	// Empty
 
@@ -42,3 +44,6 @@ std::unique_ptr<Aperture> PolygonTemplate::Call(const std::vector<double> &param
 		throw std::invalid_argument("Requires 2 to 4 parameters");
 	}
 }
+
+} /* namespace gerbex */
+

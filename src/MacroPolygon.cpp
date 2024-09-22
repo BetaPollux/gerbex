@@ -21,6 +21,8 @@
 #include "MacroPolygon.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroPolygon::MacroPolygon()
 	: MacroPolygon(MacroExposure::ON, 6, RealPoint(0.0, 0.0), 1.0, 0.0)
 {
@@ -53,3 +55,5 @@ double MacroPolygon::GetDiameter() const {
 int MacroPolygon::GetNumVertices() const {
 	return m_numVertices;
 }
+
+} /* namespace gerbex */

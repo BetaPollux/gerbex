@@ -21,6 +21,8 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
+namespace gerbex {
+
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
  * They can be rotated, mirrored or scaled.
@@ -29,5 +31,7 @@ class Aperture {
 public:
 	virtual ~Aperture();
 };
+
+} /* namespace gerbex */
 
 #endif /* APERTURE_H_ */

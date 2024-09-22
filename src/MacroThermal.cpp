@@ -21,6 +21,8 @@
 #include "MacroThermal.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 MacroThermal::MacroThermal()
 	: MacroThermal(RealPoint(0.0, 0.0), 1.0, 0.5, 0.25, 0.0)
 {
@@ -60,3 +62,5 @@ double MacroThermal::GetInnerDiameter() const {
 double MacroThermal::GetOuterDiameter() const {
 	return m_outerDiameter;
 }
+
+} /* namespace gerbex */

@@ -26,6 +26,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  *
  */
@@ -39,5 +41,7 @@ public:
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 };
+
+} /* namespace gerbex */
 
 #endif /* BLOCKAPERTURE_H_ */

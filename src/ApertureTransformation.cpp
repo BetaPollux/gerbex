@@ -21,23 +21,21 @@
 #include "ApertureTransformation.h"
 #include <stdexcept>
 
-ApertureTransformation::ApertureTransformation()
-	: m_polarity{ Polarity::Dark },
-	  m_mirroring{ Mirroring::None },
-	  m_rotation_degrees{ 0.0 },
-	  m_scaling_factor{ 1.0 }
+namespace gerbex {
+
+ApertureTransformation::ApertureTransformation() :
+		m_polarity { Polarity::Dark }, m_mirroring { Mirroring::None }, m_rotation_degrees {
+				0.0 }, m_scaling_factor { 1.0 }
 
 {
 	// Empty
 
 }
 
-ApertureTransformation::ApertureTransformation(
-		Polarity polarity, Mirroring mirroring, double rotation, double scaling)
-	: m_polarity{ polarity },
-	  m_mirroring{ mirroring },
-	  m_rotation_degrees{ rotation },
-	  m_scaling_factor{ scaling }
+ApertureTransformation::ApertureTransformation(Polarity polarity,
+		Mirroring mirroring, double rotation, double scaling) :
+		m_polarity { polarity }, m_mirroring { mirroring }, m_rotation_degrees {
+				rotation }, m_scaling_factor { scaling }
 
 {
 	// Empty
@@ -50,18 +48,16 @@ ApertureTransformation::~ApertureTransformation() {
 
 bool ApertureTransformation::operator ==(
 		const ApertureTransformation &rhs) const {
-	return (m_polarity == rhs.m_polarity) &&
-			(m_mirroring == rhs.m_mirroring) &&
-			(m_rotation_degrees == rhs.m_rotation_degrees) &&
-			(m_scaling_factor == rhs.m_scaling_factor);
+	return (m_polarity == rhs.m_polarity) && (m_mirroring == rhs.m_mirroring)
+			&& (m_rotation_degrees == rhs.m_rotation_degrees)
+			&& (m_scaling_factor == rhs.m_scaling_factor);
 }
 
 bool ApertureTransformation::operator !=(
 		const ApertureTransformation &rhs) const {
-	return (m_polarity != rhs.m_polarity) ||
-			(m_mirroring != rhs.m_mirroring) ||
-			(m_rotation_degrees != rhs.m_rotation_degrees) ||
-			(m_scaling_factor != rhs.m_scaling_factor);
+	return (m_polarity != rhs.m_polarity) || (m_mirroring != rhs.m_mirroring)
+			|| (m_rotation_degrees != rhs.m_rotation_degrees)
+			|| (m_scaling_factor != rhs.m_scaling_factor);
 }
 
 Mirroring ApertureTransformation::GetMirroring() const {
@@ -119,3 +115,6 @@ Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
 		throw std::invalid_argument("invalid mirroring");
 	}
 }
+
+} /* namespace gerbex */
+

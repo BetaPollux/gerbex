@@ -23,6 +23,8 @@
 
 #include "Aperture.h"
 
+namespace gerbex {
+
 /*
  * Polygon aperture with optional hole.
  * It is a regular polygon (all angles equal) with 3 to 12 vertices.
@@ -43,5 +45,7 @@ private:
 	double m_rotation;
 	double m_holeDiameter;
 };
+
+} /* namespace gerbex */
 
 #endif /* POLYGON_H_ */

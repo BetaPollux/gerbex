@@ -23,6 +23,8 @@
 
 #include "Point.h"
 
+namespace gerbex {
+
 enum class MacroExposure {
 	OFF,
 	ON
@@ -46,5 +48,7 @@ protected:
 	RealPoint m_coord;
 	double m_rotation;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROPRIMITIVE_H_ */

@@ -24,6 +24,8 @@
 #include <ostream>
 #include <regex>
 
+namespace gerbex {
+
 CoordinateData::CoordinateData() :
 		CoordinateData(0, 0) {
 	// Empty
@@ -103,3 +105,6 @@ const std::optional<PointCoordType>& CoordinateData::GetX() const {
 const std::optional<PointCoordType>& CoordinateData::GetY() const {
 	return m_y;
 }
+
+} /* namespace gerbex */
+

@@ -23,6 +23,8 @@
 
 #include <string>
 
+namespace gerbex {
+
 enum class Polarity {
 	Dark,
 	Clear
@@ -68,5 +70,7 @@ private:
 	double m_rotation_degrees;
 	double m_scaling_factor;
 };
+
+} /* namespace gerbex */
 
 #endif /* APERTURETRANSFORMATION_H_ */

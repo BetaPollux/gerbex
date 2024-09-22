@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+namespace gerbex {
+
 /*
  * A polygon primitive defined by its outline or contour. It must be closed.
  */
@@ -38,5 +40,7 @@ public:
 private:
 	std::vector<RealPoint> m_vertices;
 };
+
+} /* namespace gerbex */
 
 #endif /* MACROOUTLINE_H_ */

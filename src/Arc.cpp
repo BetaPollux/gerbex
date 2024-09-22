@@ -20,6 +20,8 @@
 
 #include "Arc.h"
 
+namespace gerbex {
+
 Arc::Arc()
 	: m_direction{ ArcDirection::Clockwise },
 	  m_centerOffset{}
@@ -58,3 +60,4 @@ ArcDirection Arc::GetDirection() const {
 	return m_direction;
 }
 
+} /* namespace gerbex */

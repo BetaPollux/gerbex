@@ -20,8 +20,10 @@
 
 #include "Aperture.h"
 
+namespace gerbex {
+
 Aperture::~Aperture() {
 	// Empty
 }
 
-
+} /* namespace gerbex */

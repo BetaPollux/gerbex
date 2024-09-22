@@ -21,6 +21,8 @@
 #include "Region.h"
 #include <stdexcept>
 
+namespace gerbex {
+
 Region::Region() {
 	// Empty
 
@@ -56,3 +58,5 @@ bool Region::AreContoursClosed() const {
 	}
 	return true;
 }
+
+} /* namespace gerbex */

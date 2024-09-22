@@ -23,6 +23,9 @@
 #include <sstream>
 #include "CppUTest/TestHarness.h"
 
+using namespace gerbex;
+
+
 
 void setIstream(FileParser &parser, std::string const &str) {
 	parser.SetIstream(std::make_unique<std::istringstream>(str));
