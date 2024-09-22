@@ -22,15 +22,37 @@
 #include <vector>
 
 #include "CommandHandler.h"
+#include "MockCommandsProcessor.h"
 #include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
 
 using namespace gerbex;
 
 TEST_GROUP(CommandHandlerTest) {
+	MockCommandsProcessor processor;
 };
 
+TEST(CommandHandlerTest, ApertureDefine) {
+	std::vector<double> params = { 0.5, 0.25 };
+	mock().expectOneCall("GetTemplate").withParameter("name", "C");
+	mock().expectOneCall("CallTemplate").withParameterOfType("Parameters", "parameters", &params);
+	mock().expectOneCall("ApertureDefine").withParameter("ident", 15);
+	CommandHandler::ApertureDefine(processor, { "ADD15C,0.5X0.25" });
+}
 
-TEST(CommandHandlerTest, NotImplemented) {
-	FAIL("CommandHandlerTest Not Implemented");
+TEST(CommandHandlerTest, PlotDraw) {
+	Point pt(200, 350);
+	mock().expectOneCall("PlotDraw").withParameterOfType("Point", "coord", &pt);
+	CommandHandler::Plot(processor, { "X200Y350D01" });
+}
+
+TEST(CommandHandlerTest, RegionStatement_BeginRegion) {
+	mock().expectOneCall("StartRegion");
+	CommandHandler::RegionStatement(processor, { "G36" });
+}
+
+TEST(CommandHandlerTest, RegionStatement_EndRegion) {
+	mock().expectOneCall("EndRegion");
+	CommandHandler::RegionStatement(processor, { "G37" });
 }
 

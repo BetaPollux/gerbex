@@ -1,4 +1,7 @@
 add_library(test_processing OBJECT
+	MockAperture.cpp
+	MockCommandsProcessor.cpp
+	MockTemplate.cpp
 	test_CommandHandler.cpp
 	test_CommandsProcessor.cpp
 	test_CoordinateData.cpp
@@ -13,4 +16,5 @@ target_link_libraries(test_processing
 PUBLIC
 	libgerbex
 	CppUTest
+	CppUTestExt
 )

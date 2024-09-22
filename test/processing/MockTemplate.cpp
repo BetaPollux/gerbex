@@ -1,8 +1,8 @@
 /*
- * AllTests.cpp
+ * MockTemplate.cpp
  *
- *  Created on: Dec. 4, 2022
- *	Copyright (C) 2022 BetaPollux
+ *  Created on: Sep. 22, 2024
+ *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,20 +18,21 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Comparators.h"
-#include "CppUTest/CommandLineTestRunner.h"
-#include "CppUTest/TestRegistry.h"
-#include "CppUTestExt/MockSupportPlugin.h"
+#include "MockAperture.h"
+#include "MockTemplate.h"
+#include "CppUTestExt/MockSupport.h"
 
-int main(int ac, char** av)
-{
-	PointComparator pointComparator;
-	ParamsComparator paramsComparator;
-	MockSupportPlugin mockPlugin;
+namespace gerbex {
 
-	mockPlugin.installComparator("Point", pointComparator);
-	mockPlugin.installComparator("Parameters", paramsComparator);
-	TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);
-
-    return CommandLineTestRunner::RunAllTests(ac, av);
+MockTemplate::MockTemplate() {
 }
+
+MockTemplate::~MockTemplate() {
+}
+
+std::unique_ptr<Aperture> MockTemplate::Call(const std::vector<double> &parameters) {
+	mock().actualCall("CallTemplate").withParameterOfType("Parameters", "parameters", &parameters);
+	return std::make_unique<MockAperture>();
+}
+
+} /* namespace gerbex */

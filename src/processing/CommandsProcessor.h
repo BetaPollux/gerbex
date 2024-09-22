@@ -49,28 +49,28 @@ class CommandsProcessor {
 public:
 	CommandsProcessor();
 	virtual ~CommandsProcessor();
-	void ApertureDefine(int ident, std::shared_ptr<Aperture> aperture);
-	void OpenApertureBlock(int ident);
-	void CloseApertureBlock();
-	void SetCurrentAperture(int ident);
-	std::shared_ptr<Aperture> GetAperture(int ident) const;
-	void SetPlotState(PlotState state);
-	void SetFormat(const CoordinateFormat &format);
-	void SetUnit(Unit unit);
-	void PlotDraw(const Point &coord);
-	void PlotArc(const Point &coord, const Point &offset);
-	void Move(const Point &coord);
-	void Flash(const Point &coord);
-	void StartRegion();
-	void EndRegion();
-	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
-	const GraphicsState& GetGraphicsState() const;
-	ApertureTransformation& GetTransformation();
-	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
-	CommandState GetCommandState() const;
-	void SetEndOfFile();
-	void OpenStepAndRepeat(int nx, int ny, double dx, double dy);
-	void CloseStepAndRepeat();
+	virtual void ApertureDefine(int ident, std::shared_ptr<Aperture> aperture);
+	virtual void OpenApertureBlock(int ident);
+	virtual void CloseApertureBlock();
+	virtual void SetCurrentAperture(int ident);
+	virtual std::shared_ptr<Aperture> GetAperture(int ident) const;
+	virtual void SetPlotState(PlotState state);
+	virtual void SetFormat(const CoordinateFormat &format);
+	virtual void SetUnit(Unit unit);
+	virtual void PlotDraw(const Point &coord);
+	virtual void PlotArc(const Point &coord, const Point &offset);
+	virtual void Move(const Point &coord);
+	virtual void Flash(const Point &coord);
+	virtual void StartRegion();
+	virtual void EndRegion();
+	virtual std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
+	virtual const GraphicsState& GetGraphicsState() const;
+	virtual ApertureTransformation& GetTransformation();
+	virtual const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
+	virtual CommandState GetCommandState() const;
+	virtual void SetEndOfFile();
+	virtual void OpenStepAndRepeat(int nx, int ny, double dx, double dy);
+	virtual void CloseStepAndRepeat();
 
 private:
 	//TODO check for G75

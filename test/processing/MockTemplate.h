@@ -1,8 +1,8 @@
 /*
- * AllTests.cpp
+ * MockTemplate.h
  *
- *  Created on: Dec. 4, 2022
- *	Copyright (C) 2022 BetaPollux
+ *  Created on: Sep. 22, 2024
+ *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,20 +18,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Comparators.h"
-#include "CppUTest/CommandLineTestRunner.h"
-#include "CppUTest/TestRegistry.h"
-#include "CppUTestExt/MockSupportPlugin.h"
+#ifndef MOCKTEMPLATE_H_
+#define MOCKTEMPLATE_H_
 
-int main(int ac, char** av)
-{
-	PointComparator pointComparator;
-	ParamsComparator paramsComparator;
-	MockSupportPlugin mockPlugin;
+#include "ApertureTemplate.h"
 
-	mockPlugin.installComparator("Point", pointComparator);
-	mockPlugin.installComparator("Parameters", paramsComparator);
-	TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);
+namespace gerbex {
 
-    return CommandLineTestRunner::RunAllTests(ac, av);
-}
+/*
+ *
+ */
+class MockTemplate: public ApertureTemplate {
+public:
+	MockTemplate();
+	virtual ~MockTemplate();
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
+
+};
+
+} /* namespace gerbex */
+
+#endif /* MOCKTEMPLATE_H_ */
