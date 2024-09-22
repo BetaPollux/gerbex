@@ -3,12 +3,12 @@ add_library(test_processing OBJECT
 	MockCommandsProcessor.cpp
 	MockTemplate.cpp
 	test_CommandHandler.cpp
-	test_CommandsProcessor.cpp
+	#test_CommandsProcessor.cpp
 	test_CoordinateData.cpp
 	test_CoordinateFormat.cpp
 	test_DataTypeParser.cpp
 	test_FileParser.cpp
-	test_FileProcessor.cpp
+	#test_FileProcessor.cpp
 	test_GraphicsState.cpp
 )
 

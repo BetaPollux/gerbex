@@ -24,11 +24,11 @@
 namespace gerbex {
 
 GraphicsState::GraphicsState()
-	: m_format{ std::nullopt },
-	  m_unit{ Unit::Undefined },
-	  m_currentPoint{ std::nullopt },
-	  m_currentAperture{ nullptr },
-	  m_plotState{ PlotState::Undefined },
+	: m_format{},
+	  m_unit{},
+	  m_currentPoint{},
+	  m_currentAperture{},
+	  m_plotState{},
 	  m_transformation{}
 {
 	// Empty
@@ -63,11 +63,11 @@ void GraphicsState::SetFormat(std::optional<CoordinateFormat> format) {
 	m_format = format;
 }
 
-PlotState GraphicsState::GetPlotState() const {
+std::optional<PlotState> GraphicsState::GetPlotState() const {
 	return m_plotState;
 }
 
-void GraphicsState::SetPlotState(PlotState plotState) {
+void GraphicsState::SetPlotState(std::optional<PlotState> plotState) {
 	m_plotState = plotState;
 }
 
@@ -80,11 +80,11 @@ void GraphicsState::SetTransformation(
 	m_transformation = transformation;
 }
 
-Unit GraphicsState::GetUnit() const {
+std::optional<Unit> GraphicsState::GetUnit() const {
 	return m_unit;
 }
 
-void GraphicsState::SetUnit(Unit unit) {
+void GraphicsState::SetUnit(std::optional<Unit> unit) {
 	m_unit = unit;
 }
 

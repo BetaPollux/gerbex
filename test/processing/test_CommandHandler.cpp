@@ -22,7 +22,9 @@
 #include <vector>
 
 #include "CommandHandler.h"
+#include "MockAperture.h"
 #include "MockCommandsProcessor.h"
+#include "MockTemplate.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
@@ -33,15 +35,25 @@ TEST_GROUP(CommandHandlerTest) {
 };
 
 TEST(CommandHandlerTest, ApertureDefine) {
+	std::shared_ptr<ApertureTemplate> tmpl = std::make_shared<MockTemplate>();
+	std::unique_ptr<Aperture> aperture = std::make_unique<MockAperture>();
 	std::vector<double> params = { 0.5, 0.25 };
-	mock().expectOneCall("GetTemplate").withParameter("name", "C");
-	mock().expectOneCall("CallTemplate").withParameterOfType("Parameters", "parameters", &params);
-	mock().expectOneCall("ApertureDefine").withParameter("ident", 15);
+	mock().expectOneCall("GetTemplate").withParameter("name", "C").andReturnValue(
+			&tmpl);
+	mock().expectOneCall("CallTemplate").withParameterOfType("Parameters",
+			"parameters", &params).andReturnValue(aperture.get());
+	mock().expectOneCall("ApertureDefine").withParameter("ident", 15).withParameter(
+			"aperture", aperture.get());
+	aperture.release();
 	CommandHandler::ApertureDefine(processor, { "ADD15C,0.5X0.25" });
 }
 
 TEST(CommandHandlerTest, PlotDraw) {
+	Point pt0;
 	Point pt(200, 350);
+	mock().expectOneCall("GetCurrentPoint").andReturnValue(&pt0);
+	mock().expectOneCall("GetPlotState").andReturnValue(
+			(int) PlotState::Linear);
 	mock().expectOneCall("PlotDraw").withParameterOfType("Point", "coord", &pt);
 	CommandHandler::Plot(processor, { "X200Y350D01" });
 }

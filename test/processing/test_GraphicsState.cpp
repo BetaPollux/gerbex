@@ -52,7 +52,7 @@ TEST(GraphicsStateTest, Format)
 
 TEST(GraphicsStateTest, Unit)
 {
-	CHECK(Unit::Undefined == state.GetUnit());
+	CHECK(!state.GetUnit().has_value());
 }
 
 TEST(GraphicsStateTest, CurrentPoint)
@@ -67,7 +67,7 @@ TEST(GraphicsStateTest, CurrentAperture)
 
 TEST(GraphicsStateTest, PlotState)
 {
-	CHECK(PlotState::Undefined == state.GetPlotState());
+	CHECK(!state.GetPlotState().has_value());
 }
 
 TEST(GraphicsStateTest, Transform)

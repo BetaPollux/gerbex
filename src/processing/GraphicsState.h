@@ -31,14 +31,12 @@
 namespace gerbex {
 
 enum class Unit {
-	Undefined,
 	Millimeter,
 	Inch
 };
 
 
 enum class PlotState {
-	Undefined,
 	Linear,
 	Clockwise,
 	CounterClockwise
@@ -57,21 +55,21 @@ public:
 	const std::optional<Point> GetCurrentPoint() const;
 	const std::optional<CoordinateFormat> GetFormat() const;
 	void SetFormat(std::optional<CoordinateFormat> format);
-	PlotState GetPlotState() const;
-	void SetPlotState(PlotState plotState);
+	std::optional<PlotState> GetPlotState() const;
+	void SetPlotState(std::optional<PlotState> plotState);
 	ApertureTransformation& GetTransformation();
 	void SetTransformation(const ApertureTransformation &transformation);
-	Unit GetUnit() const;
-	void SetUnit(Unit unit);
+	std::optional<Unit> GetUnit() const;
+	void SetUnit(std::optional<Unit> unit);
 	static Unit UnitFromCommand(const std::string &str);
 	static PlotState PlotStateFromCommand(const std::string &str);
 
 private:
 	std::optional<CoordinateFormat> m_format;
-	Unit m_unit;
+	std::optional<Unit> m_unit;
 	std::optional<Point> m_currentPoint;
 	std::shared_ptr<Aperture> m_currentAperture;
-	PlotState m_plotState;
+	std::optional<PlotState> m_plotState;
 	ApertureTransformation m_transformation;
 };
 

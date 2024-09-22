@@ -36,7 +36,6 @@ public:
 	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name) override;
 	void OpenApertureBlock(int ident) override;
 	void SetEndOfFile() override;
-	const GraphicsState& GetGraphicsState() const override;
 	void SetUnit(Unit unit) override;
 	void PlotArc(const Point &coord, const Point &offset) override;
 	CommandState GetCommandState() const override;
@@ -56,11 +55,10 @@ public:
 	void SetPlotState(PlotState state) override;
 	void SetCurrentAperture(int ident) override;
 	ApertureTransformation& GetTransformation() override;
+	Point GetCurrentPoint() override;
+	Unit GetUnit() override;
+	PlotState GetPlotState() override;
 
-private:
-	ApertureTransformation m_apertureTransformation;
-	GraphicsState m_graphicsState;
-	CommandState m_commandState;
 };
 
 } /* namespace gerbex */

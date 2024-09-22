@@ -176,10 +176,6 @@ std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(
 	return result->second;
 }
 
-const GraphicsState& CommandsProcessor::GetGraphicsState() const {
-	return m_graphicsState;
-}
-
 ApertureTransformation& CommandsProcessor::GetTransformation() {
 	return m_graphicsState.GetTransformation();
 }
@@ -259,6 +255,19 @@ void CommandsProcessor::CloseStepAndRepeat() {
 	} else {
 		throw std::logic_error("cannot close step and repeat; not opened");
 	}
+}
+
+PlotState CommandsProcessor::GetPlotState() {
+	return m_graphicsState.GetPlotState();
+}
+
+Unit CommandsProcessor::GetUnit() {
+	return m_graphicsState.GetUnit();
+}
+
+Point CommandsProcessor::GetCurrentPoint() {
+	//TODO check and trhow
+	return *m_graphicsState.GetCurrentPoint();
 }
 
 } /* namespace gerbex */

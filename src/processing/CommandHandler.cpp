@@ -120,14 +120,10 @@ void CommandHandler::Plot(CommandsProcessor &processor,
 	AssertOperationsCode(words[0], "D01");
 
 	CoordinateData coorddata = CoordinateData::FromString(words[0]);
-	std::optional<Point> coord = coorddata.GetXY(processor.GetGraphicsState().GetCurrentPoint());
+	std::optional<Point> coord = coorddata.GetXY(processor.GetCurrentPoint());
 	std::optional<Point> offset = coorddata.GetIJ();
 
-	if (!coord.has_value()) {
-		throw std::logic_error("current point was not defined");
-	}
-
-	switch (processor.GetGraphicsState().GetPlotState()) {
+	switch (processor.GetPlotState()) {
 		case PlotState::Linear:
 			processor.PlotDraw(*coord);
 			if (coorddata.GetIJ().has_value()) {
@@ -141,8 +137,6 @@ void CommandHandler::Plot(CommandsProcessor &processor,
 			}
 			processor.PlotArc(*coord, *offset);
 			break;
-		case PlotState::Undefined:
-			throw std::logic_error("plot state was not defined");
 	}
 }
 
@@ -152,17 +146,13 @@ void CommandHandler::Move(CommandsProcessor &processor,
 	AssertOperationsCode(words[0], "D02");
 
 	CoordinateData coorddata = CoordinateData::FromString(words[0]);
-	std::optional<Point> coord = coorddata.GetXY(processor.GetGraphicsState().GetCurrentPoint());
+	std::optional<Point> coord = coorddata.GetXY(processor.GetCurrentPoint());
 
-	if (!coord.has_value()) {
-		throw std::logic_error("current point was not defined");
-	}
 	if (coorddata.GetIJ().has_value()) {
 		throw std::invalid_argument("Move cannot have offset coordinate");
 	}
 
 	processor.Move(*coord);
-
 }
 
 void CommandHandler::Flash(CommandsProcessor &processor,
@@ -171,11 +161,7 @@ void CommandHandler::Flash(CommandsProcessor &processor,
 	AssertOperationsCode(words[0], "D03");
 
 	CoordinateData coorddata = CoordinateData::FromString(words[0]);
-	std::optional<Point> coord = coorddata.GetXY(processor.GetGraphicsState().GetCurrentPoint());
-
-	if (!coord.has_value()) {
-		throw std::logic_error("current point was not defined");
-	}
+	std::optional<Point> coord = coorddata.GetXY(processor.GetCurrentPoint());
 
 	if (coorddata.GetIJ().has_value()) {
 		throw std::invalid_argument("Flash cannot have offset coordinate");
