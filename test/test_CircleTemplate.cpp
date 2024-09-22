@@ -27,16 +27,16 @@ TEST_GROUP(CircleTemplateTest) {
 };
 
 TEST(CircleTemplateTest, TooFewParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(0, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({}));
 }
 
 TEST(CircleTemplateTest, TooManyParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(3, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0, 2.0, 3.0 }));
 }
 
 TEST(CircleTemplateTest, AllParams) {
-	double params[] = { 1.0, 0.25 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::vector<double> params = { 1.0, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
 
 	CHECK(nullptr != circle);
@@ -45,8 +45,8 @@ TEST(CircleTemplateTest, AllParams) {
 }
 
 TEST(CircleTemplateTest, DefaultHole) {
-	double params[] = { 1.0 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(1, params);
+	std::vector<double> params = { 1.0 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
 
 	CHECK(nullptr != circle);

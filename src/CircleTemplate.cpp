@@ -31,10 +31,10 @@ CircleTemplate::~CircleTemplate() {
 }
 
 std::unique_ptr<Aperture> CircleTemplate::Call(
-		int numParameters, double *parameters) {
-	if (numParameters == 1) {
+		const std::vector<double> &parameters) {
+	if (parameters.size() == 1) {
 		return std::make_unique<Circle>(parameters[0]);
-	} else if (numParameters == 2) {
+	} else if (parameters.size() == 2) {
 		return std::make_unique<Circle>(parameters[0], parameters[1]);
 	}
 	else {

@@ -133,3 +133,21 @@ std::vector<std::string> DataTypeParser::SplitFields(const std::string &word) {
 
 	return fields;
 }
+
+std::vector<double> DataTypeParser::SplitParams(const std::string &field) {
+	std::vector<double> params;
+    std::istringstream istr(field);
+
+	while (!istr.eof()) {
+        std::string param_str;
+        std::getline(istr, param_str, 'X');
+        try {
+        	params.push_back(std::stod(param_str));
+        } catch (const std::invalid_argument &ex) {
+        	throw std::invalid_argument("invalid non-numeric parameter: " + param_str);
+        }
+	}
+
+	return params;
+}
+

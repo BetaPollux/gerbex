@@ -31,7 +31,7 @@ class CircleTemplate: public ApertureTemplate {
 public:
 	CircleTemplate();
 	virtual ~CircleTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
 
 #endif /* CIRCLETEMPLATE_H_ */

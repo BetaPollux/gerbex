@@ -239,3 +239,39 @@ TEST(SplitFields, ThreeFields) {
 	STRCMP_EQUAL("76", fields[2].c_str());
 }
 
+/**
+ * Split Params
+ */
+
+
+TEST_GROUP(SplitParams) {
+};
+
+TEST(SplitParams, Empty) {
+	std::string field = "";
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field));
+}
+
+TEST(SplitParams, NonNumeric) {
+	std::string field = "0.01XABC";
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field));
+}
+
+TEST(SplitParams, OneParam) {
+	std::string field = "123";
+	std::vector<double> params = DataTypeParser::SplitParams(field);
+
+	LONGS_EQUAL(1, params.size());
+	DOUBLES_EQUAL(123.0, params[0], DBL_TOL);
+}
+
+TEST(SplitParams, ThreeParams) {
+	std::string field = "0.030X0.040X0.0015";
+	std::vector<double> params = DataTypeParser::SplitParams(field);
+
+	LONGS_EQUAL(3, params.size());
+	DOUBLES_EQUAL(0.03, params[0], DBL_TOL);
+	DOUBLES_EQUAL(0.04, params[1], DBL_TOL);
+	DOUBLES_EQUAL(0.0015, params[2], DBL_TOL);
+}
+

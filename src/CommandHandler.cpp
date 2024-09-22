@@ -78,9 +78,9 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 	if (std::regex_search(words[0], match, regex)) {
 		int ident = std::stoi(match[1].str());
 		std::string name = match[2].str();
-		std::vector<double> params = { 1.0 }; //TODO parse params
+		std::vector<double> params = DataTypeParser::SplitParams(match[3].str());
 		std::shared_ptr<ApertureTemplate> aperture = processor.GetTemplate(name);
-		processor.ApertureDefine(ident, aperture->Call(1, params.data()));
+		processor.ApertureDefine(ident, aperture->Call(params));
 	} else {
 		throw std::invalid_argument("invalid aperture define");
 	}

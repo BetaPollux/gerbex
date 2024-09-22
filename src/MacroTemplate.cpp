@@ -36,7 +36,7 @@ MacroTemplate::~MacroTemplate() {
 }
 
 
-std::unique_ptr<Aperture> MacroTemplate::Call(int numParameters, double *parameters) {
+std::unique_ptr<Aperture> MacroTemplate::Call(const std::vector<double> &parameters) {
 	//TODO create Macro
 	//TODO insert parameters into body
 	//TODO parse body

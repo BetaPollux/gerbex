@@ -32,7 +32,7 @@ public:
 	MacroTemplate();
 	MacroTemplate(std::string body);
 	virtual ~MacroTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 
 private:
 	std::string m_body;

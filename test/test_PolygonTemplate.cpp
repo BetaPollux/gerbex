@@ -27,16 +27,16 @@ TEST_GROUP(PolygonTemplateTest) {
 };
 
 TEST(PolygonTemplateTest, TooFewParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(1, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0 }));
 }
 
 TEST(PolygonTemplateTest, TooManyParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(5, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0, 2.0, 3.0, 4.0, 5.0 }));
 }
 
 TEST(PolygonTemplateTest, AllParams) {
-	double params[] = { 1.0, 3, 45.0, 0.25 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(4, params);
+	std::vector<double> params = { 1.0, 3, 45.0, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
@@ -47,8 +47,8 @@ TEST(PolygonTemplateTest, AllParams) {
 }
 
 TEST(PolygonTemplateTest, DefaultHole) {
-	double params[] = { 1.0, 3, 45.0 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(3, params);
+	std::vector<double> params = { 1.0, 3, 45.0 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
@@ -59,8 +59,8 @@ TEST(PolygonTemplateTest, DefaultHole) {
 }
 
 TEST(PolygonTemplateTest, NoRotation) {
-	double params[] = { 1.0, 3 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::vector<double> params = { 1.0, 3 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);

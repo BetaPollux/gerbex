@@ -31,7 +31,7 @@ class RectangleTemplate: public ApertureTemplate {
 public:
 	RectangleTemplate();
 	virtual ~RectangleTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
 
 #endif /* RECTANGLETEMPLATE_H_ */

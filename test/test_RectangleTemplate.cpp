@@ -27,16 +27,16 @@ TEST_GROUP(RectangleTemplateTest) {
 };
 
 TEST(RectangleTemplateTest, TooFewParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(1, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0 }));
 }
 
 TEST(RectangleTemplateTest, TooManyParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call(4, nullptr));
+	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0, 2.0, 3.0, 4.0 }));
 }
 
 TEST(RectangleTemplateTest, AllParams) {
-	double params[] = { 1.0, 0.5, 0.25 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(3, params);
+	std::vector<double> params = { 1.0, 0.5, 0.25 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
 
 	CHECK(nullptr != rect);
@@ -46,8 +46,8 @@ TEST(RectangleTemplateTest, AllParams) {
 }
 
 TEST(RectangleTemplateTest, DefaultHole) {
-	double params[] = { 1.0, 0.5 };
-	std::shared_ptr<Aperture> aperture = tmp.Call(2, params);
+	std::vector<double> params = { 1.0, 0.5 };
+	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
 
 	CHECK(nullptr != rect);

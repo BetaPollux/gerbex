@@ -31,7 +31,7 @@ class ObroundTemplate: public ApertureTemplate {
 public:
 	ObroundTemplate();
 	virtual ~ObroundTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
 
 #endif /* OBROUNDTEMPLATE_H_ */

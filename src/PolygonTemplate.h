@@ -31,7 +31,7 @@ class PolygonTemplate: public ApertureTemplate {
 public:
 	PolygonTemplate();
 	virtual ~PolygonTemplate();
-	std::unique_ptr<Aperture> Call(int numParameters, double *parameters) override;
+	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 };
 
 #endif /* POLYGONTEMPLATE_H_ */

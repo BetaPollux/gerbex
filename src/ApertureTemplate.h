@@ -24,6 +24,7 @@
 #include "Aperture.h"
 #include "Circle.h"
 #include <memory>
+#include <vector>
 
 /*
  * An Aperture Template is used to create Apertures
@@ -31,7 +32,7 @@
 class ApertureTemplate {
 public:
 	virtual ~ApertureTemplate();
-	virtual std::unique_ptr<Aperture> Call(int numParameters, double *parameters) = 0;
+	virtual std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) = 0;
 };
 
 #endif /* APERTURETEMPLATE_H_ */
