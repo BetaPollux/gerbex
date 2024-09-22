@@ -219,23 +219,71 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 
 void CommandHandler::RegionStatement(CommandsProcessor &processor,
 		const std::vector<std::string> &words) {
-	(void)processor;
-	(void)words;
-	throw std::invalid_argument("command not implemented");
+	AssertWordCommand(words);
+	if (words[0] == "G36") {
+		processor.StartRegion();
+	} else if (words[0] == "G37") {
+		processor.EndRegion();
+	} else {
+		throw std::invalid_argument("invalid region statement");
+	}
 }
 
 void CommandHandler::BlockAperture(CommandsProcessor &processor,
 		const std::vector<std::string> &words) {
-	(void)processor;
-	(void)words;
-	throw std::invalid_argument("command not implemented");
+	AssertWordCommand(words);
+	DataTypeParser parser;
+	std::string uint_re = parser.GetPattern("unsigned_integer");
+	std::ostringstream pattern;
+	pattern << "AB(D(" << uint_re << "))?";
+
+	std::regex regex(pattern.str());
+	std::smatch match;
+	if (std::regex_search(words[0], match, regex)) {
+		if (!match[1].str().empty()) {
+			//Has ident, open block
+			int ident = std::stoi(match[2].str());
+			processor.OpenApertureBlock(ident);
+		} else {
+			//No ident, close block
+			processor.CloseApertureBlock();
+		}
+	} else {
+		throw std::invalid_argument("invalid block aperture statement");
+	}
 }
 
 void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
 		const std::vector<std::string> &words) {
-	(void)processor;
-	(void)words;
-	throw std::invalid_argument("command not implemented");
+	AssertWordCommand(words);
+	DataTypeParser parser;
+	std::string pint_re = parser.GetPattern("positive_integer");
+	std::string dec_re = parser.GetPattern("unsigned_decimal");
+	std::ostringstream pattern;
+	pattern << "SR(";
+	pattern << "X(" << pint_re << ")";
+	pattern << "Y(" << pint_re << ")";
+	pattern << "I(" << dec_re << ")";
+	pattern << "J(" << dec_re << ")";
+	pattern << ")?";
+
+	std::regex regex(pattern.str());
+	std::smatch match;
+	if (std::regex_search(words[0], match, regex)) {
+		if (!match[1].str().empty()) {
+			//Has params, open step/repeat
+			int nx = std::stoi(match[2].str());
+			int ny = std::stoi(match[3].str());
+			double dx = std::stod(match[4].str());
+			double dy = std::stod(match[5].str());
+			processor.OpenStepAndRepeat(nx, ny, dx, dy);
+		} else {
+			//No ident, close step/repeat
+			processor.CloseStepAndRepeat();
+		}
+	} else {
+		throw std::invalid_argument("invalid step and repeat statement");
+	}
 }
 
 void CommandHandler::EndOfFile(CommandsProcessor &processor, const std::vector<std::string> &words) {

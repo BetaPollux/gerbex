@@ -80,6 +80,9 @@ void FileProcessor::Process(std::unique_ptr<std::istream> stream) {
 		} catch (const std::invalid_argument &ex) {
 			std::cerr << "WARNING line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
 			continue;
+		} catch (const std::logic_error &ex) {
+			std::cerr << "ERROR line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
+			break;
 		}
 	}
 }

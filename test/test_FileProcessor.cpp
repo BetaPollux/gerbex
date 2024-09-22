@@ -25,6 +25,10 @@
 
 using namespace gerbex;
 
+/**
+ * Basics
+ */
+
 
 
 TEST_GROUP(GerberBasics) {
@@ -37,6 +41,11 @@ TEST(GerberBasics, ThrowsRuntimeError) {
 	FileProcessor fileProcessor;
 	CHECK_THROWS(std::runtime_error, fileProcessor.Process(std::move(gerber)));
 }
+
+/**
+ * Two Square Boxes
+ */
+
 
 TEST_GROUP(GerberTwoSquareBoxes) {
 	FileProcessor fileProcessor;
@@ -90,3 +99,80 @@ TEST(GerberTwoSquareBoxes, LastPoint) {
 TEST(GerberTwoSquareBoxes, EndOfFile) {
 	CHECK(CommandState::EndOfFile == processor->GetCommandState());
 }
+
+/**
+ * Polarities and Apertures
+ */
+
+TEST_GROUP(GerberPolaritiesAndApertures) {
+	FileProcessor fileProcessor;
+	CommandsProcessor *processor;
+	const GraphicsState *graphicsState;
+
+	void setup() {
+		//TODO make this path use a variable
+		std::string path = "../Gerber_File_Format_Examples 20210409/2-13-2_Polarities_and_Apertures.gbr";
+		std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path, std::ifstream::in);
+		CHECK_TEXT(gerber->good(), "could not open Gerber file; run exec from build directory as ./bin/test_gerbex");
+
+		fileProcessor.Process(std::move(gerber));
+		processor = &fileProcessor.GetProcessor();
+		graphicsState = &processor->GetGraphicsState();
+	}
+};
+
+TEST(GerberPolaritiesAndApertures, NotImplemented) {
+	FAIL("GerberPolaritiesAndApertures not implemented");
+}
+
+
+/**
+ * Nested Blocks
+ */
+
+TEST_GROUP(GerberNestedBlocks) {
+	FileProcessor fileProcessor;
+	CommandsProcessor *processor;
+	const GraphicsState *graphicsState;
+
+	void setup() {
+		//TODO make this path use a variable
+		std::string path = "../Gerber_File_Format_Examples 20210409/4-6-4_Nested_blocks.gbr";
+		std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path, std::ifstream::in);
+		CHECK_TEXT(gerber->good(), "could not open Gerber file; run exec from build directory as ./bin/test_gerbex");
+
+		fileProcessor.Process(std::move(gerber));
+		processor = &fileProcessor.GetProcessor();
+		graphicsState = &processor->GetGraphicsState();
+	}
+};
+
+TEST(GerberNestedBlocks, NotImplemented) {
+	FAIL("GerberNestedBlocks not implemented");
+}
+
+/**
+ * Block with Different Orientations
+ */
+
+TEST_GROUP(GerberBlocksDiffOrientation) {
+	FileProcessor fileProcessor;
+	CommandsProcessor *processor;
+	const GraphicsState *graphicsState;
+
+	void setup() {
+		//TODO make this path use a variable
+		std::string path = "../Gerber_File_Format_Examples 20210409/4-11-6_Block_with_different_orientations.gbr";
+		std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path, std::ifstream::in);
+		CHECK_TEXT(gerber->good(), "could not open Gerber file; run exec from build directory as ./bin/test_gerbex");
+
+		fileProcessor.Process(std::move(gerber));
+		processor = &fileProcessor.GetProcessor();
+		graphicsState = &processor->GetGraphicsState();
+	}
+};
+
+TEST(GerberBlocksDiffOrientation, NotImplemented) {
+	FAIL("GerberBlocksDiffOrientation not implemented");
+}
+
