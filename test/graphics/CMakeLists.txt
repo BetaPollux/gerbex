@@ -1,0 +1,35 @@
+add_library(test_graphics OBJECT
+	test_Arc.cpp
+	test_ApertureTransformation.cpp
+	test_Arc.cpp
+	test_BlockAperture.cpp
+	test_Circle.cpp
+	test_CircleTemplate.cpp
+	test_Draw.cpp
+	test_Flash.cpp
+	test_Macro.cpp
+	test_MacroCenterLine.cpp
+	test_MacroCircle.cpp
+	test_MacroOutline.cpp
+	test_MacroPolygon.cpp
+	test_MacroTemplate.cpp
+	test_MacroThermal.cpp
+	test_MacroVectorLine.cpp
+	test_Obround.cpp
+	test_ObroundTemplate.cpp
+	test_Point.cpp
+	test_Polygon.cpp
+	test_PolygonTemplate.cpp
+	test_Rectangle.cpp
+	test_RectangleTemplate.cpp
+	test_Region.cpp
+	test_RegionContour.cpp
+	test_Segment.cpp
+	test_StepAndRepeat.cpp
+)
+
+target_link_libraries(test_graphics
+PUBLIC 
+	gerbex_graphics
+	CppUTest
+)
