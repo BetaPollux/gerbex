@@ -30,6 +30,10 @@ MockCommandsProcessor::MockCommandsProcessor() {
 MockCommandsProcessor::~MockCommandsProcessor() {
 }
 
+void MockCommandsProcessor::StartRegion() {
+	mock().actualCall("StartRegion");
+}
+
 void MockCommandsProcessor::EndRegion() {
 	mock().actualCall("EndRegion");
 }
@@ -44,12 +48,37 @@ void MockCommandsProcessor::OpenApertureBlock(int ident) {
 	mock().actualCall("OpenApertureBlock").withParameter("ident", ident);
 }
 
+void MockCommandsProcessor::CloseApertureBlock() {
+	mock().actualCall("CloseApertureBlock");
+}
+
+void MockCommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
+		double dy) {
+	mock().actualCall("OpenStepAndRepeat").withParameter("nx", nx).withParameter(
+			"ny", ny).withParameter("dx", dx).withParameter("dy", dy);
+}
+
+void MockCommandsProcessor::CloseStepAndRepeat() {
+	mock().actualCall("CloseStepAndRepeat");
+}
+
 void MockCommandsProcessor::SetEndOfFile() {
 	mock().actualCall("SetEndOfFile");
 }
 
-void MockCommandsProcessor::SetUnit(Unit unit) {
-	mock().actualCall("SetUnit").withParameter("unit", (int) unit);
+void MockCommandsProcessor::ApertureDefine(int ident,
+		std::shared_ptr<Aperture> aperture) {
+	mock().actualCall("ApertureDefine").withParameter("ident", ident).withParameter(
+			"aperture", aperture.get());
+}
+
+std::shared_ptr<Aperture> MockCommandsProcessor::GetAperture(int ident) const {
+	mock().actualCall("GetAperture").withParameter("ident", ident);
+	return *(std::shared_ptr<Aperture>*) mock().actualCall("GetCurrentPoint").returnPointerValue();
+}
+
+void MockCommandsProcessor::PlotDraw(const Point &coord) {
+	mock().actualCall("PlotDraw").withParameterOfType("Point", "coord", &coord);
 }
 
 void MockCommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
@@ -70,70 +99,13 @@ const std::vector<std::shared_ptr<GraphicalObject>>& MockCommandsProcessor::GetO
 			"GetObjects").returnPointerValue();
 }
 
-void MockCommandsProcessor::CloseStepAndRepeat() {
-	mock().actualCall("CloseStepAndRepeat");
-}
-
-void MockCommandsProcessor::CloseApertureBlock() {
-	mock().actualCall("CloseApertureBlock");
-}
-
-void MockCommandsProcessor::SetFormat(const CoordinateFormat &format) {
-	mock().actualCall("SetFormat").withParameterOfType("CoordinateFormat",
-			"format", &format);
-}
-
 void MockCommandsProcessor::Move(const Point &coord) {
 	mock().actualCall("Move").withParameterOfType("Point", "coord", &coord);
 }
 
-std::shared_ptr<Aperture> MockCommandsProcessor::GetAperture(int ident) const {
-	mock().actualCall("GetAperture").withParameter("ident", ident);
-	return *(std::shared_ptr<Aperture>*) mock().actualCall("GetCurrentPoint").returnPointerValue();
-}
 
-void MockCommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
-		double dy) {
-	mock().actualCall("OpenStepAndRepeat").withParameter("nx", nx).withParameter(
-			"ny", ny).withParameter("dx", dx).withParameter("dy", dy);
-}
-
-void MockCommandsProcessor::StartRegion() {
-	mock().actualCall("StartRegion");
-}
-
-void MockCommandsProcessor::PlotDraw(const Point &coord) {
-	mock().actualCall("PlotDraw").withParameterOfType("Point", "coord", &coord);
-}
-
-void MockCommandsProcessor::ApertureDefine(int ident,
-		std::shared_ptr<Aperture> aperture) {
-	mock().actualCall("ApertureDefine").withParameter("ident", ident).withParameter(
-			"aperture", aperture.get());
-}
-
-void MockCommandsProcessor::SetPlotState(PlotState state) {
-	mock().actualCall("SetPlotState").withParameter("state", (int) state);
-}
-
-void MockCommandsProcessor::SetCurrentAperture(int ident) {
-	mock().actualCall("SetCurrentAperture").withParameter("ident", ident);
-}
-
-ApertureTransformation& MockCommandsProcessor::GetTransformation() {
-	return *(ApertureTransformation*) mock().actualCall("GetTransformation").returnPointerValue();
-}
-
-Point MockCommandsProcessor::GetCurrentPoint() {
-	return *(Point*) mock().actualCall("GetCurrentPoint").returnPointerValue();
-}
-
-Unit MockCommandsProcessor::GetUnit() {
-	return (Unit) mock().actualCall("GetUnit").returnIntValue();
-}
-
-PlotState MockCommandsProcessor::GetPlotState() {
-	return (PlotState) mock().actualCall("GetPlotState").returnIntValue();
+GraphicsState& MockCommandsProcessor::GetGraphicsState() {
+	return *(GraphicsState*) mock().actualCall("GetGraphicsState").returnPointerValue();
 }
 
 } /* namespace gerbex */

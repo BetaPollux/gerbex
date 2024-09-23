@@ -24,89 +24,66 @@
 
 namespace gerbex {
 
-DataTypeParser::DataTypeParser() : m_patterns{{"unsigned_integer", "[0-9]+"},
-                                              {"positive_integer", "[0-9]*[1-9][0-9]*"},
-                                              {"integer", "[+-]?[0-9]+"},
-                                              {"decimal", "[+-]?((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"},
-                                              {"unsigned_decimal", "((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"},
-                                              {"string", "[^%*]*"},
-                                              {"field", "[^%*,]*"},
-                                              {"name", "[._$a-zA-Z][._$a-zA-Z0-9]{0,126}"}}
+const std::string DataTypeParser::GetNumberPattern()
 {
-    // Empty
+	return "[+-]?[0-9eE\\.]+";
 }
 
-DataTypeParser::~DataTypeParser()
+const std::string DataTypeParser::GetNamePattern()
 {
-    // Empty
+	return "[._$a-zA-Z][._$a-zA-Z0-9]{0,126}";
 }
 
-std::string DataTypeParser::GetPattern(const std::string &dtype) const
+const std::string DataTypeParser::GetFieldPattern()
 {
-    auto pattern = m_patterns.find(dtype);
-    if (pattern == m_patterns.end())
-    {
-        throw std::invalid_argument("unknown data type");
-    }
-    return pattern->second;
+    return "[^%*,]*";
 }
 
-uint32_t DataTypeParser::UnsignedInteger(const std::string &word) const
+uint32_t DataTypeParser::UnsignedInteger(const std::string &word)
 {
-    return std::stoi(Match(word, "unsigned_integer"));
+    return std::stoi(Match(word, "[0-9]+"));
 }
 
-uint32_t DataTypeParser::PositiveInteger(const std::string &word) const
+uint32_t DataTypeParser::PositiveInteger(const std::string &word)
 {
-    return std::stoi(Match(word, "positive_integer"));
+    return std::stoi(Match(word, "[0-9]*[1-9][0-9]*"));
 }
 
-int32_t DataTypeParser::Integer(const std::string &word) const
+int32_t DataTypeParser::Integer(const std::string &word)
 {
-    return std::stoi(Match(word, "integer"));
+    return std::stoi(Match(word,  "[+-]?[0-9]+"));
 }
 
-double DataTypeParser::UnsignedDecimal(const std::string &word) const
+double DataTypeParser::UnsignedDecimal(const std::string &word)
 {
-    return std::stod(Match(word, "unsigned_decimal"));
+    return std::stod(Match(word, "((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"));
 }
 
-double DataTypeParser::Decimal(const std::string &word) const
+double DataTypeParser::Decimal(const std::string &word)
 {
-    return std::stod(Match(word, "decimal"));
+    return std::stod(Match(word, "[+-]?((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"));
 }
 
-std::string DataTypeParser::String(const std::string &word) const
+std::string DataTypeParser::Field(const std::string &word)
 {
-    return Match(word, "string");
+    return Match(word, GetFieldPattern());
 }
 
-std::string DataTypeParser::Field(const std::string &word) const
+std::string DataTypeParser::Name(const std::string &word)
 {
-    return Match(word, "field");
+    return Match(word, GetNamePattern());
 }
 
-std::string DataTypeParser::Name(const std::string &word) const
+std::string DataTypeParser::Match(const std::string &word, const std::string &pattern)
 {
-    return Match(word, "name");
-}
-
-std::string DataTypeParser::Match(const std::string &word, const std::string &dtype) const
-{
-    auto pattern = m_patterns.find(dtype);
-    if (pattern == m_patterns.end())
-    {
-        throw std::invalid_argument("unknown data type");
-    }
     std::smatch match;
-    std::regex regex(pattern->second);
+    std::regex regex(pattern);
     if (std::regex_match(word, match, regex))
     {
         return match[0].str();
     }
-    throw std::invalid_argument("invalid " + dtype);
+    throw std::invalid_argument("invalid string");
 }
-
 
 std::string DataTypeParser::GetCommandCode(const std::string &word) {
 	std::smatch match;

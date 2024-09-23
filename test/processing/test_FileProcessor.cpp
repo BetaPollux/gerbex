@@ -50,7 +50,7 @@ TEST(GerberBasics, ThrowsRuntimeError) {
 TEST_GROUP(GerberTwoSquareBoxes) {
 	FileProcessor fileProcessor;
 	CommandsProcessor *processor;
-	const GraphicsState *graphicsState;
+	GraphicsState *graphicsState;
 
 	void setup() {
 		//TODO make this path use a variable
@@ -75,7 +75,7 @@ TEST(GerberTwoSquareBoxes, SetUnits) {
 }
 
 TEST(GerberTwoSquareBoxes, SetPolarity) {
-	CHECK(Polarity::Dark == processor->GetTransformation().GetPolarity());
+	CHECK(Polarity::Dark == graphicsState->GetTransformation().GetPolarity());
 }
 
 TEST(GerberTwoSquareBoxes, DefinedAperture) {

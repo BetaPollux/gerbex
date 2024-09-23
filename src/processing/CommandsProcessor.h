@@ -53,13 +53,7 @@ public:
 	virtual void OpenApertureBlock(int ident);
 	virtual void CloseApertureBlock();
 	virtual void SetCurrentAperture(int ident);
-	virtual Point GetCurrentPoint();
 	virtual std::shared_ptr<Aperture> GetAperture(int ident) const;
-	virtual void SetPlotState(PlotState state);
-	virtual PlotState GetPlotState();
-	virtual void SetFormat(const CoordinateFormat &format);
-	virtual void SetUnit(Unit unit);
-	virtual Unit GetUnit();
 	virtual void PlotDraw(const Point &coord);
 	virtual void PlotArc(const Point &coord, const Point &offset);
 	virtual void Move(const Point &coord);
@@ -67,7 +61,7 @@ public:
 	virtual void StartRegion();
 	virtual void EndRegion();
 	virtual std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
-	virtual ApertureTransformation& GetTransformation();
+	virtual GraphicsState& GetGraphicsState();
 	virtual const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	virtual CommandState GetCommandState() const;
 	virtual void SetEndOfFile();

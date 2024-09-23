@@ -95,25 +95,6 @@ TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {
 	CHECK_THROWS(std::invalid_argument, processor.SetCurrentAperture(10));
 }
 
-TEST(CommandsProcessor_Init, SetFormat) {
-	CoordinateFormat format;
-	processor.SetFormat(format);
-
-	CHECK(processor.GetGraphicsState().GetFormat().has_value());
-}
-
-TEST(CommandsProcessor_Init, SetUnit) {
-	processor.SetUnit(Unit::Inch);
-
-	CHECK(Unit::Inch == processor.GetGraphicsState().GetUnit());
-}
-
-TEST(CommandsProcessor_Init, SetPlotState) {
-	processor.SetPlotState(PlotState::CounterClockwise);
-
-	CHECK(PlotState::CounterClockwise == processor.GetGraphicsState().GetPlotState());
-}
-
 TEST(CommandsProcessor_Init, ApertureDefine) {
 	std::shared_ptr<Circle> circle = std::make_unique<Circle>();
 
@@ -143,10 +124,6 @@ TEST(CommandsProcessor_Init, ApertureDefine_Null) {
 	CHECK_THROWS(std::invalid_argument, processor.ApertureDefine(10, nullptr));
 }
 
-TEST(CommandsProcessor_Init, PlotState) {
-	LONGS_EQUAL(PlotState::Linear, processor.GetGraphicsState().GetPlotState());
-}
-
 TEST(CommandsProcessor_Init, Flash_NeedsCurrentAperture) {
 	Point origin(250, 1200);
 
@@ -157,7 +134,7 @@ TEST(CommandsProcessor_Init, Draw_NeedsCurrentAperture) {
 	Point origin(500, 2500);
 	Point end(750, -500);
 
-	processor.SetPlotState(PlotState::Linear);
+	processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 	processor.Move(origin);
 
 	CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
@@ -168,7 +145,7 @@ TEST(CommandsProcessor_Init, Arc_NeedsCurrentAperture) {
 	Point end(-3000, 4000);
 	Point offset(-3000, -2000);
 
-	processor.SetPlotState(PlotState::Clockwise);
+	processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 	processor.Move(origin);
 
 	CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
@@ -188,7 +165,7 @@ TEST(CommandsProcessor_Init, Draw_RequiresCurrentPoint) {
 	Point end(-250, 0);
 
 	MakeAndSetAperture<Circle>(processor, 10);
-	processor.SetPlotState(PlotState::Linear);
+	processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 	//Current point is invalid on initialization
 
 	CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
@@ -199,7 +176,7 @@ TEST(CommandsProcessor_Init, Arc_RequiresCurrentPoint) {
 	Point offset(-3000, -2000);
 
 	MakeAndSetAperture<Circle>(processor, 10);
-	processor.SetPlotState(PlotState::Clockwise);
+	processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 	//Current point is invalid on initialization
 
 	CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
@@ -248,7 +225,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor);
 
-	CHECK(processor.GetTransformation() == flash->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == flash->GetTransformation());
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
@@ -270,7 +247,7 @@ TEST_GROUP(CommandsProcessor_PlotDraw) {
 		end = Point(750, -500);
 
 		MakeAndSetAperture<Circle>(processor, 10);
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.Move(origin);
 	}
 };
@@ -283,7 +260,7 @@ TEST(CommandsProcessor_PlotDraw, BadState) {
 	};
 
 	for(PlotState st : state) {
-		processor.SetPlotState(st);
+		processor.GetGraphicsState().SetPlotState(st);
 		CHECK_THROWS(std::logic_error, processor.PlotDraw(end));
 	}
 }
@@ -324,7 +301,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor);
 
-	CHECK(processor.GetTransformation() == draw->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == draw->GetTransformation());
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
@@ -347,7 +324,7 @@ TEST_GROUP(CommandsProcessor_PlotArc) {
 		offset = Point(-3000, -2000);
 
 		MakeAndSetAperture<Circle>(processor, 10);
-		processor.SetPlotState(PlotState::Clockwise);
+		processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 		processor.Move(origin);
 	}
 };
@@ -359,7 +336,7 @@ TEST(CommandsProcessor_PlotArc, BadState) {
 	};
 
 	for(PlotState st : state) {
-		processor.SetPlotState(st);
+		processor.GetGraphicsState().SetPlotState(st);
 		CHECK_THROWS(std::logic_error, processor.PlotArc(end, offset));
 	}
 }
@@ -409,7 +386,7 @@ TEST(CommandsProcessor_PlotArc, Direction_CW) {
 }
 
 TEST(CommandsProcessor_PlotArc, Direction_CCW) {
-	processor.SetPlotState(PlotState::CounterClockwise);
+	processor.GetGraphicsState().SetPlotState(PlotState::CounterClockwise);
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
@@ -431,7 +408,7 @@ TEST(CommandsProcessor_PlotArc, Transform) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor);
 
-	CHECK(processor.GetTransformation() == arc->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == arc->GetTransformation());
 }
 
 /***
@@ -447,7 +424,7 @@ TEST_GROUP(CommandsProcessor_InsideRegion) {
 		end = Point(750, -500);
 		offset = Point(-2000, 1000);
 
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.StartRegion();
 	}
 };
@@ -489,7 +466,7 @@ TEST(CommandsProcessor_InsideRegion, AddsSegment_Draw) {
 
 TEST(CommandsProcessor_InsideRegion, AddsSegment_Arc) {
 	processor.Move(origin);
-	processor.SetPlotState(PlotState::Clockwise);
+	processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 	processor.PlotArc(end, offset);
 	processor.EndRegion();
 
@@ -513,7 +490,7 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 		mid = Point(1500, 1000);
 		end = Point(750, -500);
 
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.StartRegion();
 		processor.Move(origin);
 		processor.PlotDraw(mid);
@@ -562,7 +539,7 @@ TEST_GROUP(CommandsProcessor_ApertureBlock) {
 		circleId = 10;
 		blockId = 12;
 
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		MakeAndSetAperture<Circle>(processor, circleId);
 		processor.OpenApertureBlock(blockId);
 		processor.Move(origin);
@@ -618,7 +595,7 @@ TEST_GROUP(CommandsProcessor_NestedApertureBlock) {
 		outerBlockId = 100;
 		innerBlockId = 101;
 
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		MakeAndSetAperture<Circle>(processor, circleId);
 		processor.OpenApertureBlock(outerBlockId);
 		processor.OpenApertureBlock(innerBlockId);
@@ -676,7 +653,7 @@ TEST_GROUP(CommandsProcessor_StepAndRepeat) {
 		ny = 3;
 
 		MakeAndSetAperture<Circle>(processor, 10);
-		processor.SetPlotState(PlotState::Linear);
+		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.OpenStepAndRepeat(nx, ny, 0.5, 1.5);
 		processor.Flash(origin);
 		processor.CloseStepAndRepeat();

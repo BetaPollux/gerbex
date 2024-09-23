@@ -18,8 +18,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "CppUTest/TestHarness.h"
 #include "CoordinateData.h"
+#include <stdexcept>
+#include "CppUTest/TestHarness.h"
+
 
 using namespace gerbex;
 
@@ -118,36 +120,33 @@ TEST_GROUP(CoordinateData_FromDefaults) {
 };
 
 TEST(CoordinateData_FromDefaults, NoData) {
-	std::optional<Point> result = CoordinateData(std::nullopt, std::nullopt).GetXY(defaultPt);
-	CHECK(*result == defaultPt);
+	Point result = CoordinateData(std::nullopt, std::nullopt).GetXY(defaultPt);
+	CHECK(result == defaultPt);
 }
 
 TEST(CoordinateData_FromDefaults, JustX) {
-	std::optional<Point> result = CoordinateData(125, std::nullopt).GetXY(defaultPt);
-	CHECK(*result == Point(125, kDefY));
+	Point result = CoordinateData(125, std::nullopt).GetXY(defaultPt);
+	CHECK(result == Point(125, kDefY));
 }
 
 TEST(CoordinateData_FromDefaults, JustY) {
-	std::optional<Point> result = CoordinateData(std::nullopt, -500).GetXY(defaultPt);
-	CHECK(*result == Point(kDefX, -500));
+	Point result = CoordinateData(std::nullopt, -500).GetXY(defaultPt);
+	CHECK(result == Point(kDefX, -500));
 }
 
 TEST(CoordinateData_FromDefaults, NoDefault) {
-	std::optional<Point> result = CoordinateData(125, 500).GetXY();
-	CHECK(*result == Point(125, 500));
+	Point result = CoordinateData(125, 500).GetXY();
+	CHECK(result == Point(125, 500));
 }
 
 TEST(CoordinateData_FromDefaults, MissingX) {
-	std::optional<Point> result = CoordinateData(std::nullopt, -500).GetXY();
-	CHECK(!result.has_value());
+	CHECK_THROWS(std::invalid_argument, CoordinateData(std::nullopt, -500).GetXY());
 }
 
 TEST(CoordinateData_FromDefaults, MissingY) {
-	std::optional<Point> result = CoordinateData(125, std::nullopt).GetXY();
-	CHECK(!result.has_value());
+	CHECK_THROWS(std::invalid_argument, CoordinateData(125, std::nullopt).GetXY());
 }
 
 TEST(CoordinateData_FromDefaults, MissingXY) {
-	std::optional<Point> result = CoordinateData(std::nullopt, std::nullopt).GetXY();
-	CHECK(!result.has_value());
+	CHECK_THROWS(std::invalid_argument, CoordinateData(std::nullopt, std::nullopt).GetXY());
 }

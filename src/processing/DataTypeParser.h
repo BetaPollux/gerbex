@@ -22,7 +22,6 @@
 #define DATATYPEPARSER_H_
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace gerbex {
@@ -32,24 +31,20 @@ namespace gerbex {
  */
 class DataTypeParser {
 public:
-	DataTypeParser();
-	virtual ~DataTypeParser();
-	std::string GetPattern(const std::string& dtype) const;
-	uint32_t UnsignedInteger(const std::string &word) const;
-	uint32_t PositiveInteger(const std::string &word) const;
-	int32_t Integer(const std::string &word) const;
-	double UnsignedDecimal(const std::string &word) const;
-	double Decimal(const std::string &word) const;
-	std::string String(const std::string &word) const;
-	std::string Field(const std::string &word) const;
-	std::string Name(const std::string &word) const;
-	std::string Match(const std::string &word, const std::string &dtype) const;
+	static uint32_t UnsignedInteger(const std::string &word);
+	static uint32_t PositiveInteger(const std::string &word);
+	static int32_t Integer(const std::string &word);
+	static double UnsignedDecimal(const std::string &word);
+	static double Decimal(const std::string &word);
+	static std::string Field(const std::string &word);
+	static std::string Name(const std::string &word);
+	static std::string Match(const std::string &word, const std::string &pattern);
 	static std::vector<std::string> SplitFields(const std::string &word);
 	static std::vector<double> SplitParams(const std::string &field);
 	static std::string GetCommandCode(const std::string &word);
-
-private:
-	const std::unordered_map<std::string, std::string> m_patterns;
+	static const std::string GetNumberPattern();
+	static const std::string GetNamePattern();
+	static const std::string GetFieldPattern();
 
 };
 

@@ -86,5 +86,13 @@ CoordinateFormat CoordinateFormat::FromCommand(const std::string &str) {
 	throw std::invalid_argument("invalid format specification");
 }
 
+bool CoordinateFormat::operator ==(const CoordinateFormat &rhs) const {
+	return m_integer == rhs.m_integer && m_decimal == rhs.m_decimal;
+}
+
+bool CoordinateFormat::operator !=(const CoordinateFormat &rhs) const {
+	return m_integer != rhs.m_integer || m_decimal != rhs.m_decimal;
+}
+
 } /* namespace gerbex */
 

@@ -42,12 +42,12 @@ CoordinateData::~CoordinateData() {
 
 CoordinateData CoordinateData::FromString(const std::string &str) {
 	// Parse [X int][Y int][I int J int]
-	DataTypeParser parser;
-	std::string int_re = parser.GetPattern("integer");
+
+	std::string num_re = DataTypeParser::GetNumberPattern();
 	std::ostringstream pattern;
-	pattern << "(X(" << int_re << "))?";
-	pattern << "(Y(" << int_re << "))?";
-	pattern << "(I(" << int_re << ")J(" << int_re << "))?";
+	pattern << "(X(" << num_re << "))?";
+	pattern << "(Y(" << num_re << "))?";
+	pattern << "(I(" << num_re << ")J(" << num_re << "))?";
 
 	std::regex regex(pattern.str());
 	std::smatch match;
@@ -57,27 +57,27 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	std::optional<Point> ij;
 	// X-value
 	if (match[2].matched) {
-		x = parser.Integer(match[2].str());
+		x = DataTypeParser::Integer(match[2].str());
 	}
 
 	// Y-value
 	if (match[4].matched) {
-		y = parser.Integer(match[4].str());
+		y = DataTypeParser::Integer(match[4].str());
 	}
 
 	// IJ-value
 	if (match[5].matched) {
-		PointCoordType i = parser.Integer(match[6].str());
-		PointCoordType j = parser.Integer(match[7].str());
+		PointCoordType i = DataTypeParser::Integer(match[6].str());
+		PointCoordType j = DataTypeParser::Integer(match[7].str());
 		ij = Point(i, j);
 	}
 
 	return CoordinateData(x, y, ij);
 }
 
-std::optional<Point> CoordinateData::GetXY(const std::optional<Point> &defaultPt) const {
+Point CoordinateData::GetXY(const std::optional<Point> &defaultPt) const {
 	if (!HasXY() && !defaultPt.has_value()) {
-		return std::nullopt;
+		throw std::invalid_argument("coordinate data is not fully defined");
 	}
 
 	PointCoordType newX = GetX().value_or(defaultPt->GetX());

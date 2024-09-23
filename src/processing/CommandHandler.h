@@ -34,7 +34,7 @@ typedef void (*callHandler)(CommandsProcessor &, const std::vector<std::string> 
 class CommandHandler {
 public:
 	static void AssertWordCommand(const std::vector<std::string> &words);
-	static void AssertOperationsCode(const std::string &code, const std::string &expected);
+	static void AssertCommandCode(const std::string &code, const std::string &expected);
 	static void NotImplemented(CommandsProcessor &processor, const std::vector<std::string> &words);
 	static void Comment(CommandsProcessor &processor, const std::vector<std::string> &words);
 	static void Unit(CommandsProcessor &processor, const std::vector<std::string> &words);

@@ -35,7 +35,7 @@ public:
 	CoordinateData();
 	virtual ~CoordinateData();
 	static CoordinateData FromString(const std::string &str);
-	std::optional<Point> GetXY(const std::optional<Point> &defaultPt = std::nullopt) const;
+	Point GetXY(const std::optional<Point> &defaultPt = std::nullopt) const;
 	bool HasXY() const;
 	bool HasIJ() const;
 	const std::optional<Point>& GetIJ() const;

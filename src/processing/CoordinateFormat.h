@@ -35,6 +35,8 @@ public:
 	CoordinateFormat();
 	CoordinateFormat(int integer, int decimal);
 	virtual ~CoordinateFormat();
+	bool operator==(const CoordinateFormat &rhs) const;
+	bool operator!=(const CoordinateFormat &rhs) const;
 	RealPoint Convert(const Point &point) const;
 	int GetInteger() const;
 	int GetDecimal() const;

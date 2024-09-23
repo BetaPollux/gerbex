@@ -36,28 +36,19 @@ public:
 	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name) override;
 	void OpenApertureBlock(int ident) override;
 	void SetEndOfFile() override;
-	void SetUnit(Unit unit) override;
 	void PlotArc(const Point &coord, const Point &offset) override;
 	CommandState GetCommandState() const override;
 	void Flash(const Point &coord) override;
-	const std::vector<std::shared_ptr<GraphicalObject>,
-			std::allocator<std::shared_ptr<GraphicalObject>>>& GetObjects() const
-			override;
+	const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const override;
 	void CloseStepAndRepeat() override;
 	void CloseApertureBlock() override;
-	void SetFormat(const CoordinateFormat &format) override;
 	void Move(const Point &coord) override;
 	std::shared_ptr<Aperture> GetAperture(int ident) const override;
 	void OpenStepAndRepeat(int nx, int ny, double dx, double dy) override;
 	void StartRegion() override;
 	void PlotDraw(const Point &coord) override;
 	void ApertureDefine(int ident, std::shared_ptr<Aperture> aperture) override;
-	void SetPlotState(PlotState state) override;
-	void SetCurrentAperture(int ident) override;
-	ApertureTransformation& GetTransformation() override;
-	Point GetCurrentPoint() override;
-	Unit GetUnit() override;
-	PlotState GetPlotState() override;
+	GraphicsState& GetGraphicsState() override;
 
 };
 

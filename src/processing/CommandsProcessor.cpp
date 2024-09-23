@@ -176,10 +176,9 @@ std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(
 	return result->second;
 }
 
-ApertureTransformation& CommandsProcessor::GetTransformation() {
-	return m_graphicsState.GetTransformation();
+GraphicsState& CommandsProcessor::GetGraphicsState() {
+	return m_graphicsState;
 }
-
 const std::vector<std::shared_ptr<GraphicalObject> >& CommandsProcessor::GetObjects() const {
 	return m_objects;
 }
@@ -190,10 +189,6 @@ CommandState CommandsProcessor::GetCommandState() const {
 
 void CommandsProcessor::SetEndOfFile() {
 	m_commandState = CommandState::EndOfFile;
-}
-
-void CommandsProcessor::SetPlotState(PlotState state) {
-	m_graphicsState.SetPlotState(state);
 }
 
 void CommandsProcessor::StartRegion() {
@@ -239,14 +234,6 @@ void CommandsProcessor::OpenStepAndRepeat(int nx, int ny, double dx,
 	}
 }
 
-void CommandsProcessor::SetFormat(const CoordinateFormat &format) {
-	m_graphicsState.SetFormat(format);
-}
-
-void CommandsProcessor::SetUnit(Unit unit) {
-	m_graphicsState.SetUnit(unit);
-}
-
 void CommandsProcessor::CloseStepAndRepeat() {
 	if (m_activeStepAndRepeat != nullptr) {
 		m_objectDest.pop();
@@ -255,19 +242,6 @@ void CommandsProcessor::CloseStepAndRepeat() {
 	} else {
 		throw std::logic_error("cannot close step and repeat; not opened");
 	}
-}
-
-PlotState CommandsProcessor::GetPlotState() {
-	return m_graphicsState.GetPlotState();
-}
-
-Unit CommandsProcessor::GetUnit() {
-	return m_graphicsState.GetUnit();
-}
-
-Point CommandsProcessor::GetCurrentPoint() {
-	//TODO check and trhow
-	return *m_graphicsState.GetCurrentPoint();
 }
 
 } /* namespace gerbex */
