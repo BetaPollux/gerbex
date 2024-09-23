@@ -27,7 +27,7 @@ MacroTemplate::MacroTemplate() {
 
 }
 
-MacroTemplate::MacroTemplate(std::string body)
+MacroTemplate::MacroTemplate(std::vector<std::string> body)
 	: m_body{ body }
 {
 	// Empty
@@ -44,6 +44,10 @@ std::unique_ptr<Aperture> MacroTemplate::Call(const std::vector<double> &paramet
 	//TODO parse body
 	//TODO add primitives
 	return nullptr;
+}
+
+const std::vector<std::string>& MacroTemplate::GetBody() const {
+	return m_body;
 }
 
 } /* namespace gerbex */

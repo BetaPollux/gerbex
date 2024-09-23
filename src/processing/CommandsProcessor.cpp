@@ -34,13 +34,8 @@
 namespace gerbex {
 
 CommandsProcessor::CommandsProcessor() :
-		m_commandState { CommandState::Normal },
-		m_graphicsState { },
-		m_objects { },
-		m_apertures { },
-		m_templates { },
-		m_activeRegion { nullptr },
-		m_openBlocks { 0 } {
+		m_commandState { CommandState::Normal }, m_graphicsState { }, m_objects { }, m_apertures { }, m_templates { }, m_activeRegion {
+				nullptr }, m_openBlocks { 0 } {
 	m_templates["C"] = std::make_unique<CircleTemplate>();
 	m_templates["R"] = std::make_unique<RectangleTemplate>();
 	m_templates["O"] = std::make_unique<ObroundTemplate>();
@@ -164,6 +159,16 @@ void CommandsProcessor::Flash(const Point &coord) {
 			m_graphicsState.GetTransformation());
 	m_objectDest.top()->push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
+}
+
+void CommandsProcessor::AddTemplate(std::string name,
+		std::shared_ptr<ApertureTemplate> new_tmpl) {
+	if (m_templates.find(name) == m_templates.end()) {
+		m_templates[name] = new_tmpl;
+	} else {
+		throw std::invalid_argument(
+				"aperture template " + name + " already exists");
+	}
 }
 
 std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(

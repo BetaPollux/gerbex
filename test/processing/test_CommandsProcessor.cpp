@@ -22,6 +22,7 @@
 #include "BlockAperture.h"
 #include "CommandsProcessor.h"
 #include "Circle.h"
+#include "CircleTemplate.h"
 #include "Draw.h"
 #include "Flash.h"
 #include "Region.h"
@@ -89,6 +90,17 @@ TEST(CommandsProcessor_Init, StandardTemplates) {
 
 TEST(CommandsProcessor_Init, GetTemplate_DoesNotExist) {
 	CHECK_THROWS(std::invalid_argument, processor.GetTemplate("X"));
+}
+
+TEST(CommandsProcessor_Init, AddTemplate_AlreadyExists) {
+	std::shared_ptr<CircleTemplate> tmpl = std::make_shared<CircleTemplate>();
+	CHECK_THROWS(std::invalid_argument, processor.AddTemplate("C", tmpl));
+}
+
+TEST(CommandsProcessor_Init, AddTemplate) {
+	std::shared_ptr<CircleTemplate> tmpl = std::make_shared<CircleTemplate>();
+	processor.AddTemplate("Triangle_30", tmpl);
+	CHECK(processor.GetTemplate("Triangle_30") == tmpl);
 }
 
 TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {

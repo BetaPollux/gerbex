@@ -44,6 +44,10 @@ std::shared_ptr<ApertureTemplate> MockCommandsProcessor::GetTemplate(
 			"GetTemplate").withParameter("name", name.c_str()).returnPointerValue();
 }
 
+void MockCommandsProcessor::AddTemplate(std::string name, std::shared_ptr<ApertureTemplate> new_tmpl) {
+	mock().actualCall("AddTemplate").withParameter("name", name.c_str()).withParameter("new_tmpl", new_tmpl.get());
+}
+
 void MockCommandsProcessor::OpenApertureBlock(int ident) {
 	mock().actualCall("OpenApertureBlock").withParameter("ident", ident);
 }

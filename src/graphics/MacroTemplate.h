@@ -23,6 +23,7 @@
 
 #include "ApertureTemplate.h"
 #include <string>
+#include <vector>
 
 namespace gerbex {
 
@@ -32,12 +33,13 @@ namespace gerbex {
 class MacroTemplate: public ApertureTemplate {
 public:
 	MacroTemplate();
-	MacroTemplate(std::string body);
+	MacroTemplate(std::vector<std::string> body);
 	virtual ~MacroTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
+	const std::vector<std::string> &GetBody() const;
 
 private:
-	std::string m_body;
+	std::vector<std::string> m_body;
 };
 
 } /* namespace gerbex */

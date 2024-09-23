@@ -96,9 +96,15 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 
 void CommandHandler::ApertureMacro(CommandsProcessor &processor,
 		const std::vector<std::string> &words) {
-	(void) processor;
-	(void) words;
-	throw std::invalid_argument("command not implemented");
+	std::string pattern = "AM(" + DataTypeParser::GetNamePattern() + ")";
+	std::regex regex(pattern);
+	std::smatch match;
+	if (std::regex_search(words[0], match, regex)) {
+		std::string name = match[1].str();
+		processor.AddTemplate(name, nullptr);
+	} else {
+		throw std::invalid_argument("invalid aperture macro");
+	}
 }
 
 void CommandHandler::SetCurrentAperture(CommandsProcessor &processor,

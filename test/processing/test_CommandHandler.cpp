@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "CommandHandler.h"
+#include "MacroTemplate.h"
 #include "MockAperture.h"
 #include "MockCommandsProcessor.h"
 #include "MockTemplate.h"
@@ -103,7 +104,10 @@ TEST(CommandHandlerTest, Format) {
 }
 
 TEST(CommandHandlerTest, ApertureMacro) {
-	FAIL("Implemented handler for aperture macro");
+	std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>();
+	//TODO fix new_tmpl
+	mock().expectOneCall("AddTemplate").withParameter("name", "THERMAL80").withParameter("new_tmpl", 0);
+	CommandHandler::ApertureMacro(processor, { "AMTHERMAL80", "1,1,$1,$2,$3", "1,0,$4,$2,$3" });
 }
 
 TEST(CommandHandlerTest, PlotState) {
