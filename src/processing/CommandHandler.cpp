@@ -21,6 +21,7 @@
 #include "CommandHandler.h"
 #include "CoordinateData.h"
 #include "DataTypeParser.h"
+#include "MacroTemplate.h"
 #include <iostream>
 #include <regex>
 #include <stdexcept>
@@ -101,7 +102,9 @@ void CommandHandler::ApertureMacro(CommandsProcessor &processor,
 	std::smatch match;
 	if (std::regex_search(words[0], match, regex)) {
 		std::string name = match[1].str();
-		processor.AddTemplate(name, nullptr);
+		std::vector<std::string> body = std::vector<std::string>(words.begin() + 1, words.end());
+		std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(body);
+		processor.AddTemplate(name, macro);
 	} else {
 		throw std::invalid_argument("invalid aperture macro");
 	}

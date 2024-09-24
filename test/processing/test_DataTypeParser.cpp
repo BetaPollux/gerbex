@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <regex>
 #include <stdexcept>
 #include <vector>
 
@@ -271,3 +272,25 @@ TEST(SplitParams, ThreeParams) {
 	DOUBLES_EQUAL(0.0015, params[2], DBL_TOL);
 }
 
+/**
+ * Patterns
+ */
+
+
+TEST_GROUP(ParserPatterns) {
+};
+
+TEST(ParserPatterns, Name) {
+	std::regex regex(DataTypeParser::GetNamePattern());
+	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+}
+
+TEST(ParserPatterns, Field) {
+	std::regex regex(DataTypeParser::GetFieldPattern());
+	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+}
+
+TEST(ParserPatterns, Number) {
+	std::regex regex(DataTypeParser::GetNumberPattern());
+	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+}

@@ -22,6 +22,7 @@
 #define MOCKTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "MacroTemplate.h"
 
 namespace gerbex {
 

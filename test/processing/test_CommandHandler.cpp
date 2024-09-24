@@ -104,10 +104,11 @@ TEST(CommandHandlerTest, Format) {
 }
 
 TEST(CommandHandlerTest, ApertureMacro) {
-	std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>();
-	//TODO fix new_tmpl
-	mock().expectOneCall("AddTemplate").withParameter("name", "THERMAL80").withParameter("new_tmpl", 0);
-	CommandHandler::ApertureMacro(processor, { "AMTHERMAL80", "1,1,$1,$2,$3", "1,0,$4,$2,$3" });
+	std::vector<std::string> words = { "AMTHERMAL80", "1,1,$1,$2,$3", "1,0,$4,$2,$3" };
+	std::vector<std::string> body = std::vector<std::string>(words.begin() + 1, words.end());
+	std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(body);
+	mock().expectOneCall("AddTemplate").withParameter("name", "THERMAL80").withParameterOfType("MacroTemplate", "new_tmpl", macro.get());
+	CommandHandler::ApertureMacro(processor, words);
 }
 
 TEST(CommandHandlerTest, PlotState) {

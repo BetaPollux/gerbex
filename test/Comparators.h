@@ -22,10 +22,13 @@
 #define COMPARATORS_H_
 
 #include "Point.h"
+#include "MacroTemplate.h"
+#include <memory>
 #include <vector>
 #include "CppUTestExt/MockSupport.h"
 
 using gerbex::Point;
+using gerbex::MacroTemplate;
 
 class PointComparator : public MockNamedValueComparator
 {
@@ -62,5 +65,27 @@ public:
         return str;
     }
 };
+
+
+class MacroTemplateComparator : public MockNamedValueComparator
+{
+public:
+    virtual bool isEqual(const void* object1, const void* object2)
+    {
+    	MacroTemplate* macro1 = (MacroTemplate*)object1;
+    	MacroTemplate* macro2 = (MacroTemplate*)object2;
+        return macro1->GetBody() == macro2->GetBody();
+    }
+    virtual SimpleString valueToString(const void* object)
+    {
+    	MacroTemplate* macro = (MacroTemplate*)object;
+    	SimpleString str;
+    	for (const std::string &w: macro->GetBody()) {
+    		str += StringFrom(w) + "*";
+    	}
+        return str;
+    }
+};
+
 
 #endif /* COMPARATORS_H_ */
