@@ -19,6 +19,8 @@
  */
 
 #include "Macro.h"
+#include "MacroCircle.h"
+#include "MacroPolygon.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
@@ -27,7 +29,21 @@ using namespace gerbex;
 TEST_GROUP(MacroTest) {
 };
 
-TEST(MacroTest, NotImplemented) {
-	FAIL("MacroTest Not Implemented");
+TEST(MacroTest, Empty) {
+	Macro macro;
+	std::vector<std::shared_ptr<MacroPrimitive>> prims = macro.GetPrimitives();
+	CHECK(prims.empty());
+}
+
+TEST(MacroTest, AddPrimitives) {
+	std::shared_ptr<MacroCircle> circle = std::make_shared<MacroCircle>();
+	std::shared_ptr<MacroPolygon> poly = std::make_shared<MacroPolygon>();
+	Macro macro;
+	macro.AddPrimitive(circle);
+	macro.AddPrimitive(poly);
+	std::vector<std::shared_ptr<MacroPrimitive>> prims = macro.GetPrimitives();
+	LONGS_EQUAL(2, prims.size());
+	POINTERS_EQUAL(prims.front().get(), circle.get());
+	POINTERS_EQUAL(prims.back().get(), poly.get());
 }
 

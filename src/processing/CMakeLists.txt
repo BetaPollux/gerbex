@@ -3,7 +3,6 @@ add_library(gerbex_processing OBJECT
 	CommandsProcessor.cpp
 	CoordinateData.cpp
 	CoordinateFormat.cpp
-	DataTypeParser.cpp
 	FileParser.cpp
 	FileProcessor.cpp
 	GraphicsState.cpp

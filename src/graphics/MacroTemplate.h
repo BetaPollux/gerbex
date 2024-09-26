@@ -22,6 +22,7 @@
 #define MACROTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "MacroPrimitive.h"
 #include <string>
 #include <list>
 
@@ -37,6 +38,14 @@ public:
 	virtual ~MacroTemplate();
 	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
 	const std::list<std::string> &GetBody() const;
+	static std::unique_ptr<MacroPrimitive> HandleComment(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakeCircle(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakeCenterLine(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakeVectorLine(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakeOutline(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakePolygon(const std::string &word);
+	static std::unique_ptr<MacroPrimitive> MakeThermal(const std::string &word);
+	static MacroExposure ExposureFromNum(int num);
 
 private:
 	std::list<std::string> m_body;

@@ -212,23 +212,23 @@ TEST_GROUP(SplitParams) {
 
 TEST(SplitParams, Empty) {
 	std::string field = "";
-	std::vector<double> params = DataTypeParser::SplitParams(field);
+	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
 	CHECK(params.empty());
 }
 
-TEST(SplitParams, OneChar) {
+TEST(SplitParams, JustDelim) {
 	std::string field = "X";
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field, 'X'));
 }
 
 TEST(SplitParams, NonNumeric) {
 	std::string field = "0.01XABC";
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field, 'X'));
 }
 
 TEST(SplitParams, OneParam) {
 	std::string field = "123";
-	std::vector<double> params = DataTypeParser::SplitParams(field);
+	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
 
 	LONGS_EQUAL(1, params.size());
 	DOUBLES_EQUAL(123.0, params[0], DBL_TOL);
@@ -236,7 +236,7 @@ TEST(SplitParams, OneParam) {
 
 TEST(SplitParams, ThreeParams) {
 	std::string field = "0.030X0.040X0.0015";
-	std::vector<double> params = DataTypeParser::SplitParams(field);
+	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
 
 	LONGS_EQUAL(3, params.size());
 	DOUBLES_EQUAL(0.03, params[0], DBL_TOL);

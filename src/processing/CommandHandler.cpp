@@ -86,7 +86,7 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 		int ident = std::stoi(match[1].str());
 		std::string name = match[2].str();
 		std::vector<double> params = DataTypeParser::SplitParams(
-				match[4].str());
+				match[4].str(), 'X');
 		std::shared_ptr<ApertureTemplate> aperture = processor.GetTemplate(
 				name);
 		processor.ApertureDefine(ident, aperture->Call(params));

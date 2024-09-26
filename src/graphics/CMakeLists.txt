@@ -6,6 +6,7 @@ add_library(gerbex_graphics OBJECT
 	BlockAperture.cpp
 	Circle.cpp
 	CircleTemplate.cpp
+	DataTypeParser.cpp
 	Draw.cpp
 	Flash.cpp
 	GraphicalObject.cpp
