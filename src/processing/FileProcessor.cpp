@@ -64,13 +64,13 @@ FileProcessor::~FileProcessor() {
 void FileProcessor::Process(std::unique_ptr<std::istream> stream) {
 	FileParser parser(std::move(stream));
 	while (true) {
-		std::vector<std::string> words = parser.GetNextCommand();
+		std::list<std::string> words = parser.GetNextCommand();
 
 		if (words.empty()) {
 			break;	// EOF
 		}
 		try {
-			std::string code = DataTypeParser::GetCommandCode(words[0]);
+			std::string code = DataTypeParser::GetCommandCode(words.front());
 			auto handler = m_handlers.find(code);
 			if (handler != m_handlers.end()) {
 				handler->second(m_processor, words);
@@ -78,10 +78,10 @@ void FileProcessor::Process(std::unique_ptr<std::istream> stream) {
 				throw std::invalid_argument("unsupported command " + code);
 			}
 		} catch (const std::invalid_argument &ex) {
-			std::cerr << "WARNING line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
+			std::cerr << "WARNING line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words.front() << std::endl;
 			continue;
 		} catch (const std::logic_error &ex) {
-			std::cerr << "ERROR line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words[0] << std::endl;
+			std::cerr << "ERROR line " << parser.GetCurrentLine() << ": " << ex.what() << ": " << words.front() << std::endl;
 			break;
 		}
 	}

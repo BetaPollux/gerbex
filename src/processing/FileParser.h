@@ -24,7 +24,7 @@
 #include <istream>
 #include <memory>
 #include <string>
-#include <vector>
+#include <list>
 
 namespace gerbex {
 
@@ -39,7 +39,7 @@ public:
 	// Get the next command from the stream. Word commands are a single word, whereas extended commands can have multiple words.
 	// Commands can span multiple lines in the file.
 	// Words always end in *. Returns an empty vector on EOF.
-	std::vector<std::string> GetNextCommand();
+	std::list<std::string> GetNextCommand();
 	void SetIstream(std::unique_ptr<std::istream> istream);
 	int GetCurrentLine() const;
 

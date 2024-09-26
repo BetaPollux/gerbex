@@ -31,13 +31,6 @@ namespace gerbex {
  */
 class DataTypeParser {
 public:
-	static uint32_t UnsignedInteger(const std::string &word);
-	static uint32_t PositiveInteger(const std::string &word);
-	static int32_t Integer(const std::string &word);
-	static double UnsignedDecimal(const std::string &word);
-	static double Decimal(const std::string &word);
-	static std::string Field(const std::string &word);
-	static std::string Name(const std::string &word);
 	static std::string Match(const std::string &word, const std::string &pattern);
 	static std::vector<std::string> SplitFields(const std::string &word);
 	static std::vector<double> SplitParams(const std::string &field);

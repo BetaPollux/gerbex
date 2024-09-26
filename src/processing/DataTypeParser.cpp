@@ -26,7 +26,7 @@ namespace gerbex {
 
 const std::string DataTypeParser::GetNumberPattern()
 {
-	return "[+-]?[0-9eE\\.]+";
+	return "[+-]?[0-9]*[\\.]?[0-9]+";
 }
 
 const std::string DataTypeParser::GetNamePattern()
@@ -37,41 +37,6 @@ const std::string DataTypeParser::GetNamePattern()
 const std::string DataTypeParser::GetFieldPattern()
 {
     return "[^%*,]*";
-}
-
-uint32_t DataTypeParser::UnsignedInteger(const std::string &word)
-{
-    return std::stoi(Match(word, "[0-9]+"));
-}
-
-uint32_t DataTypeParser::PositiveInteger(const std::string &word)
-{
-    return std::stoi(Match(word, "[0-9]*[1-9][0-9]*"));
-}
-
-int32_t DataTypeParser::Integer(const std::string &word)
-{
-    return std::stoi(Match(word,  "[+-]?[0-9]+"));
-}
-
-double DataTypeParser::UnsignedDecimal(const std::string &word)
-{
-    return std::stod(Match(word, "((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"));
-}
-
-double DataTypeParser::Decimal(const std::string &word)
-{
-    return std::stod(Match(word, "[+-]?((([0-9]+)(\\.[0-9]*)?)|(\\.[0-9]+))"));
-}
-
-std::string DataTypeParser::Field(const std::string &word)
-{
-    return Match(word, GetFieldPattern());
-}
-
-std::string DataTypeParser::Name(const std::string &word)
-{
-    return Match(word, GetNamePattern());
 }
 
 std::string DataTypeParser::Match(const std::string &word, const std::string &pattern)
@@ -115,8 +80,11 @@ std::vector<std::string> DataTypeParser::SplitFields(const std::string &word) {
 
 std::vector<double> DataTypeParser::SplitParams(const std::string &field) {
 	std::vector<double> params;
-    std::istringstream istr(field);
+    if (field.empty()) {
+    	return params;
+    }
 
+    std::istringstream istr(field);
 	while (!istr.eof()) {
         std::string param_str;
         std::getline(istr, param_str, 'X');

@@ -57,18 +57,18 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	std::optional<Point> ij;
 	// X-value
 	if (match[2].matched) {
-		x = DataTypeParser::Integer(match[2].str());
+		x = std::stoi(match[2].str());
 	}
 
 	// Y-value
 	if (match[4].matched) {
-		y = DataTypeParser::Integer(match[4].str());
+		y = std::stoi(match[4].str());
 	}
 
 	// IJ-value
 	if (match[5].matched) {
-		PointCoordType i = DataTypeParser::Integer(match[6].str());
-		PointCoordType j = DataTypeParser::Integer(match[7].str());
+		PointCoordType i = std::stoi(match[6].str());
+		PointCoordType j = std::stoi(match[7].str());
 		ij = Point(i, j);
 	}
 

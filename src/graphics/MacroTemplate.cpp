@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Macro.h"
 #include "MacroTemplate.h"
 
 namespace gerbex {
@@ -27,7 +28,7 @@ MacroTemplate::MacroTemplate() {
 
 }
 
-MacroTemplate::MacroTemplate(std::vector<std::string> body)
+MacroTemplate::MacroTemplate(std::list<std::string> body)
 	: m_body{ body }
 {
 	// Empty
@@ -43,10 +44,10 @@ std::unique_ptr<Aperture> MacroTemplate::Call(const std::vector<double> &paramet
 	//TODO insert parameters into body
 	//TODO parse body
 	//TODO add primitives
-	return nullptr;
+	return std::make_unique<Macro>();
 }
 
-const std::vector<std::string>& MacroTemplate::GetBody() const {
+const std::list<std::string>& MacroTemplate::GetBody() const {
 	return m_body;
 }
 

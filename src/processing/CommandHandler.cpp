@@ -28,7 +28,7 @@
 
 namespace gerbex {
 
-void CommandHandler::AssertWordCommand(const std::vector<std::string> &words) {
+void CommandHandler::AssertWordCommand(const std::list<std::string> &words) {
 	if (words.size() != 1) {
 		throw std::invalid_argument(
 				"expected word command, got extended command");
@@ -44,49 +44,49 @@ void CommandHandler::AssertCommandCode(const std::string &word,
 }
 
 void CommandHandler::NotImplemented(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	(void) processor;
 	(void) words;
 	throw std::invalid_argument("command not implemented");
 }
 
 void CommandHandler::Comment(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	(void) processor;
 	AssertWordCommand(words);
 	// Ignore comment
 }
 
 void CommandHandler::Unit(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 	processor.GetGraphicsState().SetUnit(
-			GraphicsState::UnitFromCommand(words[0]));
+			GraphicsState::UnitFromCommand(words.front()));
 }
 
 void CommandHandler::Format(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 	processor.GetGraphicsState().SetFormat(
-			CoordinateFormat::FromCommand(words[0]));
+			CoordinateFormat::FromCommand(words.front()));
 }
 
 void CommandHandler::ApertureDefine(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 
 	std::ostringstream pattern;
 	pattern << "ADD(" << DataTypeParser::GetNumberPattern() << ")";
 	pattern << "(" << DataTypeParser::GetNamePattern() << ")";
-	pattern << ",(" << DataTypeParser::GetFieldPattern() << ")?";
+	pattern << "(,(" << DataTypeParser::GetFieldPattern() << "))?";
 
 	std::regex regex(pattern.str());
 	std::smatch match;
-	if (std::regex_search(words[0], match, regex)) {
+	if (std::regex_search(words.front(), match, regex)) {
 		int ident = std::stoi(match[1].str());
 		std::string name = match[2].str();
 		std::vector<double> params = DataTypeParser::SplitParams(
-				match[3].str());
+				match[4].str());
 		std::shared_ptr<ApertureTemplate> aperture = processor.GetTemplate(
 				name);
 		processor.ApertureDefine(ident, aperture->Call(params));
@@ -96,14 +96,14 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 }
 
 void CommandHandler::ApertureMacro(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	std::string pattern = "AM(" + DataTypeParser::GetNamePattern() + ")";
 	std::regex regex(pattern);
 	std::smatch match;
-	if (std::regex_search(words[0], match, regex)) {
+	if (std::regex_search(words.front(), match, regex)) {
 		std::string name = match[1].str();
-		std::vector<std::string> body = std::vector<std::string>(words.begin() + 1, words.end());
-		std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(body);
+		words.pop_front();
+		std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(words);
 		processor.AddTemplate(name, macro);
 	} else {
 		throw std::invalid_argument("invalid aperture macro");
@@ -111,32 +111,32 @@ void CommandHandler::ApertureMacro(CommandsProcessor &processor,
 }
 
 void CommandHandler::SetCurrentAperture(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 	std::smatch match;
 	std::regex regex("D(" + DataTypeParser::GetNumberPattern() + ")");
-	if (std::regex_search(words[0], match, regex)) {
-		int ident = DataTypeParser::Integer(match[1].str());
+	if (std::regex_search(words.front(), match, regex)) {
+		int ident = std::stoi(match[1].str());
 		processor.SetCurrentAperture(ident);
 	}
 }
 
 void CommandHandler::PlotState(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 
-	gerbex::PlotState state = GraphicsState::PlotStateFromCommand(words[0]);
+	gerbex::PlotState state = GraphicsState::PlotStateFromCommand(words.front());
 	processor.GetGraphicsState().SetPlotState(state);
 }
 
 void CommandHandler::Plot(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
-	AssertCommandCode(words[0], "D01");
+	AssertCommandCode(words.front(), "D01");
 
 	GraphicsState &graphicState = processor.GetGraphicsState();
 
-	CoordinateData coorddata = CoordinateData::FromString(words[0]);
+	CoordinateData coorddata = CoordinateData::FromString(words.front());
 	Point coord = coorddata.GetXY(graphicState.GetCurrentPoint());
 	std::optional<Point> offset = coorddata.GetIJ();
 
@@ -165,11 +165,11 @@ void CommandHandler::Plot(CommandsProcessor &processor,
 }
 
 void CommandHandler::Move(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
-	AssertCommandCode(words[0], "D02");
+	AssertCommandCode(words.front(), "D02");
 
-	CoordinateData coorddata = CoordinateData::FromString(words[0]);
+	CoordinateData coorddata = CoordinateData::FromString(words.front());
 	Point coord = coorddata.GetXY(
 			processor.GetGraphicsState().GetCurrentPoint());
 
@@ -181,11 +181,11 @@ void CommandHandler::Move(CommandsProcessor &processor,
 }
 
 void CommandHandler::Flash(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
-	AssertCommandCode(words[0], "D03");
+	AssertCommandCode(words.front(), "D03");
 
-	CoordinateData coorddata = CoordinateData::FromString(words[0]);
+	CoordinateData coorddata = CoordinateData::FromString(words.front());
 	Point coord = coorddata.GetXY(
 			processor.GetGraphicsState().GetCurrentPoint());
 
@@ -197,7 +197,7 @@ void CommandHandler::Flash(CommandsProcessor &processor,
 }
 
 void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 
 	std::string num_re = DataTypeParser::GetNumberPattern();
@@ -207,7 +207,7 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 
 	std::regex regex(pattern.str());
 	std::smatch match;
-	if (std::regex_search(words[0], match, regex)) {
+	if (std::regex_search(words.front(), match, regex)) {
 		std::string param = match[1].str();
 		std::string option = match[2].str();
 		ApertureTransformation &transformation =
@@ -221,10 +221,10 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 					option);
 			transformation.SetMirroring(mirroring);
 		} else if (param == "R") {
-			double rotation = DataTypeParser::Decimal(option);
+			double rotation = std::stod(option);
 			transformation.SetRotationDegrees(rotation);
 		} else if (param == "S") {
-			double scale = DataTypeParser::Decimal(option);
+			double scale = std::stod(option);
 			transformation.SetScalingFactor(scale);
 		}
 	} else {
@@ -233,11 +233,11 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 }
 
 void CommandHandler::RegionStatement(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
-	if (words[0] == "G36") {
+	if (words.front() == "G36") {
 		processor.StartRegion();
-	} else if (words[0] == "G37") {
+	} else if (words.front() == "G37") {
 		processor.EndRegion();
 	} else {
 		throw std::invalid_argument("invalid region statement");
@@ -245,7 +245,7 @@ void CommandHandler::RegionStatement(CommandsProcessor &processor,
 }
 
 void CommandHandler::BlockAperture(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 
 	std::ostringstream pattern;
@@ -253,10 +253,10 @@ void CommandHandler::BlockAperture(CommandsProcessor &processor,
 
 	std::regex regex(pattern.str());
 	std::smatch match;
-	if (std::regex_search(words[0], match, regex)) {
+	if (std::regex_search(words.front(), match, regex)) {
 		if (!match[1].str().empty()) {
 			//Has ident, open block
-			int ident = DataTypeParser::UnsignedInteger(match[2].str());
+			int ident = std::stoi(match[2].str());
 			processor.OpenApertureBlock(ident);
 		} else {
 			//No ident, close block
@@ -268,7 +268,7 @@ void CommandHandler::BlockAperture(CommandsProcessor &processor,
 }
 
 void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
 
 	std::string num_re = DataTypeParser::GetNumberPattern();
@@ -282,13 +282,13 @@ void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
 
 	std::regex regex(pattern.str());
 	std::smatch match;
-	if (std::regex_search(words[0], match, regex)) {
+	if (std::regex_search(words.front(), match, regex)) {
 		if (!match[1].str().empty()) {
 			//Has params, open step/repeat
-			int nx = DataTypeParser::PositiveInteger(match[2].str());
-			int ny = DataTypeParser::PositiveInteger(match[3].str());
-			double dx = DataTypeParser::UnsignedDecimal(match[4].str());
-			double dy = DataTypeParser::UnsignedDecimal(match[5].str());
+			int nx = std::stoi(match[2].str());
+			int ny = std::stoi(match[3].str());
+			double dx = std::stod(match[4].str());
+			double dy = std::stod(match[5].str());
 			processor.OpenStepAndRepeat(nx, ny, dx, dy);
 		} else {
 			//No ident, close step/repeat
@@ -300,9 +300,9 @@ void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
 }
 
 void CommandHandler::EndOfFile(CommandsProcessor &processor,
-		const std::vector<std::string> &words) {
+		std::list<std::string> &words) {
 	AssertWordCommand(words);
-	AssertCommandCode(words[0], "M02");
+	AssertCommandCode(words.front(), "M02");
 	processor.SetEndOfFile();
 }
 

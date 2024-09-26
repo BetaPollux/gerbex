@@ -33,71 +33,37 @@ using namespace gerbex;
 TEST_GROUP(DataTypeParserTest) {
 };
 
-TEST(DataTypeParserTest, UnsignedInteger) {
-	LONGS_EQUAL(0, DataTypeParser::UnsignedInteger("0"));
-	LONGS_EQUAL(16, DataTypeParser::UnsignedInteger("16"));
-	LONGS_EQUAL(255, DataTypeParser::UnsignedInteger("000255"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedInteger("-1024"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedInteger("+16"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedInteger("0X"));
-}
-
-TEST(DataTypeParserTest, PositiveInteger) {
-	LONGS_EQUAL(16, DataTypeParser::PositiveInteger("16"));
-	LONGS_EQUAL(255, DataTypeParser::PositiveInteger("000255"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::PositiveInteger("0"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::PositiveInteger("-1024"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::PositiveInteger("+16"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::PositiveInteger("0X"));
-}
-
-TEST(DataTypeParserTest, Integer) {
-	LONGS_EQUAL(0, DataTypeParser::Integer("0"));
-	LONGS_EQUAL(16, DataTypeParser::Integer("16"));
-	LONGS_EQUAL(-1024, DataTypeParser::Integer("-1024"));
-	LONGS_EQUAL(16, DataTypeParser::Integer("+16"));
-	LONGS_EQUAL(255, DataTypeParser::Integer("+000255"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Integer("0X"));
-}
-
-TEST(DataTypeParserTest, Decimal) {
-	DOUBLES_EQUAL(0.0, DataTypeParser::Decimal("0"), DBL_TOL);
-	DOUBLES_EQUAL(-200.0, DataTypeParser::Decimal("-200"), DBL_TOL);
-	DOUBLES_EQUAL(5000.0, DataTypeParser::Decimal("+5000"), DBL_TOL);
-	DOUBLES_EQUAL(1234.56, DataTypeParser::Decimal("001234.56"), DBL_TOL);
-	DOUBLES_EQUAL(0.123, DataTypeParser::Decimal(".123"), DBL_TOL);
-	DOUBLES_EQUAL(-0.128, DataTypeParser::Decimal("-0.128"), DBL_TOL);
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Decimal("0X"));
-}
-
-TEST(DataTypeParserTest, UnsignedDecimal) {
-	DOUBLES_EQUAL(0.0, DataTypeParser::UnsignedDecimal("0"), DBL_TOL);
-	DOUBLES_EQUAL(5000.0, DataTypeParser::UnsignedDecimal("5000"), DBL_TOL);
-	DOUBLES_EQUAL(1234.56, DataTypeParser::UnsignedDecimal("001234.56"), DBL_TOL);
-	DOUBLES_EQUAL(0.123, DataTypeParser::UnsignedDecimal(".123"), DBL_TOL);
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedDecimal("+200"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedDecimal("-200"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedDecimal("-0.128"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::UnsignedDecimal("0X"));
+TEST(DataTypeParserTest, Number) {
+	STRCMP_EQUAL("0", DataTypeParser::Match("0", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-1024", DataTypeParser::Match("-1024", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("+16", DataTypeParser::Match("+16", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-200",  DataTypeParser::Match("-200", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("1234.56", DataTypeParser::Match("1234.56", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL(".123", DataTypeParser::Match(".123", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-0.128", DataTypeParser::Match("-0.128", DataTypeParser::GetNumberPattern()).c_str());
 }
 
 TEST(DataTypeParserTest, Field) {
-	STRCMP_EQUAL("", DataTypeParser::Field("").c_str());
-	STRCMP_EQUAL("123ABC", DataTypeParser::Field("123ABC").c_str());
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Field("ABC,123"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Field("%ABC"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Field("ABC*"));
+	STRCMP_EQUAL("", DataTypeParser::Match("", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("2", DataTypeParser::Match("2", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("123ABC", DataTypeParser::Match("123ABC", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("A&B", DataTypeParser::Match("A&B", DataTypeParser::GetFieldPattern()).c_str());
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC,123", DataTypeParser::GetFieldPattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC*", DataTypeParser::GetFieldPattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("%ABC", DataTypeParser::GetFieldPattern()));
 }
 
 TEST(DataTypeParserTest, Name) {
-	STRCMP_EQUAL(".ABC", DataTypeParser::Name(".ABC").c_str());
-	STRCMP_EQUAL("$3", DataTypeParser::Name("$3").c_str());
-	STRCMP_EQUAL(".3abc", DataTypeParser::Name(".3abc").c_str());
-	STRCMP_EQUAL("ABC.123", DataTypeParser::Name("ABC.123").c_str());
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Name(""));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Name("3"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Name("%ABC"));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Name("ABC*"));
+	STRCMP_EQUAL(".ABC", DataTypeParser::Match(".ABC", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL("$3", DataTypeParser::Match("$3", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL(".3abc", DataTypeParser::Match(".3abc", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL("ABC.123", DataTypeParser::Match("ABC.123", DataTypeParser::GetNamePattern()).c_str());
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("3", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("A&B", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC,123", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("%ABC", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC*", DataTypeParser::GetNamePattern()));
 }
 
 
@@ -245,6 +211,12 @@ TEST_GROUP(SplitParams) {
 };
 
 TEST(SplitParams, Empty) {
+	std::string field = "";
+	std::vector<double> params = DataTypeParser::SplitParams(field);
+	CHECK(params.empty());
+}
+
+TEST(SplitParams, OneChar) {
 	std::string field = "X";
 	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field));
 }
