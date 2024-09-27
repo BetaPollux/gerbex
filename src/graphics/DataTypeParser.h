@@ -21,10 +21,13 @@
 #ifndef DATATYPEPARSER_H_
 #define DATATYPEPARSER_H_
 
+#include <deque>
 #include <string>
-#include <vector>
 
 namespace gerbex {
+
+using Fields = std::deque<std::string>;
+using Parameters = std::deque<double>;
 
 /*
  *
@@ -32,8 +35,7 @@ namespace gerbex {
 class DataTypeParser {
 public:
 	static std::string Match(const std::string &word, const std::string &pattern);
-	static std::vector<std::string> SplitFields(const std::string &word);
-	static std::vector<double> SplitParams(const std::string &field, char delim);
+	static Parameters SplitParams(const std::string &field, char delim);
 	static std::string GetCommandCode(const std::string &word);
 	static const std::string GetNumberPattern();
 	static const std::string GetNamePattern();

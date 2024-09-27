@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL	1e-5
 
 TEST_GROUP(PolygonTemplateTest) {
 	PolygonTemplate tmp;
@@ -38,38 +39,38 @@ TEST(PolygonTemplateTest, TooManyParams) {
 }
 
 TEST(PolygonTemplateTest, AllParams) {
-	std::vector<double> params = { 1.0, 3, 45.0, 0.25 };
+	Parameters params = { 1.0, 3, 45.0, 0.25 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	CHECK(params[0] == poly->GetOuterDiameter());
-	CHECK((int)params[1] == poly->GetNumVertices());
-	CHECK(params[2] == poly->GetRotation());
-	CHECK(params[3] == poly->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
+	DOUBLES_EQUAL(45.0, poly->GetRotation(), DBL_TOL);
+	DOUBLES_EQUAL(0.25, poly->GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(PolygonTemplateTest, DefaultHole) {
-	std::vector<double> params = { 1.0, 3, 45.0 };
+	Parameters params = { 1.0, 3, 45.0 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	CHECK(params[0] == poly->GetOuterDiameter());
-	CHECK((int)params[1] == poly->GetNumVertices());
-	CHECK(params[2] == poly->GetRotation());
-	CHECK(0.0 == poly->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
+	DOUBLES_EQUAL(45.0, poly->GetRotation(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, poly->GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(PolygonTemplateTest, NoRotation) {
-	std::vector<double> params = { 1.0, 3 };
+	Parameters params = { 1.0, 3 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	CHECK(params[0] == poly->GetOuterDiameter());
-	CHECK((int)params[1] == poly->GetNumVertices());
-	CHECK(0.0 == poly->GetRotation());
-	CHECK(0.0 == poly->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, poly->GetRotation(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, poly->GetHoleDiameter(), DBL_TOL);
 }
 

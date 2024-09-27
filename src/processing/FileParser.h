@@ -21,6 +21,7 @@
 #ifndef FILEPARSER_H_
 #define FILEPARSER_H_
 
+#include "DataTypeParser.h"
 #include <istream>
 #include <memory>
 #include <string>
@@ -39,7 +40,7 @@ public:
 	// Get the next command from the stream. Word commands are a single word, whereas extended commands can have multiple words.
 	// Commands can span multiple lines in the file.
 	// Words always end in *. Returns an empty vector on EOF.
-	std::list<std::string> GetNextCommand();
+	Fields GetNextCommand();
 	void SetIstream(std::unique_ptr<std::istream> istream);
 	int GetCurrentLine() const;
 

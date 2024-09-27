@@ -33,7 +33,7 @@ class ObroundTemplate: public ApertureTemplate {
 public:
 	ObroundTemplate();
 	virtual ~ObroundTemplate();
-	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
+	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 };
 
 } /* namespace gerbex */

@@ -24,6 +24,8 @@
 
 using namespace gerbex;
 
+#define DBL_TOL	1e-5
+
 TEST_GROUP(CircleTemplateTest) {
 	CircleTemplate tmp;
 };
@@ -37,22 +39,22 @@ TEST(CircleTemplateTest, TooManyParams) {
 }
 
 TEST(CircleTemplateTest, AllParams) {
-	std::vector<double> params = { 1.0, 0.25 };
+	Parameters params = { 1.0, 0.25 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
 
 	CHECK(nullptr != circle);
-	CHECK(params[0] == circle->GetDiameter());
-	CHECK(params[1] == circle->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, circle->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.25, circle->GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(CircleTemplateTest, DefaultHole) {
-	std::vector<double> params = { 1.0 };
+	Parameters params = { 1.0 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
 
 	CHECK(nullptr != circle);
-	CHECK(params[0] == circle->GetDiameter());
-	CHECK(0.0 == circle->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, circle->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, circle->GetHoleDiameter(), DBL_TOL);
 }
 

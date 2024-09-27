@@ -33,7 +33,7 @@ RectangleTemplate::~RectangleTemplate() {
 }
 
 std::unique_ptr<Aperture> RectangleTemplate::Call(
-		const std::vector<double> &parameters) {
+		const Parameters &parameters) {
 	if (parameters.size() == 2) {
 		return std::make_unique<Rectangle>(parameters[0], parameters[1]);
 	} else if (parameters.size() == 3) {

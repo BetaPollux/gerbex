@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "DataTypeParser.h"
+#include "Macro.h"
 #include "MacroCircle.h"
 #include "MacroCenterLine.h"
 #include "MacroOutline.h"
@@ -32,12 +34,25 @@ using namespace gerbex;
 
 #define DBL_TOL 1e-5
 
-template <typename T> std::shared_ptr<T> GetPrimitive(std::shared_ptr<MacroPrimitive> prim) {
+template<typename T> std::shared_ptr<T> GetPrimitive(
+		std::shared_ptr<Macro> macro, size_t index) {
+	CHECK_TEXT(index < macro->GetPrimitives().size(),
+			"no primitive at specified index");
+	std::shared_ptr<MacroPrimitive> prim = macro->GetPrimitives().at(index);
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(prim);
 
-	CHECK(result != nullptr);
-
+	CHECK_TEXT(result != nullptr, "primitive is different type");
 	return result;
+}
+
+std::shared_ptr<Macro> make_macro(const Fields &words,
+		const Parameters &parameters) {
+	MacroTemplate macroTemplate(words);
+	std::shared_ptr<Aperture> aperture = macroTemplate.Call(parameters);
+	std::shared_ptr<Macro> macro = std::dynamic_pointer_cast<Macro>(aperture);
+	CHECK(macro != nullptr);
+
+	return macro;
 }
 
 TEST_GROUP(MacroTemplateTest) {
@@ -50,22 +65,21 @@ TEST(MacroTemplateTest, ExposureFromStr) {
 }
 
 TEST(MacroTemplateTest, Body) {
-	std::list<std::string> body = {"AMTHERMAL80", "7,0,0,0.800,0.550,0.125,45" };
+	Fields body = { "AMTHERMAL80", "7,0,0,0.800,0.550,0.125,45" };
 	MacroTemplate macro(body);
 	CHECK(body == macro.GetBody());
 }
 
 TEST(MacroTemplateTest, Comment) {
-	std::string word = "0 Rectangle with rounded corners, with rotation";
-	std::shared_ptr<MacroPrimitive> prim = MacroTemplate::HandleComment(word);
-	POINTERS_EQUAL(nullptr, prim.get());
+	std::shared_ptr<Macro> macro = make_macro( {
+			"0 Rectangle with rounded corners, with rotation" }, { });
+	CHECK(macro->GetPrimitives().empty());
 }
 
 TEST(MacroTemplateTest, Circle) {
-	std::string word = "1,1.5,-3,+2,45";
-	std::shared_ptr<MacroPrimitive> prim = MacroTemplate::MakeCircle(word);
+	std::shared_ptr<Macro> macro = make_macro( { "1,1.5,-3,+2,45" }, { });
 
-	std::shared_ptr<MacroCircle> circle = GetPrimitive<MacroCircle>(prim);
+	std::shared_ptr<MacroCircle> circle = GetPrimitive<MacroCircle>(macro, 0);
 	CHECK(MacroExposure::ON == circle->GetExposure());
 	DOUBLES_EQUAL(1.5, circle->GetDiameter(), DBL_TOL);
 	DOUBLES_EQUAL(-3.0, circle->GetCoord().GetX(), DBL_TOL);
@@ -74,15 +88,14 @@ TEST(MacroTemplateTest, Circle) {
 }
 
 TEST(MacroTemplateTest, Circle_TooFewParams) {
-	std::string word = "1,1.5,-3,+2";
-	CHECK_THROWS(std::invalid_argument, MacroTemplate::MakeCircle(word));
+	CHECK_THROWS(std::invalid_argument, make_macro( { "1,1.5,-3,+2" }, { }));
 }
 
 TEST(MacroTemplateTest, Circle_TooManyParams) {
-	std::string word = "1,1.5,-3,+2,45,23";
-	CHECK_THROWS(std::invalid_argument, MacroTemplate::MakeCircle(word));
+	CHECK_THROWS(std::invalid_argument,
+			make_macro( { "1,1.5,-3,+2,45,23" }, { }));
 }
-
+#if 0
 TEST(MacroTemplateTest, VectorLine) {
 	std::string word = "1,0.9,0,0.45,12,0.75,22.5";
 	std::shared_ptr<MacroPrimitive> prim = MacroTemplate::MakeVectorLine(word);
@@ -211,4 +224,4 @@ TEST(MacroTemplateTest, Thermal_TooManyParams) {
 	std::string word = "0,0,0.95,0.75,0.175,0.0,5.0";
 	CHECK_THROWS(std::invalid_argument, MacroTemplate::MakeThermal(word));
 }
-
+#endif

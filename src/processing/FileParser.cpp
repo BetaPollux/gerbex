@@ -57,8 +57,8 @@ int removeNewlines(std::string &str) {
 	return count;
 }
 
-std::list<std::string> split(std::string &str, char delim) {
-	std::list<std::string> result;
+Fields split(std::string &str, char delim) {
+	Fields result;
 	std::string new_str;
 	for (char &c : str) {
 		if (c == delim) {
@@ -74,7 +74,7 @@ std::list<std::string> split(std::string &str, char delim) {
 	return result;
 }
 
-std::list<std::string> FileParser::GetNextCommand() {
+Fields FileParser::GetNextCommand() {
 	// Discard all leading space, and count new lines
 	while (isspace(m_istream->peek())) {
 		int space = m_istream->get();
@@ -85,7 +85,7 @@ std::list<std::string> FileParser::GetNextCommand() {
 
 	if (m_istream->eof()) {
 		// Return empty vector on EOF
-		return std::list<std::string>();
+		return Fields();
 	}
 
 	std::string command_str;

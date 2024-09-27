@@ -21,14 +21,13 @@
 #ifndef COMPARATORS_H_
 #define COMPARATORS_H_
 
+#include "DataTypeParser.h"
 #include "Point.h"
 #include "MacroTemplate.h"
 #include <memory>
-#include <vector>
 #include "CppUTestExt/MockSupport.h"
 
-using gerbex::Point;
-using gerbex::MacroTemplate;
+using namespace gerbex;
 
 class PointComparator : public MockNamedValueComparator
 {
@@ -51,13 +50,13 @@ class ParamsComparator : public MockNamedValueComparator
 public:
     virtual bool isEqual(const void* object1, const void* object2)
     {
-    	std::vector<double> params1 = *(std::vector<double>*)object1;
-    	std::vector<double> params2 = *(std::vector<double>*)object2;
+    	Parameters params1 = *(Parameters*)object1;
+    	Parameters params2 = *(Parameters*)object2;
         return params1 == params2;
     }
     virtual SimpleString valueToString(const void* object)
     {
-    	std::vector<double> params = *(std::vector<double>*)object;
+    	Parameters params = *(Parameters*)object;
     	SimpleString str;
     	for (double p: params) {
     		str += StringFrom(p) + " ";

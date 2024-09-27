@@ -33,7 +33,7 @@ class MockTemplate: public ApertureTemplate {
 public:
 	MockTemplate();
 	virtual ~MockTemplate();
-	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
+	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 
 };
 

@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL	1e-5
 
 TEST_GROUP(ObroundTemplateTest) {
 	ObroundTemplate tmp;
@@ -38,23 +39,23 @@ TEST(ObroundTemplateTest, TooManyParams) {
 }
 
 TEST(ObroundTemplateTest, AllParams) {
-	std::vector<double> params = { 1.0, 0.5, 0.25 };
+	Parameters params = { 1.0, 0.5, 0.25 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
 
 	CHECK(nullptr != obround);
-	CHECK(params[0] == obround->GetXSize());
-	CHECK(params[1] == obround->GetYSize());
-	CHECK(params[2] == obround->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, obround->GetXSize(), DBL_TOL);
+	DOUBLES_EQUAL(0.5, obround->GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(0.25, obround->GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(ObroundTemplateTest, DefaultHole) {
-	std::vector<double> params = { 1.0, 0.5 };
+	Parameters params = { 1.0, 0.5 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
 	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
 
 	CHECK(nullptr != obround);
-	CHECK(params[0] == obround->GetXSize());
-	CHECK(params[1] == obround->GetYSize());
-	CHECK(0.0 == obround->GetHoleDiameter());
+	DOUBLES_EQUAL(1.0, obround->GetXSize(), DBL_TOL);
+	DOUBLES_EQUAL(0.5, obround->GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, obround->GetHoleDiameter(), DBL_TOL);
 }

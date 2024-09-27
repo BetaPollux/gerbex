@@ -28,7 +28,7 @@
 
 namespace gerbex {
 
-void CommandHandler::AssertWordCommand(const std::list<std::string> &words) {
+void CommandHandler::AssertWordCommand(const Fields &words) {
 	if (words.size() != 1) {
 		throw std::invalid_argument(
 				"expected word command, got extended command");
@@ -44,35 +44,32 @@ void CommandHandler::AssertCommandCode(const std::string &word,
 }
 
 void CommandHandler::NotImplemented(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	(void) processor;
 	(void) words;
 	throw std::invalid_argument("command not implemented");
 }
 
-void CommandHandler::Comment(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Comment(CommandsProcessor &processor, Fields &words) {
 	(void) processor;
 	AssertWordCommand(words);
 	// Ignore comment
 }
 
-void CommandHandler::Unit(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Unit(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	processor.GetGraphicsState().SetUnit(
 			GraphicsState::UnitFromCommand(words.front()));
 }
 
-void CommandHandler::Format(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Format(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	processor.GetGraphicsState().SetFormat(
 			CoordinateFormat::FromCommand(words.front()));
 }
 
 void CommandHandler::ApertureDefine(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 
 	std::ostringstream pattern;
@@ -85,8 +82,7 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 	if (std::regex_search(words.front(), match, regex)) {
 		int ident = std::stoi(match[1].str());
 		std::string name = match[2].str();
-		std::vector<double> params = DataTypeParser::SplitParams(
-				match[4].str(), 'X');
+		Parameters params = DataTypeParser::SplitParams(match[4].str(), 'X');
 		std::shared_ptr<ApertureTemplate> aperture = processor.GetTemplate(
 				name);
 		processor.ApertureDefine(ident, aperture->Call(params));
@@ -96,14 +92,15 @@ void CommandHandler::ApertureDefine(CommandsProcessor &processor,
 }
 
 void CommandHandler::ApertureMacro(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	std::string pattern = "AM(" + DataTypeParser::GetNamePattern() + ")";
 	std::regex regex(pattern);
 	std::smatch match;
 	if (std::regex_search(words.front(), match, regex)) {
 		std::string name = match[1].str();
 		words.pop_front();
-		std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(words);
+		std::shared_ptr<MacroTemplate> macro = std::make_shared<MacroTemplate>(
+				words);
 		processor.AddTemplate(name, macro);
 	} else {
 		throw std::invalid_argument("invalid aperture macro");
@@ -111,7 +108,7 @@ void CommandHandler::ApertureMacro(CommandsProcessor &processor,
 }
 
 void CommandHandler::SetCurrentAperture(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 	std::smatch match;
 	std::regex regex("D(" + DataTypeParser::GetNumberPattern() + ")");
@@ -121,16 +118,15 @@ void CommandHandler::SetCurrentAperture(CommandsProcessor &processor,
 	}
 }
 
-void CommandHandler::PlotState(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::PlotState(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 
-	gerbex::PlotState state = GraphicsState::PlotStateFromCommand(words.front());
+	gerbex::PlotState state = GraphicsState::PlotStateFromCommand(
+			words.front());
 	processor.GetGraphicsState().SetPlotState(state);
 }
 
-void CommandHandler::Plot(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "D01");
 
@@ -164,8 +160,7 @@ void CommandHandler::Plot(CommandsProcessor &processor,
 	}
 }
 
-void CommandHandler::Move(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Move(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "D02");
 
@@ -180,8 +175,7 @@ void CommandHandler::Move(CommandsProcessor &processor,
 	processor.Move(coord);
 }
 
-void CommandHandler::Flash(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::Flash(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "D03");
 
@@ -197,7 +191,7 @@ void CommandHandler::Flash(CommandsProcessor &processor,
 }
 
 void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 
 	std::string num_re = DataTypeParser::GetNumberPattern();
@@ -233,7 +227,7 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 }
 
 void CommandHandler::RegionStatement(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 	if (words.front() == "G36") {
 		processor.StartRegion();
@@ -245,7 +239,7 @@ void CommandHandler::RegionStatement(CommandsProcessor &processor,
 }
 
 void CommandHandler::BlockAperture(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 
 	std::ostringstream pattern;
@@ -268,7 +262,7 @@ void CommandHandler::BlockAperture(CommandsProcessor &processor,
 }
 
 void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+		Fields &words) {
 	AssertWordCommand(words);
 
 	std::string num_re = DataTypeParser::GetNumberPattern();
@@ -299,8 +293,7 @@ void CommandHandler::StepAndRepeat(CommandsProcessor &processor,
 	}
 }
 
-void CommandHandler::EndOfFile(CommandsProcessor &processor,
-		std::list<std::string> &words) {
+void CommandHandler::EndOfFile(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "M02");
 	processor.SetEndOfFile();

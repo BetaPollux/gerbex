@@ -42,7 +42,7 @@ TEST_GROUP(FileParser_GetNext) {
 TEST(FileParser_GetNext, Word) {
 	setIstream(parser, "D10*");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("D10", words.begin()->c_str());
@@ -51,7 +51,7 @@ TEST(FileParser_GetNext, Word) {
 TEST(FileParser_GetNext, Word_LeadingWhitespace) {
 	setIstream(parser, "\n\nD10*");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("D10", words.begin()->c_str());
@@ -60,7 +60,7 @@ TEST(FileParser_GetNext, Word_LeadingWhitespace) {
 TEST(FileParser_GetNext, Word_LeadingWhitespace_Dos) {
 	setIstream(parser, "\r\n\r\nD10*");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("D10", words.begin()->c_str());
@@ -69,8 +69,8 @@ TEST(FileParser_GetNext, Word_LeadingWhitespace_Dos) {
 TEST(FileParser_GetNext, Two_Word) {
 	setIstream(parser, "D10*X0Y0D02*");
 
-	std::list<std::string> first = parser.GetNextCommand();
-	std::list<std::string> second = parser.GetNextCommand();
+	Fields first = parser.GetNextCommand();
+	Fields second = parser.GetNextCommand();
 
 	CHECK(!first.empty());
 	STRCMP_EQUAL("D10", first.begin()->c_str());
@@ -81,7 +81,7 @@ TEST(FileParser_GetNext, Two_Word) {
 TEST(FileParser_GetNext, Extended) {
 	setIstream(parser, "%FSLAX26Y26*%");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("FSLAX26Y26", words.begin()->c_str());
@@ -90,7 +90,7 @@ TEST(FileParser_GetNext, Extended) {
 TEST(FileParser_GetNext, Extended_LeadingWhitespace) {
 	setIstream(parser, "\n\n%FSLAX26Y26*%");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("FSLAX26Y26", words.begin()->c_str());
@@ -99,7 +99,7 @@ TEST(FileParser_GetNext, Extended_LeadingWhitespace) {
 TEST(FileParser_GetNext, Extended_LeadingWhitespace_Dos) {
 	setIstream(parser, "\r\n\r\n%FSLAX26Y26*%");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	STRCMP_EQUAL("FSLAX26Y26", words.begin()->c_str());
@@ -108,8 +108,8 @@ TEST(FileParser_GetNext, Extended_LeadingWhitespace_Dos) {
 TEST(FileParser_GetNext, Two_Extended) {
 	setIstream(parser, "%FSLAX26Y26*%%MOMM*%");
 
-	std::list<std::string> first = parser.GetNextCommand();
-	std::list<std::string> second = parser.GetNextCommand();
+	Fields first = parser.GetNextCommand();
+	Fields second = parser.GetNextCommand();
 
 	CHECK(!first.empty());
 	STRCMP_EQUAL("FSLAX26Y26", first.begin()->c_str());
@@ -120,25 +120,23 @@ TEST(FileParser_GetNext, Two_Extended) {
 TEST(FileParser_GetNext, ExtendedMulti) {
 	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	LONGS_EQUAL(3, words.size());
-	auto it = words.begin();
-	STRCMP_EQUAL("AMDONUTVAR", it->c_str());
-	STRCMP_EQUAL("1,1,$1,$2,$3", (++it)->c_str());
-	STRCMP_EQUAL("1,0,$4,$2,$3", (++it)->c_str());
+	STRCMP_EQUAL("AMDONUTVAR", words[0].c_str());
+	STRCMP_EQUAL("1,1,$1,$2,$3", words[1].c_str());
+	STRCMP_EQUAL("1,0,$4,$2,$3", words[2].c_str());
 }
 
 TEST(FileParser_GetNext, ExtendedMulti_Multiline) {
 	setIstream(parser,
 			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
 
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
-	auto it = words.begin();
 	LONGS_EQUAL(2, words.size());
-	STRCMP_EQUAL("AMTriangle_30", it->c_str());
-	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", (++it)->c_str());
+	STRCMP_EQUAL("AMTriangle_30", words[0].c_str());
+	STRCMP_EQUAL("4,1,3,1,-1,1,1,2,1,1,-1,30", words[1].c_str());
 }
 
 TEST(FileParser_GetNext, CurrentLine_One) {
@@ -182,7 +180,7 @@ TEST(FileParser_GetNext, CurrentLine_Many) {
 }
 
 TEST(FileParser_GetNext, Empty) {
-	std::list<std::string> words = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
 
 	CHECK(words.empty());
 }
@@ -190,8 +188,8 @@ TEST(FileParser_GetNext, Empty) {
 TEST(FileParser_GetNext, Finish) {
 	setIstream(parser, "D10*");
 
-	std::list<std::string> words = parser.GetNextCommand();
-	std::list<std::string> final = parser.GetNextCommand();
+	Fields words = parser.GetNextCommand();
+	Fields final = parser.GetNextCommand();
 
 	CHECK(!words.empty());
 	CHECK(final.empty());

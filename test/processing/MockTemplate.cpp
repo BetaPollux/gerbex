@@ -31,7 +31,7 @@ MockTemplate::~MockTemplate() {
 }
 
 std::unique_ptr<Aperture> MockTemplate::Call(
-		const std::vector<double> &parameters) {
+		const Parameters &parameters) {
 	void *aperture = mock().actualCall("CallTemplate").withParameterOfType(
 			"Parameters", "parameters", &parameters).returnPointerValue();
 	return std::unique_ptr<Aperture>((Aperture*)aperture);

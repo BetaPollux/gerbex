@@ -65,21 +65,8 @@ std::string DataTypeParser::GetCommandCode(const std::string &word) {
 	throw std::invalid_argument("unrecognized word");
 }
 
-std::vector<std::string> DataTypeParser::SplitFields(const std::string &word) {
-	std::vector<std::string> fields;
-    std::istringstream istr(word);
-
-	while (!istr.eof()) {
-        std::string field;
-        std::getline(istr, field, ',');
-		fields.push_back(field);
-	}
-
-	return fields;
-}
-
-std::vector<double> DataTypeParser::SplitParams(const std::string &field, char delim) {
-	std::vector<double> params;
+Parameters DataTypeParser::SplitParams(const std::string &field, char delim) {
+	Parameters params;
     if (field.empty()) {
     	return params;
     }

@@ -32,7 +32,7 @@ PolygonTemplate::~PolygonTemplate() {
 	// Empty
 }
 
-std::unique_ptr<Aperture> PolygonTemplate::Call(const std::vector<double> &parameters) {
+std::unique_ptr<Aperture> PolygonTemplate::Call(const Parameters &parameters) {
 	if (parameters.size() == 2) {
 			return std::make_unique<Polygon>(parameters[0], (int)parameters[1]);
 	} else if (parameters.size() == 3) {

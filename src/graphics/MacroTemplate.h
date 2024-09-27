@@ -24,9 +24,18 @@
 #include "ApertureTemplate.h"
 #include "MacroPrimitive.h"
 #include <string>
-#include <list>
 
 namespace gerbex {
+
+enum class MacroCodes {
+	COMMENT = 0,
+	CIRCLE = 1,
+	VECTOR_LINE = 20,
+	CENTER_LINE = 21,
+	OUTLINE = 4,
+	POLYGON = 5,
+	THERMAL = 7,
+};
 
 /*
  * Creates a Macro aperture using parameters, variables and expressions.
@@ -34,21 +43,22 @@ namespace gerbex {
 class MacroTemplate: public ApertureTemplate {
 public:
 	MacroTemplate();
-	MacroTemplate(std::list<std::string> body);
+	MacroTemplate(Fields body);
 	virtual ~MacroTemplate();
-	std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) override;
-	const std::list<std::string> &GetBody() const;
-	static std::unique_ptr<MacroPrimitive> HandleComment(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakeCircle(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakeCenterLine(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakeVectorLine(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakeOutline(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakePolygon(const std::string &word);
-	static std::unique_ptr<MacroPrimitive> MakeThermal(const std::string &word);
+	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
+	const Fields &GetBody() const;
 	static MacroExposure ExposureFromNum(int num);
 
 private:
-	std::list<std::string> m_body;
+	static std::unique_ptr<MacroPrimitive> HandleComment(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakeCircle(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakeCenterLine(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakeVectorLine(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakeOutline(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakePolygon(const Parameters &params);
+	static std::unique_ptr<MacroPrimitive> MakeThermal(const Parameters &params);
+
+	Fields m_body;
 };
 
 } /* namespace gerbex */

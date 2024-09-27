@@ -23,6 +23,7 @@
 
 #include "Aperture.h"
 #include "Circle.h"
+#include "DataTypeParser.h"
 #include <memory>
 #include <vector>
 
@@ -35,7 +36,7 @@ namespace gerbex {
 class ApertureTemplate {
 public:
 	virtual ~ApertureTemplate();
-	virtual std::unique_ptr<Aperture> Call(const std::vector<double> &parameters) = 0;
+	virtual std::unique_ptr<Aperture> Call(const Parameters &parameters) = 0;
 };
 
 } /* namespace gerbex */

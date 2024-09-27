@@ -21,37 +21,38 @@
 #ifndef COMMANDHANDLER_H_
 #define COMMANDHANDLER_H_
 
-#include <list>
 #include <string>
 #include "CommandsProcessor.h"
 
 namespace gerbex {
 
-typedef void (*callHandler)(CommandsProcessor &, std::list<std::string> &);
+typedef void (*callHandler)(CommandsProcessor&, Fields&);
 
 /*
  *
  */
 class CommandHandler {
 public:
-	static void AssertWordCommand(const std::list<std::string> &words);
-	static void AssertCommandCode(const std::string &code, const std::string &expected);
-	static void NotImplemented(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Comment(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Unit(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Format(CommandsProcessor &processor, std::list<std::string> &words);
-	static void ApertureDefine(CommandsProcessor &processor, std::list<std::string> &words);
-	static void ApertureMacro(CommandsProcessor &processor, std::list<std::string> &words);
-	static void SetCurrentAperture(CommandsProcessor &processor, std::list<std::string> &words);
-	static void PlotState(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Plot(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Move(CommandsProcessor &processor, std::list<std::string> &words);
-	static void Flash(CommandsProcessor &processor, std::list<std::string> &words);
-	static void ApertureTransformations(CommandsProcessor &processor, std::list<std::string> &words);
-	static void RegionStatement(CommandsProcessor &processor, std::list<std::string> &words);
-	static void BlockAperture(CommandsProcessor &processor, std::list<std::string> &words);
-	static void StepAndRepeat(CommandsProcessor &processor, std::list<std::string> &words);
-	static void EndOfFile(CommandsProcessor &processor, std::list<std::string> &words);
+	static void AssertWordCommand(const Fields &words);
+	static void AssertCommandCode(const std::string &code,
+			const std::string &expected);
+	static void NotImplemented(CommandsProcessor &processor, Fields &words);
+	static void Comment(CommandsProcessor &processor, Fields &words);
+	static void Unit(CommandsProcessor &processor, Fields &words);
+	static void Format(CommandsProcessor &processor, Fields &words);
+	static void ApertureDefine(CommandsProcessor &processor, Fields &words);
+	static void ApertureMacro(CommandsProcessor &processor, Fields &words);
+	static void SetCurrentAperture(CommandsProcessor &processor, Fields &words);
+	static void PlotState(CommandsProcessor &processor, Fields &words);
+	static void Plot(CommandsProcessor &processor, Fields &words);
+	static void Move(CommandsProcessor &processor, Fields &words);
+	static void Flash(CommandsProcessor &processor, Fields &words);
+	static void ApertureTransformations(CommandsProcessor &processor,
+			Fields &words);
+	static void RegionStatement(CommandsProcessor &processor, Fields &words);
+	static void BlockAperture(CommandsProcessor &processor, Fields &words);
+	static void StepAndRepeat(CommandsProcessor &processor, Fields &words);
+	static void EndOfFile(CommandsProcessor &processor, Fields &words);
 };
 
 } /* namespace gerbex */

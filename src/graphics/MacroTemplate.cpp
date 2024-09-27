@@ -28,7 +28,6 @@
 #include "MacroThermal.h"
 #include "MacroVectorLine.h"
 #include <stdexcept>
-#include <vector>
 
 namespace gerbex {
 
@@ -37,7 +36,7 @@ MacroTemplate::MacroTemplate() {
 
 }
 
-MacroTemplate::MacroTemplate(std::list<std::string> body)
+MacroTemplate::MacroTemplate(Fields body)
 	: m_body{ body }
 {
 	// Empty
@@ -48,30 +47,48 @@ MacroTemplate::~MacroTemplate() {
 }
 
 
-std::unique_ptr<Aperture> MacroTemplate::Call(const std::vector<double> &parameters) {
+std::unique_ptr<Aperture> MacroTemplate::Call(const Parameters &parameters) {
 	//TODO create Macro
 	//TODO insert parameters into body
 	//TODO parse body
 	//TODO add primitives
-	return std::make_unique<Macro>();
+	std::string word = *m_body.begin();
+	std::unique_ptr<Macro> macro = std::make_unique<Macro>();
+	int code = std::stoi(word.substr(0, 1));
+	if (code != (int)MacroCodes::COMMENT) {
+		Parameters params = DataTypeParser::SplitParams(word, ',');
+		macro->AddPrimitive(MacroTemplate::MakeCircle(params));
+	}
+	return macro;
 }
 
-const std::list<std::string>& MacroTemplate::GetBody() const {
+const Fields& MacroTemplate::GetBody() const {
 	return m_body;
 }
 
+MacroExposure MacroTemplate::ExposureFromNum(int num) {
+	switch (num) {
+	case 1:
+		return MacroExposure::ON;
+	case 0:
+		return MacroExposure::OFF;
+	default:
+		throw std::invalid_argument("macro exposure must be 0 or 1");
+	}
+}
+
 std::unique_ptr<MacroPrimitive> MacroTemplate::HandleComment(
-		const std::string &word) {
-	(void)word;
+		const Parameters &params) {
+	(void)params;
 	return nullptr;
 }
 
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCircle(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() != 5) {
 		throw std::invalid_argument("macro circle expects 5 parameters");
 	}
+
 	MacroExposure exposure = ExposureFromNum((int)params[0]);
 	double diameter = params[1];
 	RealPoint center(params[2], params[3]);
@@ -79,9 +96,9 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCircle(
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
 }
 
+#if 0
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCenterLine(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() != 6) {
 		throw std::invalid_argument("macro center line expects 6 parameters");
 	}
@@ -94,8 +111,7 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCenterLine(
 }
 
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakeVectorLine(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() != 7) {
 		throw std::invalid_argument("macro vector line expects 7 parameters");
 	}
@@ -108,8 +124,7 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakeVectorLine(
 }
 
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakeOutline(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() < 5) {
 		throw std::invalid_argument("macro outline expects at least 5 parameters");
 	}
@@ -132,8 +147,7 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakeOutline(
 }
 
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakePolygon(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() != 6) {
 		throw std::invalid_argument("macro polygon expects 6 parameters");
 	}
@@ -146,8 +160,7 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakePolygon(
 }
 
 std::unique_ptr<MacroPrimitive> MacroTemplate::MakeThermal(
-		const std::string &word) {
-	std::vector<double> params = DataTypeParser::SplitParams(word, ',');
+		const Parameters &params) {
 	if (params.size() != 6) {
 		throw std::invalid_argument("macro thermal expects 6 parameters");
 	}
@@ -159,16 +172,6 @@ std::unique_ptr<MacroPrimitive> MacroTemplate::MakeThermal(
 	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
 }
 
-MacroExposure MacroTemplate::ExposureFromNum(int num) {
-	switch (num) {
-	case 1:
-		return MacroExposure::ON;
-	case 0:
-		return MacroExposure::OFF;
-	default:
-		throw std::invalid_argument("macro exposure must be 0 or 1");
-	}
-}
-
+#endif
 
 } /* namespace gerbex */

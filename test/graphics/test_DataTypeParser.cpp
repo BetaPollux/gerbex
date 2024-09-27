@@ -157,51 +157,6 @@ TEST(GetCommandCode, Unknown) {
 	CHECK_THROWS(std::invalid_argument, DataTypeParser::GetCommandCode("Z"));
 }
 
-
-/**
- * Split Fields
- */
-
-
-TEST_GROUP(SplitFields) {
-};
-
-TEST(SplitFields, Empty) {
-	std::string word = "";
-	std::vector<std::string> fields = DataTypeParser::SplitFields(word);
-
-	LONGS_EQUAL(1, fields.size());
-	STRCMP_EQUAL("", fields[0].c_str());
-}
-
-TEST(SplitFields, OneField) {
-	std::string word = "123";
-	std::vector<std::string> fields = DataTypeParser::SplitFields(word);
-
-	LONGS_EQUAL(1, fields.size());
-	STRCMP_EQUAL("123", fields[0].c_str());
-}
-
-TEST(SplitFields, ThreeFields) {
-	std::string word = "4,123,76";
-	std::vector<std::string> fields = DataTypeParser::SplitFields(word);
-
-	LONGS_EQUAL(3, fields.size());
-	STRCMP_EQUAL("4", fields[0].c_str());
-	STRCMP_EQUAL("123", fields[1].c_str());
-	STRCMP_EQUAL("76", fields[2].c_str());
-}
-
-TEST(SplitFields, ThreeEmptyFields) {
-	std::string word = ",,";
-	std::vector<std::string> fields = DataTypeParser::SplitFields(word);
-
-	LONGS_EQUAL(3, fields.size());
-	STRCMP_EQUAL("", fields[0].c_str());
-	STRCMP_EQUAL("", fields[1].c_str());
-	STRCMP_EQUAL("", fields[2].c_str());
-}
-
 /**
  * Split Params
  */
@@ -212,7 +167,7 @@ TEST_GROUP(SplitParams) {
 
 TEST(SplitParams, Empty) {
 	std::string field = "";
-	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
+	Parameters params = DataTypeParser::SplitParams(field, 'X');
 	CHECK(params.empty());
 }
 
@@ -228,15 +183,15 @@ TEST(SplitParams, NonNumeric) {
 
 TEST(SplitParams, OneParam) {
 	std::string field = "123";
-	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
+	Parameters params = DataTypeParser::SplitParams(field, 'X');
 
 	LONGS_EQUAL(1, params.size());
-	DOUBLES_EQUAL(123.0, params[0], DBL_TOL);
+	DOUBLES_EQUAL(123.0, *params.begin(), DBL_TOL);
 }
 
 TEST(SplitParams, ThreeParams) {
 	std::string field = "0.030X0.040X0.0015";
-	std::vector<double> params = DataTypeParser::SplitParams(field, 'X');
+	Parameters params = DataTypeParser::SplitParams(field, 'X');
 
 	LONGS_EQUAL(3, params.size());
 	DOUBLES_EQUAL(0.03, params[0], DBL_TOL);
