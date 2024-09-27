@@ -21,7 +21,9 @@
 #ifndef MACROCIRCLE_H_
 #define MACROCIRCLE_H_
 
+#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -35,6 +37,7 @@ public:
 			const RealPoint &center, double rotation = 0.0);
 	virtual ~MacroCircle();
 	double GetDiameter() const;
+	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
 
 private:
 	double m_diameter;

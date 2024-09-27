@@ -56,4 +56,18 @@ int MacroPolygon::GetNumVertices() const {
 	return m_numVertices;
 }
 
+std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
+		const Parameters &params) {
+	if (params.size() != 6) {
+		throw std::invalid_argument("macro polygon expects 6 parameters");
+	}
+	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
+	size_t num = (size_t) params[1];
+	RealPoint center(params[2], params[3]);
+	double diameter = params[4];
+	double rotation = params[5];
+	return std::make_unique<MacroPolygon>(exposure, num, center, diameter,
+			rotation);
+}
+
 } /* namespace gerbex */

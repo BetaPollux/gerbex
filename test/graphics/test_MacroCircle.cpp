@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroCircleTest) {
 };
@@ -45,6 +46,26 @@ TEST(MacroCircleTest, Ctor) {
 }
 
 TEST(MacroCircleTest, NegativeDiameter) {
-	CHECK_THROWS(std::invalid_argument, MacroCircle(MacroExposure::ON, -1.0, RealPoint()));
+	CHECK_THROWS(std::invalid_argument,
+			MacroCircle(MacroExposure::ON, -1.0, RealPoint()));
 }
 
+TEST(MacroCircleTest, FromParameters) {
+	Parameters params = { 1.0, 1.5, -3.0, 2.0, 45.0 };
+	std::shared_ptr<MacroCircle> circle = MacroCircle::FromParameters(params);
+	CHECK(MacroExposure::ON == circle->GetExposure());
+	DOUBLES_EQUAL(1.5, circle->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(-3.0, circle->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(2.0, circle->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(45.0, circle->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroCircleTest, FromParameters_TooFew) {
+	Parameters params = { 1.0, 1.5, -3.0, 2.0 };
+	CHECK_THROWS(std::invalid_argument, MacroCircle::FromParameters(params));
+}
+
+TEST(MacroCircleTest, FromParameters_TooMany) {
+	Parameters params = { 1.0, 1.5, -3.0, 2.0, 45.0, 23.0 };
+	CHECK_THROWS(std::invalid_argument, MacroCircle::FromParameters(params));
+}

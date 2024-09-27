@@ -21,7 +21,9 @@
 #ifndef MACROCENTERLINE_H_
 #define MACROCENTERLINE_H_
 
+#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -36,6 +38,7 @@ public:
 	virtual ~MacroCenterLine();
 	double GetHeight() const;
 	double GetWidth() const;
+	static std::unique_ptr<MacroCenterLine> FromParameters(const Parameters &params);
 
 private:
 	double m_width, m_height;

@@ -24,10 +24,10 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroThermalTest) {
 };
-
 
 TEST(MacroThermalTest, Default) {
 	MacroThermal thermal;
@@ -54,22 +54,50 @@ TEST(MacroThermalTest, Ctor) {
 }
 
 TEST(MacroThermalTest, InnerTooBig) {
-	CHECK_THROWS(std::invalid_argument, MacroThermal(RealPoint(), 1.0, 1.0, 0.25, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroThermal(RealPoint(), 1.0, 1.0, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, GapTooBig) {
 	// Gap thickness < (outer diameter)/sqrt(2)
-	CHECK_THROWS(std::invalid_argument, MacroThermal(RealPoint(), 1.0, 0.5, 0.71, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroThermal(RealPoint(), 1.0, 0.5, 0.71, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeOuter) {
-	CHECK_THROWS(std::invalid_argument, MacroThermal(RealPoint(), -1.0, 0.5, 0.25, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroThermal(RealPoint(), -1.0, 0.5, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeInner) {
-	CHECK_THROWS(std::invalid_argument, MacroThermal(RealPoint(), 1.0, -0.5, 0.25, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroThermal(RealPoint(), 1.0, -0.5, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeGap) {
-	CHECK_THROWS(std::invalid_argument, MacroThermal(RealPoint(), 1.0, 0.5, -0.25, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroThermal(RealPoint(), 1.0, 0.5, -0.25, 0.0));
+}
+
+TEST(MacroThermalTest, Thermal) {
+	Parameters params = { 0, 0.25, 0.95, 0.75, 0.175, 22.5 };
+	std::shared_ptr<MacroThermal> thermal = MacroThermal::FromParameters(
+			params);
+	CHECK(MacroExposure::ON == thermal->GetExposure());
+	DOUBLES_EQUAL(0.0, thermal->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.25, thermal->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.95, thermal->GetOuterDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.75, thermal->GetInnerDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.175, thermal->GetGapThickness(), DBL_TOL);
+	DOUBLES_EQUAL(22.5, thermal->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroThermalTest, Thermal_TooFewParams) {
+	Parameters params = { 0, 0.25, 0.95, 0.75, 0.175 };
+	CHECK_THROWS(std::invalid_argument, MacroThermal::FromParameters(params));
+}
+
+TEST(MacroThermalTest, Thermal_TooManyParams) {
+	Parameters params = { 0, 0.25, 0.95, 0.75, 0.175, 22.5, 5.0 };
+	CHECK_THROWS(std::invalid_argument, MacroThermal::FromParameters(params));
 }

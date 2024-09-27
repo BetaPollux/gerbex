@@ -1,7 +1,7 @@
 /*
- * MacroVectorLine.h
+ * test_MacroPrimitive.cpp
  *
- *  Created on: Apr. 1, 2024
+ *  Created on: Sep. 26, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,33 +18,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MACROVECTORLINE_H_
-#define MACROVECTORLINE_H_
-
-#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
-#include <memory>
+#include <stdexcept>
+#include "CppUTest/TestHarness.h"
 
-namespace gerbex {
+using namespace gerbex;
 
-/*
- * A rectangle primitive defined by its line width, start and end points.
- */
-class MacroVectorLine: public MacroPrimitive {
-public:
-	MacroVectorLine();
-	MacroVectorLine(MacroExposure exposure, double width,
-			const RealPoint &start, const RealPoint &end, double rotation);
-	virtual ~MacroVectorLine();
-	const RealPoint& GetEnd() const;
-	double GetWidth() const;
-	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
-
-private:
-	double m_width;
-	RealPoint m_end;
+TEST_GROUP(MacroPrimitiveTest) {
 };
 
-} /* namespace gerbex */
-
-#endif /* MACROVECTORLINE_H_ */
+TEST(MacroPrimitiveTest, ExposureFromStr) {
+	CHECK(MacroExposure::OFF == MacroPrimitive::ExposureFromNum(0));
+	CHECK(MacroExposure::ON == MacroPrimitive::ExposureFromNum(1));
+	CHECK_THROWS(std::invalid_argument, MacroPrimitive::ExposureFromNum(2));
+}

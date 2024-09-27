@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroVectorLineTest) {
 };
@@ -47,6 +48,32 @@ TEST(MacroVectorLineTest, Ctor) {
 }
 
 TEST(MacroVectorLineTest, NegativeWidth) {
-	CHECK_THROWS(std::invalid_argument, MacroVectorLine(MacroExposure::ON, -1.0, RealPoint(), RealPoint(), 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroVectorLine(MacroExposure::ON, -1.0, RealPoint(), RealPoint(),
+					0.0));
 }
 
+TEST(MacroVectorLineTest, FromParameters) {
+	Parameters params = { 1, 0.9, 0, 0.45, 12, 0.75, 22.5 };
+	std::shared_ptr<MacroVectorLine> line = MacroVectorLine::FromParameters(
+			params);
+	CHECK(MacroExposure::ON == line->GetExposure());
+	DOUBLES_EQUAL(0.9, line->GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, line->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.45, line->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(12.0, line->GetEnd().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.75, line->GetEnd().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(22.5, line->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroVectorLineTest, FromParameters_TooFew) {
+	Parameters params = { 1, 0.9, 0, 0.45, 12, 0.45 };
+	CHECK_THROWS(std::invalid_argument,
+			MacroVectorLine::FromParameters(params));
+}
+
+TEST(MacroVectorLineTest, FromParameters_TooMany) {
+	Parameters params = { 1, 0.9, 0, 0.45, 12, 0.45, 0, 1 };
+	CHECK_THROWS(std::invalid_argument,
+			MacroVectorLine::FromParameters(params));
+}

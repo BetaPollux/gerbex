@@ -47,16 +47,9 @@ public:
 	virtual ~MacroTemplate();
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 	const Fields &GetBody() const;
-	static MacroExposure ExposureFromNum(int num);
 
 private:
-	static std::unique_ptr<MacroPrimitive> HandleComment(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakeCircle(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakeCenterLine(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakeVectorLine(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakeOutline(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakePolygon(const Parameters &params);
-	static std::unique_ptr<MacroPrimitive> MakeThermal(const Parameters &params);
+	static void InsertVariables(std::string &block, const Parameters &params);
 
 	Fields m_body;
 };

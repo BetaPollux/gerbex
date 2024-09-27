@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroPolygonTest) {
 };
@@ -48,10 +49,33 @@ TEST(MacroPolygonTest, Ctor) {
 }
 
 TEST(MacroPolygonTest, TooFewVertices) {
-	CHECK_THROWS(std::invalid_argument, MacroPolygon(MacroExposure::ON, 2, RealPoint(), 1.0, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroPolygon(MacroExposure::ON, 2, RealPoint(), 1.0, 0.0));
 }
 
 TEST(MacroPolygonTest, TooManyVertices) {
-	CHECK_THROWS(std::invalid_argument, MacroPolygon(MacroExposure::ON, 13, RealPoint(), 1.0, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroPolygon(MacroExposure::ON, 13, RealPoint(), 1.0, 0.0));
+}
+
+TEST(MacroPolygonTest, FromParameters) {
+	Parameters params = { 1, 8, 3, 4, 6, 12 };
+	std::shared_ptr<MacroPolygon> poly = MacroPolygon::FromParameters(params);
+	CHECK(MacroExposure::ON == poly->GetExposure());
+	LONGS_EQUAL(8, poly->GetNumVertices());
+	DOUBLES_EQUAL(3.0, poly->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(4.0, poly->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(6.0, poly->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(12.0, poly->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroPolygonTest, FromParameters_TooFew) {
+	Parameters params = { 1, 8, 0, 0, 8 };
+	CHECK_THROWS(std::invalid_argument, MacroPolygon::FromParameters(params));
+}
+
+TEST(MacroPolygonTest, FromParameters_TooMany) {
+	Parameters params = { 5, 1, 8, 0, 0, 8, 0, 1.0 };
+	CHECK_THROWS(std::invalid_argument, MacroPolygon::FromParameters(params));
 }
 

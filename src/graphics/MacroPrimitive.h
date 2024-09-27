@@ -42,6 +42,7 @@ public:
 	const RealPoint& GetCoord() const;
 	MacroExposure GetExposure() const;
 	double GetRotation() const;
+	static MacroExposure ExposureFromNum(int num);
 
 protected:
 	MacroExposure m_exposure;

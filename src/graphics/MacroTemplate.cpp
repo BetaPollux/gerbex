@@ -27,6 +27,7 @@
 #include "MacroTemplate.h"
 #include "MacroThermal.h"
 #include "MacroVectorLine.h"
+#include <regex>
 #include <stdexcept>
 
 namespace gerbex {
@@ -36,9 +37,8 @@ MacroTemplate::MacroTemplate() {
 
 }
 
-MacroTemplate::MacroTemplate(Fields body)
-	: m_body{ body }
-{
+MacroTemplate::MacroTemplate(Fields body) :
+		m_body { body } {
 	// Empty
 }
 
@@ -46,18 +46,51 @@ MacroTemplate::~MacroTemplate() {
 	// Empty
 }
 
-
 std::unique_ptr<Aperture> MacroTemplate::Call(const Parameters &parameters) {
-	//TODO create Macro
-	//TODO insert parameters into body
-	//TODO parse body
-	//TODO add primitives
-	std::string word = *m_body.begin();
+	(void) parameters;
+	//TODO handle parameters and expressions
 	std::unique_ptr<Macro> macro = std::make_unique<Macro>();
-	int code = std::stoi(word.substr(0, 1));
-	if (code != (int)MacroCodes::COMMENT) {
-		Parameters params = DataTypeParser::SplitParams(word, ',');
-		macro->AddPrimitive(MacroTemplate::MakeCircle(params));
+	for (std::string &w : m_body) {
+		std::smatch match;
+		std::regex regex("^([0-9]+)?([$][0-9]+)?");
+		MacroCodes code;
+		if (std::regex_search(w, match, regex)) {
+			if (match[1].matched) {
+				code = (MacroCodes) std::stoi(match[1].str());
+			} else {
+				throw std::invalid_argument(
+						"macro variable definiton is not yet supported");
+				continue;
+			}
+		}
+		if (code == MacroCodes::COMMENT) {
+			continue;
+		}
+		MacroTemplate::InsertVariables(w, parameters);
+		Parameters prim_params = DataTypeParser::SplitParams(w, ',');
+		prim_params.pop_front();	// Discard code
+		switch (code) {
+		case MacroCodes::CIRCLE:
+			macro->AddPrimitive(MacroCircle::FromParameters(prim_params));
+			break;
+		case MacroCodes::VECTOR_LINE:
+			macro->AddPrimitive(MacroVectorLine::FromParameters(prim_params));
+			break;
+		case MacroCodes::CENTER_LINE:
+			macro->AddPrimitive(MacroCenterLine::FromParameters(prim_params));
+			break;
+		case MacroCodes::OUTLINE:
+			macro->AddPrimitive(MacroOutline::FromParameters(prim_params));
+			break;
+		case MacroCodes::POLYGON:
+			macro->AddPrimitive(MacroPolygon::FromParameters(prim_params));
+			break;
+		case MacroCodes::THERMAL:
+			macro->AddPrimitive(MacroThermal::FromParameters(prim_params));
+			break;
+		default:
+			throw std::invalid_argument("invalid macro code " + w);
+		}
 	}
 	return macro;
 }
@@ -66,112 +99,15 @@ const Fields& MacroTemplate::GetBody() const {
 	return m_body;
 }
 
-MacroExposure MacroTemplate::ExposureFromNum(int num) {
-	switch (num) {
-	case 1:
-		return MacroExposure::ON;
-	case 0:
-		return MacroExposure::OFF;
-	default:
-		throw std::invalid_argument("macro exposure must be 0 or 1");
-	}
-}
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::HandleComment(
+void MacroTemplate::InsertVariables(std::string &block,
 		const Parameters &params) {
 	(void)params;
-	return nullptr;
+	std::smatch match;
+	std::regex regex("[$]([0-9]+)");
+	if (std::regex_search(block, match, regex)) {
+		throw std::invalid_argument("macro variables are not yet supported");
+
+	}
 }
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCircle(
-		const Parameters &params) {
-	if (params.size() != 5) {
-		throw std::invalid_argument("macro circle expects 5 parameters");
-	}
-
-	MacroExposure exposure = ExposureFromNum((int)params[0]);
-	double diameter = params[1];
-	RealPoint center(params[2], params[3]);
-	double rotation = params[4];
-	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
-}
-
-#if 0
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakeCenterLine(
-		const Parameters &params) {
-	if (params.size() != 6) {
-		throw std::invalid_argument("macro center line expects 6 parameters");
-	}
-	MacroExposure exposure = ExposureFromNum((int)params[0]);
-	double width = params[1];
-	double height = params[2];
-	RealPoint center(params[3], params[4]);
-	double rotation = params[5];
-	return std::make_unique<MacroCenterLine>(exposure, width, height, center, rotation);
-}
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakeVectorLine(
-		const Parameters &params) {
-	if (params.size() != 7) {
-		throw std::invalid_argument("macro vector line expects 7 parameters");
-	}
-	MacroExposure exposure = ExposureFromNum((int)params[0]);
-	double width = params[1];
-	RealPoint start(params[2], params[3]);
-	RealPoint end(params[4], params[5]);
-	double rotation = params[6];
-	return std::make_unique<MacroVectorLine>(exposure, width, start, end, rotation);
-}
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakeOutline(
-		const Parameters &params) {
-	if (params.size() < 5) {
-		throw std::invalid_argument("macro outline expects at least 5 parameters");
-	}
-	MacroExposure exposure = ExposureFromNum((int)params[0]);
-	size_t num = (size_t)params[1] + 1;
-
-	if (params.size() != (5 + 2 * (num - 1))) {
-		throw std::invalid_argument("macro outline expects 5+2n parameters");
-	}
-	std::vector<RealPoint> vertices;
-	vertices.reserve(num);
-	auto it = params.begin() + 2;
-	for (size_t i = 0; i < num; i++) {
-		double x = *it++;
-		double y = *it++;
-		vertices.push_back(RealPoint(x, y));
-	}
-	double rotation = params.back();
-	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
-}
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakePolygon(
-		const Parameters &params) {
-	if (params.size() != 6) {
-		throw std::invalid_argument("macro polygon expects 6 parameters");
-	}
-	MacroExposure exposure = ExposureFromNum((int)params[0]);
-	size_t num = (size_t)params[1];
-	RealPoint center(params[2], params[3]);
-	double diameter = params[4];
-	double rotation = params[5];
-	return std::make_unique<MacroPolygon>(exposure, num, center, diameter, rotation);
-}
-
-std::unique_ptr<MacroPrimitive> MacroTemplate::MakeThermal(
-		const Parameters &params) {
-	if (params.size() != 6) {
-		throw std::invalid_argument("macro thermal expects 6 parameters");
-	}
-	RealPoint center(params[0], params[1]);
-	double outer = params[2];
-	double inner = params[3];
-	double gap = params[4];
-	double rotation = params[5];
-	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
-}
-
-#endif
 
 } /* namespace gerbex */

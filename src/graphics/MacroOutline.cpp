@@ -49,5 +49,29 @@ const std::vector<RealPoint>& MacroOutline::GetVertices() const {
 	return m_vertices;
 }
 
+std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
+		const Parameters &params) {
+	if (params.size() < 5) {
+		throw std::invalid_argument(
+				"macro outline expects at least 5 parameters");
+	}
+	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
+	size_t num = (size_t) params[1] + 1;
+
+	if (params.size() != (5 + 2 * (num - 1))) {
+		throw std::invalid_argument("macro outline expects 5+2n parameters");
+	}
+	std::vector<RealPoint> vertices;
+	vertices.reserve(num);
+	auto it = params.begin() + 2;
+	for (size_t i = 0; i < num; i++) {
+		double x = *it++;
+		double y = *it++;
+		vertices.push_back(RealPoint(x, y));
+	}
+	double rotation = params.back();
+	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
+}
+
 } /* namespace gerbex */
 

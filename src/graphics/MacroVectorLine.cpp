@@ -23,18 +23,16 @@
 
 namespace gerbex {
 
-MacroVectorLine::MacroVectorLine()
-	: MacroVectorLine(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), RealPoint(1.0, 0.0), 0.0)
-{
+MacroVectorLine::MacroVectorLine() :
+		MacroVectorLine(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0),
+				RealPoint(1.0, 0.0), 0.0) {
 	// Empty
 }
 
 MacroVectorLine::MacroVectorLine(MacroExposure exposure, double width,
-		const RealPoint &start, const RealPoint &end, double rotation)
-	: MacroPrimitive(exposure, start, rotation),
-	  m_width{ width },
-	  m_end{ end }
-{
+		const RealPoint &start, const RealPoint &end, double rotation) :
+		MacroPrimitive(exposure, start, rotation), m_width { width }, m_end {
+				end } {
 	if (width < 0.0) {
 		throw std::invalid_argument("Width must be >= 0.0");
 	}
@@ -50,6 +48,20 @@ const RealPoint& MacroVectorLine::GetEnd() const {
 
 double MacroVectorLine::GetWidth() const {
 	return m_width;
+}
+
+std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
+		const Parameters &params) {
+	if (params.size() != 7) {
+		throw std::invalid_argument("macro vector line expects 7 parameters");
+	}
+	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
+	double width = params[1];
+	RealPoint start(params[2], params[3]);
+	RealPoint end(params[4], params[5]);
+	double rotation = params[6];
+	return std::make_unique<MacroVectorLine>(exposure, width, start, end,
+			rotation);
 }
 
 } /* namespace gerbex */

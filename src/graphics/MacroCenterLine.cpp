@@ -52,4 +52,18 @@ double MacroCenterLine::GetWidth() const {
 	return m_width;
 }
 
+std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
+		const Parameters &params) {
+	if (params.size() != 6) {
+		throw std::invalid_argument("macro center line expects 6 parameters");
+	}
+	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
+	double width = params[1];
+	double height = params[2];
+	RealPoint center(params[3], params[4]);
+	double rotation = params[5];
+	return std::make_unique<MacroCenterLine>(exposure, width, height, center,
+			rotation);
+}
+
 } /* namespace gerbex */

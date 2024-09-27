@@ -13,6 +13,7 @@ add_library(test_graphics OBJECT
 	test_MacroCircle.cpp
 	test_MacroOutline.cpp
 	test_MacroPolygon.cpp
+	test_MacroPrimitive.cpp
 	test_MacroTemplate.cpp
 	test_MacroThermal.cpp
 	test_MacroVectorLine.cpp

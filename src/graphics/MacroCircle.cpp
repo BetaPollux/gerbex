@@ -47,4 +47,17 @@ double MacroCircle::GetDiameter() const {
 	return m_diameter;
 }
 
+std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
+		const Parameters &params) {
+	if (params.size() != 5) {
+		throw std::invalid_argument("macro circle expects 5 parameters");
+	}
+
+	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
+	double diameter = params[1];
+	RealPoint center(params[2], params[3]);
+	double rotation = params[4];
+	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
+}
+
 } /* namespace gerbex */

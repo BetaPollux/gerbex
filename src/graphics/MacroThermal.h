@@ -21,7 +21,9 @@
 #ifndef MACROTHERMAL_H_
 #define MACROTHERMAL_H_
 
+#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -37,6 +39,7 @@ public:
 	double GetGapThickness() const;
 	double GetInnerDiameter() const;
 	double GetOuterDiameter() const;
+	static std::unique_ptr<MacroThermal> FromParameters(const Parameters &params);
 
 private:
 	double m_outerDiameter, m_innerDiameter, m_gapThickness;

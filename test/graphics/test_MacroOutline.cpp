@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroOutlineTest) {
 };
@@ -34,11 +35,8 @@ TEST(MacroOutlineTest, Default) {
 }
 
 TEST(MacroOutlineTest, Ctor) {
-	std::vector<RealPoint> vertices = {
-			RealPoint(-1.0, 0.0),
-			RealPoint(1.0, 0.0),
-			RealPoint(0.0, 1.0),
-	};
+	std::vector<RealPoint> vertices = { RealPoint(-1.0, 0.0), RealPoint(1.0,
+			0.0), RealPoint(0.0, 1.0), };
 
 	MacroOutline outline(MacroExposure::OFF, vertices, 45.0);
 
@@ -48,11 +46,8 @@ TEST(MacroOutlineTest, Ctor) {
 }
 
 TEST(MacroOutlineTest, CopiesVertices) {
-	std::vector<RealPoint> vertices = {
-			RealPoint(-1.0, 0.0),
-			RealPoint(1.0, 0.0),
-			RealPoint(0.0, 1.0),
-	};
+	std::vector<RealPoint> vertices = { RealPoint(-1.0, 0.0), RealPoint(1.0,
+			0.0), RealPoint(0.0, 1.0), };
 
 	MacroOutline outline(MacroExposure::ON, vertices, 0.0);
 	vertices.clear();
@@ -64,12 +59,47 @@ TEST(MacroOutlineTest, CopiesVertices) {
 
 TEST(MacroOutlineTest, TooFewVertices) {
 	std::vector<RealPoint> vertices(2);
-	CHECK_THROWS(std::invalid_argument, MacroOutline(MacroExposure::ON, vertices, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroOutline(MacroExposure::ON, vertices, 0.0));
 }
 
 TEST(MacroOutlineTest, EmptyVertices) {
 	std::vector<RealPoint> vertices;
-	CHECK_THROWS(std::invalid_argument, MacroOutline(MacroExposure::ON, vertices, 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroOutline(MacroExposure::ON, vertices, 0.0));
 }
 
+TEST(MacroOutlineTest, FromParameters) {
+	Parameters params = { 1, 3, 1, -1, 1, 1, 2, 1, 1, -1, 30 };
+	std::shared_ptr<MacroOutline> outline = MacroOutline::FromParameters(
+			params);
+	CHECK(MacroExposure::ON == outline->GetExposure());
+	const std::vector<RealPoint> vertices = outline->GetVertices();
+	LONGS_EQUAL(4, vertices.size());
+	CHECK(outline->GetCoord() == vertices[0]);
+	DOUBLES_EQUAL(1.0, vertices[0].GetX(), DBL_TOL);
+	DOUBLES_EQUAL(-1.0, vertices[0].GetY(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, vertices[1].GetX(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, vertices[1].GetY(), DBL_TOL);
+	DOUBLES_EQUAL(2.0, vertices[2].GetX(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, vertices[2].GetY(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, vertices[3].GetX(), DBL_TOL);
+	DOUBLES_EQUAL(-1.0, vertices[3].GetY(), DBL_TOL);
+	DOUBLES_EQUAL(30.0, outline->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroOutlineTest, FromParameters_TooFew) {
+	Parameters params = { 1, 3, 1, -1, 1, 1, 2, 1, 1, -1 };
+	CHECK_THROWS(std::invalid_argument, MacroOutline::FromParameters(params));
+}
+
+TEST(MacroOutlineTest, FromParameters_TooFewXY) {
+	Parameters params = { 1, 4, 1, -1, 1, 1, 2, 1, 1, -1, 30 };
+	CHECK_THROWS(std::invalid_argument, MacroOutline::FromParameters(params));
+}
+
+TEST(MacroOutlineTest, FromParameters_TooManyXY) {
+	Parameters params = { 1, 2, 1, -1, 1, 1, 2, 1, 1, -1, 30 };
+	CHECK_THROWS(std::invalid_argument, MacroOutline::FromParameters(params));
+}
 

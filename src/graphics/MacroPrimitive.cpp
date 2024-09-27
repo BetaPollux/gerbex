@@ -19,6 +19,7 @@
  */
 
 #include "MacroPrimitive.h"
+#include <stdexcept>
 
 namespace gerbex {
 
@@ -50,6 +51,17 @@ MacroExposure MacroPrimitive::GetExposure() const {
 
 double MacroPrimitive::GetRotation() const {
 	return m_rotation;
+}
+
+MacroExposure MacroPrimitive::ExposureFromNum(int num) {
+	switch (num) {
+	case 1:
+		return MacroExposure::ON;
+	case 0:
+		return MacroExposure::OFF;
+	default:
+		throw std::invalid_argument("macro exposure must be 0 or 1");
+	}
 }
 
 } /* namespace gerbex */

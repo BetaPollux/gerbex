@@ -21,6 +21,7 @@
 #ifndef MACROOUTLINE_H_
 #define MACROOUTLINE_H_
 
+#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
 #include <memory>
 #include <vector>
@@ -36,6 +37,7 @@ public:
 	MacroOutline(MacroExposure exposure, const std::vector<RealPoint> &vertices, double rotation);
 	virtual ~MacroOutline();
 	const std::vector<RealPoint>& GetVertices() const;
+	static std::unique_ptr<MacroOutline> FromParameters(const Parameters &params);
 
 private:
 	std::vector<RealPoint> m_vertices;

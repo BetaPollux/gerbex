@@ -21,7 +21,9 @@
 #ifndef MACROPOLYGON_H_
 #define MACROPOLYGON_H_
 
+#include "DataTypeParser.h"
 #include "MacroPrimitive.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -37,6 +39,7 @@ public:
 	virtual ~MacroPolygon();
 	double GetDiameter() const;
 	int GetNumVertices() const;
+	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
 
 private:
 	int m_numVertices;

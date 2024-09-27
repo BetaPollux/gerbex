@@ -24,6 +24,7 @@
 
 using namespace gerbex;
 
+#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroCenterLineTest) {
 };
@@ -47,10 +48,35 @@ TEST(MacroCenterLineTest, Ctor) {
 }
 
 TEST(MacroCenterLineTest, NegativeWidth) {
-	CHECK_THROWS(std::invalid_argument, MacroCenterLine(MacroExposure::ON, -1.0, 1.0, RealPoint(), 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroCenterLine(MacroExposure::ON, -1.0, 1.0, RealPoint(), 0.0));
 }
 
 TEST(MacroCenterLineTest, NegativeHeight) {
-	CHECK_THROWS(std::invalid_argument, MacroCenterLine(MacroExposure::ON, 1.0, -1.0, RealPoint(), 0.0));
+	CHECK_THROWS(std::invalid_argument,
+			MacroCenterLine(MacroExposure::ON, 1.0, -1.0, RealPoint(), 0.0));
 }
 
+TEST(MacroCenterLineTest, FromParameters) {
+	Parameters params = { 1, 6.8, 1.2, 3.4, 0.6, 30 };
+	std::shared_ptr<MacroCenterLine> line = MacroCenterLine::FromParameters(
+			params);
+	CHECK(MacroExposure::ON == line->GetExposure());
+	DOUBLES_EQUAL(6.8, line->GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(1.2, line->GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(3.4, line->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.6, line->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(30.0, line->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroCenterLineTest, FromParameters_TooFew) {
+	Parameters params = { 1, 6.8, 1.2, 3.4, 0.6 };
+	CHECK_THROWS(std::invalid_argument,
+			MacroCenterLine::FromParameters(params));
+}
+
+TEST(MacroCenterLineTest, FromParameters_TooMany) {
+	Parameters params = { 1, 6.8, 1.2, 3.4, 0.6, 30, 5 };
+	CHECK_THROWS(std::invalid_argument,
+			MacroCenterLine::FromParameters(params));
+}
