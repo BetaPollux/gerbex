@@ -27,54 +27,75 @@
 
 using namespace gerbex;
 
-
 #define DBL_TOL 1e-5
 
 TEST_GROUP(DataTypeParserTest) {
 };
 
 TEST(DataTypeParserTest, Number) {
-	STRCMP_EQUAL("0", DataTypeParser::Match("0", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL("-1024", DataTypeParser::Match("-1024", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL("+16", DataTypeParser::Match("+16", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL("-200",  DataTypeParser::Match("-200", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL("1234.56", DataTypeParser::Match("1234.56", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL(".123", DataTypeParser::Match(".123", DataTypeParser::GetNumberPattern()).c_str());
-	STRCMP_EQUAL("-0.128", DataTypeParser::Match("-0.128", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("0",
+			DataTypeParser::Match("0", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-1024",
+			DataTypeParser::Match("-1024", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("+16",
+			DataTypeParser::Match("+16", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-200",
+			DataTypeParser::Match("-200", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("1234.56",
+			DataTypeParser::Match("1234.56", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL(".123",
+			DataTypeParser::Match(".123", DataTypeParser::GetNumberPattern()).c_str());
+	STRCMP_EQUAL("-0.128",
+			DataTypeParser::Match("-0.128", DataTypeParser::GetNumberPattern()).c_str());
 }
 
 TEST(DataTypeParserTest, Field) {
-	STRCMP_EQUAL("", DataTypeParser::Match("", DataTypeParser::GetFieldPattern()).c_str());
-	STRCMP_EQUAL("2", DataTypeParser::Match("2", DataTypeParser::GetFieldPattern()).c_str());
-	STRCMP_EQUAL("123ABC", DataTypeParser::Match("123ABC", DataTypeParser::GetFieldPattern()).c_str());
-	STRCMP_EQUAL("A&B", DataTypeParser::Match("A&B", DataTypeParser::GetFieldPattern()).c_str());
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC,123", DataTypeParser::GetFieldPattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC*", DataTypeParser::GetFieldPattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("%ABC", DataTypeParser::GetFieldPattern()));
+	STRCMP_EQUAL("",
+			DataTypeParser::Match("", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("2",
+			DataTypeParser::Match("2", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("123ABC",
+			DataTypeParser::Match("123ABC", DataTypeParser::GetFieldPattern()).c_str());
+	STRCMP_EQUAL("A&B",
+			DataTypeParser::Match("A&B", DataTypeParser::GetFieldPattern()).c_str());
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("ABC,123",
+					DataTypeParser::GetFieldPattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("ABC*", DataTypeParser::GetFieldPattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("%ABC", DataTypeParser::GetFieldPattern()));
 }
 
 TEST(DataTypeParserTest, Name) {
-	STRCMP_EQUAL(".ABC", DataTypeParser::Match(".ABC", DataTypeParser::GetNamePattern()).c_str());
-	STRCMP_EQUAL("$3", DataTypeParser::Match("$3", DataTypeParser::GetNamePattern()).c_str());
-	STRCMP_EQUAL(".3abc", DataTypeParser::Match(".3abc", DataTypeParser::GetNamePattern()).c_str());
-	STRCMP_EQUAL("ABC.123", DataTypeParser::Match("ABC.123", DataTypeParser::GetNamePattern()).c_str());
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("", DataTypeParser::GetNamePattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("3", DataTypeParser::GetNamePattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("A&B", DataTypeParser::GetNamePattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC,123", DataTypeParser::GetNamePattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("%ABC", DataTypeParser::GetNamePattern()));
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::Match("ABC*", DataTypeParser::GetNamePattern()));
+	STRCMP_EQUAL(".ABC",
+			DataTypeParser::Match(".ABC", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL("$3",
+			DataTypeParser::Match("$3", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL(".3abc",
+			DataTypeParser::Match(".3abc", DataTypeParser::GetNamePattern()).c_str());
+	STRCMP_EQUAL("ABC.123",
+			DataTypeParser::Match("ABC.123", DataTypeParser::GetNamePattern()).c_str());
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("3", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("A&B", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("ABC,123", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("%ABC", DataTypeParser::GetNamePattern()));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::Match("ABC*", DataTypeParser::GetNamePattern()));
 }
-
 
 /**
  * Get Command Code
  */
 
-
 TEST_GROUP(GetCommandCode) {
 };
-
 
 TEST(GetCommandCode, G04) {
 	STRCMP_EQUAL("G04", DataTypeParser::GetCommandCode("G04 Comment").c_str());
@@ -115,7 +136,8 @@ TEST(GetCommandCode, Operations) {
 		std::vector<std::string> words = { "X250000Y155000", "Y155000",
 				"X250000", "", "X75000Y50000I40000J0", "I40000J0" };
 		for (std::string &w : words) {
-			STRCMP_EQUAL(op.c_str(), DataTypeParser::GetCommandCode(w + op).c_str());
+			STRCMP_EQUAL(op.c_str(),
+					DataTypeParser::GetCommandCode(w + op).c_str());
 		}
 	}
 }
@@ -138,7 +160,8 @@ TEST(GetCommandCode, BlockAperture) {
 }
 
 TEST(GetCommandCode, StepAndRepeat) {
-	STRCMP_EQUAL("SR", DataTypeParser::GetCommandCode("SRX2Y3I2.0J3.0").c_str());
+	STRCMP_EQUAL("SR",
+			DataTypeParser::GetCommandCode("SRX2Y3I2.0J3.0").c_str());
 	STRCMP_EQUAL("SR", DataTypeParser::GetCommandCode("SR").c_str());
 }
 
@@ -147,10 +170,13 @@ TEST(GetCommandCode, EndOfFile) {
 }
 
 TEST(GetCommandCode, Attributes) {
-	STRCMP_EQUAL("TF", DataTypeParser::GetCommandCode("TFMyAttribute,Yes").c_str());
-	STRCMP_EQUAL("TA", DataTypeParser::GetCommandCode("TA.AperFunction,ComponentPad").c_str());
+	STRCMP_EQUAL("TF",
+			DataTypeParser::GetCommandCode("TFMyAttribute,Yes").c_str());
+	STRCMP_EQUAL("TA",
+			DataTypeParser::GetCommandCode("TA.AperFunction,ComponentPad").c_str());
 	STRCMP_EQUAL("TO", DataTypeParser::GetCommandCode("TO.C,R6").c_str());
-	STRCMP_EQUAL("TD", DataTypeParser::GetCommandCode("TD.AperFunction").c_str());
+	STRCMP_EQUAL("TD",
+			DataTypeParser::GetCommandCode("TD.AperFunction").c_str());
 }
 
 TEST(GetCommandCode, Unknown) {
@@ -160,7 +186,6 @@ TEST(GetCommandCode, Unknown) {
 /**
  * Split Params
  */
-
 
 TEST_GROUP(SplitParams) {
 };
@@ -173,12 +198,14 @@ TEST(SplitParams, Empty) {
 
 TEST(SplitParams, JustDelim) {
 	std::string field = "X";
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field, 'X'));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::SplitParams(field, 'X'));
 }
 
 TEST(SplitParams, NonNumeric) {
 	std::string field = "0.01XABC";
-	CHECK_THROWS(std::invalid_argument, DataTypeParser::SplitParams(field, 'X'));
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::SplitParams(field, 'X'));
 }
 
 TEST(SplitParams, OneParam) {
@@ -199,25 +226,35 @@ TEST(SplitParams, ThreeParams) {
 	DOUBLES_EQUAL(0.0015, params[2], DBL_TOL);
 }
 
+TEST(SplitParams, NonNumericChars) {
+	std::string field = "-0.1000/2+0.000,0.0500/2-0.000+0.02";
+	//std::stod does not throw error
+	DOUBLES_EQUAL(-0.100, std::stod("-0.1000/2+0.000"), DBL_TOL);
+	CHECK_THROWS(std::invalid_argument,
+			DataTypeParser::SplitParams(field, ','));
+}
+
 /**
  * Patterns
  */
-
 
 TEST_GROUP(ParserPatterns) {
 };
 
 TEST(ParserPatterns, Name) {
 	std::regex regex(DataTypeParser::GetNamePattern());
-	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+	LONGS_EQUAL_TEXT(0, regex.mark_count(),
+			"pattern must not have subexpressions");
 }
 
 TEST(ParserPatterns, Field) {
 	std::regex regex(DataTypeParser::GetFieldPattern());
-	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+	LONGS_EQUAL_TEXT(0, regex.mark_count(),
+			"pattern must not have subexpressions");
 }
 
 TEST(ParserPatterns, Number) {
 	std::regex regex(DataTypeParser::GetNumberPattern());
-	LONGS_EQUAL_TEXT(0, regex.mark_count(), "pattern must not have subexpressions");
+	LONGS_EQUAL_TEXT(0, regex.mark_count(),
+			"pattern must not have subexpressions");
 }

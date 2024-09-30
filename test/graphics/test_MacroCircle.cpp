@@ -60,8 +60,14 @@ TEST(MacroCircleTest, FromParameters) {
 	DOUBLES_EQUAL(45.0, circle->GetRotation(), DBL_TOL);
 }
 
-TEST(MacroCircleTest, FromParameters_TooFew) {
+TEST(MacroCircleTest, FromParameters_NoRotation) {
 	Parameters params = { 1.0, 1.5, -3.0, 2.0 };
+	std::shared_ptr<MacroCircle> circle = MacroCircle::FromParameters(params);
+	DOUBLES_EQUAL(0.0, circle->GetRotation(), DBL_TOL);
+}
+
+TEST(MacroCircleTest, FromParameters_TooFew) {
+	Parameters params = { 1.0, 1.5, -3.0 };
 	CHECK_THROWS(std::invalid_argument, MacroCircle::FromParameters(params));
 }
 

@@ -23,17 +23,14 @@
 
 namespace gerbex {
 
-MacroCircle::MacroCircle()
-	: MacroCircle(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), 0.0)
-{
+MacroCircle::MacroCircle() :
+		MacroCircle(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0), 0.0) {
 	// Empty
 }
 
 MacroCircle::MacroCircle(MacroExposure exposure, double diameter,
-		const RealPoint &center, double rotation)
-	: MacroPrimitive(exposure, center, rotation),
-	  m_diameter{ diameter }
-{
+		const RealPoint &center, double rotation) :
+		MacroPrimitive(exposure, center, rotation), m_diameter { diameter } {
 	if (diameter < 0.0) {
 		throw std::invalid_argument("Diameter must be >= 0.0");
 	}
@@ -49,14 +46,19 @@ double MacroCircle::GetDiameter() const {
 
 std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 		const Parameters &params) {
-	if (params.size() != 5) {
-		throw std::invalid_argument("macro circle expects 5 parameters");
+	if (params.size() < 4 || params.size() > 5) {
+		throw std::invalid_argument("macro circle expects 4 to 5 parameters");
 	}
 
 	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
 	double diameter = params[1];
 	RealPoint center(params[2], params[3]);
-	double rotation = params[4];
+	double rotation;
+	if (params.size() > 4) {
+		rotation = params[4];
+	} else {
+		rotation = 0.0;
+	}
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
 }
 

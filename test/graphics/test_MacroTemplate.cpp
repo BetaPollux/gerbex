@@ -121,3 +121,61 @@ TEST(MacroTemplateTest, Thermal) {
 	DOUBLES_EQUAL(0.95, thermal->GetOuterDiameter(), DBL_TOL);
 
 }
+
+TEST(MacroTemplateTest, FixedDonut) {
+	std::shared_ptr<Macro> macro = make_macro( { "1,1,0.100,0,0",
+			"1,0,0.080,0,0" }, { });
+	std::shared_ptr<MacroCircle> outer = GetPrimitive<MacroCircle>(macro, 0);
+	std::shared_ptr<MacroCircle> inner = GetPrimitive<MacroCircle>(macro, 1);
+	CHECK(MacroExposure::ON == outer->GetExposure());
+	DOUBLES_EQUAL(0.100, outer->GetDiameter(), DBL_TOL);
+	CHECK(MacroExposure::OFF == inner->GetExposure());
+	DOUBLES_EQUAL(0.080, inner->GetDiameter(), DBL_TOL);
+}
+
+TEST(MacroTemplateTest, VariableDonut) {
+	std::shared_ptr<Macro> macro = make_macro(
+			{ "1,1,$1,$2,$3", "1,0,$4,$2,$3" }, { 0.100, 0.02, 0.03, 0.080 });
+	std::shared_ptr<MacroCircle> outer = GetPrimitive<MacroCircle>(macro, 0);
+	std::shared_ptr<MacroCircle> inner = GetPrimitive<MacroCircle>(macro, 1);
+	CHECK(MacroExposure::ON == outer->GetExposure());
+	DOUBLES_EQUAL(0.100, outer->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, outer->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.03, outer->GetCoord().GetY(), DBL_TOL);
+	CHECK(MacroExposure::OFF == inner->GetExposure());
+	DOUBLES_EQUAL(0.080, inner->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, inner->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.03, inner->GetCoord().GetY(), DBL_TOL);
+}
+
+TEST(MacroTemplateTest, VariableDonut_TooFewParams) {
+	CHECK_THROWS(std::invalid_argument, make_macro( { "1,1,$1,$2,$3",
+			"1,0,$4,$2,$3" }, { 0.100, 0.0, 0.0 }));
+}
+
+TEST(MacroTemplateTest, NewVariable_Const) {
+	std::shared_ptr<Macro> macro = make_macro( { "1,1,$1,$2,$3", "$4=0.015",
+			"1,0,$4,$2,$3" }, { 0.02, 0.0, 0.0 });
+	std::shared_ptr<MacroCircle> outer = GetPrimitive<MacroCircle>(macro, 0);
+	std::shared_ptr<MacroCircle> inner = GetPrimitive<MacroCircle>(macro, 1);
+	CHECK(MacroExposure::ON == outer->GetExposure());
+	DOUBLES_EQUAL(0.020, outer->GetDiameter(), DBL_TOL);
+	CHECK(MacroExposure::OFF == inner->GetExposure());
+	DOUBLES_EQUAL(0.015, inner->GetDiameter(), DBL_TOL);
+}
+
+TEST(MacroTemplateTest, NewVariable_ArbitraryId) {
+	//Variable id does not need to be in sequence
+	std::shared_ptr<Macro> macro = make_macro( { "$17=0.015", "1,0,$17,$1,$2" },
+			{ 0.01, 0.02 });
+	std::shared_ptr<MacroCircle> circ = GetPrimitive<MacroCircle>(macro, 0);
+	DOUBLES_EQUAL(0.015, circ->GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(0.01, circ->GetCoord().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, circ->GetCoord().GetY(), DBL_TOL);
+}
+
+TEST(MacroTemplateTest, NewVariable_Redefine) {
+	// Cannot redefine variable
+	CHECK_THROWS(std::invalid_argument, make_macro( { "1,1,$1,$2,$3",
+			"$4=0.015", "$4=0.080" }, { 0.02, 0.0, 0.0 }));
+}

@@ -24,6 +24,7 @@
 #include "ApertureTemplate.h"
 #include "MacroPrimitive.h"
 #include <string>
+#include <unordered_map>
 
 namespace gerbex {
 
@@ -37,6 +38,8 @@ enum class MacroCodes {
 	THERMAL = 7,
 };
 
+using Variables = std::unordered_map<int, double>;
+
 /*
  * Creates a Macro aperture using parameters, variables and expressions.
  */
@@ -49,7 +52,9 @@ public:
 	const Fields &GetBody() const;
 
 private:
-	static void InsertVariables(std::string &block, const Parameters &params);
+	static Variables GetVariables(const Parameters &parameters);
+	static void InsertVariables(std::string &block, const Variables &vars);
+	static void DefineVariable(std::string &block, Variables &vars);
 
 	Fields m_body;
 };
