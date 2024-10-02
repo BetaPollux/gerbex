@@ -22,9 +22,10 @@
 #define MACROTEMPLATE_H_
 
 #include "ApertureTemplate.h"
+#include "Expression.h"
 #include "MacroPrimitive.h"
+#include <deque>
 #include <string>
-#include <unordered_map>
 
 namespace gerbex {
 
@@ -37,8 +38,6 @@ enum class MacroCodes {
 	POLYGON = 5,
 	THERMAL = 7,
 };
-
-using Variables = std::unordered_map<int, double>;
 
 /*
  * Creates a Macro aperture using parameters, variables and expressions.
@@ -53,8 +52,9 @@ public:
 
 private:
 	static Variables GetVariables(const Parameters &parameters);
-	static void InsertVariables(std::string &block, const Variables &vars);
 	static void DefineVariable(std::string &block, Variables &vars);
+	static std::deque<Expression> SplitStatement(std::string &block);
+	static Parameters ProcessExpressions(std::deque<Expression> &expr, const Variables &vars);
 
 	Fields m_body;
 };

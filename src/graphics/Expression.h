@@ -24,8 +24,11 @@
 #include <memory>
 #include <stack>
 #include <string>
+#include <unordered_map>
 
 namespace gerbex {
+
+using Variables = std::unordered_map<int, double>;
 
 class Operator {
 public:
@@ -85,8 +88,12 @@ public:
 	Expression();
 	Expression(std::string body);
 	virtual ~Expression();
-	double Evaluate() const;
+	double Evaluate(const Variables &vars = {}) const;
+	const std::string &GetBody() const;
+
+private:
 	static std::unique_ptr<Operator> MakeOperator(const std::string &op);
+	static double LookupVariable(const std::string &id, const Variables &vars);
 	static void ApplyOperator(std::stack<double> &output,
 			std::stack<std::unique_ptr<Operator>> &operators);
 

@@ -55,10 +55,7 @@ std::unique_ptr<Aperture> MacroTemplate::Call(const Parameters &parameters) {
 		std::regex regex("^(([0-9]+)|([$][0-9]+=))");
 		MacroCodes code;
 		if (std::regex_search(block, match, regex)) {
-			if (match[2].matched) {
-				// Statement, primitive code
-				code = (MacroCodes) std::stoi(match[1].str());
-			} else {
+			if (match[3].matched) {
 				// Variable definition, $x=
 				MacroTemplate::DefineVariable(block, variables);
 				continue;
@@ -66,12 +63,14 @@ std::unique_ptr<Aperture> MacroTemplate::Call(const Parameters &parameters) {
 		} else {
 			throw std::invalid_argument("invalid macro body");
 		}
+		// Statement, starting with primitive code
+		std::deque<Expression> expr = SplitStatement(block);
+		code = (MacroCodes) std::stoi(expr.front().GetBody());
 		if (code == MacroCodes::COMMENT) {
 			continue;
 		}
-		MacroTemplate::InsertVariables(block, variables);
-		Parameters prim_params = DataTypeParser::SplitParams(block, ',');
-		prim_params.pop_front();	// Discard code
+		expr.pop_front();	// Discard code
+		Parameters prim_params = ProcessExpressions(expr, variables);
 		switch (code) {
 		case MacroCodes::CIRCLE:
 			macro->AddPrimitive(MacroCircle::FromParameters(prim_params));
@@ -111,42 +110,48 @@ Variables MacroTemplate::GetVariables(const Parameters &parameters) {
 	return vars;
 }
 
-void MacroTemplate::InsertVariables(std::string &block, const Variables &vars) {
-	std::smatch match;
-	std::regex var_re("[$]([0-9]+)");
-	while (std::regex_search(block, match, var_re)) {
-		int var_id = std::stoi(match[1].str());
-		auto value = vars.find(var_id);
-		if (value != vars.end()) {
-			std::regex repl_re("[$]" + std::to_string(var_id));
-			std::string val_str = std::to_string(value->second);
-			block = std::regex_replace(block, repl_re, val_str);
-		} else {
-			throw std::invalid_argument(
-					"variable " + match.str()
-							+ " was not provided in macro call");
-		}
-	}
-}
-
 void MacroTemplate::DefineVariable(std::string &block, Variables &vars) {
-	// TODO handle expressions support + - x / ( )
 	std::smatch match;
 	std::regex regex(
-			"^[$]([0-9]+)=(" + DataTypeParser::GetNumberPattern() + ")");
-	if (std::regex_search(block, match, regex)) {
+			"[$]([0-9]+)=([^%*,]+)");
+	if (std::regex_match(block, match, regex)) {
 		int var_id = std::stoi(match[1].str());
 		if (vars.find(var_id) == vars.end()) {
 			Expression expr(match[2].str());
-			vars[var_id] = expr.Evaluate();
+			vars[var_id] = expr.Evaluate(vars);
 		} else {
 			throw std::invalid_argument(
 					"variable $" + std::to_string(var_id)
 							+ " cannot be redefined");
 		}
 	} else {
-		throw std::invalid_argument("macro expressions not yet supported");
+		throw std::invalid_argument("invalid variable definition");
 	}
+}
+
+std::deque<Expression> MacroTemplate::SplitStatement(std::string &block) {
+	std::deque<Expression> expr;
+	if (block.empty()) {
+		return expr;
+	}
+
+	std::istringstream istr(block);
+	while (!istr.eof()) {
+		std::string expr_str;
+		std::getline(istr, expr_str, ',');
+		expr.push_back(Expression(expr_str));
+	}
+
+	return expr;
+}
+
+Parameters MacroTemplate::ProcessExpressions(std::deque<Expression> &expr, const Variables &vars) {
+	Parameters params;
+	for (auto e: expr) {
+		double p = e.Evaluate(vars);
+		params.push_back(p);
+	}
+	return params;
 }
 
 } /* namespace gerbex */

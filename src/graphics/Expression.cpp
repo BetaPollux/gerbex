@@ -38,7 +38,11 @@ Expression::~Expression() {
 	// Empty
 }
 
-double Expression::Evaluate() const {
+const std::string &Expression::GetBody() const {
+	return m_body;
+}
+
+double Expression::Evaluate(const Variables &vars) const {
 	// Shunting yard algorithm
 	std::stack<double> output;
 	std::stack<std::unique_ptr<Operator>> operators;
@@ -47,6 +51,7 @@ double Expression::Evaluate() const {
 	pattern << "(";
 	pattern << "(^[+-]" + num_re + ")|";	// Leading number with unary + or -
 	pattern << "(" + num_re + ")|";			// Normal number
+	pattern << "([$][0-9]+)|";				// Variable
 	pattern << "([+-x/])";					// Operator
 	pattern << ")";
 	std::regex re(pattern.str());
@@ -59,6 +64,9 @@ double Expression::Evaluate() const {
 			// Number
 			output.push(std::stod(match.str()));
 		} else if (match[4].matched) {
+			// Variable
+			output.push(LookupVariable(match.str(), vars));
+		} else if (match[5].matched) {
 			// Operator
 			std::unique_ptr<Operator> new_op = MakeOperator(match.str());
 			while (!operators.empty()
@@ -68,14 +76,18 @@ double Expression::Evaluate() const {
 			}
 			operators.push(std::move(new_op));
 		} else {
-			throw std::invalid_argument("failed to parse expression");
+			throw std::invalid_argument("unrecognized tokens");
 		}
 	}
 	while (!operators.empty()) {
 		// Process remaining operators
 		ApplyOperator(output, operators);
 	}
-	return output.top();
+	if (output.size() == 1) {
+		return output.top();
+	} else {
+		throw std::invalid_argument("failed to process expression");
+	}
 }
 
 std::unique_ptr<Operator> Expression::MakeOperator(const std::string &op) {
@@ -110,6 +122,24 @@ void Expression::ApplyOperator(std::stack<double> &output,
 	double result = operators.top()->Evaluate(left, right);
 	operators.pop();
 	output.push(result);
+}
+
+double Expression::LookupVariable(const std::string &id, const Variables &vars) {
+	std::smatch match;
+	std::regex var_re("[$]([0-9]+)");
+	if (std::regex_search(id, match, var_re)) {
+		int var_id = std::stoi(match[1].str());
+		auto value = vars.find(var_id);
+		if (value != vars.end()) {
+			return value->second;
+		} else {
+			throw std::invalid_argument(
+					"variable " + match.str()
+							+ " was not provided in macro call");
+		}
+	} else {
+		throw std::invalid_argument("invalid variable id " + id);
+	}
 }
 
 } /* namespace gerbex */

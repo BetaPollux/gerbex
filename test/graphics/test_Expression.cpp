@@ -125,4 +125,40 @@ TEST(ExpressionTest, Brackets) {
 	DOUBLES_EQUAL(2.5, result, DBL_TOL);
 }
 
+TEST(ExpressionTest, Variable) {
+	Variables vars = {{2, 1.25}};
+	Expression expr("$2");
+	double result = expr.Evaluate(vars);
+	DOUBLES_EQUAL(1.25, result, DBL_TOL);
+}
+
+TEST(ExpressionTest, AddVariables) {
+	Variables vars = {{1, 0.75}, {2, 1.25}};
+	Expression expr("$1+$2");
+	double result = expr.Evaluate(vars);
+	DOUBLES_EQUAL(2.0, result, DBL_TOL);
+}
+
+TEST(ExpressionTest, Variable_NotFound) {
+	Variables vars = {{1, 0.0}};
+	Expression expr("$2");
+	CHECK_THROWS(std::invalid_argument, expr.Evaluate(vars));
+}
+
+TEST(ExpressionTest, PlusVariable) {
+	FAIL("Need to fix unary operator");
+	Variables vars = {{2, 1.25}};
+	Expression expr("+$2");
+	double result = expr.Evaluate(vars);
+	DOUBLES_EQUAL(1.25, result, DBL_TOL);
+}
+
+TEST(ExpressionTest, MinusVariable) {
+	FAIL("Need to fix unary operator");
+	Variables vars = {{2, 1.25}};
+	Expression expr("-$2");
+	double result = expr.Evaluate(vars);
+	DOUBLES_EQUAL(-1.25, result, DBL_TOL);
+}
+
 } /* namespace gerbex */
