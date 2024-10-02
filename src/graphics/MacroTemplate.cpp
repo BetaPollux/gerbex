@@ -19,6 +19,7 @@
  */
 
 #include "DataTypeParser.h"
+#include "Expression.h"
 #include "Macro.h"
 #include "MacroCircle.h"
 #include "MacroCenterLine.h"
@@ -136,7 +137,8 @@ void MacroTemplate::DefineVariable(std::string &block, Variables &vars) {
 	if (std::regex_search(block, match, regex)) {
 		int var_id = std::stoi(match[1].str());
 		if (vars.find(var_id) == vars.end()) {
-			vars[var_id] = std::stod(match[2].str());
+			Expression expr(match[2].str());
+			vars[var_id] = expr.Evaluate();
 		} else {
 			throw std::invalid_argument(
 					"variable $" + std::to_string(var_id)

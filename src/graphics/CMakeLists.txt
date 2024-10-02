@@ -8,6 +8,7 @@ add_library(gerbex_graphics OBJECT
 	CircleTemplate.cpp
 	DataTypeParser.cpp
 	Draw.cpp
+	Expression.cpp
 	Flash.cpp
 	GraphicalObject.cpp
 	Macro.cpp

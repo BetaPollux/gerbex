@@ -7,6 +7,7 @@ add_library(test_graphics OBJECT
 	test_CircleTemplate.cpp
 	test_DataTypeParser.cpp
 	test_Draw.cpp
+	test_Expression.cpp
 	test_Flash.cpp
 	test_Macro.cpp
 	test_MacroCenterLine.cpp
