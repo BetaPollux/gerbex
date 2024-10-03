@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <stack>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -37,7 +38,13 @@ public:
 	virtual ~Operator() {
 	}
 	virtual double Evaluate(double left, double right) = 0;
-	virtual int Precedence() = 0;
+	virtual double Evaluate(double right) {
+		(void)right;
+		throw std::invalid_argument("syntax error");
+	}
+	virtual int Precedence() {
+		return 0;
+	};
 };
 
 class Addition: public Operator {
@@ -45,8 +52,8 @@ public:
 	double Evaluate(double left, double right) override {
 		return left + right;
 	}
-	int Precedence() override {
-		return 0;
+	double Evaluate(double right) override {
+		return right;
 	}
 };
 
@@ -55,8 +62,8 @@ public:
 	double Evaluate(double left, double right) override {
 		return left - right;
 	}
-	int Precedence() override {
-		return 0;
+	double Evaluate(double right) override {
+		return -right;
 	}
 };
 

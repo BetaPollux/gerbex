@@ -46,27 +46,24 @@ double Expression::Evaluate(const Variables &vars) const {
 	// Shunting yard algorithm
 	std::stack<double> output;
 	std::stack<std::unique_ptr<Operator>> operators;
-	std::string num_re = "[0-9]*[.]?[0-9]+";
 	std::ostringstream pattern;
 	pattern << "(";
-	pattern << "(^[+-]" + num_re + ")|";	// Leading number with unary + or -
-	pattern << "(" + num_re + ")|";			// Normal number
-	pattern << "([$][0-9]+)|";				// Variable
-	pattern << "([+-x/])";					// Operator
+	pattern << "([0-9]*[.]?[0-9]+)";		// Normal number
+	pattern << "|([$][0-9]+)";				// Variable
+	pattern << "|([+-x/])";					// Operator
 	pattern << ")";
 	std::regex re(pattern.str());
 	auto tokens_begin = std::sregex_iterator(m_body.begin(), m_body.end(), re);
 	auto tokens_end = std::sregex_iterator();
 	for (auto it = tokens_begin; it != tokens_end; ++it) {
 		std::smatch match = *it;
-		std::string label;
-		if (match[2].matched || match[3].matched) {
+		if (match[2].matched) {
 			// Number
 			output.push(std::stod(match.str()));
-		} else if (match[4].matched) {
+		} else if (match[3].matched) {
 			// Variable
 			output.push(LookupVariable(match.str(), vars));
-		} else if (match[5].matched) {
+		} else if (match[4].matched) {
 			// Operator
 			std::unique_ptr<Operator> new_op = MakeOperator(match.str());
 			while (!operators.empty()
@@ -108,7 +105,7 @@ std::unique_ptr<Operator> Expression::MakeOperator(const std::string &op) {
 
 void Expression::ApplyOperator(std::stack<double> &output,
 		std::stack<std::unique_ptr<Operator>> &operators) {
-	if (output.size() < 2) {
+	if (output.empty()) {
 		throw std::invalid_argument("missing operand");
 	}
 	if (operators.empty()) {
@@ -117,9 +114,16 @@ void Expression::ApplyOperator(std::stack<double> &output,
 
 	double right = output.top();
 	output.pop();
-	double left = output.top();
-	output.pop();
-	double result = operators.top()->Evaluate(left, right);
+	double result;
+	if (!output.empty()) {
+		// Binary operator
+		double left = output.top();
+		output.pop();
+		result = operators.top()->Evaluate(left, right);
+	} else {
+		// Unary operator
+		result = operators.top()->Evaluate(right);
+	}
 	operators.pop();
 	output.push(result);
 }

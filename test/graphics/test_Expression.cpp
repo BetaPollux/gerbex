@@ -146,7 +146,6 @@ TEST(ExpressionTest, Variable_NotFound) {
 }
 
 TEST(ExpressionTest, PlusVariable) {
-	FAIL("Need to fix unary operator");
 	Variables vars = {{2, 1.25}};
 	Expression expr("+$2");
 	double result = expr.Evaluate(vars);
@@ -154,7 +153,6 @@ TEST(ExpressionTest, PlusVariable) {
 }
 
 TEST(ExpressionTest, MinusVariable) {
-	FAIL("Need to fix unary operator");
 	Variables vars = {{2, 1.25}};
 	Expression expr("-$2");
 	double result = expr.Evaluate(vars);
