@@ -61,7 +61,7 @@ public:
 	virtual void StartRegion();
 	virtual void EndRegion();
 	virtual void AddTemplate(std::string name, std::shared_ptr<ApertureTemplate> new_tmpl);
-	virtual std::shared_ptr<ApertureTemplate> GetTemplate(std::string name);
+	virtual std::shared_ptr<ApertureTemplate> GetTemplate(const std::string &name);
 	virtual GraphicsState& GetGraphicsState();
 	virtual const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	virtual CommandState GetCommandState() const;

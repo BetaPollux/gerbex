@@ -172,7 +172,7 @@ void CommandsProcessor::AddTemplate(std::string name,
 }
 
 std::shared_ptr<ApertureTemplate> CommandsProcessor::GetTemplate(
-		std::string name) {
+		const std::string &name) {
 	auto result = m_templates.find(name);
 	if (result == m_templates.end()) {
 		throw std::invalid_argument(

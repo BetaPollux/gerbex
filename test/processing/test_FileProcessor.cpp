@@ -19,9 +19,14 @@
  */
 
 #include "FileProcessor.h"
+#include "Macro.h"
+#include "MacroTemplate.h"
+#include "MacroThermal.h"
 #include <fstream>
 #include <sstream>
 #include "CppUTest/TestHarness.h"
+
+#define DBL_TOL	1e-5
 
 using namespace gerbex;
 
@@ -122,8 +127,24 @@ TEST_GROUP(GerberPolaritiesAndApertures) {
 	}
 };
 
-TEST(GerberPolaritiesAndApertures, NotImplemented) {
-	FAIL("GerberPolaritiesAndApertures not implemented");
+TEST(GerberPolaritiesAndApertures, ReadAndUsedMacro) {
+	std::shared_ptr<ApertureTemplate> templ = processor->GetTemplate("THERMAL80");
+	std::shared_ptr<Aperture> aperture = processor->GetAperture(19);
+
+	std::shared_ptr<Macro> macro = std::dynamic_pointer_cast<Macro>(aperture);
+	CHECK(macro != nullptr);
+	std::shared_ptr<MacroThermal> thermal = std::dynamic_pointer_cast<MacroThermal>(macro->GetPrimitives().front());
+	CHECK(thermal != nullptr);
+	DOUBLES_EQUAL(0.8, thermal->GetOuterDiameter(), DBL_TOL);
+}
+
+TEST(GerberPolaritiesAndApertures, TwoRegions) {
+	auto obj1 = processor->GetObjects()[17];
+	auto obj2 = processor->GetObjects()[18];
+	std::shared_ptr<Region> outer_region = std::dynamic_pointer_cast<Region>(obj1);
+	std::shared_ptr<Region> inner_region = std::dynamic_pointer_cast<Region>(obj2);
+	CHECK(outer_region != nullptr);
+	CHECK(inner_region != nullptr);
 }
 
 /**

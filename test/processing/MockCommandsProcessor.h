@@ -33,7 +33,7 @@ public:
 	MockCommandsProcessor();
 	virtual ~MockCommandsProcessor();
 	void EndRegion() override;
-	std::shared_ptr<ApertureTemplate> GetTemplate(std::string name) override;
+	std::shared_ptr<ApertureTemplate> GetTemplate(const std::string &name) override;
 	void AddTemplate(std::string name, std::shared_ptr<ApertureTemplate> new_tmpl) override;
 	void OpenApertureBlock(int ident) override;
 	void SetEndOfFile() override;

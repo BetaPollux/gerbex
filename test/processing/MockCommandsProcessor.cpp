@@ -39,7 +39,7 @@ void MockCommandsProcessor::EndRegion() {
 }
 
 std::shared_ptr<ApertureTemplate> MockCommandsProcessor::GetTemplate(
-		std::string name) {
+		const std::string &name) {
 	return *(std::shared_ptr<ApertureTemplate>*) mock().actualCall(
 			"GetTemplate").withParameter("name", name.c_str()).returnPointerValue();
 }
