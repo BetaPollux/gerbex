@@ -28,6 +28,8 @@
 
 namespace gerbex {
 
+//TODO remove aperture or origin, e.g. for Regions, and make a new subclass
+
 /*
  * Represents a plane figure, with shape, size, position and polarity (dark/clear).
  */

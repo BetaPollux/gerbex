@@ -18,8 +18,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Arc.h"
+#include "BlockAperture.h"
+#include "CastHelpers.h"
+#include "Draw.h"
 #include "FileProcessor.h"
+#include "Flash.h"
 #include "Macro.h"
+#include "MacroCenterLine.h"
+#include "MacroCircle.h"
 #include "MacroTemplate.h"
 #include "MacroThermal.h"
 #include <fstream>
@@ -129,22 +136,19 @@ TEST_GROUP(GerberPolaritiesAndApertures) {
 
 TEST(GerberPolaritiesAndApertures, ReadAndUsedMacro) {
 	std::shared_ptr<ApertureTemplate> templ = processor->GetTemplate("THERMAL80");
-	std::shared_ptr<Aperture> aperture = processor->GetAperture(19);
-
-	std::shared_ptr<Macro> macro = std::dynamic_pointer_cast<Macro>(aperture);
-	CHECK(macro != nullptr);
-	std::shared_ptr<MacroThermal> thermal = std::dynamic_pointer_cast<MacroThermal>(macro->GetPrimitives().front());
-	CHECK(thermal != nullptr);
+	std::shared_ptr<Macro> macro = GetAperture<Macro>(*processor, 19);
+	std::shared_ptr<MacroThermal> thermal = GetMacroPrimitive<MacroThermal>(*macro);
 	DOUBLES_EQUAL(0.8, thermal->GetOuterDiameter(), DBL_TOL);
 }
 
-TEST(GerberPolaritiesAndApertures, TwoRegions) {
-	auto obj1 = processor->GetObjects()[17];
-	auto obj2 = processor->GetObjects()[18];
-	std::shared_ptr<Region> outer_region = std::dynamic_pointer_cast<Region>(obj1);
-	std::shared_ptr<Region> inner_region = std::dynamic_pointer_cast<Region>(obj2);
-	CHECK(outer_region != nullptr);
-	CHECK(inner_region != nullptr);
+TEST(GerberPolaritiesAndApertures, TwoRegionsWithPolarity) {
+	std::shared_ptr<Region> outer_region = GetGraphicalObject<Region>(processor->GetObjects(), 17);
+	std::shared_ptr<Region> inner_region = GetGraphicalObject<Region>(processor->GetObjects(), 18);
+
+	LONGS_EQUAL(4, outer_region->GetContours().front().GetSegments().size());
+	CHECK(outer_region->GetTransformation().GetPolarity() == Polarity::Dark);
+	LONGS_EQUAL(5, inner_region->GetContours().front().GetSegments().size());
+	CHECK(inner_region->GetTransformation().GetPolarity() == Polarity::Clear);
 }
 
 /**
@@ -183,8 +187,44 @@ TEST_GROUP(GerberBlocksDiffOrientation) {
 	}
 };
 
-TEST(GerberBlocksDiffOrientation, NotImplemented) {
-	FAIL("GerberBlocksDiffOrientation not implemented");
+TEST(GerberBlocksDiffOrientation, MadeBlock) {
+	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(*processor, 12);
+	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(*block->GetObjectList(), 0);
+	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(*block->GetObjectList(), 1);
+	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(*block->GetObjectList(), 2);
+	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(), 3);
+	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(), 4);
+
+	CHECK(Polarity::Dark == c1->GetTransformation().GetPolarity());
+	CHECK(Polarity::Dark == c2->GetTransformation().GetPolarity());
+	CHECK(Polarity::Clear == c3->GetTransformation().GetPolarity());
+
+	CHECK(Point(-500000, -1000000) == d1->GetOrigin());
+	CHECK(Point(2500000, -1000000) == d1->GetEndPoint());
+
+	CHECK(ArcDirection::CounterClockwise == a1->GetDirection());
+}
+
+TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
+	std::shared_ptr<Flash> b1 = GetGraphicalObject<Flash>(processor->GetObjects(), 0);
+	std::shared_ptr<Flash> b2 = GetGraphicalObject<Flash>(processor->GetObjects(), 1);
+	std::shared_ptr<Flash> b3 = GetGraphicalObject<Flash>(processor->GetObjects(), 2);
+	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(processor->GetObjects(), 3);
+
+	DOUBLES_EQUAL(0.0, b1->GetTransformation().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, b2->GetTransformation().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(30.0, b3->GetTransformation().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(45.0, b4->GetTransformation().GetRotationDegrees(), DBL_TOL);
+
+	CHECK(Mirroring::None == b1->GetTransformation().GetMirroring());
+	CHECK(Mirroring::X == b2->GetTransformation().GetMirroring());
+	CHECK(Mirroring::Y == b3->GetTransformation().GetMirroring());
+	CHECK(Mirroring::XY == b4->GetTransformation().GetMirroring());
+
+	DOUBLES_EQUAL(1.0, b1->GetTransformation().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b2->GetTransformation().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b3->GetTransformation().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(0.8, b4->GetTransformation().GetScalingFactor(), DBL_TOL);
 }
 
 /**
@@ -202,45 +242,36 @@ TEST_GROUP(GerberSampleMacro) {
 	}
 };
 
-TEST(GerberSampleMacro, NotImplemented) {
-	FAIL("GerberSampleMacro not implemented");
+TEST(GerberSampleMacro, MadeMacros) {
+	processor->GetTemplate("BOXR");
+	processor->GetTemplate("BOXS");
+	processor->GetTemplate("BOXS2");
+	processor->GetTemplate("THERS4T");
+	processor->GetTemplate("THERR4");
+	processor->GetTemplate("DONSS");
+	processor->GetTemplate("DONSR");
 }
 
-/**
- * SMD Macro Prim 20
- */
+TEST(GerberSampleMacro, BOXR_D12) {
+	std::shared_ptr<Macro> boxr_d12 = GetAperture<Macro>(*processor, 12);
+	std::shared_ptr<MacroCenterLine> s1 = GetMacroPrimitive<MacroCenterLine>(*boxr_d12, 0);
+	std::shared_ptr<MacroCircle> c4 = GetMacroPrimitive<MacroCircle>(*boxr_d12, 5);
 
-TEST_GROUP(GerberMacroPrim20) {
-	FileProcessor fileProcessor;
-	CommandsProcessor *processor;
-	GraphicsState *graphicsState;
+	DOUBLES_EQUAL(0.2550, s1->GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(0.1 - 2 * 0.02, s1->GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(30.0, s1->GetRotation(), DBL_TOL);
+	CHECK(RealPoint(0.0, 0.0) == s1->GetCoord());
 
-	void setup() {
-		loadfile("../Gerber_File_Format_Examples 20210409/SMD_prim_20_X1.gbr",
-				fileProcessor, &processor, &graphicsState);
-	}
-};
-
-TEST(GerberMacroPrim20, NotImplemented) {
-	FAIL("GerberMacroPrim20 not implemented");
+	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
+	CHECK(RealPoint(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)) == c4->GetCoord());
 }
 
-/**
- * SMD Macro Prim 21
- */
+TEST(GerberSampleMacro, MadeStepRepeats) {
+	std::shared_ptr<StepAndRepeat> sr1 = GetGraphicalObject<StepAndRepeat>(processor->GetObjects(), 1);
+	std::shared_ptr<StepAndRepeat> sr2 = GetGraphicalObject<StepAndRepeat>(processor->GetObjects(), 2);
 
-TEST_GROUP(GerberMacroPrim21) {
-	FileProcessor fileProcessor;
-	CommandsProcessor *processor;
-	GraphicsState *graphicsState;
-
-	void setup() {
-		loadfile("../Gerber_File_Format_Examples 20210409/SMD_prim_21_X1.gbr",
-				fileProcessor, &processor, &graphicsState);
-	}
-};
-
-TEST(GerberMacroPrim21, NotImplemented) {
-	FAIL("GerberMacroPrim21 not implemented");
+	LONGS_EQUAL(90, sr1->GetNy());
+	DOUBLES_EQUAL(0.03, sr1->GetDy(), DBL_TOL);
+	LONGS_EQUAL(54, sr2->GetNx());
+	DOUBLES_EQUAL(0.03, sr2->GetDx(), DBL_TOL);
 }
-

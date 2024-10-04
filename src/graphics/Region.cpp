@@ -28,6 +28,10 @@ Region::Region() {
 
 }
 
+Region::Region(ApertureTransformation transformation) :
+		GraphicalObject(Point(), nullptr, transformation) {
+}
+
 Region::~Region() {
 	// Empty
 }
@@ -51,7 +55,7 @@ const std::vector<RegionContour>& Region::GetContours() const {
 }
 
 bool Region::AreContoursClosed() const {
-	for (const RegionContour &c: m_contours) {
+	for (const RegionContour &c : m_contours) {
 		if (!c.IsClosed()) {
 			return false;
 		}

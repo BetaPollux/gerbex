@@ -200,7 +200,7 @@ void CommandsProcessor::StartRegion() {
 	if (m_commandState == CommandState::InsideRegion) {
 		throw std::logic_error("cannot start a region inside a region");
 	}
-	m_activeRegion = std::make_unique<Region>();
+	m_activeRegion = std::make_unique<Region>(m_graphicsState.GetTransformation());
 	m_commandState = CommandState::InsideRegion;
 }
 

@@ -33,6 +33,7 @@ namespace gerbex {
 class Region: public GraphicalObject {
 public:
 	Region();
+	Region(ApertureTransformation transformation);
 	virtual ~Region();
 	void StartContour();
 	void AddSegment(std::shared_ptr<Segment> segment);
