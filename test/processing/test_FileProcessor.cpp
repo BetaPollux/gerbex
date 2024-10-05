@@ -167,9 +167,21 @@ TEST_GROUP(GerberNestedBlocks) {
 	}
 };
 
-TEST(GerberNestedBlocks, NotImplemented) {
-	FAIL("GerberNestedBlocks not implemented");
+TEST(GerberNestedBlocks, MadeAllBlocks) {
+	std::shared_ptr<BlockAperture> b100 = GetAperture<BlockAperture>(*processor, 100);
+	std::shared_ptr<BlockAperture> b101 = GetAperture<BlockAperture>(*processor, 101);
+	std::shared_ptr<BlockAperture> b102 = GetAperture<BlockAperture>(*processor, 102);
+
+	LONGS_EQUAL(3, b100->GetObjectList()->size());
+	LONGS_EQUAL(4, b101->GetObjectList()->size());
+	LONGS_EQUAL(7, b102->GetObjectList()->size());
+
+	auto nb100 = CheckAperture<BlockAperture>(*b101->GetObjectList()->at(0));
+	auto nb101 = CheckAperture<BlockAperture>(*b102->GetObjectList()->at(0));
+	POINTERS_EQUAL(b100.get(), nb100.get());
+	POINTERS_EQUAL(b101.get(), nb101.get());
 }
+
 
 /**
  * Block with Different Orientations

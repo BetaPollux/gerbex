@@ -50,6 +50,15 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<st
 	return result;
 }
 
+template <typename T> std::shared_ptr<T> CheckAperture(const GraphicalObject &obj) {
+	std::shared_ptr<Aperture> aperture = obj.GetAperture();
+	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(aperture);
+
+	CHECK(result != nullptr);
+
+	return result;
+}
+
 template <typename T> std::shared_ptr<T> GetAperture(CommandsProcessor &processor, int ident) {
 	std::shared_ptr<Aperture> obj = processor.GetAperture(ident);
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
