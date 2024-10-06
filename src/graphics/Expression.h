@@ -37,41 +37,26 @@ public:
 	}
 	virtual ~Operator() {
 	}
-	virtual double Evaluate(double left, double right) = 0;
-	virtual double Evaluate(double right) {
-		(void)right;
-		throw std::invalid_argument("syntax error");
-	}
+	virtual void Apply(std::stack<double> &output) = 0;
 	virtual int Precedence() {
 		return 0;
-	};
+	}
+	;
 };
 
 class Addition: public Operator {
 public:
-	double Evaluate(double left, double right) override {
-		return left + right;
-	}
-	double Evaluate(double right) override {
-		return right;
-	}
+	void Apply(std::stack<double> &output) override;
 };
 
 class Subtraction: public Operator {
 public:
-	double Evaluate(double left, double right) override {
-		return left - right;
-	}
-	double Evaluate(double right) override {
-		return -right;
-	}
+	void Apply(std::stack<double> &output) override;
 };
 
 class Multiplication: public Operator {
 public:
-	double Evaluate(double left, double right) override {
-		return left * right;
-	}
+	void Apply(std::stack<double> &output) override;
 	int Precedence() override {
 		return 1;
 	}
@@ -79,9 +64,7 @@ public:
 
 class Division: public Operator {
 public:
-	double Evaluate(double left, double right) override {
-		return left / right;
-	}
+	void Apply(std::stack<double> &output) override;
 	int Precedence() override {
 		return 1;
 	}
@@ -95,8 +78,8 @@ public:
 	Expression();
 	Expression(std::string body);
 	virtual ~Expression();
-	double Evaluate(const Variables &vars = {}) const;
-	const std::string &GetBody() const;
+	double Evaluate(const Variables &vars = { }) const;
+	const std::string& GetBody() const;
 
 private:
 	static std::unique_ptr<Operator> MakeOperator(const std::string &op);

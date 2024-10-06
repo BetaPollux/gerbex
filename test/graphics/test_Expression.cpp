@@ -48,8 +48,9 @@ TEST(ExpressionTest, PositiveConst) {
 }
 
 TEST(ExpressionTest, RejectsBadChars) {
-	Expression expr("7a");
-	CHECK_THROWS(std::invalid_argument, expr.Evaluate());
+	CHECK_THROWS(std::invalid_argument, Expression("7a").Evaluate());
+	CHECK_THROWS(std::invalid_argument, Expression("1o2").Evaluate());
+	CHECK_THROWS(std::invalid_argument, Expression("k2").Evaluate());
 }
 
 TEST(ExpressionTest, Add) {
@@ -119,12 +120,22 @@ TEST(ExpressionTest, Compound) {
 }
 
 TEST(ExpressionTest, Brackets) {
-	FAIL("Brackets are not handled yet");
-	Expression expr("(7.00+3.00)x0.25");
+	Expression expr("(7+3)x0.25");
 	double result = expr.Evaluate();
 	DOUBLES_EQUAL(2.5, result, DBL_TOL);
 }
 
+TEST(ExpressionTest, NestedBrackets) {
+	Expression expr("(2x(3-1))x4");
+	double result = expr.Evaluate();
+	DOUBLES_EQUAL(16.0, result, DBL_TOL);
+}
+
+TEST(ExpressionTest, NegatedBrackets) {
+	Expression expr("-(1+2)");
+	double result = expr.Evaluate();
+	DOUBLES_EQUAL(-3.0, result, DBL_TOL);
+}
 TEST(ExpressionTest, Variable) {
 	Variables vars = {{2, 1.25}};
 	Expression expr("$2");

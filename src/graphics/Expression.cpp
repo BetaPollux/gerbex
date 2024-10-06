@@ -24,6 +24,44 @@
 
 namespace gerbex {
 
+void Addition::Apply(std::stack<double> &output) {
+	double right = output.top();
+	output.pop();
+	double left = 0.0;
+	if (!output.empty()) {
+		left = output.top();
+		output.pop();
+	}
+	output.push(left + right);
+}
+
+void Subtraction::Apply(std::stack<double> &output) {
+	double right = output.top();
+	output.pop();
+	double left = 0.0;
+	if (!output.empty()) {
+		left = output.top();
+		output.pop();
+	}
+	output.push(left - right);
+}
+
+void Multiplication::Apply(std::stack<double> &output) {
+	double right = output.top();
+	output.pop();
+	double left = output.top();
+	output.pop();
+	output.push(left * right);
+}
+
+void Division::Apply(std::stack<double> &output) {
+	double right = output.top();
+	output.pop();
+	double left = output.top();
+	output.pop();
+	output.push(left / right);
+}
+
 Expression::Expression() :
 		Expression("0") {
 	// Empty
@@ -38,7 +76,7 @@ Expression::~Expression() {
 	// Empty
 }
 
-const std::string &Expression::GetBody() const {
+const std::string& Expression::GetBody() const {
 	return m_body;
 }
 
@@ -48,9 +86,10 @@ double Expression::Evaluate(const Variables &vars) const {
 	std::stack<std::unique_ptr<Operator>> operators;
 	std::ostringstream pattern;
 	pattern << "(";
-	pattern << "([0-9]*[.]?[0-9]+)";		// Normal number
-	pattern << "|([$][0-9]+)";				// Variable
-	pattern << "|([+-x/])";					// Operator
+	pattern << "([0-9]*[.]?[0-9]+)";	// Normal number
+	pattern << "|([$][0-9]+)";			// Variable
+	pattern << "|([()+x/-])";			// Operator (- must be last!)
+	pattern << "|(\\S+)";				// Other invalid chars
 	pattern << ")";
 	std::regex re(pattern.str());
 	auto tokens_begin = std::sregex_iterator(m_body.begin(), m_body.end(), re);
@@ -112,23 +151,12 @@ void Expression::ApplyOperator(std::stack<double> &output,
 		throw std::invalid_argument("missing operator");
 	}
 
-	double right = output.top();
-	output.pop();
-	double result;
-	if (!output.empty()) {
-		// Binary operator
-		double left = output.top();
-		output.pop();
-		result = operators.top()->Evaluate(left, right);
-	} else {
-		// Unary operator
-		result = operators.top()->Evaluate(right);
-	}
+	operators.top()->Apply(output);
 	operators.pop();
-	output.push(result);
 }
 
-double Expression::LookupVariable(const std::string &id, const Variables &vars) {
+double Expression::LookupVariable(const std::string &id,
+		const Variables &vars) {
 	std::smatch match;
 	std::regex var_re("[$]([0-9]+)");
 	if (std::regex_search(id, match, var_re)) {
