@@ -21,45 +21,62 @@
 #include "Expression.h"
 #include <regex>
 #include <sstream>
+#ifdef DEBUG_MACRO
+	#include <iostream>
+#endif
 
 namespace gerbex {
 
-void Addition::Apply(std::stack<double> &output) {
-	double right = output.top();
-	output.pop();
+Operator::Operator(char op) :
+		m_op { op } {
+}
+
+Operator::~Operator() {
+}
+
+void Operator::Apply(std::vector<double> &output) {
+	double right = output.back();
+	output.pop_back();
 	double left = 0.0;
 	if (!output.empty()) {
-		left = output.top();
-		output.pop();
+		left = output.back();
+		output.pop_back();
 	}
-	output.push(left + right);
-}
-
-void Subtraction::Apply(std::stack<double> &output) {
-	double right = output.top();
-	output.pop();
-	double left = 0.0;
-	if (!output.empty()) {
-		left = output.top();
-		output.pop();
+	double result;
+	switch (m_op) {
+	case '+':
+		result = left + right;
+		break;
+	case '-':
+		result = left - right;
+		break;
+	case 'x':
+		result = left * right;
+		break;
+	case '/':
+		result = left / right;
+		break;
+	default:
+		throw std::invalid_argument("unrecognized operator " + m_op);
 	}
-	output.push(left - right);
+	output.push_back(result);
 }
 
-void Multiplication::Apply(std::stack<double> &output) {
-	double right = output.top();
-	output.pop();
-	double left = output.top();
-	output.pop();
-	output.push(left * right);
+char Operator::OpChar() {
+	return m_op;
 }
 
-void Division::Apply(std::stack<double> &output) {
-	double right = output.top();
-	output.pop();
-	double left = output.top();
-	output.pop();
-	output.push(left / right);
+int Operator::Precedence() {
+	switch (m_op) {
+	case '+':
+	case '-':
+		return 0;
+	case 'x':
+	case '/':
+		return 1;
+	default:
+		throw std::invalid_argument("unrecognized operator " + m_op);
+	}
 }
 
 Expression::Expression() :
@@ -82,8 +99,8 @@ const std::string& Expression::GetBody() const {
 
 double Expression::Evaluate(const Variables &vars) const {
 	// Shunting yard algorithm
-	std::stack<double> output;
-	std::stack<std::unique_ptr<Operator>> operators;
+	std::vector<double> output;
+	std::vector<std::shared_ptr<Operator>> operators;
 	std::ostringstream pattern;
 	pattern << "(";
 	pattern << "([0-9]*[.]?[0-9]+)";	// Normal number
@@ -92,58 +109,88 @@ double Expression::Evaluate(const Variables &vars) const {
 	pattern << "|(\\S+)";				// Other invalid chars
 	pattern << ")";
 	std::regex re(pattern.str());
+#ifdef DEBUG_MACRO
+	std::cout << m_body << "\n";
+#endif
 	auto tokens_begin = std::sregex_iterator(m_body.begin(), m_body.end(), re);
 	auto tokens_end = std::sregex_iterator();
+	std::vector<size_t> open_brackets_idx;
 	for (auto it = tokens_begin; it != tokens_end; ++it) {
 		std::smatch match = *it;
 		if (match[2].matched) {
 			// Number
-			output.push(std::stod(match.str()));
+			output.push_back(std::stod(match.str()));
 		} else if (match[3].matched) {
 			// Variable
-			output.push(LookupVariable(match.str(), vars));
+			output.push_back(LookupVariable(match.str(), vars));
 		} else if (match[4].matched) {
 			// Operator
-			std::unique_ptr<Operator> new_op = MakeOperator(match.str());
-			while (!operators.empty()
-					&& new_op->Precedence() <= operators.top()->Precedence()) {
-				// Process all higher precedence operators first
-				ApplyOperator(output, operators);
+			if (match.str() == "(") {
+				// Mark where open bracket is
+				open_brackets_idx.push_back(operators.size());
+			} else if (match.str() == ")") {
+				// Process all operators until open bracket
+				if (open_brackets_idx.empty()) {
+					throw std::invalid_argument("close bracket without open");
+				}
+				while (operators.size() > open_brackets_idx.back()) {
+					ApplyOperator(output, operators);
+				}
+				open_brackets_idx.pop_back();
+			} else {
+				std::shared_ptr<Operator> new_op = MakeOperator(match.str());
+				while (!operators.empty()
+						&& new_op->Precedence()
+								<= operators.back()->Precedence()) {
+					// Process all higher precedence operators first
+					if (!open_brackets_idx.empty()
+							&& operators.size() == open_brackets_idx.back()) {
+						break;
+					}
+					ApplyOperator(output, operators);
+				}
+				operators.push_back(std::move(new_op));
 			}
-			operators.push(std::move(new_op));
 		} else {
 			throw std::invalid_argument("unrecognized tokens");
 		}
+#ifdef DEBUG_MACRO
+		std::cout << "Op: ";
+		for (auto op : operators) {
+			std::cout << op->OpChar() << " ";
+		}
+		std::cout << "Out: ";
+		for (auto out : output) {
+			std::cout << out << " ";
+		}
+		std::cout << "Brk: ";
+		for (auto br : open_brackets_idx) {
+			std::cout << br << " ";
+		}
+		std::cout << std::endl;
+#endif
 	}
 	while (!operators.empty()) {
 		// Process remaining operators
 		ApplyOperator(output, operators);
 	}
+	if (!open_brackets_idx.empty()) {
+		throw std::invalid_argument("open bracket without close");
+	}
+
 	if (output.size() == 1) {
-		return output.top();
+		return output.back();
 	} else {
 		throw std::invalid_argument("failed to process expression");
 	}
 }
 
 std::unique_ptr<Operator> Expression::MakeOperator(const std::string &op) {
-	std::unique_ptr<Operator> result;
-	if (op == "+") {
-		result = std::make_unique<Addition>();
-	} else if (op == "-") {
-		result = std::make_unique<Subtraction>();
-	} else if (op == "x") {
-		result = std::make_unique<Multiplication>();
-	} else if (op == "/") {
-		result = std::make_unique<Division>();
-	} else {
-		throw std::invalid_argument("invalid operator " + op);
-	}
-	return result;
+	return std::make_unique<Operator>(op[0]);
 }
 
-void Expression::ApplyOperator(std::stack<double> &output,
-		std::stack<std::unique_ptr<Operator>> &operators) {
+void Expression::ApplyOperator(std::vector<double> &output,
+		std::vector<std::shared_ptr<Operator>> &operators) {
 	if (output.empty()) {
 		throw std::invalid_argument("missing operand");
 	}
@@ -151,8 +198,8 @@ void Expression::ApplyOperator(std::stack<double> &output,
 		throw std::invalid_argument("missing operator");
 	}
 
-	operators.top()->Apply(output);
-	operators.pop();
+	operators.back()->Apply(output);
+	operators.pop_back();
 }
 
 double Expression::LookupVariable(const std::string &id,

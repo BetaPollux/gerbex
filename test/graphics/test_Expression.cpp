@@ -131,11 +131,29 @@ TEST(ExpressionTest, NestedBrackets) {
 	DOUBLES_EQUAL(16.0, result, DBL_TOL);
 }
 
+TEST(ExpressionTest, MissingOpenBracket) {
+	Expression expr("3-1)x4");
+	CHECK_THROWS(std::invalid_argument, expr.Evaluate());
+}
+
+TEST(ExpressionTest, MissingCloseBracket) {
+	Expression expr("(3-1x4");
+	CHECK_THROWS(std::invalid_argument, expr.Evaluate());
+}
+
 TEST(ExpressionTest, NegatedBrackets) {
 	Expression expr("-(1+2)");
 	double result = expr.Evaluate();
 	DOUBLES_EQUAL(-3.0, result, DBL_TOL);
 }
+
+TEST(ExpressionTest, BracketsWithVariables) {
+	Variables vars = {{1, 0.1}, {2, 0.05}, {3, 0.02}, {4, 0.01}};
+	Expression expr("(-$1+3x$3)/2+$4");
+	double result = expr.Evaluate(vars);
+	DOUBLES_EQUAL(-0.01, result, DBL_TOL);
+}
+
 TEST(ExpressionTest, Variable) {
 	Variables vars = {{2, 1.25}};
 	Expression expr("$2");

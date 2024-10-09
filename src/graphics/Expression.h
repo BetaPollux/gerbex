@@ -22,7 +22,7 @@
 #define EXPRESSION_H_
 
 #include <memory>
-#include <stack>
+#include <vector>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -33,41 +33,14 @@ using Variables = std::unordered_map<int, double>;
 
 class Operator {
 public:
-	Operator() {
-	}
-	virtual ~Operator() {
-	}
-	virtual void Apply(std::stack<double> &output) = 0;
-	virtual int Precedence() {
-		return 0;
-	}
-	;
-};
+	Operator(char op);
+	virtual ~Operator();
+	void Apply(std::vector<double> &output);
+	char OpChar();
+	int Precedence();
 
-class Addition: public Operator {
-public:
-	void Apply(std::stack<double> &output) override;
-};
-
-class Subtraction: public Operator {
-public:
-	void Apply(std::stack<double> &output) override;
-};
-
-class Multiplication: public Operator {
-public:
-	void Apply(std::stack<double> &output) override;
-	int Precedence() override {
-		return 1;
-	}
-};
-
-class Division: public Operator {
-public:
-	void Apply(std::stack<double> &output) override;
-	int Precedence() override {
-		return 1;
-	}
+private:
+	char m_op;
 };
 
 /*
@@ -84,8 +57,8 @@ public:
 private:
 	static std::unique_ptr<Operator> MakeOperator(const std::string &op);
 	static double LookupVariable(const std::string &id, const Variables &vars);
-	static void ApplyOperator(std::stack<double> &output,
-			std::stack<std::unique_ptr<Operator>> &operators);
+	static void ApplyOperator(std::vector<double> &output,
+			std::vector<std::shared_ptr<Operator>> &operators);
 
 private:
 	std::string m_body;
