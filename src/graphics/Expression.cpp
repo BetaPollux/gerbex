@@ -57,7 +57,9 @@ void Operator::Apply(std::vector<double> &output) {
 		result = left / right;
 		break;
 	default:
-		throw std::invalid_argument("unrecognized operator " + m_op);
+		std::string msg = "cannot evaluate operator ";
+		msg += m_op;
+		throw std::invalid_argument(msg);
 	}
 	output.push_back(result);
 }
@@ -75,7 +77,9 @@ int Operator::Precedence() {
 	case '/':
 		return 1;
 	default:
-		throw std::invalid_argument("unrecognized operator " + m_op);
+		std::string msg = "operator has no precedence";
+		msg += m_op;
+		throw std::invalid_argument(msg);
 	}
 }
 
@@ -110,11 +114,11 @@ double Expression::Evaluate(const Variables &vars) const {
 	pattern << ")";
 	std::regex re(pattern.str());
 #ifdef DEBUG_MACRO
-	std::cout << m_body << "\n";
+	std::cout << "\n" << m_body;
 #endif
 	auto tokens_begin = std::sregex_iterator(m_body.begin(), m_body.end(), re);
 	auto tokens_end = std::sregex_iterator();
-	std::vector<size_t> open_brackets_idx;
+
 	for (auto it = tokens_begin; it != tokens_end; ++it) {
 		std::smatch match = *it;
 		if (match[2].matched) {
@@ -125,37 +129,37 @@ double Expression::Evaluate(const Variables &vars) const {
 			output.push_back(LookupVariable(match.str(), vars));
 		} else if (match[4].matched) {
 			// Operator
-			if (match.str() == "(") {
-				// Mark where open bracket is
-				open_brackets_idx.push_back(operators.size());
-			} else if (match.str() == ")") {
+			std::shared_ptr<Operator> new_op = MakeOperator(match.str());
+			if (new_op->OpChar() == ')') {
 				// Process all operators until open bracket
-				if (open_brackets_idx.empty()) {
-					throw std::invalid_argument("close bracket without open");
-				}
-				while (operators.size() > open_brackets_idx.back()) {
+				while (!operators.empty() && operators.back()->OpChar() != '(') {
 					ApplyOperator(output, operators);
 				}
-				open_brackets_idx.pop_back();
+				if (operators.empty()) {
+					throw std::invalid_argument("close bracket without open");
+				} else {
+					operators.pop_back();	// Discard '('
+				}
+			} else if (new_op->OpChar() == '(') {
+				// Add open bracket to stack
+				operators.push_back(new_op);
 			} else {
-				std::shared_ptr<Operator> new_op = MakeOperator(match.str());
-				while (!operators.empty()
-						&& new_op->Precedence()
-								<= operators.back()->Precedence()) {
-					// Process all higher precedence operators first
-					if (!open_brackets_idx.empty()
-							&& operators.size() == open_brackets_idx.back()) {
+				// Process + - x /
+				while (!operators.empty() && operators.back()->OpChar() != '(') {
+					// Process all higher precedence operators first, up to open bracket
+					if (new_op->Precedence() > operators.back()->Precedence()) {
 						break;
 					}
 					ApplyOperator(output, operators);
 				}
-				operators.push_back(std::move(new_op));
+				operators.push_back(new_op);
 			}
+
 		} else {
 			throw std::invalid_argument("unrecognized tokens");
 		}
 #ifdef DEBUG_MACRO
-		std::cout << "Op: ";
+		std::cout << "\nOp: ";
 		for (auto op : operators) {
 			std::cout << op->OpChar() << " ";
 		}
@@ -163,19 +167,14 @@ double Expression::Evaluate(const Variables &vars) const {
 		for (auto out : output) {
 			std::cout << out << " ";
 		}
-		std::cout << "Brk: ";
-		for (auto br : open_brackets_idx) {
-			std::cout << br << " ";
-		}
-		std::cout << std::endl;
 #endif
 	}
 	while (!operators.empty()) {
 		// Process remaining operators
+		if (operators.back()->OpChar() == '(') {
+			throw std::invalid_argument("open bracket without close");
+		}
 		ApplyOperator(output, operators);
-	}
-	if (!open_brackets_idx.empty()) {
-		throw std::invalid_argument("open bracket without close");
 	}
 
 	if (output.size() == 1) {

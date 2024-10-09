@@ -36,3 +36,11 @@ target_include_directories(gerbex_graphics
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+option(DEBUG_MACRO "print debug information when evaluating macros" OFF)
+if (DEBUG_MACRO)
+	target_compile_definitions(gerbex_graphics
+		PRIVATE 
+			DEBUG_MACRO
+	)
+endif()
