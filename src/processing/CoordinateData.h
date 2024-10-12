@@ -29,23 +29,23 @@ namespace gerbex {
 
 class CoordinateData {
 public:
-	CoordinateData(std::optional<PointCoordType> x,
-			std::optional<PointCoordType> y, std::optional<Point> ij =
+	CoordinateData(std::optional<FixedPointType> x,
+			std::optional<FixedPointType> y, std::optional<FixedPoint> ij =
 					std::nullopt);
 	CoordinateData();
 	virtual ~CoordinateData();
 	static CoordinateData FromString(const std::string &str);
-	Point GetXY(const std::optional<Point> &defaultPt = std::nullopt) const;
+	FixedPoint GetXY(const std::optional<FixedPoint> &defaultPt = std::nullopt) const;
 	bool HasXY() const;
 	bool HasIJ() const;
-	const std::optional<Point>& GetIJ() const;
-	const std::optional<PointCoordType>& GetX() const;
-	const std::optional<PointCoordType>& GetY() const;
+	const std::optional<FixedPoint>& GetIJ() const;
+	const std::optional<FixedPointType>& GetX() const;
+	const std::optional<FixedPointType>& GetY() const;
 
 private:
-	std::optional<PointCoordType> m_x;
-	std::optional<PointCoordType> m_y;
-	std::optional<Point> m_ij;
+	std::optional<FixedPointType> m_x;
+	std::optional<FixedPointType> m_y;
+	std::optional<FixedPoint> m_ij;
 
 };
 

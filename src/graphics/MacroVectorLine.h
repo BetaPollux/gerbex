@@ -34,15 +34,15 @@ class MacroVectorLine: public MacroPrimitive {
 public:
 	MacroVectorLine();
 	MacroVectorLine(MacroExposure exposure, double width,
-			const RealPoint &start, const RealPoint &end, double rotation);
+			const Point &start, const Point &end, double rotation);
 	virtual ~MacroVectorLine();
-	const RealPoint& GetEnd() const;
+	const Point& GetEnd() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
 
 private:
 	double m_width;
-	RealPoint m_end;
+	Point m_end;
 };
 
 } /* namespace gerbex */

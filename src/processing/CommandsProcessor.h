@@ -70,7 +70,6 @@ public:
 	virtual void CloseStepAndRepeat();
 
 private:
-	//TODO check for G75
 	CommandState m_commandState;
 	GraphicsState m_graphicsState;
 	std::stack<std::vector<std::shared_ptr<GraphicalObject>>*> m_objectDest;

@@ -25,16 +25,13 @@
 
 namespace gerbex {
 
-CoordinateFormat::CoordinateFormat()
-	: 	CoordinateFormat(3, 6)
-{
+CoordinateFormat::CoordinateFormat() :
+		CoordinateFormat(3, 6) {
 	// Empty
 }
 
-CoordinateFormat::CoordinateFormat(int integer, int decimal)
-	: 	m_integer{ integer },
-		m_decimal{ decimal }
-{
+CoordinateFormat::CoordinateFormat(int integer, int decimal) :
+		m_integer { integer }, m_decimal { decimal } {
 	if (integer < 1 || integer > 6) {
 		throw std::invalid_argument("Integer must be from 1 to 6.");
 	}
@@ -55,18 +52,20 @@ CoordinateFormat::~CoordinateFormat() {
 	// Empty
 }
 
-int CoordinateFormat::GetInteger() const
-{
-    return m_integer;
+int CoordinateFormat::GetInteger() const {
+	return m_integer;
 }
 
-int CoordinateFormat::GetDecimal() const
-{
-    return m_decimal;
+int CoordinateFormat::GetDecimal() const {
+	return m_decimal;
 }
 
-RealPoint CoordinateFormat::Convert(const Point &point) const {
-	return RealPoint(m_resolution * point.GetX(), m_resolution * point.GetY());
+Point CoordinateFormat::Convert(const FixedPoint &point) const {
+	return Point(Convert(point.GetX()), Convert(point.GetY()));
+}
+
+PointType CoordinateFormat::Convert(FixedPointType value) const {
+	return m_resolution * value;
 }
 
 CoordinateFormat CoordinateFormat::FromCommand(const std::string &str) {
@@ -77,7 +76,8 @@ CoordinateFormat CoordinateFormat::FromCommand(const std::string &str) {
 			throw std::invalid_argument("format options must be LA");
 		}
 		if (match[2].str() != match[3].str()) {
-			throw std::invalid_argument("format digits must be the same for X and Y");
+			throw std::invalid_argument(
+					"format digits must be the same for X and Y");
 		}
 		int integer = std::stoi(match[2].str().substr(0, 1));
 		int decimal = std::stoi(match[2].str().substr(1, 1));

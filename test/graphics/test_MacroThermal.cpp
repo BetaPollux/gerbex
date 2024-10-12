@@ -41,7 +41,7 @@ TEST(MacroThermalTest, Default) {
 }
 
 TEST(MacroThermalTest, Ctor) {
-	RealPoint center(0.5, -0.25);
+	Point center(0.5, -0.25);
 
 	MacroThermal thermal(center, 2.5, 1.2, 0.25, 45.0);
 
@@ -55,28 +55,28 @@ TEST(MacroThermalTest, Ctor) {
 
 TEST(MacroThermalTest, InnerTooBig) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroThermal(RealPoint(), 1.0, 1.0, 0.25, 0.0));
+			MacroThermal(Point(), 1.0, 1.0, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, GapTooBig) {
 	// Gap thickness < (outer diameter)/sqrt(2)
 	CHECK_THROWS(std::invalid_argument,
-			MacroThermal(RealPoint(), 1.0, 0.5, 0.71, 0.0));
+			MacroThermal(Point(), 1.0, 0.5, 0.71, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeOuter) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroThermal(RealPoint(), -1.0, 0.5, 0.25, 0.0));
+			MacroThermal(Point(), -1.0, 0.5, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeInner) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroThermal(RealPoint(), 1.0, -0.5, 0.25, 0.0));
+			MacroThermal(Point(), 1.0, -0.5, 0.25, 0.0));
 }
 
 TEST(MacroThermalTest, NegativeGap) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroThermal(RealPoint(), 1.0, 0.5, -0.25, 0.0));
+			MacroThermal(Point(), 1.0, 0.5, -0.25, 0.0));
 }
 
 TEST(MacroThermalTest, Thermal) {

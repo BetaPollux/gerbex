@@ -60,14 +60,13 @@ void Arc::Serialize(Serializer &serializer) {
 	serializer.SetOffset(0.0, 0.0);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	// TODO needs to use RealPoint
 	// TODO need to add Arc to serializer
 	double cx = m_centerOffset.GetX() + m_origin.GetX();
 	double cy = m_centerOffset.GetY() + m_origin.GetY();
-	serializer.AddDraw(circle->GetDiameter(), cx * 1e-6, cy * 1e-6,
-			m_origin.GetX() * 1e-6, m_origin.GetY() * 1e-6);
-	serializer.AddDraw(circle->GetDiameter(), cx * 1e-6, cy * 1e-6,
-			m_endPoint.GetX() * 1e-6, m_endPoint.GetY() * 1e-6);
+	serializer.AddDraw(circle->GetDiameter(), cx, cy, m_origin.GetX(),
+			m_origin.GetY());
+	serializer.AddDraw(circle->GetDiameter(), cx, cy, m_endPoint.GetX(),
+			m_endPoint.GetY());
 }
 
 } /* namespace gerbex */

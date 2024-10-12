@@ -33,7 +33,7 @@ namespace gerbex {
 class MacroThermal: public MacroPrimitive {
 public:
 	MacroThermal();
-	MacroThermal(const RealPoint &center, double outerDiameter, double innerDiameter,
+	MacroThermal(const Point &center, double outerDiameter, double innerDiameter,
 			double gapThickness, double rotation);
 	virtual ~MacroThermal();
 	double GetGapThickness() const;

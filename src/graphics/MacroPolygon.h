@@ -35,7 +35,7 @@ class MacroPolygon: public MacroPrimitive {
 public:
 	MacroPolygon();
 	MacroPolygon(MacroExposure exposure, int numVertices,
-			const RealPoint &center, double diameter, double rotation);
+			const Point &center, double diameter, double rotation);
 	virtual ~MacroPolygon();
 	double GetDiameter() const;
 	int GetNumVertices() const;

@@ -34,7 +34,7 @@ class MacroCenterLine: public MacroPrimitive {
 public:
 	MacroCenterLine();
 	MacroCenterLine(MacroExposure exposure, double width, double height,
-			const RealPoint &start, double rotation);
+			const Point &start, double rotation);
 	virtual ~MacroCenterLine();
 	double GetHeight() const;
 	double GetWidth() const;

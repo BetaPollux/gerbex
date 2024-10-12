@@ -25,14 +25,14 @@ namespace gerbex {
 
 MacroOutline::MacroOutline()
 	: MacroOutline(MacroExposure::ON,
-			{RealPoint(0.0, 0.0), RealPoint(1.0, 0.0), RealPoint(0.0, 1.0)}, 0.0)
+			{Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0)}, 0.0)
 {
 	// Empty
 }
 
 MacroOutline::MacroOutline(MacroExposure exposure,
-		const std::vector<RealPoint> &vertices, double rotation)
-	: MacroPrimitive(exposure, RealPoint(), rotation),
+		const std::vector<Point> &vertices, double rotation)
+	: MacroPrimitive(exposure, Point(), rotation),
 	  m_vertices{ vertices }
 {
 	if (vertices.size() < 3) {
@@ -45,7 +45,7 @@ MacroOutline::~MacroOutline() {
 	// Empty
 }
 
-const std::vector<RealPoint>& MacroOutline::GetVertices() const {
+const std::vector<Point>& MacroOutline::GetVertices() const {
 	return m_vertices;
 }
 
@@ -61,13 +61,13 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	if (params.size() != (5 + 2 * (num - 1))) {
 		throw std::invalid_argument("macro outline expects 5+2n parameters");
 	}
-	std::vector<RealPoint> vertices;
+	std::vector<Point> vertices;
 	vertices.reserve(num);
 	auto it = params.begin() + 2;
 	for (size_t i = 0; i < num; i++) {
 		double x = *it++;
 		double y = *it++;
-		vertices.push_back(RealPoint(x, y));
+		vertices.push_back(Point(x, y));
 	}
 	double rotation = params.back();
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);

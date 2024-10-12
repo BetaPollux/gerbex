@@ -24,13 +24,13 @@
 namespace gerbex {
 
 MacroCenterLine::MacroCenterLine()
-	: MacroCenterLine(MacroExposure::ON, 1.0, 0.5, RealPoint(0.0, 0.0), 0.0)
+	: MacroCenterLine(MacroExposure::ON, 1.0, 0.5, Point(0.0, 0.0), 0.0)
 {
 	// Empty
 }
 
 MacroCenterLine::MacroCenterLine(MacroExposure exposure, double width,
-		double height, const RealPoint &start, double rotation)
+		double height, const Point &start, double rotation)
 	: MacroPrimitive(exposure, start, rotation),
 	  m_width{ width},
 	  m_height{ height }
@@ -60,7 +60,7 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
 	double width = params[1];
 	double height = params[2];
-	RealPoint center(params[3], params[4]);
+	Point center(params[3], params[4]);
 	double rotation = params[5];
 	return std::make_unique<MacroCenterLine>(exposure, width, height, center,
 			rotation);

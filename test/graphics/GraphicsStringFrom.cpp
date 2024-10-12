@@ -1,7 +1,7 @@
 /*
- * MacroCircle.h
+ * GraphicsStringFrom.cpp
  *
- *  Created on: Apr. 1, 2024
+ *  Created on: Oct. 12, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,31 +18,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MACROCIRCLE_H_
-#define MACROCIRCLE_H_
+#include "GraphicsStringFrom.h"
 
-#include "DataTypeParser.h"
-#include "MacroPrimitive.h"
-#include <memory>
+SimpleString StringFrom(const gerbex::Point &pt) {
+	return StringFromFormat("%f, %f", pt.GetX(), pt.GetY());
+}
 
-namespace gerbex {
-
-/*
- * Circle primitive defined by its center point and diameter.
- */
-class MacroCircle: public MacroPrimitive {
-public:
-	MacroCircle();
-	MacroCircle(MacroExposure exposure, double diameter,
-			const Point &center, double rotation = 0.0);
-	virtual ~MacroCircle();
-	double GetDiameter() const;
-	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
-
-private:
-	double m_diameter;
-};
-
-} /* namespace gerbex */
-
-#endif /* MACROCIRCLE_H_ */

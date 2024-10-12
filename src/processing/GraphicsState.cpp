@@ -23,14 +23,8 @@
 
 namespace gerbex {
 
-GraphicsState::GraphicsState()
-	: m_format{},
-	  m_unit{},
-	  m_currentPoint{},
-	  m_currentAperture{},
-	  m_plotState{},
-	  m_transformation{}
-{
+GraphicsState::GraphicsState() :
+		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transformation { } {
 	// Empty
 
 }
@@ -43,19 +37,19 @@ const std::shared_ptr<Aperture> GraphicsState::GetCurrentAperture() const {
 	return m_currentAperture;
 }
 
-void GraphicsState::SetCurrentAperture(std::shared_ptr<Aperture> currentAperture) {
-	m_currentAperture = currentAperture;
+void GraphicsState::SetCurrentAperture(std::shared_ptr<Aperture> aperture) {
+	m_currentAperture = aperture;
 }
 
-const std::optional<Point> GraphicsState::GetCurrentPoint() const {
+std::optional<Point> GraphicsState::GetCurrentPoint() const {
 	return m_currentPoint;
 }
 
-void GraphicsState::SetCurrentPoint(std::optional<Point> currentPoint) {
-	m_currentPoint = currentPoint;
+void GraphicsState::SetCurrentPoint(std::optional<Point> point) {
+	m_currentPoint = point;
 }
 
-const std::optional<CoordinateFormat> GraphicsState::GetFormat() const {
+std::optional<CoordinateFormat> GraphicsState::GetFormat() const {
 	return m_format;
 }
 
@@ -109,13 +103,14 @@ PlotState GraphicsState::PlotStateFromCommand(const std::string &str) {
 	}
 }
 
-const std::optional<ArcMode> GraphicsState::GetArcMode() const {
+std::optional<ArcMode> GraphicsState::GetArcMode() const {
 	return m_arcMode;
 }
 
 void GraphicsState::SetArcMode(std::optional<ArcMode> arcMode) {
 	if (arcMode == ArcMode::SingleQuadrant) {
-		throw std::invalid_argument("single quadrant arc mode is not supported");
+		throw std::invalid_argument(
+				"single quadrant arc mode is not supported");
 	}
 	m_arcMode = arcMode;
 }
@@ -128,6 +123,23 @@ ArcMode GraphicsState::ArcModeFromCommand(const std::string &str) {
 	} else {
 		throw std::invalid_argument("invalid arc mode");
 	}
+}
+
+Point GraphicsState::GetPoint(const CoordinateData &data) const {
+	if (!data.HasXY() && !m_currentPoint.has_value()) {
+		throw std::invalid_argument("coordinate data is not fully defined");
+	}
+
+	std::optional<PointType> newX, newY;
+	if (data.GetX().has_value()) {
+		newX = m_format->Convert(*data.GetX());
+	}
+	if (data.GetY().has_value()) {
+		newY = m_format->Convert(*data.GetY());
+	}
+
+	return Point(newX.value_or(m_currentPoint->GetX()),
+			newY.value_or(m_currentPoint->GetY()));
 }
 
 } /* namespace gerbex */

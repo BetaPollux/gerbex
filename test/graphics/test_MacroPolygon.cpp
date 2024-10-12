@@ -37,7 +37,7 @@ TEST(MacroPolygonTest, Default) {
 }
 
 TEST(MacroPolygonTest, Ctor) {
-	RealPoint center(0.5, -0.25);
+	Point center(0.5, -0.25);
 
 	MacroPolygon poly(MacroExposure::OFF, 5, center, 1.25, 45.0);
 
@@ -50,12 +50,12 @@ TEST(MacroPolygonTest, Ctor) {
 
 TEST(MacroPolygonTest, TooFewVertices) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroPolygon(MacroExposure::ON, 2, RealPoint(), 1.0, 0.0));
+			MacroPolygon(MacroExposure::ON, 2, Point(), 1.0, 0.0));
 }
 
 TEST(MacroPolygonTest, TooManyVertices) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroPolygon(MacroExposure::ON, 13, RealPoint(), 1.0, 0.0));
+			MacroPolygon(MacroExposure::ON, 13, Point(), 1.0, 0.0));
 }
 
 TEST(MacroPolygonTest, FromParameters) {

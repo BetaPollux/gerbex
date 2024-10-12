@@ -1,7 +1,7 @@
 /*
- * MacroPrimitive.h
+ * StringFrom.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Oct. 12, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,38 +18,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MACROPRIMITIVE_H_
-#define MACROPRIMITIVE_H_
+#ifndef GRAPHICSSTRINGFROM_H_
+#define GRAPHICSSTRINGFROM_H_
 
 #include "Point.h"
+#include "CppUTest/SimpleString.h"
 
-namespace gerbex {
+SimpleString StringFrom(const gerbex::Point &pt);
 
-enum class MacroExposure {
-	OFF,
-	ON
-};
-
-/*
- * A simple shape used to build a Macro aperture.
- * Primitives always rotate around the parent Macro origin.
- */
-class MacroPrimitive {
-public:
-	MacroPrimitive();
-	MacroPrimitive(MacroExposure exposure, const Point &coord, double rotation);
-	virtual ~MacroPrimitive();
-	const Point& GetCoord() const;
-	MacroExposure GetExposure() const;
-	double GetRotation() const;
-	static MacroExposure ExposureFromNum(int num);
-
-protected:
-	MacroExposure m_exposure;
-	Point m_coord;
-	double m_rotation;
-};
-
-} /* namespace gerbex */
-
-#endif /* MACROPRIMITIVE_H_ */
+#endif /* GRAPHICSSTRINGFROM_H_ */

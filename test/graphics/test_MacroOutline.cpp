@@ -35,8 +35,8 @@ TEST(MacroOutlineTest, Default) {
 }
 
 TEST(MacroOutlineTest, Ctor) {
-	std::vector<RealPoint> vertices = { RealPoint(-1.0, 0.0), RealPoint(1.0,
-			0.0), RealPoint(0.0, 1.0), };
+	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0,
+			0.0), Point(0.0, 1.0), };
 
 	MacroOutline outline(MacroExposure::OFF, vertices, 45.0);
 
@@ -46,25 +46,25 @@ TEST(MacroOutlineTest, Ctor) {
 }
 
 TEST(MacroOutlineTest, CopiesVertices) {
-	std::vector<RealPoint> vertices = { RealPoint(-1.0, 0.0), RealPoint(1.0,
-			0.0), RealPoint(0.0, 1.0), };
+	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0,
+			0.0), Point(0.0, 1.0), };
 
 	MacroOutline outline(MacroExposure::ON, vertices, 0.0);
 	vertices.clear();
 
-	CHECK(RealPoint(-1.0, 0.0) == outline.GetVertices()[0]);
-	CHECK(RealPoint(1.0, 0.0) == outline.GetVertices()[1]);
-	CHECK(RealPoint(0.0, 1.0) == outline.GetVertices()[2]);
+	CHECK(Point(-1.0, 0.0) == outline.GetVertices()[0]);
+	CHECK(Point(1.0, 0.0) == outline.GetVertices()[1]);
+	CHECK(Point(0.0, 1.0) == outline.GetVertices()[2]);
 }
 
 TEST(MacroOutlineTest, TooFewVertices) {
-	std::vector<RealPoint> vertices(2);
+	std::vector<Point> vertices(2);
 	CHECK_THROWS(std::invalid_argument,
 			MacroOutline(MacroExposure::ON, vertices, 0.0));
 }
 
 TEST(MacroOutlineTest, EmptyVertices) {
-	std::vector<RealPoint> vertices;
+	std::vector<Point> vertices;
 	CHECK_THROWS(std::invalid_argument,
 			MacroOutline(MacroExposure::ON, vertices, 0.0));
 }
@@ -74,7 +74,7 @@ TEST(MacroOutlineTest, FromParameters) {
 	std::shared_ptr<MacroOutline> outline = MacroOutline::FromParameters(
 			params);
 	CHECK(MacroExposure::ON == outline->GetExposure());
-	const std::vector<RealPoint> vertices = outline->GetVertices();
+	const std::vector<Point> vertices = outline->GetVertices();
 	LONGS_EQUAL(4, vertices.size());
 	CHECK(outline->GetCoord() == vertices[0]);
 	DOUBLES_EQUAL(1.0, vertices[0].GetX(), DBL_TOL);

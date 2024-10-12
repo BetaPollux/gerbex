@@ -133,8 +133,7 @@ void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 	GraphicsState &graphicState = processor.GetGraphicsState();
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
-	Point coord = coorddata.GetXY(graphicState.GetCurrentPoint());
-	std::optional<Point> offset = coorddata.GetIJ();
+	Point coord = graphicState.GetPoint(coorddata);
 
 	if (!graphicState.GetPlotState().has_value()) {
 		graphicState.SetPlotState(gerbex::PlotState::Linear);
@@ -151,7 +150,8 @@ void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 		break;
 	case PlotState::Clockwise:
 	case PlotState::CounterClockwise:
-		if (!offset.has_value()) {
+		std::optional<FixedPoint> fOffset = coorddata.GetIJ();
+		if (!fOffset.has_value()) {
 			throw std::logic_error(
 					"circular plotting requires an offset coordinate");
 		}
@@ -161,7 +161,8 @@ void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 					<< "WARNING arc mode was not defined, assuming multi-quadrant"
 					<< std::endl;
 		}
-		processor.PlotArc(coord, *offset);
+		Point offset = graphicState.GetFormat()->Convert(*fOffset);
+		processor.PlotArc(coord, offset);
 		break;
 	}
 }
@@ -171,8 +172,7 @@ void CommandHandler::Move(CommandsProcessor &processor, Fields &words) {
 	AssertCommandCode(words.front(), "D02");
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
-	Point coord = coorddata.GetXY(
-			processor.GetGraphicsState().GetCurrentPoint());
+	Point coord = processor.GetGraphicsState().GetPoint(coorddata);
 
 	if (coorddata.GetIJ().has_value()) {
 		throw std::invalid_argument("Move cannot have offset coordinate");
@@ -186,8 +186,7 @@ void CommandHandler::Flash(CommandsProcessor &processor, Fields &words) {
 	AssertCommandCode(words.front(), "D03");
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
-	Point coord = coorddata.GetXY(
-			processor.GetGraphicsState().GetCurrentPoint());
+	Point coord = processor.GetGraphicsState().GetPoint(coorddata);
 
 	if (coorddata.GetIJ().has_value()) {
 		throw std::invalid_argument("Flash cannot have offset coordinate");

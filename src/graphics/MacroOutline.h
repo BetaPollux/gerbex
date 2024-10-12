@@ -34,13 +34,13 @@ namespace gerbex {
 class MacroOutline: public MacroPrimitive {
 public:
 	MacroOutline();
-	MacroOutline(MacroExposure exposure, const std::vector<RealPoint> &vertices, double rotation);
+	MacroOutline(MacroExposure exposure, const std::vector<Point> &vertices, double rotation);
 	virtual ~MacroOutline();
-	const std::vector<RealPoint>& GetVertices() const;
+	const std::vector<Point>& GetVertices() const;
 	static std::unique_ptr<MacroOutline> FromParameters(const Parameters &params);
 
 private:
-	std::vector<RealPoint> m_vertices;
+	std::vector<Point> m_vertices;
 };
 
 } /* namespace gerbex */

@@ -9,3 +9,11 @@ Planned exports:
 - mesh
 
 The Python code is obsolete; the project is moving to C++.
+
+## Dependencies
+
+Packages required:
+
+	libpugixml-dev
+
+	

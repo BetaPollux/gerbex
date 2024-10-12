@@ -24,13 +24,13 @@
 namespace gerbex {
 
 MacroVectorLine::MacroVectorLine() :
-		MacroVectorLine(MacroExposure::ON, 1.0, RealPoint(0.0, 0.0),
-				RealPoint(1.0, 0.0), 0.0) {
+		MacroVectorLine(MacroExposure::ON, 1.0, Point(0.0, 0.0),
+				Point(1.0, 0.0), 0.0) {
 	// Empty
 }
 
 MacroVectorLine::MacroVectorLine(MacroExposure exposure, double width,
-		const RealPoint &start, const RealPoint &end, double rotation) :
+		const Point &start, const Point &end, double rotation) :
 		MacroPrimitive(exposure, start, rotation), m_width { width }, m_end {
 				end } {
 	if (width < 0.0) {
@@ -42,7 +42,7 @@ MacroVectorLine::~MacroVectorLine() {
 	// Empty
 }
 
-const RealPoint& MacroVectorLine::GetEnd() const {
+const Point& MacroVectorLine::GetEnd() const {
 	return m_end;
 }
 
@@ -57,8 +57,8 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 	}
 	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
 	double width = params[1];
-	RealPoint start(params[2], params[3]);
-	RealPoint end(params[4], params[5]);
+	Point start(params[2], params[3]);
+	Point end(params[4], params[5]);
 	double rotation = params[6];
 	return std::make_unique<MacroVectorLine>(exposure, width, start, end,
 			rotation);

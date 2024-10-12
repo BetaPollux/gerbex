@@ -14,6 +14,12 @@ add_library(test_processing OBJECT
 target_link_libraries(test_processing
 PUBLIC
 	libgerbex
+	test_graphics
 	CppUTest
 	CppUTestExt
+)
+
+target_include_directories(test_processing
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )

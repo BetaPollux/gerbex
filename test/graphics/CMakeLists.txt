@@ -1,4 +1,5 @@
 add_library(test_graphics OBJECT
+	GraphicsStringFrom.cpp
 	test_Arc.cpp
 	test_ApertureTransformation.cpp
 	test_Arc.cpp
@@ -36,3 +37,9 @@ PUBLIC
 	gerbex_graphics
 	CppUTest
 )
+
+target_include_directories(test_graphics
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+

@@ -31,6 +31,7 @@
 #include "MacroThermal.h"
 #include <fstream>
 #include <sstream>
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
 #define DBL_TOL	1e-5
@@ -111,7 +112,8 @@ TEST(GerberTwoSquareBoxes, Draws) {
 }
 
 TEST(GerberTwoSquareBoxes, LastPoint) {
-	CHECK(Point(6000000, 0) == graphicsState->GetCurrentPoint());
+	CHECK(graphicsState->GetCurrentPoint().has_value());
+	CHECK_EQUAL(Point(6.0, 0), *graphicsState->GetCurrentPoint());
 }
 
 TEST(GerberTwoSquareBoxes, EndOfFile) {
@@ -211,8 +213,8 @@ TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	CHECK(Polarity::Dark == c2->GetTransformation().GetPolarity());
 	CHECK(Polarity::Clear == c3->GetTransformation().GetPolarity());
 
-	CHECK(Point(-500000, -1000000) == d1->GetOrigin());
-	CHECK(Point(2500000, -1000000) == d1->GetEndPoint());
+	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetOrigin());
+	CHECK_EQUAL(Point(2.5, -1.0), d1->GetEndPoint());
 
 	CHECK(ArcDirection::CounterClockwise == a1->GetDirection());
 }
@@ -272,10 +274,10 @@ TEST(GerberSampleMacro, BOXR_D12) {
 	DOUBLES_EQUAL(0.2550, s1->GetWidth(), DBL_TOL);
 	DOUBLES_EQUAL(0.1 - 2 * 0.02, s1->GetHeight(), DBL_TOL);
 	DOUBLES_EQUAL(30.0, s1->GetRotation(), DBL_TOL);
-	CHECK(RealPoint(0.0, 0.0) == s1->GetCoord());
+	CHECK(Point(0.0, 0.0) == s1->GetCoord());
 
 	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
-	CHECK(RealPoint(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)) == c4->GetCoord());
+	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)), c4->GetCoord());
 }
 
 TEST(GerberSampleMacro, MadeStepRepeats) {

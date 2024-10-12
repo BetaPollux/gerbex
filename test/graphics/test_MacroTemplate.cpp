@@ -102,7 +102,7 @@ TEST(MacroTemplateTest, Outline) {
 	std::shared_ptr<MacroOutline> outline = GetPrimitive<MacroOutline>(macro,
 			0);
 	CHECK(MacroExposure::ON == outline->GetExposure());
-	const std::vector<RealPoint> vertices = outline->GetVertices();
+	const std::vector<Point> vertices = outline->GetVertices();
 	LONGS_EQUAL(4, vertices.size());
 	CHECK(outline->GetCoord() == vertices[0]);
 }

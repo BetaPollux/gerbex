@@ -31,8 +31,8 @@ CoordinateData::CoordinateData() :
 	// Empty
 }
 
-CoordinateData::CoordinateData(std::optional<PointCoordType> x,
-		std::optional<PointCoordType> y, std::optional<Point> ij) :
+CoordinateData::CoordinateData(std::optional<FixedPointType> x,
+		std::optional<FixedPointType> y, std::optional<FixedPoint> ij) :
 		m_x { x }, m_y { y }, m_ij { ij } {
 	// Empty
 }
@@ -53,8 +53,8 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	std::smatch match;
 	std::regex_search(str, match, regex);
 
-	std::optional<PointCoordType> x, y;
-	std::optional<Point> ij;
+	std::optional<FixedPointType> x, y;
+	std::optional<FixedPoint> ij;
 	// X-value
 	if (match[2].matched) {
 		x = std::stoi(match[2].str());
@@ -67,23 +67,23 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 
 	// IJ-value
 	if (match[5].matched) {
-		PointCoordType i = std::stoi(match[6].str());
-		PointCoordType j = std::stoi(match[7].str());
-		ij = Point(i, j);
+		FixedPointType i = std::stoi(match[6].str());
+		FixedPointType j = std::stoi(match[7].str());
+		ij = FixedPoint(i, j);
 	}
 
 	return CoordinateData(x, y, ij);
 }
 
-Point CoordinateData::GetXY(const std::optional<Point> &defaultPt) const {
+FixedPoint CoordinateData::GetXY(const std::optional<FixedPoint> &defaultPt) const {
 	if (!HasXY() && !defaultPt.has_value()) {
 		throw std::invalid_argument("coordinate data is not fully defined");
 	}
 
-	PointCoordType newX = GetX().value_or(defaultPt->GetX());
-	PointCoordType newY = GetY().value_or(defaultPt->GetY());
+	FixedPointType newX = GetX().value_or(defaultPt->GetX());
+	FixedPointType newY = GetY().value_or(defaultPt->GetY());
 
-	return Point(newX, newY);
+	return FixedPoint(newX, newY);
 }
 
 bool CoordinateData::HasXY() const {
@@ -94,15 +94,15 @@ bool CoordinateData::HasIJ() const {
 	return m_ij.has_value();
 }
 
-const std::optional<Point>& CoordinateData::GetIJ() const {
+const std::optional<FixedPoint>& CoordinateData::GetIJ() const {
 	return m_ij;
 }
 
-const std::optional<PointCoordType>& CoordinateData::GetX() const {
+const std::optional<FixedPointType>& CoordinateData::GetX() const {
 	return m_x;
 }
 
-const std::optional<PointCoordType>& CoordinateData::GetY() const {
+const std::optional<FixedPointType>& CoordinateData::GetY() const {
 	return m_y;
 }
 

@@ -26,7 +26,7 @@
 
 namespace gerbex {
 
-//TODO use RealPoint here
+//TODO use RealPoint for arguments
 
 /*
  *
@@ -36,9 +36,8 @@ public:
 	Serializer() : m_xOffset { 0.0 }, m_yOffset { 0.0 } {}
 	virtual ~Serializer() {}
 	virtual void SetOffset(double x, double y) {
-		//TODO change all graphics to use RealPoint, apply Format spec
-		m_xOffset = x * 1e-6;
-		m_yOffset = y * 1e-6;
+		m_xOffset = x;
+		m_yOffset = y;
 	}
 	virtual void AddCircle(double radius, double centerX, double centerY) = 0;
 	virtual void AddRectangle(double width, double height, double left, double top) = 0;

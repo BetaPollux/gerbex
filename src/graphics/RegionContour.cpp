@@ -36,10 +36,12 @@ bool RegionContour::IsClosed() const {
 	//Checks that all segments are connected.
 	//Does NOT check for more complex conditions which are invalid.
 	if (m_segments.size() > 2) {
-		bool closedEnd = (m_segments.front()->GetOrigin() == m_segments.back()->GetEndPoint());
+		bool closedEnd = (m_segments.front()->GetOrigin()
+				== m_segments.back()->GetEndPoint());
 		bool connected = true;
-		for(size_t i = 1; i < m_segments.size(); i++) {
-			connected &= (m_segments[i]->GetOrigin() == m_segments[i - 1]->GetEndPoint());
+		for (size_t i = 1; i < m_segments.size(); i++) {
+			connected &= (m_segments[i]->GetOrigin()
+					== m_segments[i - 1]->GetEndPoint());
 		}
 		return closedEnd && connected;
 	} else {
@@ -62,10 +64,9 @@ void RegionContour::Serialize(Serializer &serializer) {
 	//Closed contour, endpoints are redundant with origins
 	std::vector<std::pair<double, double>> points;
 	//TODO this needs to make a path using segment, draw vs arc
-	for (std::shared_ptr<Segment> s: m_segments) {
-		//TODO segment needs to use RealPoint
-		double x = s->GetOrigin().GetX() * 1e-6;
-		double y = s->GetOrigin().GetY() * 1e-6;
+	for (std::shared_ptr<Segment> s : m_segments) {
+		double x = s->GetOrigin().GetX();
+		double y = s->GetOrigin().GetY();
 		points.push_back( { x, y });
 	}
 	serializer.AddPolygon(points);

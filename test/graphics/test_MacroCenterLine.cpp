@@ -36,7 +36,7 @@ TEST(MacroCenterLineTest, Default) {
 }
 
 TEST(MacroCenterLineTest, Ctor) {
-	RealPoint start(0.5, -0.25);
+	Point start(0.5, -0.25);
 
 	MacroCenterLine line(MacroExposure::OFF, 1.25, 0.75, start, 45.0);
 
@@ -49,12 +49,12 @@ TEST(MacroCenterLineTest, Ctor) {
 
 TEST(MacroCenterLineTest, NegativeWidth) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroCenterLine(MacroExposure::ON, -1.0, 1.0, RealPoint(), 0.0));
+			MacroCenterLine(MacroExposure::ON, -1.0, 1.0, Point(), 0.0));
 }
 
 TEST(MacroCenterLineTest, NegativeHeight) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroCenterLine(MacroExposure::ON, 1.0, -1.0, RealPoint(), 0.0));
+			MacroCenterLine(MacroExposure::ON, 1.0, -1.0, Point(), 0.0));
 }
 
 TEST(MacroCenterLineTest, FromParameters) {

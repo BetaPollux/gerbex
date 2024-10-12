@@ -23,6 +23,7 @@
 
 #include "Aperture.h"
 #include "ApertureTransformation.h"
+#include "CoordinateData.h"
 #include "CoordinateFormat.h"
 #include "Point.h"
 #include <memory>
@@ -55,10 +56,10 @@ public:
 	GraphicsState();
 	virtual ~GraphicsState();
 	const std::shared_ptr<Aperture> GetCurrentAperture() const;
-	void SetCurrentAperture(std::shared_ptr<Aperture> currentAperture);
-	void SetCurrentPoint(std::optional<Point> currentPoint);
-	const std::optional<Point> GetCurrentPoint() const;
-	const std::optional<CoordinateFormat> GetFormat() const;
+	void SetCurrentAperture(std::shared_ptr<Aperture> aperture);
+	void SetCurrentPoint(std::optional<Point> point);
+	std::optional<Point> GetCurrentPoint() const;
+	std::optional<CoordinateFormat> GetFormat() const;
 	void SetFormat(std::optional<CoordinateFormat> format);
 	std::optional<PlotState> GetPlotState() const;
 	void SetPlotState(std::optional<PlotState> plotState);
@@ -69,8 +70,9 @@ public:
 	static Unit UnitFromCommand(const std::string &str);
 	static PlotState PlotStateFromCommand(const std::string &str);
 	static ArcMode ArcModeFromCommand(const std::string &str);
-	const std::optional<ArcMode> GetArcMode() const;
+	std::optional<ArcMode> GetArcMode() const;
 	void SetArcMode(std::optional<ArcMode> arcMode);
+	Point GetPoint(const CoordinateData &data) const;
 
 private:
 	std::optional<CoordinateFormat> m_format;

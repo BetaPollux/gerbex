@@ -51,22 +51,22 @@ TEST(CoordinateFormatTest, Getters) {
 }
 
 TEST(CoordinateFormatTest, Convert_6decimal) {
-	Point point(123123456, 23456);
-	RealPoint expected(123.123456, 0.023456);
+	FixedPoint point(123123456, 23456);
+	Point expected(123.123456, 0.023456);
 
 	CoordinateFormat format(3, 6);
-	RealPoint actual = format.Convert(point);
+	Point actual = format.Convert(point);
 
 	DOUBLES_EQUAL(expected.GetX(), actual.GetX(), 1e-9);
 	DOUBLES_EQUAL(expected.GetY(), actual.GetY(), 1e-9);
 }
 
 TEST(CoordinateFormatTest, Convert5decimal) {
-	Point point(123123456, 23456);
-	RealPoint expected(1231.23456, 0.23456);
+	FixedPoint point(123123456, 23456);
+	Point expected(1231.23456, 0.23456);
 
 	CoordinateFormat format(3, 5);
-	RealPoint actual = format.Convert(point);
+	Point actual = format.Convert(point);
 
 	DOUBLES_EQUAL(expected.GetX(), actual.GetX(), 1e-9);
 	DOUBLES_EQUAL(expected.GetY(), actual.GetY(), 1e-9);

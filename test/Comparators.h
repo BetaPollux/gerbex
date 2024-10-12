@@ -25,6 +25,7 @@
 #include "Point.h"
 #include "MacroTemplate.h"
 #include <memory>
+#include "GraphicsStringFrom.h"
 #include "CppUTestExt/MockSupport.h"
 
 using namespace gerbex;
@@ -41,7 +42,7 @@ public:
     virtual SimpleString valueToString(const void* object)
     {
     	Point pt = *(Point*)object;
-        return StringFromFormat("%d, %d", pt.GetX(), pt.GetY());
+        return StringFrom(pt);
     }
 };
 

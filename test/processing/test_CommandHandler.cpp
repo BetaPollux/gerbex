@@ -61,24 +61,26 @@ TEST(CommandHandlerTest, ApertureDefine_NoParams) {
 
 TEST(CommandHandlerTest, PlotDraw) {
 	GraphicsState state;
+	state.SetFormat(CoordinateFormat());
 	state.SetPlotState(PlotState::Linear);
-	Point pt(200, 350);
+	Point pt(2.0, 3.5);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	mock().expectOneCall("PlotDraw").withParameterOfType("Point", "coord", &pt);
-	Fields words = { "X200Y350D01" };
+	Fields words = { "X2000000Y3500000D01" };
 	CommandHandler::Plot(processor, words);
 }
 
 TEST(CommandHandlerTest, PlotArc) {
 	GraphicsState state;
+	state.SetFormat(CoordinateFormat());
 	state.SetPlotState(PlotState::Clockwise);
 	state.SetArcMode(ArcMode::MultiQuadrant);
-	Point pt(125, 475);
-	Point os(50, -50);
+	Point pt(0.125, 0.475);
+	Point os(0.500, -0.500);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	mock().expectOneCall("PlotArc").withParameterOfType("Point", "coord", &pt).withParameterOfType(
 			"Point", "offset", &os);
-	Fields words = { "X125Y475I50J-50D01" };
+	Fields words = { "X125000Y475000I500000J-500000D01" };
 	CommandHandler::Plot(processor, words);
 }
 
@@ -144,15 +146,17 @@ TEST(CommandHandlerTest, PlotState) {
 
 TEST(CommandHandlerTest, Move) {
 	GraphicsState state;
-	Point pt(-100, 0);
+	state.SetFormat(CoordinateFormat());
+	Point pt(-1.0, 0);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	mock().expectOneCall("Move").withParameterOfType("Point", "coord", &pt);
-	Fields words = { "X-100Y0D02" };
+	Fields words = { "X-1000000Y0D02" };
 	CommandHandler::Move(processor, words);
 }
 
 TEST(CommandHandlerTest, Move_UsesCurrentPoint) {
 	GraphicsState state;
+	state.SetFormat(CoordinateFormat());
 	Point pt(1500, -2500);
 	state.SetCurrentPoint(pt);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
@@ -163,15 +167,17 @@ TEST(CommandHandlerTest, Move_UsesCurrentPoint) {
 
 TEST(CommandHandlerTest, Flash) {
 	GraphicsState state;
-	Point pt(-100, 0);
+	state.SetFormat(CoordinateFormat());
+	Point pt(-1.0, 0);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	mock().expectOneCall("Flash").withParameterOfType("Point", "coord", &pt);
-	Fields words = { "X-100Y0D03" };
+	Fields words = { "X-1000000Y0D03" };
 	CommandHandler::Flash(processor, words);
 }
 
 TEST(CommandHandlerTest, Flash_UsesCurrentPoint) {
 	GraphicsState state;
+	state.SetFormat(CoordinateFormat());
 	Point pt(1500, -2500);
 	state.SetCurrentPoint(pt);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);

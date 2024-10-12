@@ -35,7 +35,7 @@ TEST(MacroCircleTest, Default) {
 }
 
 TEST(MacroCircleTest, Ctor) {
-	RealPoint center(0.5, -0.25);
+	Point center(0.5, -0.25);
 
 	MacroCircle circle(MacroExposure::OFF, 1.25, center, 45.0);
 
@@ -47,7 +47,7 @@ TEST(MacroCircleTest, Ctor) {
 
 TEST(MacroCircleTest, NegativeDiameter) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroCircle(MacroExposure::ON, -1.0, RealPoint()));
+			MacroCircle(MacroExposure::ON, -1.0, Point()));
 }
 
 TEST(MacroCircleTest, FromParameters) {

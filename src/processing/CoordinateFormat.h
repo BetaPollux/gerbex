@@ -37,7 +37,8 @@ public:
 	virtual ~CoordinateFormat();
 	bool operator==(const CoordinateFormat &rhs) const;
 	bool operator!=(const CoordinateFormat &rhs) const;
-	RealPoint Convert(const Point &point) const;
+	Point Convert(const FixedPoint &point) const;
+	PointType Convert(FixedPointType value) const;
 	int GetInteger() const;
 	int GetDecimal() const;
 	static CoordinateFormat FromCommand(const std::string &str);

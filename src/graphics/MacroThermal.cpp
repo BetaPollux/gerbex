@@ -24,11 +24,11 @@
 namespace gerbex {
 
 MacroThermal::MacroThermal() :
-		MacroThermal(RealPoint(0.0, 0.0), 1.0, 0.5, 0.25, 0.0) {
+		MacroThermal(Point(0.0, 0.0), 1.0, 0.5, 0.25, 0.0) {
 	// Empty
 }
 
-MacroThermal::MacroThermal(const RealPoint &center, double outerDiameter,
+MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 		double innerDiameter, double gapThickness, double rotation) :
 		MacroPrimitive(MacroExposure::ON, center, rotation), m_outerDiameter {
 				outerDiameter }, m_innerDiameter { innerDiameter }, m_gapThickness {
@@ -67,7 +67,7 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 	if (params.size() != 6) {
 		throw std::invalid_argument("macro thermal expects 6 parameters");
 	}
-	RealPoint center(params[0], params[1]);
+	Point center(params[0], params[1]);
 	double outer = params[2];
 	double inner = params[3];
 	double gap = params[4];

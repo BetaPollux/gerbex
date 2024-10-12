@@ -24,12 +24,12 @@
 namespace gerbex {
 
 MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, RealPoint(0.0, 0.0), 0.0)
+	: MacroPrimitive(MacroExposure::ON, Point(0.0, 0.0), 0.0)
 {
 	// Empty
 }
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, const RealPoint &coord, double rotation)
+MacroPrimitive::MacroPrimitive(MacroExposure exposure, const Point &coord, double rotation)
 	: m_exposure{ exposure },
 	  m_coord{ coord },
 	  m_rotation{ rotation }
@@ -41,7 +41,7 @@ MacroPrimitive::~MacroPrimitive() {
 	// Empty
 }
 
-const RealPoint& MacroPrimitive::GetCoord() const {
+const Point& MacroPrimitive::GetCoord() const {
 	return m_coord;
 }
 

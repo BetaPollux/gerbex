@@ -24,13 +24,13 @@
 namespace gerbex {
 
 MacroPolygon::MacroPolygon()
-	: MacroPolygon(MacroExposure::ON, 6, RealPoint(0.0, 0.0), 1.0, 0.0)
+	: MacroPolygon(MacroExposure::ON, 6, Point(0.0, 0.0), 1.0, 0.0)
 {
 	// Empty
 }
 
 MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
-		const RealPoint &center, double diameter, double rotation)
+		const Point &center, double diameter, double rotation)
 	: MacroPrimitive(exposure, center, rotation),
 	  m_numVertices{ numVertices },
 	  m_diameter{ diameter }
@@ -63,7 +63,7 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 	}
 	MacroExposure exposure = MacroPrimitive::ExposureFromNum((int) params[0]);
 	size_t num = (size_t) params[1];
-	RealPoint center(params[2], params[3]);
+	Point center(params[2], params[3]);
 	double diameter = params[4];
 	double rotation = params[5];
 	return std::make_unique<MacroPolygon>(exposure, num, center, diameter,

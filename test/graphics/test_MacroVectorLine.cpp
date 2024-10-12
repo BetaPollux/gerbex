@@ -35,8 +35,8 @@ TEST(MacroVectorLineTest, Default) {
 }
 
 TEST(MacroVectorLineTest, Ctor) {
-	RealPoint start(0.5, -0.25);
-	RealPoint end(2.5, -0.5);
+	Point start(0.5, -0.25);
+	Point end(2.5, -0.5);
 
 	MacroVectorLine line(MacroExposure::OFF, 1.25, start, end, 45.0);
 
@@ -49,7 +49,7 @@ TEST(MacroVectorLineTest, Ctor) {
 
 TEST(MacroVectorLineTest, NegativeWidth) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroVectorLine(MacroExposure::ON, -1.0, RealPoint(), RealPoint(),
+			MacroVectorLine(MacroExposure::ON, -1.0, Point(), Point(),
 					0.0));
 }
 

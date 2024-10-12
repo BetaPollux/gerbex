@@ -48,10 +48,8 @@ void Draw::Serialize(Serializer &serializer) {
 	serializer.SetOffset(0.0, 0.0);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	// TODO needs to use RealPoint
-	serializer.AddDraw(circle->GetDiameter(), m_origin.GetX() * 1e-6,
-			m_origin.GetY() * 1e-6, m_endPoint.GetX() * 1e-6,
-			m_endPoint.GetY() * 1e-6);
+	serializer.AddDraw(circle->GetDiameter(), m_origin.GetX(), m_origin.GetY(),
+			m_endPoint.GetX(), m_endPoint.GetY());
 }
 
 } /* namespace gerbex */

@@ -42,8 +42,8 @@ TEST(CoordinateDataTest, HasXY) {
 
 TEST(CoordinateDataTest, HasOffset) {
 	CoordinateData xy(0, 0, std::nullopt);
-	CoordinateData xyij(0, 0, Point(0, 0));
-	CoordinateData ij(std::nullopt, std::nullopt, Point(0, 0));
+	CoordinateData xyij(0, 0, FixedPoint(0, 0));
+	CoordinateData ij(std::nullopt, std::nullopt, FixedPoint(0, 0));
 	CHECK(!xy.HasIJ());
 	CHECK(xyij.HasIJ());
 	CHECK(ij.HasIJ());
@@ -110,33 +110,33 @@ TEST(CoordinateDataTest, FromString_XYIJ_WithSign) {
 }
 
 TEST_GROUP(CoordinateData_FromDefaults) {
-	Point defaultPt;
-	const PointCoordType kDefX = 1000;
-	const PointCoordType kDefY = 2500;
+	FixedPoint defaultPt;
+	const FixedPointType kDefX = 1000;
+	const FixedPointType kDefY = 2500;
 
 	void setup() {
-		defaultPt = Point(kDefX, kDefY);
+		defaultPt = FixedPoint(kDefX, kDefY);
 	}
 };
 
 TEST(CoordinateData_FromDefaults, NoData) {
-	Point result = CoordinateData(std::nullopt, std::nullopt).GetXY(defaultPt);
+	FixedPoint result = CoordinateData(std::nullopt, std::nullopt).GetXY(defaultPt);
 	CHECK(result == defaultPt);
 }
 
 TEST(CoordinateData_FromDefaults, JustX) {
-	Point result = CoordinateData(125, std::nullopt).GetXY(defaultPt);
-	CHECK(result == Point(125, kDefY));
+	FixedPoint result = CoordinateData(125, std::nullopt).GetXY(defaultPt);
+	CHECK(result == FixedPoint(125, kDefY));
 }
 
 TEST(CoordinateData_FromDefaults, JustY) {
-	Point result = CoordinateData(std::nullopt, -500).GetXY(defaultPt);
-	CHECK(result == Point(kDefX, -500));
+	FixedPoint result = CoordinateData(std::nullopt, -500).GetXY(defaultPt);
+	CHECK(result == FixedPoint(kDefX, -500));
 }
 
 TEST(CoordinateData_FromDefaults, NoDefault) {
-	Point result = CoordinateData(125, 500).GetXY();
-	CHECK(result == Point(125, 500));
+	FixedPoint result = CoordinateData(125, 500).GetXY();
+	CHECK(result == FixedPoint(125, 500));
 }
 
 TEST(CoordinateData_FromDefaults, MissingX) {
