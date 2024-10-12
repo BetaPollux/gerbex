@@ -43,6 +43,7 @@ public:
 	double GetDy() const;
 	int GetNx() const;
 	int GetNy() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

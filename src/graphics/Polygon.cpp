@@ -19,23 +19,20 @@
  */
 
 #include "Polygon.h"
+#include <cmath>
 #include <stdexcept>
 
 namespace gerbex {
 
-Polygon::Polygon()
-	: Polygon(1.0, 3)
-{
+Polygon::Polygon() :
+		Polygon(1.0, 3) {
 	// Empty
 }
 
 Polygon::Polygon(double outerDiameter, int numVertices, double rotation,
-		double holeDiameter)
-	: m_outerDiameter{ outerDiameter },
-	  m_numVertices{ numVertices },
-	  m_rotation{ rotation },
-	  m_holeDiameter{ holeDiameter }
-{
+		double holeDiameter) :
+		m_outerDiameter { outerDiameter }, m_numVertices { numVertices }, m_rotation {
+				rotation }, m_holeDiameter { holeDiameter } {
 	if (m_outerDiameter <= 0.0) {
 		throw std::invalid_argument("Diameter must be > 0");
 	}
@@ -67,6 +64,19 @@ double Polygon::GetOuterDiameter() const {
 
 double Polygon::GetRotation() const {
 	return m_rotation;
+}
+
+void Polygon::Serialize(Serializer &serializer) {
+	//Regular polygon
+	std::vector<std::pair<double, double>> points;
+	double angle_step = 2.0 * M_PI / m_numVertices;
+	for (int i = 0; i < m_numVertices; i++) {
+		double angle = angle_step * i;
+		double x = 0.5 * m_outerDiameter * cos(angle);
+		double y = 0.5 * m_outerDiameter * sin(angle);
+		points.push_back( { x, y });
+	}
+	serializer.AddPolygon(points);
 }
 
 } /* namespace gerbex */

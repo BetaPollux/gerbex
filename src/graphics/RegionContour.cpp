@@ -58,5 +58,18 @@ const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const 
 	return m_segments;
 }
 
+void RegionContour::Serialize(Serializer &serializer) {
+	//Closed contour, endpoints are redundant with origins
+	std::vector<std::pair<double, double>> points;
+	//TODO this needs to make a path using segment, draw vs arc
+	for (std::shared_ptr<Segment> s: m_segments) {
+		//TODO segment needs to use RealPoint
+		double x = s->GetOrigin().GetX() * 1e-6;
+		double y = s->GetOrigin().GetY() * 1e-6;
+		points.push_back( { x, y });
+	}
+	serializer.AddPolygon(points);
+}
+
 } /* namespace gerbex */
 

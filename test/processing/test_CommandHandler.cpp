@@ -72,6 +72,7 @@ TEST(CommandHandlerTest, PlotDraw) {
 TEST(CommandHandlerTest, PlotArc) {
 	GraphicsState state;
 	state.SetPlotState(PlotState::Clockwise);
+	state.SetArcMode(ArcMode::MultiQuadrant);
 	Point pt(125, 475);
 	Point os(50, -50);
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);

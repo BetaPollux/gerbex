@@ -21,6 +21,7 @@
 #ifndef SVGSERIALIZER_H_
 #define SVGSERIALIZER_H_
 
+#include "Serializer.h"
 #include <string>
 #include <vector>
 #include <pugixml.hpp>
@@ -30,16 +31,18 @@ namespace gerbex {
 /*
  *
  */
-class SvgSerializer {
+class SvgSerializer : public Serializer {
 public:
 	SvgSerializer();
 	virtual ~SvgSerializer();
 	void SetViewPort(int width, int height);
 	void SetViewBox(double xMin, double yMin, double width, double height);
 	void SaveFile(const std::string &path);
-	void AddCircle(double radius, double centerX, double centerY);
-	void AddRectangle(double width, double height, double left, double top);
-	void AddPolygon(const std::vector<std::pair<double, double>> &points);
+	void AddCircle(double radius, double centerX, double centerY) override;
+	void AddRectangle(double width, double height, double left, double top) override;
+	void AddPolygon(const std::vector<std::pair<double, double>> &points) override;
+	void AddDraw(double width, double x0, double y0, double x1, double y1)
+			override;
 
 private:
 	pugi::xml_document m_doc;

@@ -39,4 +39,7 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 	return m_primitives;
 }
 
+void Macro::Serialize(Serializer &serializer) {
+}
+
 } /* namespace gerbex */

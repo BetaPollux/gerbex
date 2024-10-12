@@ -71,4 +71,7 @@ int StepAndRepeat::GetNy() const {
 	return m_ny;
 }
 
+void StepAndRepeat::Serialize(Serializer &serializer) {
+}
+
 } /* namespace gerbex */

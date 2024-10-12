@@ -54,5 +54,9 @@ double Circle::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
 
+void Circle::Serialize(Serializer &serializer) {
+	serializer.AddCircle(0.5 * m_diameter, 0.0, 0.0);
+}
+
 } /* namespace gerbex */
 

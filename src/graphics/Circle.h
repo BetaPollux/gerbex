@@ -36,6 +36,7 @@ public:
 	virtual ~Circle();
 	double GetDiameter() const;
 	double GetHoleDiameter() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	double m_diameter;

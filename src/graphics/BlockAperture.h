@@ -37,6 +37,7 @@ public:
 	virtual ~BlockAperture();
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
+	void Serialize(Serializer &serializer) override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

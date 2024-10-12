@@ -19,32 +19,27 @@
  */
 
 #include "Arc.h"
+#include "Circle.h"
 
 namespace gerbex {
 
-Arc::Arc()
-	: m_direction{ ArcDirection::Clockwise },
-	  m_centerOffset{}
-{
+Arc::Arc() :
+		m_direction { ArcDirection::Clockwise }, m_centerOffset { } {
 	// Empty
 }
 
-Arc::Arc(const Point &origin, const Point &endPoint,
-		const Point &centerOffset, ArcDirection direction)
-	: Segment(origin, endPoint),
-	  m_direction{ direction },
-	  m_centerOffset{ centerOffset }
-{
+Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
+		ArcDirection direction) :
+		Segment(origin, endPoint), m_direction { direction }, m_centerOffset {
+				centerOffset } {
 	// Empty
 }
 
 Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
 		ArcDirection direction, std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation)
-	: Segment(origin, endPoint, aperture, transformation),
-	  m_direction{ direction },
-	  m_centerOffset{ centerOffset }
-{
+		const ApertureTransformation &transformation) :
+		Segment(origin, endPoint, aperture, transformation), m_direction {
+				direction }, m_centerOffset { centerOffset } {
 	// Empty
 }
 
@@ -58,6 +53,21 @@ const Point& Arc::GetCenterOffset() const {
 
 ArcDirection Arc::GetDirection() const {
 	return m_direction;
+}
+
+void Arc::Serialize(Serializer &serializer) {
+	// TODO should not need to reset offset
+	serializer.SetOffset(0.0, 0.0);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
+			m_aperture);
+	// TODO needs to use RealPoint
+	// TODO need to add Arc to serializer
+	double cx = m_centerOffset.GetX() + m_origin.GetX();
+	double cy = m_centerOffset.GetY() + m_origin.GetY();
+	serializer.AddDraw(circle->GetDiameter(), cx * 1e-6, cy * 1e-6,
+			m_origin.GetX() * 1e-6, m_origin.GetY() * 1e-6);
+	serializer.AddDraw(circle->GetDiameter(), cx * 1e-6, cy * 1e-6,
+			m_endPoint.GetX() * 1e-6, m_endPoint.GetY() * 1e-6);
 }
 
 } /* namespace gerbex */

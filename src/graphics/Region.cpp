@@ -63,4 +63,12 @@ bool Region::AreContoursClosed() const {
 	return true;
 }
 
+void Region::Serialize(Serializer &serializer) {
+	//TODO fixing offset should not be required
+	serializer.SetOffset(0.0, 0.0);
+	for (RegionContour &c: m_contours) {
+		c.Serialize(serializer);
+	}
+}
+
 } /* namespace gerbex */

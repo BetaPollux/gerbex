@@ -25,6 +25,8 @@
 
 namespace gerbex {
 
+//TODO need to fix y-axis
+
 SvgSerializer::SvgSerializer() {
 	m_svg = m_doc.append_child("svg");
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
@@ -56,27 +58,40 @@ void SvgSerializer::SaveFile(const std::string &path) {
 void SvgSerializer::AddCircle(double radius, double centerX, double centerY) {
 	pugi::xml_node circle = m_svg.append_child("circle");
 	circle.append_attribute("r") = radius;
-	circle.append_attribute("cx") = centerX;
-	circle.append_attribute("cy") = centerY;
+	circle.append_attribute("cx") = centerX + m_xOffset;
+	circle.append_attribute("cy") = centerY + m_yOffset;
 }
 
 void SvgSerializer::AddRectangle(double width, double height, double left,
 		double top) {
-	pugi::xml_node rect = m_svg.append_child("circle");
+	pugi::xml_node rect = m_svg.append_child("rect");
 	rect.append_attribute("width") = width;
 	rect.append_attribute("height") = height;
-	rect.append_attribute("x") = left;
-	rect.append_attribute("y") = top;
+	rect.append_attribute("x") = left + m_xOffset;
+	rect.append_attribute("y") = top + m_yOffset;
 }
 
 void SvgSerializer::AddPolygon(
 		const std::vector<std::pair<double, double> > &points) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
-	for (auto pt: points) {
-		pts_stream << pt.first << "," << pt.second << " ";
+	for (auto pt : points) {
+		pts_stream << pt.first + m_xOffset << "," << pt.second + m_yOffset
+				<< " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
+}
+
+void SvgSerializer::AddDraw(double width, double x1, double y1, double x2,
+		double y2) {
+	pugi::xml_node line = m_svg.append_child("line");
+	line.append_attribute("stroke") = "black";
+	line.append_attribute("stroke-linecap") = "round";
+	line.append_attribute("stroke-width") = std::to_string(width).c_str();
+	line.append_attribute("x1") = x1 + m_xOffset;
+	line.append_attribute("y1") = y1 + m_yOffset;
+	line.append_attribute("x2") = x2 + m_xOffset;
+	line.append_attribute("y2") = y2 + m_yOffset;
 }
 
 } /* namespace gerbex */

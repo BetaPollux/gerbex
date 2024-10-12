@@ -40,4 +40,7 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
+void BlockAperture::Serialize(Serializer &serializer) {
+}
+
 } /* namespace gerbex */

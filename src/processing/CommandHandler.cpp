@@ -155,6 +155,12 @@ void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 			throw std::logic_error(
 					"circular plotting requires an offset coordinate");
 		}
+		if (!graphicState.GetArcMode().has_value()) {
+			graphicState.SetArcMode(gerbex::ArcMode::MultiQuadrant);
+			std::cerr
+					<< "WARNING arc mode was not defined, assuming multi-quadrant"
+					<< std::endl;
+		}
 		processor.PlotArc(coord, *offset);
 		break;
 	}
@@ -297,6 +303,12 @@ void CommandHandler::EndOfFile(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "M02");
 	processor.SetEndOfFile();
+}
+
+void CommandHandler::ArcMode(CommandsProcessor &processor, Fields &words) {
+	AssertWordCommand(words);
+	gerbex::ArcMode mode = GraphicsState::ArcModeFromCommand(words.front());
+	processor.GetGraphicsState().SetArcMode(mode);
 }
 
 } /* namespace gerbex */

@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Circle.h"
 #include "Draw.h"
 
 namespace gerbex {
@@ -26,22 +27,31 @@ Draw::Draw() {
 	// Empty
 }
 
-Draw::Draw(const Point &origin, const Point &endPoint)
-	: Segment(origin, endPoint)
-{
+Draw::Draw(const Point &origin, const Point &endPoint) :
+		Segment(origin, endPoint) {
 	// Empty
 }
 
 Draw::Draw(const Point &origin, const Point &endPoint,
 		std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation)
-	: Segment(origin, endPoint, aperture, transformation)
-{
+		const ApertureTransformation &transformation) :
+		Segment(origin, endPoint, aperture, transformation) {
 	// Empty
 }
 
 Draw::~Draw() {
 	// Empty
+}
+
+void Draw::Serialize(Serializer &serializer) {
+	// TODO should not need to reset offset
+	serializer.SetOffset(0.0, 0.0);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
+			m_aperture);
+	// TODO needs to use RealPoint
+	serializer.AddDraw(circle->GetDiameter(), m_origin.GetX() * 1e-6,
+			m_origin.GetY() * 1e-6, m_endPoint.GetX() * 1e-6,
+			m_endPoint.GetY() * 1e-6);
 }
 
 } /* namespace gerbex */

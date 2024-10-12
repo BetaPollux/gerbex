@@ -42,6 +42,7 @@ public:
 	virtual ~Arc();
 	const Point& GetCenterOffset() const;
 	ArcDirection GetDirection() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	ArcDirection m_direction;

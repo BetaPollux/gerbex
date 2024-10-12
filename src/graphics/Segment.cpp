@@ -50,4 +50,7 @@ const Point& Segment::GetEndPoint() const {
 	return m_endPoint;
 }
 
+void Segment::Serialize(Serializer &serializer) {
+}
+
 } /* namespace gerbex */

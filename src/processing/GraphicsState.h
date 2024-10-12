@@ -42,6 +42,11 @@ enum class PlotState {
 	CounterClockwise
 };
 
+enum class ArcMode {
+	SingleQuadrant,
+	MultiQuadrant
+};
+
 /*
  * Graphics state is a set of parameters affecting the result of operation codes.
  */
@@ -63,6 +68,9 @@ public:
 	void SetUnit(std::optional<Unit> unit);
 	static Unit UnitFromCommand(const std::string &str);
 	static PlotState PlotStateFromCommand(const std::string &str);
+	static ArcMode ArcModeFromCommand(const std::string &str);
+	const std::optional<ArcMode> GetArcMode() const;
+	void SetArcMode(std::optional<ArcMode> arcMode);
 
 private:
 	std::optional<CoordinateFormat> m_format;
@@ -70,6 +78,7 @@ private:
 	std::optional<Point> m_currentPoint;
 	std::shared_ptr<Aperture> m_currentAperture;
 	std::optional<PlotState> m_plotState;
+	std::optional<ArcMode> m_arcMode;
 	ApertureTransformation m_transformation;
 };
 

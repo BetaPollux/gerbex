@@ -21,15 +21,18 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
+#include "Serializer.h"
+
 namespace gerbex {
 
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
  * They can be rotated, mirrored or scaled.
  */
-class Aperture {
+class Aperture : public Serializable {
 public:
 	virtual ~Aperture();
+	virtual void Serialize(Serializer &serializer) = 0;
 };
 
 } /* namespace gerbex */

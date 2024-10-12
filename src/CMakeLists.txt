@@ -9,3 +9,11 @@ PUBLIC
 	gerbex_processing
 	gerbex_svg
 )
+
+add_executable(gerbex
+	gerbex.cpp
+)
+
+target_link_libraries(gerbex
+	libgerbex
+)

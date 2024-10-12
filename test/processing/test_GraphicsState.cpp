@@ -45,6 +45,13 @@ TEST(GraphicsStateTest, PlotStateFromCommand)
 	CHECK_THROWS(std::invalid_argument, GraphicsState::PlotStateFromCommand("G55"));
 }
 
+TEST(GraphicsStateTest, ArcModeFromCommand)
+{
+	CHECK(ArcMode::SingleQuadrant == GraphicsState::ArcModeFromCommand("G74"));
+	CHECK(ArcMode::MultiQuadrant  == GraphicsState::ArcModeFromCommand("G75"));
+	CHECK_THROWS(std::invalid_argument, GraphicsState::ArcModeFromCommand("G76"));
+}
+
 TEST(GraphicsStateTest, Format)
 {
 	CHECK(!state.GetFormat().has_value());
@@ -68,6 +75,16 @@ TEST(GraphicsStateTest, CurrentAperture)
 TEST(GraphicsStateTest, PlotState)
 {
 	CHECK(!state.GetPlotState().has_value());
+}
+
+TEST(GraphicsStateTest, ArcMode)
+{
+	CHECK(!state.GetArcMode().has_value());
+}
+
+TEST(GraphicsStateTest, SetArcMode_RejectsSingleQuadrant)
+{
+	CHECK_THROWS(std::invalid_argument, state.SetArcMode(ArcMode::SingleQuadrant));
 }
 
 TEST(GraphicsStateTest, Transform)

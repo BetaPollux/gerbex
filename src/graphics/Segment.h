@@ -25,6 +25,8 @@
 
 namespace gerbex {
 
+//TODO segment should not be a graphical object
+
 /*
  * A graphical object with an origin and end point that can be used to define a contour.
  */
@@ -36,6 +38,7 @@ public:
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Segment();
 	const Point& GetEndPoint() const;
+	void Serialize(Serializer &serializer) override;
 
 protected:
 	Point m_endPoint;

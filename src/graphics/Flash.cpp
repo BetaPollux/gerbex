@@ -38,4 +38,10 @@ Flash::~Flash() {
 	// Empty
 }
 
+void Flash::Serialize(Serializer &serializer) {
+	//TODO set offset back
+	serializer.SetOffset(m_origin.GetX(), m_origin.GetY());
+	m_aperture->Serialize(serializer);
+}
+
 } /* namespace gerbex */

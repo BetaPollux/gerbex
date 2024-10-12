@@ -38,6 +38,7 @@ public:
 	int GetNumVertices() const;
 	double GetOuterDiameter() const;
 	double GetRotation() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	double m_outerDiameter;

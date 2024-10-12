@@ -35,7 +35,7 @@ public:
 	Draw(const Point &origin, const Point &endPoint,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Draw();
-
+	void Serialize(Serializer &serializer) override;
 };
 
 } /* namespace gerbex */

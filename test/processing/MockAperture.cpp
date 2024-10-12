@@ -31,4 +31,8 @@ MockAperture::~MockAperture() {
 	// Empty
 }
 
+void MockAperture::Serialize(Serializer &serializer) {
+	(void)serializer;
+}
+
 } /* namespace gerbex */

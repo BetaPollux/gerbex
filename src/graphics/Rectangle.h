@@ -36,6 +36,7 @@ public:
 	double GetHoleDiameter() const;
 	double GetXSize() const;
 	double GetYSize() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	double m_xSize;

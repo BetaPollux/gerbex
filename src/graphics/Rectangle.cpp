@@ -59,5 +59,10 @@ double Rectangle::GetYSize() const {
 	return m_ySize;
 }
 
+void Rectangle::Serialize(Serializer &serializer) {
+	//TODO fix top coord
+	serializer.AddRectangle(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
+}
+
 } /* namespace gerbex */
 

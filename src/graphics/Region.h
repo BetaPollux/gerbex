@@ -39,6 +39,7 @@ public:
 	void AddSegment(std::shared_ptr<Segment> segment);
 	const std::vector<RegionContour>& GetContours() const;
 	bool AreContoursClosed() const;
+	void Serialize(Serializer &serializer) override;
 
 private:
 	std::vector<RegionContour> m_contours;

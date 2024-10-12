@@ -40,6 +40,7 @@ public:
 	static void Comment(CommandsProcessor &processor, Fields &words);
 	static void Unit(CommandsProcessor &processor, Fields &words);
 	static void Format(CommandsProcessor &processor, Fields &words);
+	static void ArcMode(CommandsProcessor &processor, Fields &words);
 	static void ApertureDefine(CommandsProcessor &processor, Fields &words);
 	static void ApertureMacro(CommandsProcessor &processor, Fields &words);
 	static void SetCurrentAperture(CommandsProcessor &processor, Fields &words);

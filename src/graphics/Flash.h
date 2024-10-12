@@ -22,6 +22,7 @@
 #define FLASH_H_
 
 #include "GraphicalObject.h"
+#include "Serializer.h"
 
 namespace gerbex {
 
@@ -34,6 +35,7 @@ public:
 	Flash(const Point &origin,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Flash();
+	void Serialize(Serializer &serializer) override;
 };
 
 } /* namespace gerbex */

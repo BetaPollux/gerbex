@@ -109,5 +109,26 @@ PlotState GraphicsState::PlotStateFromCommand(const std::string &str) {
 	}
 }
 
+const std::optional<ArcMode> GraphicsState::GetArcMode() const {
+	return m_arcMode;
+}
+
+void GraphicsState::SetArcMode(std::optional<ArcMode> arcMode) {
+	if (arcMode == ArcMode::SingleQuadrant) {
+		throw std::invalid_argument("single quadrant arc mode is not supported");
+	}
+	m_arcMode = arcMode;
+}
+
+ArcMode GraphicsState::ArcModeFromCommand(const std::string &str) {
+	if (str == "G75") {
+		return ArcMode::MultiQuadrant;
+	} else if (str == "G74") {
+		return ArcMode::SingleQuadrant;
+	} else {
+		throw std::invalid_argument("invalid arc mode");
+	}
+}
+
 } /* namespace gerbex */
 
