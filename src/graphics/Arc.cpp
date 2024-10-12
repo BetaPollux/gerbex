@@ -20,6 +20,8 @@
 
 #include "Arc.h"
 #include "Circle.h"
+#include "Serializer.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -61,12 +63,9 @@ void Arc::Serialize(Serializer &serializer) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
 	// TODO need to add Arc to serializer
-	double cx = m_centerOffset.GetX() + m_origin.GetX();
-	double cy = m_centerOffset.GetY() + m_origin.GetY();
-	serializer.AddDraw(circle->GetDiameter(), cx, cy, m_origin.GetX(),
-			m_origin.GetY());
-	serializer.AddDraw(circle->GetDiameter(), cx, cy, m_endPoint.GetX(),
-			m_endPoint.GetY());
+	Point center = m_centerOffset + m_origin;
+	serializer.AddArc(circle->GetDiameter(), m_origin, m_endPoint, center,
+			m_direction);
 }
 
 } /* namespace gerbex */

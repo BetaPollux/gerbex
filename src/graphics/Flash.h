@@ -22,7 +22,7 @@
 #define FLASH_H_
 
 #include "GraphicalObject.h"
-#include "Serializer.h"
+#include "Serializable.h"
 
 namespace gerbex {
 

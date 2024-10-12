@@ -19,6 +19,7 @@
  */
 
 #include "GraphicsState.h"
+#include <iostream>
 #include <stdexcept>
 
 namespace gerbex {
@@ -140,6 +141,22 @@ Point GraphicsState::GetPoint(const CoordinateData &data) const {
 
 	return Point(newX.value_or(m_currentPoint->GetX()),
 			newY.value_or(m_currentPoint->GetY()));
+}
+
+void GraphicsState::AssertPlotState() {
+	if (!m_plotState.has_value()) {
+		SetPlotState(gerbex::PlotState::Linear);
+		std::cerr << "WARNING plot state was not defined, assuming linear"
+				<< std::endl;
+	}
+}
+
+void GraphicsState::AssertArcMode() {
+	if (!m_arcMode.has_value()) {
+		SetArcMode(gerbex::ArcMode::MultiQuadrant);
+		std::cerr << "WARNING arc mode was not defined, assuming multi-quadrant"
+				<< std::endl;
+	}
 }
 
 } /* namespace gerbex */

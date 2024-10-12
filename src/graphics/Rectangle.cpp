@@ -19,6 +19,7 @@
  */
 
 #include "Rectangle.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -61,7 +62,7 @@ double Rectangle::GetYSize() const {
 
 void Rectangle::Serialize(Serializer &serializer) {
 	//TODO fix top coord
-	serializer.AddRectangle(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
+	serializer.AddRectangle(m_xSize, m_ySize, Point(-0.5 * m_xSize, -0.5 * m_ySize));
 }
 
 } /* namespace gerbex */

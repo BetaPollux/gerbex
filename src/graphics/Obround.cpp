@@ -19,6 +19,7 @@
  */
 
 #include "Obround.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -59,16 +60,8 @@ double Obround::GetYSize() const {
 	return m_ySize;
 }
 
-void Obround::Serialize(gerbex::Serializer &serializer) {
-	if (m_xSize < m_ySize) {
-		double w = m_xSize;
-		double y = 0.5 * (m_ySize - m_xSize);
-		serializer.AddDraw(w, 0.0, -y, 0.0, y);
-	} else {
-		double w = m_ySize;
-		double x = 0.5 * (m_xSize - m_ySize);
-		serializer.AddDraw(w, -x, 0.0, x, 0.0);
-	}
+void Obround::Serialize(Serializer &serializer) {
+	serializer.AddObround(m_xSize, m_ySize, Point());
 }
 
 } /* namespace gerbex */

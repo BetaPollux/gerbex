@@ -22,7 +22,7 @@
 #define REGIONCONTOUR_H_
 
 #include "Segment.h"
-#include "Serializer.h"
+#include "Serializable.h"
 #include <memory>
 #include <vector>
 

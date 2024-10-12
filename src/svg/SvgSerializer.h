@@ -31,18 +31,21 @@ namespace gerbex {
 /*
  *
  */
-class SvgSerializer : public Serializer {
+class SvgSerializer: public Serializer {
 public:
 	SvgSerializer();
 	virtual ~SvgSerializer();
 	void SetViewPort(int width, int height);
 	void SetViewBox(double xMin, double yMin, double width, double height);
 	void SaveFile(const std::string &path);
-	void AddCircle(double radius, double centerX, double centerY) override;
-	void AddRectangle(double width, double height, double left, double top) override;
-	void AddPolygon(const std::vector<std::pair<double, double>> &points) override;
-	void AddDraw(double width, double x0, double y0, double x1, double y1)
+	void AddDraw(double width, const Point &start, const Point &end) override;
+	void AddArc(double width, const Point &start, const Point &end,
+			const Point &center, ArcDirection direction) override;
+	void AddCircle(double radius, const Point &center) override;
+	void AddRectangle(double width, double height, const Point &topLeft)
 			override;
+	void AddPolygon(const std::vector<Point> &points) override;
+	void AddObround(double width, double height, const Point &center) override;
 
 private:
 	pugi::xml_document m_doc;

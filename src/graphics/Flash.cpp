@@ -19,6 +19,7 @@
  */
 
 #include "Flash.h"
+#include "Serializer.h"
 
 namespace gerbex {
 

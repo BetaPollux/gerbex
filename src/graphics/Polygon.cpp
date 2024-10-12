@@ -19,6 +19,7 @@
  */
 
 #include "Polygon.h"
+#include "Serializer.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -68,7 +69,7 @@ double Polygon::GetRotation() const {
 
 void Polygon::Serialize(Serializer &serializer) {
 	//Regular polygon
-	std::vector<std::pair<double, double>> points;
+	std::vector<Point> points;
 	double angle_step = 2.0 * M_PI / m_numVertices;
 	for (int i = 0; i < m_numVertices; i++) {
 		double angle = angle_step * i;

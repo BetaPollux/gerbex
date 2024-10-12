@@ -21,42 +21,42 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
+#include "Arc.h"
+#include "Point.h"
 #include <string>
 #include <vector>
 
 namespace gerbex {
-
-//TODO use RealPoint for arguments
 
 /*
  *
  */
 class Serializer {
 public:
-	Serializer() : m_xOffset { 0.0 }, m_yOffset { 0.0 } {}
-	virtual ~Serializer() {}
+	Serializer() :
+			m_xOffset { 0.0 }, m_yOffset { 0.0 } {
+	}
+	virtual ~Serializer() {
+	}
 	virtual void SetOffset(double x, double y) {
 		m_xOffset = x;
 		m_yOffset = y;
 	}
-	virtual void AddCircle(double radius, double centerX, double centerY) = 0;
-	virtual void AddRectangle(double width, double height, double left, double top) = 0;
-	virtual void AddPolygon(const std::vector<std::pair<double, double>> &points) = 0;
-	virtual void AddDraw(double width, double x1, double y1, double x2, double y2) = 0;
-	//TODO add arc
+	virtual void AddCircle(double radius, const Point &center) = 0;
+	virtual void AddRectangle(double width, double height,
+			const Point &topLeft) = 0;
+	virtual void AddObround(double width, double height,
+			const Point &center) = 0;
+	virtual void AddPolygon(const std::vector<Point> &points) = 0;
+	virtual void AddDraw(double width, const Point &start,
+			const Point &end) = 0;
+	virtual void AddArc(double width, const Point &start, const Point &end,
+			const Point &center, ArcDirection direction) = 0;
 	//TODO add path builder
 	//TODO add polarity & transform
 
 protected:
 	double m_xOffset, m_yOffset;
-};
-
-
-class Serializable {
-public:
-	Serializable() {}
-	virtual ~Serializable() {}
-	virtual void Serialize(Serializer &serializer) = 0;
 };
 
 } /* namespace gerbex */

@@ -35,12 +35,12 @@ public:
 	CoordinateData();
 	virtual ~CoordinateData();
 	static CoordinateData FromString(const std::string &str);
-	FixedPoint GetXY(const std::optional<FixedPoint> &defaultPt = std::nullopt) const;
 	bool HasXY() const;
-	bool HasIJ() const;
-	const std::optional<FixedPoint>& GetIJ() const;
-	const std::optional<FixedPointType>& GetX() const;
-	const std::optional<FixedPointType>& GetY() const;
+	FixedPoint GetIJChecked() const;
+	std::optional<FixedPoint> GetIJ() const;
+	std::optional<FixedPointType> GetX() const;
+	std::optional<FixedPointType> GetY() const;
+	void AssertNoIJ() const;
 
 private:
 	std::optional<FixedPointType> m_x;

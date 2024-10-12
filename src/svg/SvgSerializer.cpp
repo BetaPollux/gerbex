@@ -55,43 +55,61 @@ void SvgSerializer::SaveFile(const std::string &path) {
 	m_doc.save_file(path.c_str());
 }
 
-void SvgSerializer::AddCircle(double radius, double centerX, double centerY) {
-	pugi::xml_node circle = m_svg.append_child("circle");
-	circle.append_attribute("r") = radius;
-	circle.append_attribute("cx") = centerX + m_xOffset;
-	circle.append_attribute("cy") = centerY + m_yOffset;
+void SvgSerializer::AddDraw(double width, const Point &start,
+		const Point &end) {
+	pugi::xml_node line = m_svg.append_child("line");
+	line.append_attribute("stroke") = "black";
+	line.append_attribute("stroke-linecap") = "round";
+	line.append_attribute("stroke-width") = std::to_string(width).c_str();
+	line.append_attribute("x1") = start.GetX() + m_xOffset;
+	line.append_attribute("y1") = start.GetY() + m_yOffset;
+	line.append_attribute("x2") = end.GetX() + m_xOffset;
+	line.append_attribute("y2") = end.GetY() + m_yOffset;
 }
 
-void SvgSerializer::AddRectangle(double width, double height, double left,
-		double top) {
+void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
+		const Point &center, ArcDirection direction) {
+	AddDraw(width, center, start);
+	AddDraw(width, center, end);
+}
+
+void SvgSerializer::AddCircle(double radius, const Point &center) {
+	pugi::xml_node circle = m_svg.append_child("circle");
+	circle.append_attribute("r") = radius;
+	circle.append_attribute("cx") = center.GetX() + m_xOffset;
+	circle.append_attribute("cy") = center.GetY() + m_yOffset;
+}
+
+void SvgSerializer::AddRectangle(double width, double height,
+		const Point &topLeft) {
 	pugi::xml_node rect = m_svg.append_child("rect");
 	rect.append_attribute("width") = width;
 	rect.append_attribute("height") = height;
-	rect.append_attribute("x") = left + m_xOffset;
-	rect.append_attribute("y") = top + m_yOffset;
+	rect.append_attribute("x") = topLeft.GetX() + m_xOffset;
+	rect.append_attribute("y") = topLeft.GetY() + m_yOffset;
 }
 
-void SvgSerializer::AddPolygon(
-		const std::vector<std::pair<double, double> > &points) {
+void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
 	for (auto pt : points) {
-		pts_stream << pt.first + m_xOffset << "," << pt.second + m_yOffset
+		pts_stream << pt.GetX() + m_xOffset << "," << pt.GetY() + m_yOffset
 				<< " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
 }
 
-void SvgSerializer::AddDraw(double width, double x1, double y1, double x2,
-		double y2) {
-	pugi::xml_node line = m_svg.append_child("line");
-	line.append_attribute("stroke") = "black";
-	line.append_attribute("stroke-linecap") = "round";
-	line.append_attribute("stroke-width") = std::to_string(width).c_str();
-	line.append_attribute("x1") = x1 + m_xOffset;
-	line.append_attribute("y1") = y1 + m_yOffset;
-	line.append_attribute("x2") = x2 + m_xOffset;
-	line.append_attribute("y2") = y2 + m_yOffset;
+void SvgSerializer::AddObround(double width, double height,
+		const Point &center) {
+	if (width < height) {
+		double w = width;
+		double y = 0.5 * (height - width);
+		AddDraw(w, Point(0.0, -y), Point(0.0, y));
+	} else {
+		double w = height;
+		double x = 0.5 * (width - height);
+		AddDraw(w, Point(-x, 0.0), Point(x, 0.0));
+	}
 }
 
 } /* namespace gerbex */

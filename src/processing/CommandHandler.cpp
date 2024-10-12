@@ -130,38 +130,22 @@ void CommandHandler::Plot(CommandsProcessor &processor, Fields &words) {
 	AssertWordCommand(words);
 	AssertCommandCode(words.front(), "D01");
 
-	GraphicsState &graphicState = processor.GetGraphicsState();
+	GraphicsState &graphicsState = processor.GetGraphicsState();
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
-	Point coord = graphicState.GetPoint(coorddata);
+	Point coord = graphicsState.GetPoint(coorddata);
+	graphicsState.AssertPlotState();
 
-	if (!graphicState.GetPlotState().has_value()) {
-		graphicState.SetPlotState(gerbex::PlotState::Linear);
-		std::cerr << "WARNING plot state was not defined, assuming linear"
-				<< std::endl;
-	}
-	switch (*graphicState.GetPlotState()) {
+	switch (*graphicsState.GetPlotState()) {
 	case PlotState::Linear:
+		coorddata.AssertNoIJ();
 		processor.PlotDraw(coord);
-		if (coorddata.GetIJ().has_value()) {
-			throw std::invalid_argument(
-					"ignoring offset coordinate for linear Draw");
-		}
 		break;
 	case PlotState::Clockwise:
 	case PlotState::CounterClockwise:
-		std::optional<FixedPoint> fOffset = coorddata.GetIJ();
-		if (!fOffset.has_value()) {
-			throw std::logic_error(
-					"circular plotting requires an offset coordinate");
-		}
-		if (!graphicState.GetArcMode().has_value()) {
-			graphicState.SetArcMode(gerbex::ArcMode::MultiQuadrant);
-			std::cerr
-					<< "WARNING arc mode was not defined, assuming multi-quadrant"
-					<< std::endl;
-		}
-		Point offset = graphicState.GetFormat()->Convert(*fOffset);
+		FixedPoint fOffset = coorddata.GetIJChecked();
+		graphicsState.AssertArcMode();
+		Point offset = graphicsState.GetFormat()->Convert(fOffset);
 		processor.PlotArc(coord, offset);
 		break;
 	}
@@ -172,11 +156,8 @@ void CommandHandler::Move(CommandsProcessor &processor, Fields &words) {
 	AssertCommandCode(words.front(), "D02");
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
+	coorddata.AssertNoIJ();
 	Point coord = processor.GetGraphicsState().GetPoint(coorddata);
-
-	if (coorddata.GetIJ().has_value()) {
-		throw std::invalid_argument("Move cannot have offset coordinate");
-	}
 
 	processor.Move(coord);
 }
@@ -186,11 +167,8 @@ void CommandHandler::Flash(CommandsProcessor &processor, Fields &words) {
 	AssertCommandCode(words.front(), "D03");
 
 	CoordinateData coorddata = CoordinateData::FromString(words.front());
+	coorddata.AssertNoIJ();
 	Point coord = processor.GetGraphicsState().GetPoint(coorddata);
-
-	if (coorddata.GetIJ().has_value()) {
-		throw std::invalid_argument("Flash cannot have offset coordinate");
-	}
 
 	processor.Flash(coord);
 }

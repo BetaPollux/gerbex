@@ -18,7 +18,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Point.h"
 #include "RegionContour.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -62,12 +64,10 @@ const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const 
 
 void RegionContour::Serialize(Serializer &serializer) {
 	//Closed contour, endpoints are redundant with origins
-	std::vector<std::pair<double, double>> points;
+	std::vector<Point> points;
 	//TODO this needs to make a path using segment, draw vs arc
 	for (std::shared_ptr<Segment> s : m_segments) {
-		double x = s->GetOrigin().GetX();
-		double y = s->GetOrigin().GetY();
-		points.push_back( { x, y });
+		points.push_back(s->GetOrigin());
 	}
 	serializer.AddPolygon(points);
 }

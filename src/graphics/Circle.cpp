@@ -19,6 +19,7 @@
  */
 
 #include "Circle.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -55,7 +56,7 @@ double Circle::GetHoleDiameter() const {
 }
 
 void Circle::Serialize(Serializer &serializer) {
-	serializer.AddCircle(0.5 * m_diameter, 0.0, 0.0);
+	serializer.AddCircle(0.5 * m_diameter, Point());
 }
 
 } /* namespace gerbex */

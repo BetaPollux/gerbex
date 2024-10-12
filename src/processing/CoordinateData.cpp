@@ -75,35 +75,33 @@ CoordinateData CoordinateData::FromString(const std::string &str) {
 	return CoordinateData(x, y, ij);
 }
 
-FixedPoint CoordinateData::GetXY(const std::optional<FixedPoint> &defaultPt) const {
-	if (!HasXY() && !defaultPt.has_value()) {
-		throw std::invalid_argument("coordinate data is not fully defined");
-	}
-
-	FixedPointType newX = GetX().value_or(defaultPt->GetX());
-	FixedPointType newY = GetY().value_or(defaultPt->GetY());
-
-	return FixedPoint(newX, newY);
-}
-
 bool CoordinateData::HasXY() const {
 	return m_x.has_value() && m_y.has_value();
 }
 
-bool CoordinateData::HasIJ() const {
-	return m_ij.has_value();
-}
-
-const std::optional<FixedPoint>& CoordinateData::GetIJ() const {
+std::optional<FixedPoint> CoordinateData::GetIJ() const {
 	return m_ij;
 }
 
-const std::optional<FixedPointType>& CoordinateData::GetX() const {
+FixedPoint CoordinateData::GetIJChecked() const {
+	if (!m_ij.has_value()) {
+		throw std::invalid_argument("offset IJ was not defined");
+	}
+	return *m_ij;
+}
+
+std::optional<FixedPointType> CoordinateData::GetX() const {
 	return m_x;
 }
 
-const std::optional<FixedPointType>& CoordinateData::GetY() const {
+std::optional<FixedPointType> CoordinateData::GetY() const {
 	return m_y;
+}
+
+void CoordinateData::AssertNoIJ() const {
+	if (m_ij.has_value()) {
+		throw std::invalid_argument("offset IJ defined but invalid for operation");
+	}
 }
 
 } /* namespace gerbex */

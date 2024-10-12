@@ -1,7 +1,7 @@
 /*
- * Draw.cpp
+ * Serializable.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Oct. 12, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,38 +18,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Circle.h"
-#include "Draw.h"
-#include "Serializer.h"
+#ifndef SERIALIZABLE_H_
+#define SERIALIZABLE_H_
 
 namespace gerbex {
 
-Draw::Draw() {
-	// Empty
-}
+class Serializer;
 
-Draw::Draw(const Point &origin, const Point &endPoint) :
-		Segment(origin, endPoint) {
-	// Empty
-}
-
-Draw::Draw(const Point &origin, const Point &endPoint,
-		std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation) :
-		Segment(origin, endPoint, aperture, transformation) {
-	// Empty
-}
-
-Draw::~Draw() {
-	// Empty
-}
-
-void Draw::Serialize(Serializer &serializer) {
-	// TODO should not need to reset offset
-	serializer.SetOffset(0.0, 0.0);
-	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
-			m_aperture);
-	serializer.AddDraw(circle->GetDiameter(), m_origin, m_endPoint);
-}
+class Serializable {
+public:
+	Serializable() {
+	}
+	virtual ~Serializable() {
+	}
+	virtual void Serialize(Serializer &serializer) = 0;
+};
 
 } /* namespace gerbex */
+
+#endif /* SERIALIZABLE_H_ */

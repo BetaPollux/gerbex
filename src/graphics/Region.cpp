@@ -19,6 +19,7 @@
  */
 
 #include "Region.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {

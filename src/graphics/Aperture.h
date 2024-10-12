@@ -21,7 +21,7 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
-#include "Serializer.h"
+#include "Serializable.h"
 
 namespace gerbex {
 

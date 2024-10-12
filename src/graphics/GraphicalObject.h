@@ -24,7 +24,7 @@
 #include "Aperture.h"
 #include "ApertureTransformation.h"
 #include "Point.h"
-#include "Serializer.h"
+#include "Serializable.h"
 #include <memory>
 
 namespace gerbex {
@@ -43,7 +43,7 @@ public:
 	const std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
 	const ApertureTransformation& GetTransformation() const;
-	void Serialize(gerbex::Serializer &serializer) = 0;
+	void Serialize(Serializer &serializer) = 0;
 
 protected:
 	Point m_origin;

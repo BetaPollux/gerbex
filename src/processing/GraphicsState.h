@@ -73,6 +73,8 @@ public:
 	std::optional<ArcMode> GetArcMode() const;
 	void SetArcMode(std::optional<ArcMode> arcMode);
 	Point GetPoint(const CoordinateData &data) const;
+	void AssertPlotState();
+	void AssertArcMode();
 
 private:
 	std::optional<CoordinateFormat> m_format;
