@@ -28,7 +28,7 @@ TEST_GROUP(SvgSerializerTest) {
 
 TEST(SvgSerializerTest, MakeFile) {
 	SvgSerializer serializer;
-	serializer.SetViewPort(800, 800);
+	serializer.SetViewPort(400, 400);
 	serializer.SetViewBox(-10.0, -10.0, 20.0, 20.0);
 	serializer.AddCircle(0.1, -10.0, -10.0);
 	serializer.AddCircle(0.1, 10.0, -10.0);

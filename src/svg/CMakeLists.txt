@@ -10,4 +10,5 @@ target_include_directories(gerbex_svg
 target_link_libraries(gerbex_svg
 PUBLIC
 	gerbex_graphics
+    pugixml
 )

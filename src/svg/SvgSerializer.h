@@ -21,9 +21,9 @@
 #ifndef SVGSERIALIZER_H_
 #define SVGSERIALIZER_H_
 
-#include <sstream>
 #include <string>
 #include <vector>
+#include <pugixml.hpp>
 
 namespace gerbex {
 
@@ -42,10 +42,8 @@ public:
 	void AddPolygon(const std::vector<std::pair<double, double>> &points);
 
 private:
-	std::stringstream m_stream;
-	int m_viewPortWidth, m_viewPortHeight;
-	double m_viewBoxXMin, m_viewBoxYMin;
-	double m_viewBoxWidth, m_viewBoxHeight;
+	pugi::xml_document m_doc;
+	pugi::xml_node m_svg;
 };
 
 } /* namespace gerbex */
