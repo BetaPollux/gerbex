@@ -62,8 +62,8 @@ FileProcessor::~FileProcessor() {
 	// Empty
 }
 
-void FileProcessor::Process(std::unique_ptr<std::istream> stream) {
-	FileParser parser(std::move(stream));
+void FileProcessor::Process(std::istream &stream) {
+	FileParser parser(stream);
 	while (true) {
 		Fields words = parser.GetNextCommand();
 

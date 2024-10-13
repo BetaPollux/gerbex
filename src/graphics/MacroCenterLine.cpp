@@ -75,6 +75,7 @@ void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
 		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
 				-dy), Point(dx, -dy) };
 		for (Point &pt : corners) {
+			pt = pt + m_coord;
 			pt.Rotate(m_rotation);
 		}
 		serializer.AddPolygon(corners);

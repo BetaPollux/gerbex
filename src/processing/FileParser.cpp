@@ -26,13 +26,8 @@ namespace gerbex {
 const char EXT_DELIM = '%';
 const char WORD_DELIM = '*';
 
-FileParser::FileParser() :
-		FileParser(std::make_unique<std::istringstream>("")) {
-	// Empty
-}
-
-FileParser::FileParser(std::unique_ptr<std::istream> stream) {
-	SetIstream(std::move(stream));
+FileParser::FileParser(std::istream &stream) :
+		m_istream { stream }, m_currentLine { 1 } {
 }
 
 FileParser::~FileParser() {
@@ -76,41 +71,36 @@ Fields split(std::string &str, char delim) {
 
 Fields FileParser::GetNextCommand() {
 	// Discard all leading space, and count new lines
-	while (isspace(m_istream->peek())) {
-		int space = m_istream->get();
+	while (isspace(m_istream.peek())) {
+		int space = m_istream.get();
 		if (space == '\n') {
 			m_currentLine++;
 		}
 	}
 
-	if (m_istream->eof()) {
+	if (m_istream.eof()) {
 		// Return empty vector on EOF
 		return Fields();
 	}
 
 	std::string command_str;
 	char delim;
-	if (m_istream->peek() == EXT_DELIM) {
+	if (m_istream.peek() == EXT_DELIM) {
 		// Handle extended command
-		m_istream->get();	// Discard the leading EXT_DELIM
+		m_istream.get();	// Discard the leading EXT_DELIM
 		delim = EXT_DELIM;
 	} else {
 		// Handle word command
 		delim = WORD_DELIM;
 	}
 
-	std::getline(*m_istream, command_str, delim);
-	if (m_istream->eof()) {
+	std::getline(m_istream, command_str, delim);
+	if (m_istream.eof()) {
 		throw std::runtime_error("reached EOF without a delimiter");
 	}
 	m_currentLine += removeNewlines(command_str);
 
 	return split(command_str, WORD_DELIM);
-}
-
-void FileParser::SetIstream(std::unique_ptr<std::istream> istream) {
-	m_istream = std::move(istream);
-	m_currentLine = 1;
 }
 
 int FileParser::GetCurrentLine() const {

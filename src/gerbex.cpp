@@ -41,10 +41,9 @@ int main(int argc, char *argv[]) {
 	std::string path = argv[1];
 	std::string svg_file = argc > 2 ? argv[2] : "gerber.svg";
 
-	std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path,
-			std::ifstream::in);
+	std::ifstream gerber = std::ifstream(path, std::ifstream::in);
 	FileProcessor fileProcessor;
-	fileProcessor.Process(std::move(gerber));
+	fileProcessor.Process(gerber);
 
 	SvgSerializer serializer;
 	serializer.SetViewPort(400, 400);

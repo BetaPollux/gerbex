@@ -35,7 +35,7 @@ class FileProcessor {
 public:
 	FileProcessor();
 	virtual ~FileProcessor();
-	void Process(std::unique_ptr<std::istream> stream);
+	void Process(std::istream &stream);
 	CommandsProcessor& GetProcessor();
 
 private:

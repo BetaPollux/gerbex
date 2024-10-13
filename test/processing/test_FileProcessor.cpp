@@ -45,12 +45,11 @@ using namespace gerbex;
 void loadfile(const std::string &path, FileProcessor &fileProcessor,
 		CommandsProcessor **processor, GraphicsState **graphicsState) {
 	//TODO make this path use a variable
-	std::unique_ptr<std::istream> gerber = std::make_unique<std::ifstream>(path,
-			std::ifstream::in);
-	CHECK_TEXT(gerber->good(),
+	std::ifstream gerber = std::ifstream(path, std::ifstream::in);
+	CHECK_TEXT(gerber.good(),
 			"could not open Gerber file; run exec from build directory as ./bin/test_gerbex");
 
-	fileProcessor.Process(std::move(gerber));
+	fileProcessor.Process(gerber);
 	*processor = &fileProcessor.GetProcessor();
 	*graphicsState = &fileProcessor.GetProcessor().GetGraphicsState();
 }
@@ -60,11 +59,10 @@ TEST_GROUP(GerberBasics) {
 
 TEST(GerberBasics, ThrowsRuntimeError) {
 	// Reaches EOF without closing delimiter
-	std::unique_ptr<std::istream> gerber = std::make_unique<std::istringstream>(
-			"%MOMM*\n");
+	std::istringstream gerber = std::istringstream("%MOMM*\n");
 
 	FileProcessor fileProcessor;
-	CHECK_THROWS(std::runtime_error, fileProcessor.Process(std::move(gerber)));
+	CHECK_THROWS(std::runtime_error, fileProcessor.Process(gerber));
 }
 
 /**
@@ -137,15 +135,19 @@ TEST_GROUP(GerberPolaritiesAndApertures) {
 };
 
 TEST(GerberPolaritiesAndApertures, ReadAndUsedMacro) {
-	std::shared_ptr<ApertureTemplate> templ = processor->GetTemplate("THERMAL80");
+	std::shared_ptr<ApertureTemplate> templ = processor->GetTemplate(
+			"THERMAL80");
 	std::shared_ptr<Macro> macro = GetAperture<Macro>(*processor, 19);
-	std::shared_ptr<MacroThermal> thermal = GetMacroPrimitive<MacroThermal>(*macro);
+	std::shared_ptr<MacroThermal> thermal = GetMacroPrimitive<MacroThermal>(
+			*macro);
 	DOUBLES_EQUAL(0.8, thermal->GetOuterDiameter(), DBL_TOL);
 }
 
 TEST(GerberPolaritiesAndApertures, TwoRegionsWithPolarity) {
-	std::shared_ptr<Region> outer_region = GetGraphicalObject<Region>(processor->GetObjects(), 17);
-	std::shared_ptr<Region> inner_region = GetGraphicalObject<Region>(processor->GetObjects(), 18);
+	std::shared_ptr<Region> outer_region = GetGraphicalObject<Region>(
+			processor->GetObjects(), 17);
+	std::shared_ptr<Region> inner_region = GetGraphicalObject<Region>(
+			processor->GetObjects(), 18);
 
 	LONGS_EQUAL(4, outer_region->GetContours().front().GetSegments().size());
 	CHECK(outer_region->GetTransformation().GetPolarity() == Polarity::Dark);
@@ -170,9 +172,12 @@ TEST_GROUP(GerberNestedBlocks) {
 };
 
 TEST(GerberNestedBlocks, MadeAllBlocks) {
-	std::shared_ptr<BlockAperture> b100 = GetAperture<BlockAperture>(*processor, 100);
-	std::shared_ptr<BlockAperture> b101 = GetAperture<BlockAperture>(*processor, 101);
-	std::shared_ptr<BlockAperture> b102 = GetAperture<BlockAperture>(*processor, 102);
+	std::shared_ptr<BlockAperture> b100 = GetAperture<BlockAperture>(*processor,
+			100);
+	std::shared_ptr<BlockAperture> b101 = GetAperture<BlockAperture>(*processor,
+			101);
+	std::shared_ptr<BlockAperture> b102 = GetAperture<BlockAperture>(*processor,
+			102);
 
 	LONGS_EQUAL(3, b100->GetObjectList()->size());
 	LONGS_EQUAL(4, b101->GetObjectList()->size());
@@ -183,7 +188,6 @@ TEST(GerberNestedBlocks, MadeAllBlocks) {
 	POINTERS_EQUAL(b100.get(), nb100.get());
 	POINTERS_EQUAL(b101.get(), nb101.get());
 }
-
 
 /**
  * Block with Different Orientations
@@ -202,12 +206,18 @@ TEST_GROUP(GerberBlocksDiffOrientation) {
 };
 
 TEST(GerberBlocksDiffOrientation, MadeBlock) {
-	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(*processor, 12);
-	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(*block->GetObjectList(), 0);
-	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(*block->GetObjectList(), 1);
-	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(*block->GetObjectList(), 2);
-	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(), 3);
-	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(), 4);
+	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(
+			*processor, 12);
+	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 0);
+	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 1);
+	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 2);
+	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(),
+			3);
+	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(),
+			4);
 
 	CHECK(Polarity::Dark == c1->GetTransformation().GetPolarity());
 	CHECK(Polarity::Dark == c2->GetTransformation().GetPolarity());
@@ -220,10 +230,14 @@ TEST(GerberBlocksDiffOrientation, MadeBlock) {
 }
 
 TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
-	std::shared_ptr<Flash> b1 = GetGraphicalObject<Flash>(processor->GetObjects(), 0);
-	std::shared_ptr<Flash> b2 = GetGraphicalObject<Flash>(processor->GetObjects(), 1);
-	std::shared_ptr<Flash> b3 = GetGraphicalObject<Flash>(processor->GetObjects(), 2);
-	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(processor->GetObjects(), 3);
+	std::shared_ptr<Flash> b1 = GetGraphicalObject<Flash>(
+			processor->GetObjects(), 0);
+	std::shared_ptr<Flash> b2 = GetGraphicalObject<Flash>(
+			processor->GetObjects(), 1);
+	std::shared_ptr<Flash> b3 = GetGraphicalObject<Flash>(
+			processor->GetObjects(), 2);
+	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(
+			processor->GetObjects(), 3);
 
 	DOUBLES_EQUAL(0.0, b1->GetTransformation().GetRotationDegrees(), DBL_TOL);
 	DOUBLES_EQUAL(0.0, b2->GetTransformation().GetRotationDegrees(), DBL_TOL);
@@ -268,8 +282,10 @@ TEST(GerberSampleMacro, MadeMacros) {
 
 TEST(GerberSampleMacro, BOXR_D12) {
 	std::shared_ptr<Macro> boxr_d12 = GetAperture<Macro>(*processor, 12);
-	std::shared_ptr<MacroCenterLine> s1 = GetMacroPrimitive<MacroCenterLine>(*boxr_d12, 0);
-	std::shared_ptr<MacroCircle> c4 = GetMacroPrimitive<MacroCircle>(*boxr_d12, 5);
+	std::shared_ptr<MacroCenterLine> s1 = GetMacroPrimitive<MacroCenterLine>(
+			*boxr_d12, 0);
+	std::shared_ptr<MacroCircle> c4 = GetMacroPrimitive<MacroCircle>(*boxr_d12,
+			5);
 
 	DOUBLES_EQUAL(0.2550, s1->GetWidth(), DBL_TOL);
 	DOUBLES_EQUAL(0.1 - 2 * 0.02, s1->GetHeight(), DBL_TOL);
@@ -277,12 +293,15 @@ TEST(GerberSampleMacro, BOXR_D12) {
 	CHECK(Point(0.0, 0.0) == s1->GetCoord());
 
 	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
-	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)), c4->GetCoord());
+	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)),
+			c4->GetCoord());
 }
 
 TEST(GerberSampleMacro, MadeStepRepeats) {
-	std::shared_ptr<StepAndRepeat> sr1 = GetGraphicalObject<StepAndRepeat>(processor->GetObjects(), 1);
-	std::shared_ptr<StepAndRepeat> sr2 = GetGraphicalObject<StepAndRepeat>(processor->GetObjects(), 2);
+	std::shared_ptr<StepAndRepeat> sr1 = GetGraphicalObject<StepAndRepeat>(
+			processor->GetObjects(), 1);
+	std::shared_ptr<StepAndRepeat> sr2 = GetGraphicalObject<StepAndRepeat>(
+			processor->GetObjects(), 2);
 
 	LONGS_EQUAL(90, sr1->GetNy());
 	DOUBLES_EQUAL(0.03, sr1->GetDy(), DBL_TOL);

@@ -25,22 +25,16 @@
 
 using namespace gerbex;
 
-
-
-void setIstream(FileParser &parser, std::string const &str) {
-	parser.SetIstream(std::make_unique<std::istringstream>(str));
-}
-
 /**
  * Get Next Command
  */
 
 TEST_GROUP(FileParser_GetNext) {
-	FileParser parser;
 };
 
 TEST(FileParser_GetNext, Word) {
-	setIstream(parser, "D10*");
+	std::istringstream stream("D10*");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -49,7 +43,8 @@ TEST(FileParser_GetNext, Word) {
 }
 
 TEST(FileParser_GetNext, Word_LeadingWhitespace) {
-	setIstream(parser, "\n\nD10*");
+	std::istringstream stream("\n\nD10*");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -58,7 +53,8 @@ TEST(FileParser_GetNext, Word_LeadingWhitespace) {
 }
 
 TEST(FileParser_GetNext, Word_LeadingWhitespace_Dos) {
-	setIstream(parser, "\r\n\r\nD10*");
+	std::istringstream stream("\r\n\r\nD10*");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -67,7 +63,8 @@ TEST(FileParser_GetNext, Word_LeadingWhitespace_Dos) {
 }
 
 TEST(FileParser_GetNext, Two_Word) {
-	setIstream(parser, "D10*X0Y0D02*");
+	std::istringstream stream("D10*X0Y0D02*");
+	FileParser parser(stream);
 
 	Fields first = parser.GetNextCommand();
 	Fields second = parser.GetNextCommand();
@@ -79,7 +76,8 @@ TEST(FileParser_GetNext, Two_Word) {
 }
 
 TEST(FileParser_GetNext, Extended) {
-	setIstream(parser, "%FSLAX26Y26*%");
+	std::istringstream stream("%FSLAX26Y26*%");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -88,7 +86,8 @@ TEST(FileParser_GetNext, Extended) {
 }
 
 TEST(FileParser_GetNext, Extended_LeadingWhitespace) {
-	setIstream(parser, "\n\n%FSLAX26Y26*%");
+	std::istringstream stream("\n\n%FSLAX26Y26*%");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -97,7 +96,8 @@ TEST(FileParser_GetNext, Extended_LeadingWhitespace) {
 }
 
 TEST(FileParser_GetNext, Extended_LeadingWhitespace_Dos) {
-	setIstream(parser, "\r\n\r\n%FSLAX26Y26*%");
+	std::istringstream stream("\r\n\r\n%FSLAX26Y26*%");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -106,7 +106,8 @@ TEST(FileParser_GetNext, Extended_LeadingWhitespace_Dos) {
 }
 
 TEST(FileParser_GetNext, Two_Extended) {
-	setIstream(parser, "%FSLAX26Y26*%%MOMM*%");
+	std::istringstream stream("%FSLAX26Y26*%%MOMM*%");
+	FileParser parser(stream);
 
 	Fields first = parser.GetNextCommand();
 	Fields second = parser.GetNextCommand();
@@ -118,7 +119,8 @@ TEST(FileParser_GetNext, Two_Extended) {
 }
 
 TEST(FileParser_GetNext, ExtendedMulti) {
-	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+	std::istringstream stream("%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -129,8 +131,8 @@ TEST(FileParser_GetNext, ExtendedMulti) {
 }
 
 TEST(FileParser_GetNext, ExtendedMulti_Multiline) {
-	setIstream(parser,
-			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+	std::istringstream stream("%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 
@@ -140,11 +142,14 @@ TEST(FileParser_GetNext, ExtendedMulti_Multiline) {
 }
 
 TEST(FileParser_GetNext, CurrentLine_One) {
+	std::istringstream stream("D10*");
+	FileParser parser(stream);
 	LONGS_EQUAL(1, parser.GetCurrentLine());
 }
 
 TEST(FileParser_GetNext, CurrentLine_ReadOne) {
-	setIstream(parser, "%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+	std::istringstream stream("%AMDONUTVAR*1,1,$1,$2,$3*1,0,$4,$2,$3*%");
+	FileParser parser(stream);
 
 	parser.GetNextCommand();
 
@@ -152,7 +157,8 @@ TEST(FileParser_GetNext, CurrentLine_ReadOne) {
 }
 
 TEST(FileParser_GetNext, CurrentLine_ReadTwo) {
-	setIstream(parser, "D10*\nX0Y0D02*");
+	std::istringstream stream("D10*\nX0Y0D02*");
+	FileParser parser(stream);
 
 	parser.GetNextCommand();
 	parser.GetNextCommand();
@@ -160,19 +166,9 @@ TEST(FileParser_GetNext, CurrentLine_ReadTwo) {
 	LONGS_EQUAL(2, parser.GetCurrentLine());
 }
 
-TEST(FileParser_GetNext, SetStreamResetsCount) {
-	setIstream(parser, "\n\n\nD10*");
-
-	parser.GetNextCommand();
-	parser.GetNextCommand();
-
-	setIstream(parser, "");
-	LONGS_EQUAL(1, parser.GetCurrentLine());
-}
-
 TEST(FileParser_GetNext, CurrentLine_Many) {
-	setIstream(parser,
-			"%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+	std::istringstream stream("%AMTriangle_30*\n4,1,3,\n1,-1,\n1,1,\n2,1,\n1,-1,\n30*\n%");
+	FileParser parser(stream);
 
 	parser.GetNextCommand();
 
@@ -180,13 +176,16 @@ TEST(FileParser_GetNext, CurrentLine_Many) {
 }
 
 TEST(FileParser_GetNext, Empty) {
+	std::istringstream stream("");
+	FileParser parser(stream);
 	Fields words = parser.GetNextCommand();
 
 	CHECK(words.empty());
 }
 
 TEST(FileParser_GetNext, Finish) {
-	setIstream(parser, "D10*");
+	std::istringstream stream("D10*");
+	FileParser parser(stream);
 
 	Fields words = parser.GetNextCommand();
 	Fields final = parser.GetNextCommand();
@@ -196,14 +195,15 @@ TEST(FileParser_GetNext, Finish) {
 }
 
 TEST(FileParser_GetNext, NoDelimiter) {
-	setIstream(parser, "WHAT");
+std::istringstream stream("WHAT");
+	FileParser parser(stream);
 
 	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());
 }
 
 TEST(FileParser_GetNext, OpenExtended) {
-	setIstream(parser, "%OHNO*");
+	std::istringstream stream("%OHNO*");
+	FileParser parser(stream);
 
 	CHECK_THROWS(std::runtime_error, parser.GetNextCommand());
 }
-

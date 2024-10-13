@@ -34,19 +34,16 @@ namespace gerbex {
  */
 class FileParser {
 public:
-	FileParser();
-	//TODO can stream be a reference?
-	FileParser(std::unique_ptr<std::istream> stream);
+	FileParser(std::istream &stream);
 	virtual ~FileParser();
 	// Get the next command from the stream. Word commands are a single word, whereas extended commands can have multiple words.
 	// Commands can span multiple lines in the file.
 	// Words always end in *. Returns an empty vector on EOF.
 	Fields GetNextCommand();
-	void SetIstream(std::unique_ptr<std::istream> istream);
 	int GetCurrentLine() const;
 
 private:
-	std::unique_ptr<std::istream> m_istream;
+	std::istream &m_istream;
 	int m_currentLine;
 };
 
