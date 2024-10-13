@@ -64,11 +64,9 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 }
 
 void MacroCircle::Serialize(gerbex::Serializer &serializer) {
-	Point center = m_coord;
-	if (m_rotation != 0.0) {
-		center.Rotate(m_rotation);
-	}
-	serializer.AddCircle(0.5 * m_diameter, center);
+	serializer.PushRotation(m_rotation);
+	serializer.AddCircle(0.5 * m_diameter, m_coord);
+	serializer.PopRotation();
 }
 
 } /* namespace gerbex */

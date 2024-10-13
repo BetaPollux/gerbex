@@ -41,7 +41,9 @@ Flash::~Flash() {
 
 void Flash::Serialize(Serializer &serializer) {
 	serializer.PushOffset(m_origin);
+	serializer.PushRotation(m_transformation.GetRotationDegrees());
 	m_aperture->Serialize(serializer);
+	serializer.PopRotation();
 	serializer.PopOffset();
 }
 

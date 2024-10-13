@@ -35,7 +35,7 @@ namespace gerbex {
 class Serializer {
 public:
 	Serializer() :
-			m_offset { }, m_offsetStack { } {
+			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack {}  {
 	}
 	virtual ~Serializer() {
 	}
@@ -46,6 +46,14 @@ public:
 	virtual void PopOffset() {
 		m_offsetStack.pop_back();
 		updateOffset();
+	}
+	virtual void PushRotation(double degrees) {
+		m_rotationStack.push_back(degrees);
+		updateRotation();
+	}
+	virtual void PopRotation() {
+		m_rotationStack.pop_back();
+		updateRotation();
 	}
 	virtual void AddCircle(double radius, const Point &center) = 0;
 	virtual void AddRectangle(double width, double height,
@@ -67,8 +75,16 @@ protected:
 			m_offset = m_offset + pt;
 		}
 	}
+	virtual void updateRotation() {
+		m_rotation = 0;
+		for (double r : m_rotationStack) {
+			m_rotation += r;
+		}
+	}
 	Point m_offset;
 	std::vector<Point> m_offsetStack;
+	double m_rotation;
+	std::vector<double> m_rotationStack;
 };
 
 } /* namespace gerbex */

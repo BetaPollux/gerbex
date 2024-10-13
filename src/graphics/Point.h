@@ -73,11 +73,14 @@ public:
 		return m_y;
 	}
 	void Rotate(double degrees) {
-		double rad = M_PI * degrees / 180.0;
-		T newX = cos(rad) * m_x - sin(rad) * m_y;
-		T newY = sin(rad) * m_x + cos(rad) * m_y;
-		m_x = newX;
-		m_y = newY;
+		//TODO add a rotate around a reference point
+		if (degrees != 0.0) {
+			double rad = M_PI * degrees / 180.0;
+			T newX = cos(rad) * m_x - sin(rad) * m_y;
+			T newY = sin(rad) * m_x + cos(rad) * m_y;
+			m_x = newX;
+			m_y = newY;
+		}
 	}
 
 private:

@@ -65,21 +65,10 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 }
 
 void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
-	if (m_rotation == 0.0) {
-		serializer.AddRectangle(m_width, m_height,
-				m_coord - Point(m_width, m_height) * 0.5);
-	} else {
-		//TODO use a vector line instead?
-		double dx = 0.5 * m_width;
-		double dy = 0.5 * m_height;
-		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
-				-dy), Point(dx, -dy) };
-		for (Point &pt : corners) {
-			pt = pt + m_coord;
-			pt.Rotate(m_rotation);
-		}
-		serializer.AddPolygon(corners);
-	}
+	serializer.PushRotation(m_rotation);
+	serializer.AddRectangle(m_width, m_height,
+			m_coord - Point(m_width, m_height) * 0.5);
+	serializer.PopRotation();
 }
 
 } /* namespace gerbex */

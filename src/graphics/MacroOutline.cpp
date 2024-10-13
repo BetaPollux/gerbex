@@ -72,15 +72,9 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 }
 
 void MacroOutline::Serialize(gerbex::Serializer &serializer) {
-	if (m_rotation == 0.0) {
-		serializer.AddPolygon(m_vertices);
-	} else {
-		std::vector<Point> rotated = m_vertices;
-		for (Point &pt : rotated) {
-			pt.Rotate(m_rotation);
-		}
-		serializer.AddPolygon(rotated);
-	}
+	serializer.PushRotation(m_rotation);
+	serializer.AddPolygon(m_vertices);
+	serializer.PopRotation();
 }
 
 } /* namespace gerbex */

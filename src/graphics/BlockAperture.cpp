@@ -19,6 +19,7 @@
  */
 
 #include "BlockAperture.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -41,6 +42,9 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 }
 
 void BlockAperture::Serialize(Serializer &serializer) {
+	for (auto obj : m_objects) {
+		obj->Serialize(serializer);
+	}
 }
 
 } /* namespace gerbex */

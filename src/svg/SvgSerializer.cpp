@@ -57,14 +57,20 @@ void SvgSerializer::SaveFile(const std::string &path) {
 
 void SvgSerializer::AddDraw(double width, const Point &start,
 		const Point &end) {
+	Point s = start;
+	Point e = end;
+	s.Rotate(m_rotation);
+	e.Rotate(m_rotation);
+	s = s + m_offset;
+	e = e + m_offset;
 	pugi::xml_node line = m_svg.append_child("line");
 	line.append_attribute("stroke") = "black";
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
-	line.append_attribute("x1") = start.GetX() + m_offset.GetX();
-	line.append_attribute("y1") = start.GetY() + m_offset.GetY();
-	line.append_attribute("x2") = end.GetX() + m_offset.GetX();
-	line.append_attribute("y2") = end.GetY() + m_offset.GetY();
+	line.append_attribute("x1") = s.GetX();
+	line.append_attribute("y1") = s.GetY();
+	line.append_attribute("x2") = e.GetX();
+	line.append_attribute("y2") = e.GetY();
 }
 
 void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
@@ -74,25 +80,44 @@ void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 }
 
 void SvgSerializer::AddCircle(double radius, const Point &center) {
+	Point c = center;
+	c.Rotate(m_rotation);
+	c = c + m_offset;
+
 	pugi::xml_node circle = m_svg.append_child("circle");
 	circle.append_attribute("r") = radius;
-	circle.append_attribute("cx") = center.GetX() + m_offset.GetX();
-	circle.append_attribute("cy") = center.GetY() + m_offset.GetY();
+	circle.append_attribute("cx") = c.GetX();
+	circle.append_attribute("cy") = c.GetY();
 }
 
 void SvgSerializer::AddRectangle(double width, double height,
 		const Point &topLeft) {
-	pugi::xml_node rect = m_svg.append_child("rect");
-	rect.append_attribute("width") = width;
-	rect.append_attribute("height") = height;
-	rect.append_attribute("x") = topLeft.GetX() + m_offset.GetX();
-	rect.append_attribute("y") = topLeft.GetY() + m_offset.GetY();
+	if (m_rotation == 0.0) {
+		Point pt = topLeft + m_offset;
+		pugi::xml_node rect = m_svg.append_child("rect");
+		rect.append_attribute("width") = width;
+		rect.append_attribute("height") = height;
+		rect.append_attribute("x") = pt.GetX();
+		rect.append_attribute("y") = pt.GetY();
+	} else {
+		double dx = 0.5 * width;
+		double dy = 0.5 * height;
+		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
+				-dy), Point(dx, -dy) };
+		AddPolygon(corners);
+		// TODO investigate built-in SVG transforms
+		//		std::string rot = "rotate(" + std::to_string(m_rotation) + ")";
+		//		rect.append_attribute("transform") = rot.c_str();
+		//		rect.append_attribute("transform-origin") = "center";
+		//		rect.append_attribute("transform-box") = "fill-box";
+	}
 }
 
 void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
 	for (auto pt : points) {
+		pt.Rotate(m_rotation);
 		pts_stream << pt.GetX() + m_offset.GetX() << ","
 				<< pt.GetY() + m_offset.GetY() << " ";
 	}
