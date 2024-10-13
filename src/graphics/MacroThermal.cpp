@@ -19,6 +19,7 @@
  */
 
 #include "MacroThermal.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -73,6 +74,11 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 	double gap = params[4];
 	double rotation = params[5];
 	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
+}
+
+void MacroThermal::Serialize(gerbex::Serializer &serializer) {
+	//TODO need to draw thermal
+	serializer.AddCircle(0.5 * m_outerDiameter, m_coord);
 }
 
 } /* namespace gerbex */

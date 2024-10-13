@@ -23,6 +23,7 @@
 
 #include "Arc.h"
 #include "Point.h"
+#include <vector>
 #include <string>
 #include <vector>
 
@@ -34,13 +35,17 @@ namespace gerbex {
 class Serializer {
 public:
 	Serializer() :
-			m_xOffset { 0.0 }, m_yOffset { 0.0 } {
+			m_offset { }, m_offsetStack { } {
 	}
 	virtual ~Serializer() {
 	}
-	virtual void SetOffset(double x, double y) {
-		m_xOffset = x;
-		m_yOffset = y;
+	virtual void PushOffset(const Point &delta) {
+		m_offsetStack.push_back(delta);
+		updateOffset();
+	}
+	virtual void PopOffset() {
+		m_offsetStack.pop_back();
+		updateOffset();
 	}
 	virtual void AddCircle(double radius, const Point &center) = 0;
 	virtual void AddRectangle(double width, double height,
@@ -56,7 +61,14 @@ public:
 	//TODO add polarity & transform
 
 protected:
-	double m_xOffset, m_yOffset;
+	virtual void updateOffset() {
+		m_offset = Point();
+		for (const Point &pt : m_offsetStack) {
+			m_offset = m_offset + pt;
+		}
+	}
+	Point m_offset;
+	std::vector<Point> m_offsetStack;
 };
 
 } /* namespace gerbex */

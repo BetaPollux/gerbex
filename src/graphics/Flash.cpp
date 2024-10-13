@@ -40,9 +40,9 @@ Flash::~Flash() {
 }
 
 void Flash::Serialize(Serializer &serializer) {
-	//TODO set offset back
-	serializer.SetOffset(m_origin.GetX(), m_origin.GetY());
+	serializer.PushOffset(m_origin);
 	m_aperture->Serialize(serializer);
+	serializer.PopOffset();
 }
 
 } /* namespace gerbex */

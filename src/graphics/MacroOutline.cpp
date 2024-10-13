@@ -19,22 +19,20 @@
  */
 
 #include "MacroOutline.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
 
-MacroOutline::MacroOutline()
-	: MacroOutline(MacroExposure::ON,
-			{Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0)}, 0.0)
-{
+MacroOutline::MacroOutline() :
+		MacroOutline(MacroExposure::ON, { Point(0.0, 0.0), Point(1.0, 0.0),
+				Point(0.0, 1.0) }, 0.0) {
 	// Empty
 }
 
 MacroOutline::MacroOutline(MacroExposure exposure,
-		const std::vector<Point> &vertices, double rotation)
-	: MacroPrimitive(exposure, Point(), rotation),
-	  m_vertices{ vertices }
-{
+		const std::vector<Point> &vertices, double rotation) :
+		MacroPrimitive(exposure, Point(), rotation), m_vertices { vertices } {
 	if (vertices.size() < 3) {
 		throw std::invalid_argument("There must at least 3 vertices");
 	}
@@ -71,6 +69,18 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	}
 	double rotation = params.back();
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
+}
+
+void MacroOutline::Serialize(gerbex::Serializer &serializer) {
+	if (m_rotation == 0.0) {
+		serializer.AddPolygon(m_vertices);
+	} else {
+		std::vector<Point> rotated = m_vertices;
+		for (Point &pt : rotated) {
+			pt.Rotate(m_rotation);
+		}
+		serializer.AddPolygon(rotated);
+	}
 }
 
 } /* namespace gerbex */

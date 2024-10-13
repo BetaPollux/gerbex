@@ -61,10 +61,10 @@ void SvgSerializer::AddDraw(double width, const Point &start,
 	line.append_attribute("stroke") = "black";
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
-	line.append_attribute("x1") = start.GetX() + m_xOffset;
-	line.append_attribute("y1") = start.GetY() + m_yOffset;
-	line.append_attribute("x2") = end.GetX() + m_xOffset;
-	line.append_attribute("y2") = end.GetY() + m_yOffset;
+	line.append_attribute("x1") = start.GetX() + m_offset.GetX();
+	line.append_attribute("y1") = start.GetY() + m_offset.GetY();
+	line.append_attribute("x2") = end.GetX() + m_offset.GetX();
+	line.append_attribute("y2") = end.GetY() + m_offset.GetY();
 }
 
 void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
@@ -76,8 +76,8 @@ void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 void SvgSerializer::AddCircle(double radius, const Point &center) {
 	pugi::xml_node circle = m_svg.append_child("circle");
 	circle.append_attribute("r") = radius;
-	circle.append_attribute("cx") = center.GetX() + m_xOffset;
-	circle.append_attribute("cy") = center.GetY() + m_yOffset;
+	circle.append_attribute("cx") = center.GetX() + m_offset.GetX();
+	circle.append_attribute("cy") = center.GetY() + m_offset.GetY();
 }
 
 void SvgSerializer::AddRectangle(double width, double height,
@@ -85,16 +85,16 @@ void SvgSerializer::AddRectangle(double width, double height,
 	pugi::xml_node rect = m_svg.append_child("rect");
 	rect.append_attribute("width") = width;
 	rect.append_attribute("height") = height;
-	rect.append_attribute("x") = topLeft.GetX() + m_xOffset;
-	rect.append_attribute("y") = topLeft.GetY() + m_yOffset;
+	rect.append_attribute("x") = topLeft.GetX() + m_offset.GetX();
+	rect.append_attribute("y") = topLeft.GetY() + m_offset.GetY();
 }
 
 void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
 	for (auto pt : points) {
-		pts_stream << pt.GetX() + m_xOffset << "," << pt.GetY() + m_yOffset
-				<< " ";
+		pts_stream << pt.GetX() + m_offset.GetX() << ","
+				<< pt.GetY() + m_offset.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
 }

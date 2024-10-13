@@ -39,6 +39,7 @@ public:
 	double GetHeight() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroCenterLine> FromParameters(const Parameters &params);
+	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
 	double m_width, m_height;

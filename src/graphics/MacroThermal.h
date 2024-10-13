@@ -40,6 +40,7 @@ public:
 	double GetInnerDiameter() const;
 	double GetOuterDiameter() const;
 	static std::unique_ptr<MacroThermal> FromParameters(const Parameters &params);
+	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
 	double m_outerDiameter, m_innerDiameter, m_gapThickness;

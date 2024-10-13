@@ -19,6 +19,7 @@
  */
 
 #include "MacroVectorLine.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -62,6 +63,9 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 	double rotation = params[6];
 	return std::make_unique<MacroVectorLine>(exposure, width, start, end,
 			rotation);
+}
+
+void MacroVectorLine::Serialize(gerbex::Serializer &serializer) {
 }
 
 } /* namespace gerbex */

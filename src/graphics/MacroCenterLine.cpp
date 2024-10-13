@@ -19,22 +19,20 @@
  */
 
 #include "MacroCenterLine.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
 
-MacroCenterLine::MacroCenterLine()
-	: MacroCenterLine(MacroExposure::ON, 1.0, 0.5, Point(0.0, 0.0), 0.0)
-{
+MacroCenterLine::MacroCenterLine() :
+		MacroCenterLine(MacroExposure::ON, 1.0, 0.5, Point(0.0, 0.0), 0.0) {
 	// Empty
 }
 
 MacroCenterLine::MacroCenterLine(MacroExposure exposure, double width,
-		double height, const Point &start, double rotation)
-	: MacroPrimitive(exposure, start, rotation),
-	  m_width{ width},
-	  m_height{ height }
-{
+		double height, const Point &start, double rotation) :
+		MacroPrimitive(exposure, start, rotation), m_width { width }, m_height {
+				height } {
 	if (width < 0.0 || height < 0.0) {
 		throw std::invalid_argument("Width and height must be >= 0.0");
 	}
@@ -64,6 +62,23 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 	double rotation = params[5];
 	return std::make_unique<MacroCenterLine>(exposure, width, height, center,
 			rotation);
+}
+
+void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
+	if (m_rotation == 0.0) {
+		serializer.AddRectangle(m_width, m_height,
+				m_coord - Point(m_width, m_height) * 0.5);
+	} else {
+		//TODO use a vector line instead?
+		double dx = 0.5 * m_width;
+		double dy = 0.5 * m_height;
+		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
+				-dy), Point(dx, -dy) };
+		for (Point &pt : corners) {
+			pt.Rotate(m_rotation);
+		}
+		serializer.AddPolygon(corners);
+	}
 }
 
 } /* namespace gerbex */

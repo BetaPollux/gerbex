@@ -18,23 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Serializer.h"
 #include "StepAndRepeat.h"
 #include <stdexcept>
 
 namespace gerbex {
 
-StepAndRepeat::StepAndRepeat()
-	: StepAndRepeat(1, 1, 0.0, 0.0)
-{
+StepAndRepeat::StepAndRepeat() :
+		StepAndRepeat(1, 1, 0.0, 0.0) {
 	// Empty
 }
 
-StepAndRepeat::StepAndRepeat(int nx, int ny, double dx, double dy)
-	: m_nx{ nx },
-	  m_ny{ ny },
-	  m_dx{ dx },
-	  m_dy{ dy }
-{
+StepAndRepeat::StepAndRepeat(int nx, int ny, double dx, double dy) :
+		m_nx { nx }, m_ny { ny }, m_dx { dx }, m_dy { dy } {
 	if (nx < 1 || ny < 1) {
 		throw std::invalid_argument("Must repeat at least once.");
 	}
@@ -72,6 +68,15 @@ int StepAndRepeat::GetNy() const {
 }
 
 void StepAndRepeat::Serialize(Serializer &serializer) {
+	for (int ix = 0; ix < m_nx; ix++) {
+		for (int iy = 0; iy < m_ny; iy++) {
+			serializer.PushOffset(Point(ix * m_dx, iy * m_dy));
+			for (auto obj : m_objects) {
+				obj->Serialize(serializer);
+			}
+			serializer.PopOffset();
+		}
+	}
 }
 
 } /* namespace gerbex */

@@ -58,11 +58,8 @@ ArcDirection Arc::GetDirection() const {
 }
 
 void Arc::Serialize(Serializer &serializer) {
-	// TODO should not need to reset offset
-	serializer.SetOffset(0.0, 0.0);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	// TODO need to add Arc to serializer
 	Point center = m_centerOffset + m_origin;
 	serializer.AddArc(circle->GetDiameter(), m_origin, m_endPoint, center,
 			m_direction);

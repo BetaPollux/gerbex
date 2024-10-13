@@ -19,6 +19,7 @@
  */
 
 #include "MacroCircle.h"
+#include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
@@ -60,6 +61,14 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 		rotation = 0.0;
 	}
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
+}
+
+void MacroCircle::Serialize(gerbex::Serializer &serializer) {
+	Point center = m_coord;
+	if (m_rotation != 0.0) {
+		center.Rotate(m_rotation);
+	}
+	serializer.AddCircle(0.5 * m_diameter, center);
 }
 
 } /* namespace gerbex */

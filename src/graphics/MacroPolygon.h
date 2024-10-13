@@ -40,6 +40,7 @@ public:
 	double GetDiameter() const;
 	int GetNumVertices() const;
 	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
+	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
 	int m_numVertices;

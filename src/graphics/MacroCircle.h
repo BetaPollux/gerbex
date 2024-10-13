@@ -38,6 +38,7 @@ public:
 	virtual ~MacroCircle();
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
+	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
 	double m_diameter;

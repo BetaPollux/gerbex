@@ -19,22 +19,21 @@
  */
 
 #include "MacroPolygon.h"
+#include "Serializer.h"
+#include <cmath>
 #include <stdexcept>
 
 namespace gerbex {
 
-MacroPolygon::MacroPolygon()
-	: MacroPolygon(MacroExposure::ON, 6, Point(0.0, 0.0), 1.0, 0.0)
-{
+MacroPolygon::MacroPolygon() :
+		MacroPolygon(MacroExposure::ON, 6, Point(0.0, 0.0), 1.0, 0.0) {
 	// Empty
 }
 
 MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
-		const Point &center, double diameter, double rotation)
-	: MacroPrimitive(exposure, center, rotation),
-	  m_numVertices{ numVertices },
-	  m_diameter{ diameter }
-{
+		const Point &center, double diameter, double rotation) :
+		MacroPrimitive(exposure, center, rotation), m_numVertices { numVertices }, m_diameter {
+				diameter } {
 	if (numVertices < 3 || numVertices > 12) {
 		throw std::invalid_argument("Number of vertices must be from 3 to 12");
 	}
@@ -68,6 +67,19 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 	double rotation = params[5];
 	return std::make_unique<MacroPolygon>(exposure, num, center, diameter,
 			rotation);
+}
+
+void MacroPolygon::Serialize(gerbex::Serializer &serializer) {
+	//Regular polygon
+	std::vector<Point> points;
+	double angle_step = 2.0 * M_PI / m_numVertices;
+	for (int i = 0; i < m_numVertices; i++) {
+		double angle = angle_step * i;
+		double x = 0.5 * m_diameter * cos(angle);
+		double y = 0.5 * m_diameter * sin(angle);
+		points.push_back( { x, y });
+	}
+	serializer.AddPolygon(points);
 }
 
 } /* namespace gerbex */

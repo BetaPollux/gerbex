@@ -21,6 +21,7 @@
 #ifndef POINT_H_
 #define POINT_H_
 
+#include <cmath>
 #include <cstdint>
 
 namespace gerbex {
@@ -62,7 +63,7 @@ public:
 	GenericPoint operator-(const GenericPoint<T> &rhs) const {
 		return GenericPoint<T>(m_x - rhs.m_x, m_y - rhs.m_y);
 	}
-	GenericPoint operator*(T factor) const {
+	GenericPoint operator*(double factor) const {
 		return GenericPoint<T>(m_x * factor, m_y * factor);
 	}
 	T GetX() const {
@@ -70,6 +71,13 @@ public:
 	}
 	T GetY() const {
 		return m_y;
+	}
+	void Rotate(double degrees) {
+		double rad = M_PI * degrees / 180.0;
+		T newX = cos(rad) * m_x - sin(rad) * m_y;
+		T newY = sin(rad) * m_x + cos(rad) * m_y;
+		m_x = newX;
+		m_y = newY;
 	}
 
 private:

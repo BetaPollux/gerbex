@@ -22,6 +22,7 @@
 #define MACROPRIMITIVE_H_
 
 #include "Point.h"
+#include "Serializable.h"
 
 namespace gerbex {
 
@@ -34,7 +35,7 @@ enum class MacroExposure {
  * A simple shape used to build a Macro aperture.
  * Primitives always rotate around the parent Macro origin.
  */
-class MacroPrimitive {
+class MacroPrimitive : public Serializable {
 public:
 	MacroPrimitive();
 	MacroPrimitive(MacroExposure exposure, const Point &coord, double rotation);

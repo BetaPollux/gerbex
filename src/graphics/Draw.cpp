@@ -45,8 +45,6 @@ Draw::~Draw() {
 }
 
 void Draw::Serialize(Serializer &serializer) {
-	// TODO should not need to reset offset
-	serializer.SetOffset(0.0, 0.0);
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
 	serializer.AddDraw(circle->GetDiameter(), m_origin, m_endPoint);

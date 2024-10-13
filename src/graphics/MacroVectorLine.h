@@ -39,6 +39,7 @@ public:
 	const Point& GetEnd() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
+	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
 	double m_width;
