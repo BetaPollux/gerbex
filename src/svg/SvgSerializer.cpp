@@ -64,7 +64,7 @@ void SvgSerializer::AddDraw(double width, const Point &start,
 	s = s + m_offset;
 	e = e + m_offset;
 	pugi::xml_node line = m_svg.append_child("line");
-	line.append_attribute("stroke") = "black";
+	line.append_attribute("stroke") = getFillColour();
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
 	line.append_attribute("x1") = s.GetX();
@@ -76,13 +76,6 @@ void SvgSerializer::AddDraw(double width, const Point &start,
 void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 		const Point &center, ArcDirection direction) {
 	double radius = start.Distance(center);
-	Point s = start;
-	Point e = end;
-	s.Rotate(m_rotation);
-	e.Rotate(m_rotation);
-	s = s + m_offset;
-	e = e + m_offset;
-
 	if (start == end) {
 		Point c = center + m_offset;
 		pugi::xml_node circle = m_svg.append_child("circle");
@@ -90,10 +83,16 @@ void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 		circle.append_attribute("cx") = c.GetX();
 		circle.append_attribute("cy") = c.GetY();
 		circle.append_attribute("fill") = "none";
-		circle.append_attribute("stroke") = "black";
+		circle.append_attribute("stroke") = getFillColour();
 		circle.append_attribute("stroke-width") = width;
 	} else {
 		//TODO solve for arc flags
+		Point s = start;
+		Point e = end;
+		s.Rotate(m_rotation);
+		e.Rotate(m_rotation);
+		s = s + m_offset;
+		e = e + m_offset;
 		double rot = 0.0;
 		int large_arc_flag = 0;
 		int sweep_flag = 1;
@@ -105,7 +104,7 @@ void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 		pugi::xml_node path = m_svg.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
 		path.append_attribute("fill") = "none";
-		path.append_attribute("stroke") = "black";
+		path.append_attribute("stroke") = getFillColour();
 		path.append_attribute("stroke-width") = width;
 		path.append_attribute("stroke-linecap") = "round";
 	}
@@ -120,6 +119,7 @@ void SvgSerializer::AddCircle(double radius, const Point &center) {
 	circle.append_attribute("r") = radius;
 	circle.append_attribute("cx") = c.GetX();
 	circle.append_attribute("cy") = c.GetY();
+	circle.append_attribute("fill") = getFillColour();
 }
 
 void SvgSerializer::AddRectangle(double width, double height,
@@ -131,9 +131,11 @@ void SvgSerializer::AddRectangle(double width, double height,
 		rect.append_attribute("height") = height;
 		rect.append_attribute("x") = pt.GetX();
 		rect.append_attribute("y") = pt.GetY();
+		rect.append_attribute("fill") = getFillColour();
 	} else {
 		double dx = 0.5 * width;
 		double dy = 0.5 * height;
+		// TODO this isn't top left
 		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
 				-dy), Point(dx, -dy) };
 		AddPolygon(corners);
@@ -154,6 +156,7 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 				<< pt.GetY() + m_offset.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
+	poly.append_attribute("fill") = getFillColour();
 }
 
 void SvgSerializer::AddObround(double width, double height,
@@ -166,6 +169,14 @@ void SvgSerializer::AddObround(double width, double height,
 		double w = height;
 		double x = 0.5 * (width - height);
 		AddDraw(w, Point(-x, 0.0), Point(x, 0.0));
+	}
+}
+
+const char* SvgSerializer::getFillColour() const {
+	if (m_isDark) {
+		return "black";
+	} else {
+		return "white";
 	}
 }
 

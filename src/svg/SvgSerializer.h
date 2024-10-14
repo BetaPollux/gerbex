@@ -48,6 +48,7 @@ public:
 	void AddObround(double width, double height, const Point &center) override;
 
 private:
+	const char* getFillColour() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 };

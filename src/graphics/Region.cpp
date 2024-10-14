@@ -65,8 +65,14 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer) {
+	if (m_transformation.GetPolarity() == Polarity::Clear) {
+		serializer.TogglePolarity();
+	}
 	for (RegionContour &c: m_contours) {
 		c.Serialize(serializer);
+	}
+	if (m_transformation.GetPolarity() == Polarity::Clear) {
+		serializer.TogglePolarity();
 	}
 }
 

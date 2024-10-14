@@ -79,7 +79,13 @@ void MacroPolygon::Serialize(gerbex::Serializer &serializer) {
 		double y = 0.5 * m_diameter * sin(angle);
 		points.push_back( { x, y });
 	}
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 	serializer.AddPolygon(points);
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 }
 
 } /* namespace gerbex */

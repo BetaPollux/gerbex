@@ -72,9 +72,15 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 }
 
 void MacroOutline::Serialize(gerbex::Serializer &serializer) {
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 	serializer.PushRotation(m_rotation);
 	serializer.AddPolygon(m_vertices);
 	serializer.PopRotation();
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 }
 
 } /* namespace gerbex */

@@ -78,7 +78,13 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 
 void MacroThermal::Serialize(gerbex::Serializer &serializer) {
 	//TODO need to draw thermal
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 	serializer.AddCircle(0.5 * m_outerDiameter, m_coord);
+	if (m_exposure == MacroExposure::OFF) {
+		serializer.TogglePolarity();
+	}
 }
 
 } /* namespace gerbex */

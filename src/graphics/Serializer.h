@@ -35,7 +35,8 @@ namespace gerbex {
 class Serializer {
 public:
 	Serializer() :
-			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack {}  {
+			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack { }, m_isDark {
+					true } {
 	}
 	virtual ~Serializer() {
 	}
@@ -55,6 +56,10 @@ public:
 		m_rotationStack.pop_back();
 		updateRotation();
 	}
+	virtual void TogglePolarity() {
+		//TODO make this push/pop?
+		m_isDark = !m_isDark;
+	}
 	virtual void AddCircle(double radius, const Point &center) = 0;
 	virtual void AddRectangle(double width, double height,
 			const Point &topLeft) = 0;
@@ -66,7 +71,7 @@ public:
 	virtual void AddArc(double width, const Point &start, const Point &end,
 			const Point &center, ArcDirection direction) = 0;
 	//TODO add path builder
-	//TODO add polarity & transform
+	//TODO add transform
 
 protected:
 	virtual void updateOffset() {
@@ -85,6 +90,7 @@ protected:
 	std::vector<Point> m_offsetStack;
 	double m_rotation;
 	std::vector<double> m_rotationStack;
+	bool m_isDark;
 };
 
 } /* namespace gerbex */

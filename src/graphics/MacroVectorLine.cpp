@@ -66,6 +66,7 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 }
 
 void MacroVectorLine::Serialize(gerbex::Serializer &serializer) {
+	//TODO draw vector line
 }
 
 } /* namespace gerbex */

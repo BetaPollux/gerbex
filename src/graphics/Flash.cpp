@@ -40,11 +40,17 @@ Flash::~Flash() {
 }
 
 void Flash::Serialize(Serializer &serializer) {
+	if (m_transformation.GetPolarity() == Polarity::Clear) {
+		serializer.TogglePolarity();
+	}
 	serializer.PushOffset(m_origin);
 	serializer.PushRotation(m_transformation.GetRotationDegrees());
 	m_aperture->Serialize(serializer);
 	serializer.PopRotation();
 	serializer.PopOffset();
+	if (m_transformation.GetPolarity() == Polarity::Clear) {
+		serializer.TogglePolarity();
+	}
 }
 
 } /* namespace gerbex */
