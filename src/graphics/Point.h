@@ -82,6 +82,11 @@ public:
 			m_y = newY;
 		}
 	}
+	double Distance(const GenericPoint<T> &rhs) const {
+		double dx = m_x - rhs.m_x;
+		double dy = m_y - rhs.m_y;
+		return sqrt(dx * dx + dy * dy);
+	}
 
 private:
 	T m_x, m_y;

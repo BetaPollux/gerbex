@@ -75,8 +75,40 @@ void SvgSerializer::AddDraw(double width, const Point &start,
 
 void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 		const Point &center, ArcDirection direction) {
-	AddDraw(width, center, start);
-	AddDraw(width, center, end);
+	double radius = start.Distance(center);
+	Point s = start;
+	Point e = end;
+	s.Rotate(m_rotation);
+	e.Rotate(m_rotation);
+	s = s + m_offset;
+	e = e + m_offset;
+
+	if (start == end) {
+		Point c = center + m_offset;
+		pugi::xml_node circle = m_svg.append_child("circle");
+		circle.append_attribute("r") = radius;
+		circle.append_attribute("cx") = c.GetX();
+		circle.append_attribute("cy") = c.GetY();
+		circle.append_attribute("fill") = "none";
+		circle.append_attribute("stroke") = "black";
+		circle.append_attribute("stroke-width") = width;
+	} else {
+		//TODO solve for arc flags
+		double rot = 0.0;
+		int large_arc_flag = 0;
+		int sweep_flag = 1;
+		std::stringstream d;
+		d << "M " << s.GetX() << " " << s.GetY() << " ";
+		d << "A " << radius << " " << radius << " ";
+		d << rot << " " << large_arc_flag << " " << sweep_flag << " ";
+		d << e.GetX() << " " << e.GetY() << " ";
+		pugi::xml_node path = m_svg.append_child("path");
+		path.append_attribute("d") = d.str().c_str();
+		path.append_attribute("fill") = "none";
+		path.append_attribute("stroke") = "black";
+		path.append_attribute("stroke-width") = width;
+		path.append_attribute("stroke-linecap") = "round";
+	}
 }
 
 void SvgSerializer::AddCircle(double radius, const Point &center) {
