@@ -73,8 +73,8 @@ void SvgSerializer::AddDraw(double width, const Segment &segment) {
 }
 
 void SvgSerializer::AddArc(double width, const ArcSegment &segment) {
-	double radius = segment.GetStart().Distance(segment.GetCenter());
 	if (segment.IsCircle()) {
+		double radius = segment.GetStart().Distance(segment.GetCenter());
 		Point c = segment.GetCenter() + m_offset;
 		pugi::xml_node circle = m_svg.append_child("circle");
 		circle.append_attribute("r") = radius;
@@ -84,21 +84,12 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment) {
 		circle.append_attribute("stroke") = getFillColour();
 		circle.append_attribute("stroke-width") = width;
 	} else {
-		//TODO solve for arc flags
 		Point s = segment.GetStart();
-		Point e = segment.GetEnd();
 		s.Rotate(m_rotation);
-		e.Rotate(m_rotation);
 		s = s + m_offset;
-		e = e + m_offset;
-		double rot = 0.0;
-		int large_arc_flag = 0;
-		int sweep_flag = 1;
 		std::stringstream d;
 		d << "M " << s.GetX() << " " << s.GetY() << " ";
-		d << "A " << radius << " " << radius << " ";
-		d << rot << " " << large_arc_flag << " " << sweep_flag << " ";
-		d << e.GetX() << " " << e.GetY() << " ";
+		d << makePathArc(segment);
 		pugi::xml_node path = m_svg.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
 		path.append_attribute("fill") = "none";
@@ -131,11 +122,11 @@ void SvgSerializer::AddRectangle(double width, double height,
 		rect.append_attribute("y") = pt.GetY();
 		rect.append_attribute("fill") = getFillColour();
 	} else {
-		double dx = 0.5 * width;
-		double dy = 0.5 * height;
-		// TODO this isn't top left
-		std::vector<Point> corners = { Point(dx, dy), Point(-dx, dy), Point(-dx,
-				-dy), Point(dx, -dy) };
+		std::vector<Point> corners = { Point(0.0, 0.0), Point(-width, 0.0),
+				Point(-width, -height), Point(0.0, -height) };
+		for (Point &c : corners) {
+			c = c - topLeft;
+		}
 		AddPolygon(corners);
 		// TODO investigate built-in SVG transforms
 		//		std::string rot = "rotate(" + std::to_string(m_rotation) + ")";
@@ -177,6 +168,51 @@ const char* SvgSerializer::getFillColour() const {
 	} else {
 		return "white";
 	}
+}
+
+void SvgSerializer::AddContour(
+		const std::vector<std::shared_ptr<Segment>> &segments) {
+	Point s = segments[0]->GetStart();
+	s.Rotate(m_rotation);
+	s = s + m_offset;
+	std::stringstream d;
+	d << "M " << s.GetX() << " " << s.GetY() << " ";
+	for (std::shared_ptr<Segment> segment: segments) {
+		std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<ArcSegment>(segment);
+		if (arc) {
+			d << makePathArc(*arc);
+		} else {
+			d << makePathLine(*segment);
+		}
+	}
+	pugi::xml_node path = m_svg.append_child("path");
+	path.append_attribute("d") = d.str().c_str();
+	path.append_attribute("fill") = getFillColour();
+}
+
+std::string SvgSerializer::makePathArc(const ArcSegment &segment) {
+	//TODO solve for arc flags
+	double radius = segment.GetStart().Distance(segment.GetCenter());
+	Point e = segment.GetEnd();
+	e.Rotate(m_rotation);
+	e = e + m_offset;
+	double rot = 0.0;
+	int large_arc_flag = 0;
+	int sweep_flag = segment.GetDirection() == ArcDirection::CounterClockwise ? 1 : 0;
+	std::stringstream d;
+	d << "A " << radius << " " << radius << " ";
+	d << rot << " " << large_arc_flag << " " << sweep_flag << " ";
+	d << e.GetX() << " " << e.GetY() << " ";
+	return d.str();
+}
+
+std::string SvgSerializer::makePathLine(const Segment &segment) {
+	Point e = segment.GetEnd();
+	e.Rotate(m_rotation);
+	e = e + m_offset;
+	std::stringstream d;
+	d << "L " << e.GetX() << " " << e.GetY() << " ";
+	return d.str();
 }
 
 } /* namespace gerbex */

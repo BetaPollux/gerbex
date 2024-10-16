@@ -66,15 +66,11 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer) {
-	if (m_polarity == Polarity::Clear) {
-		serializer.TogglePolarity();
-	}
+	serializer.PushPolarity(m_polarity);
 	for (RegionContour &c : m_contours) {
 		c.Serialize(serializer);
 	}
-	if (m_polarity == Polarity::Clear) {
-		serializer.TogglePolarity();
-	}
+	serializer.PopPolarity();
 }
 
 Polarity Region::GetPolarity() const {

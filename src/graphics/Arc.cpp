@@ -44,7 +44,9 @@ Arc::~Arc() {
 void Arc::Serialize(Serializer &serializer) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
+	serializer.PushPolarity(m_transform.GetPolarity());
 	serializer.AddArc(circle->GetDiameter(), m_segment);
+	serializer.PopPolarity();
 }
 
 std::shared_ptr<Aperture> Arc::GetAperture() const {

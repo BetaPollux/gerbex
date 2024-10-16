@@ -45,8 +45,12 @@ public:
 			override;
 	void AddPolygon(const std::vector<Point> &points) override;
 	void AddObround(double width, double height, const Point &center) override;
+	void AddContour(const std::vector<std::shared_ptr<Segment>> &segments)
+			override;
 
 private:
+	std::string makePathArc(const ArcSegment &segment);
+	std::string makePathLine(const Segment &segment);
 	const char* getFillColour() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;

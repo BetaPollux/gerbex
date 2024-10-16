@@ -74,13 +74,8 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 
 void MacroThermal::Serialize(gerbex::Serializer &serializer) {
 	//TODO need to draw thermal
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
+	// Exposure is always ON
 	serializer.AddCircle(0.5 * m_outerDiameter, m_center);
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
 }
 
 const Point& MacroThermal::GetCenter() const {

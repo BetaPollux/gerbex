@@ -42,13 +42,17 @@ int main(int argc, char *argv[]) {
 	std::string svg_file = argc > 2 ? argv[2] : "gerber.svg";
 
 	std::ifstream gerber = std::ifstream(path, std::ifstream::in);
+	if (!gerber.good()) {
+		std::cerr << "Failed to open file" << std::endl;
+		return EXIT_FAILURE;
+	}
 	FileProcessor fileProcessor;
 	fileProcessor.Process(gerber);
 
 	SvgSerializer serializer;
 	serializer.SetViewPort(400, 400);
 	//TODO set viewbox to match extents
-	serializer.SetViewBox(-1.0, -1.0, 10.0, 10.0);
+	serializer.SetViewBox(-10.0, -10.0, 50.0, 50.0);
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();

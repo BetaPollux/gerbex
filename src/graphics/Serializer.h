@@ -21,8 +21,11 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
+#include "ApertureTransformation.h"
 #include "Arc.h"
+#include "MacroPrimitive.h"
 #include "Point.h"
+#include "Segment.h"
 #include <string>
 #include <vector>
 
@@ -34,11 +37,10 @@ namespace gerbex {
 class Serializer {
 public:
 	Serializer() :
-			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack { }, m_isDark {
+			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack { }, m_polarityStack { }, m_isDark {
 					true } {
 	}
-	virtual ~Serializer() {
-	}
+	virtual ~Serializer() = default;
 	virtual void PushOffset(const Point &delta) {
 		m_offsetStack.push_back(delta);
 		updateOffset();
@@ -55,9 +57,21 @@ public:
 		m_rotationStack.pop_back();
 		updateRotation();
 	}
-	virtual void TogglePolarity() {
-		//TODO make this push/pop?
-		m_isDark = !m_isDark;
+	virtual void PushPolarity(Polarity polarity) {
+		m_polarityStack.push_back(polarity);
+		updatePolarity();
+	}
+	virtual void PushPolarity(MacroExposure exposure) {
+		Polarity polarity =
+				exposure == MacroExposure::ON ?
+						Polarity::Dark : Polarity::Clear;
+		m_polarityStack.push_back(polarity);
+		updatePolarity();
+
+	}
+	virtual void PopPolarity() {
+		m_polarityStack.pop_back();
+		updatePolarity();
 	}
 	virtual void AddCircle(double radius, const Point &center) = 0;
 	virtual void AddRectangle(double width, double height,
@@ -67,7 +81,8 @@ public:
 	virtual void AddPolygon(const std::vector<Point> &points) = 0;
 	virtual void AddDraw(double width, const Segment &segment) = 0;
 	virtual void AddArc(double width, const ArcSegment &segment) = 0;
-	//TODO add path builder
+	virtual void AddContour(
+			const std::vector<std::shared_ptr<Segment>> &segments) = 0;
 	//TODO add transform
 
 protected:
@@ -83,10 +98,19 @@ protected:
 			m_rotation += r;
 		}
 	}
+	virtual void updatePolarity() {
+		m_isDark = true;
+		for (Polarity p : m_polarityStack) {
+			if (p == Polarity::Clear) {
+				m_isDark = !m_isDark;
+			}
+		}
+	}
 	Point m_offset;
 	std::vector<Point> m_offsetStack;
 	double m_rotation;
 	std::vector<double> m_rotationStack;
+	std::vector<Polarity> m_polarityStack;
 	bool m_isDark;
 };
 

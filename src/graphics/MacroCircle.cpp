@@ -60,15 +60,11 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 }
 
 void MacroCircle::Serialize(gerbex::Serializer &serializer) {
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
+	serializer.PushPolarity(m_exposure);
 	serializer.PushRotation(m_rotation);
 	serializer.AddCircle(0.5 * m_diameter, m_center);
 	serializer.PopRotation();
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
+	serializer.PopPolarity();
 }
 
 const Point& MacroCircle::GetCenter() const {

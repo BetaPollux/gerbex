@@ -61,16 +61,12 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 }
 
 void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
+	serializer.PushPolarity(m_exposure);
 	serializer.PushRotation(m_rotation);
 	serializer.AddRectangle(m_width, m_height,
 			m_center - Point(m_width, m_height) * 0.5);
 	serializer.PopRotation();
-	if (m_exposure == MacroExposure::OFF) {
-		serializer.TogglePolarity();
-	}
+	serializer.PopPolarity();
 }
 
 const Point& MacroCenterLine::GetCenter() const {

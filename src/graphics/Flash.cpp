@@ -42,17 +42,13 @@ Flash::~Flash() {
 }
 
 void Flash::Serialize(Serializer &serializer) {
-	if (m_transform.GetPolarity() == Polarity::Clear) {
-		serializer.TogglePolarity();
-	}
+	serializer.PushPolarity(m_transform.GetPolarity());
 	serializer.PushOffset(m_origin);
 	serializer.PushRotation(m_transform.GetRotationDegrees());
 	m_aperture->Serialize(serializer);
 	serializer.PopRotation();
 	serializer.PopOffset();
-	if (m_transform.GetPolarity() == Polarity::Clear) {
-		serializer.TogglePolarity();
-	}
+	serializer.PopPolarity();
 }
 
 std::shared_ptr<Aperture> Flash::GetAperture() const {
