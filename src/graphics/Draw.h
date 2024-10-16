@@ -21,21 +21,31 @@
 #ifndef DRAW_H_
 #define DRAW_H_
 
+#include "ApertureTransformation.h"
+#include "GraphicalObject.h"
 #include "Segment.h"
+#include <memory>
 
 namespace gerbex {
 
 /*
  * Straight line segments drawn with a circle.
  */
-class Draw: public Segment {
+class Draw : public GraphicalObject {
 public:
 	Draw();
-	Draw(const Point &origin, const Point &endPoint);
-	Draw(const Point &origin, const Point &endPoint,
+	Draw(const Segment &segment,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
 	virtual ~Draw();
 	void Serialize(Serializer &serializer) override;
+	std::shared_ptr<Aperture> GetAperture() const;
+	const Segment& GetSegment() const;
+	const ApertureTransformation& GetTransform() const;
+
+private:
+	Segment m_segment;
+	std::shared_ptr<Aperture> m_aperture;
+	ApertureTransformation m_transform;
 };
 
 } /* namespace gerbex */

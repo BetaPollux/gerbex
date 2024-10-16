@@ -21,32 +21,32 @@
 #ifndef ARC_H_
 #define ARC_H_
 
-#include "Segment.h"
+#include "Aperture.h"
+#include "ApertureTransformation.h"
+#include "ArcSegment.h"
+#include "GraphicalObject.h"
+#include <memory>
 
 namespace gerbex {
-
-enum class ArcDirection {
-	Clockwise,
-	CounterClockwise
-};
 
 /*
  * Circular segments drawn with a circle.
  */
-class Arc: public Segment {
+class Arc: public GraphicalObject {
 public:
 	Arc();
-	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset, ArcDirection direction);
-	Arc(const Point &origin, const Point &endPoint, const Point &centerOffset, ArcDirection direction,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
+	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
+			const ApertureTransformation &transformation);
 	virtual ~Arc();
-	const Point& GetCenterOffset() const;
-	ArcDirection GetDirection() const;
 	void Serialize(Serializer &serializer) override;
+	std::shared_ptr<Aperture> GetAperture() const;
+	const ArcSegment& GetSegment() const;
+	const ApertureTransformation& GetTransform() const;
 
 private:
-	ArcDirection m_direction;
-	Point m_centerOffset;
+	ArcSegment m_segment;
+	std::shared_ptr<Aperture> m_aperture;
+	ApertureTransformation m_transform;
 };
 
 } /* namespace gerbex */

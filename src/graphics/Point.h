@@ -44,7 +44,7 @@ namespace gerbex {
 template<typename T>
 class GenericPoint {
 public:
-	GenericPoint() {
+	GenericPoint() : GenericPoint(0, 0) {
 	}
 	GenericPoint(T x, T y) :
 			m_x { x }, m_y { y } {

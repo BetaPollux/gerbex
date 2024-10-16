@@ -22,35 +22,27 @@
 
 namespace gerbex {
 
-Segment::Segment() {
+Segment::Segment() :
+		m_start { 0.0, 0.0 }, m_end { 1.0, 0.0 } {
 	// Empty
 
 }
 
-Segment::Segment(const Point &origin, const Point &endPoint)
-{
-	m_origin = origin;
-	m_endPoint = endPoint;
-}
-
-Segment::Segment(const Point &origin, const Point &endPoint,
-		std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation)
-	: GraphicalObject(origin, aperture, transformation),
-	  m_endPoint{ endPoint }
-{
-	// Empty
+Segment::Segment(const Point &start, const Point &end) {
+	m_start = start;
+	m_end = end;
 }
 
 Segment::~Segment() {
 	// Empty
 }
 
-const Point& Segment::GetEndPoint() const {
-	return m_endPoint;
+const Point& Segment::GetStart() const {
+	return m_start;
 }
 
-void Segment::Serialize(Serializer &serializer) {
+const Point& Segment::GetEnd() const {
+	return m_end;
 }
 
 } /* namespace gerbex */

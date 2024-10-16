@@ -24,30 +24,29 @@
 
 using namespace gerbex;
 
-
 TEST_GROUP(DrawTest) {
-	Point origin, end;
+	Point start, end;
 	std::shared_ptr<Circle> aperture;
 	ApertureTransformation transform;
 	Draw draw;
 
 	void setup() {
-		origin = Point(2500, -1500);
+		start = Point(2500, -1500);
 		end = Point(3750, 0);
 		aperture = std::make_shared<Circle>(0.75);
 		transform.SetRotationDegrees(45.0);
 
-		draw = Draw(origin, end, aperture, transform);
+		draw = Draw(Segment(start, end), aperture, transform);
 	}
 
 };
 
 TEST(DrawTest, Origin) {
-	CHECK(origin == draw.GetOrigin());
+	CHECK(start == draw.GetSegment().GetStart());
 }
 
 TEST(DrawTest, End) {
-	CHECK(end == draw.GetEndPoint());
+	CHECK(end == draw.GetSegment().GetEnd());
 }
 
 TEST(DrawTest, Aperture) {
@@ -55,5 +54,5 @@ TEST(DrawTest, Aperture) {
 }
 
 TEST(DrawTest, Transform) {
-	CHECK(transform == draw.GetTransformation());
+	CHECK(transform == draw.GetTransform());
 }

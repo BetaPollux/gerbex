@@ -55,10 +55,9 @@ void SvgSerializer::SaveFile(const std::string &path) {
 	m_doc.save_file(path.c_str());
 }
 
-void SvgSerializer::AddDraw(double width, const Point &start,
-		const Point &end) {
-	Point s = start;
-	Point e = end;
+void SvgSerializer::AddDraw(double width, const Segment &segment) {
+	Point s = segment.GetStart();
+	Point e = segment.GetEnd();
 	s.Rotate(m_rotation);
 	e.Rotate(m_rotation);
 	s = s + m_offset;
@@ -73,11 +72,10 @@ void SvgSerializer::AddDraw(double width, const Point &start,
 	line.append_attribute("y2") = e.GetY();
 }
 
-void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
-		const Point &center, ArcDirection direction) {
-	double radius = start.Distance(center);
-	if (start == end) {
-		Point c = center + m_offset;
+void SvgSerializer::AddArc(double width, const ArcSegment &segment) {
+	double radius = segment.GetStart().Distance(segment.GetCenter());
+	if (segment.IsCircle()) {
+		Point c = segment.GetCenter() + m_offset;
 		pugi::xml_node circle = m_svg.append_child("circle");
 		circle.append_attribute("r") = radius;
 		circle.append_attribute("cx") = c.GetX();
@@ -87,8 +85,8 @@ void SvgSerializer::AddArc(double width, const Point &start, const Point &end,
 		circle.append_attribute("stroke-width") = width;
 	} else {
 		//TODO solve for arc flags
-		Point s = start;
-		Point e = end;
+		Point s = segment.GetStart();
+		Point e = segment.GetEnd();
 		s.Rotate(m_rotation);
 		e.Rotate(m_rotation);
 		s = s + m_offset;
@@ -164,11 +162,11 @@ void SvgSerializer::AddObround(double width, double height,
 	if (width < height) {
 		double w = width;
 		double y = 0.5 * (height - width);
-		AddDraw(w, Point(0.0, -y), Point(0.0, y));
+		AddDraw(w, Segment(Point(0.0, -y), Point(0.0, y)));
 	} else {
 		double w = height;
 		double x = 0.5 * (width - height);
-		AddDraw(w, Point(-x, 0.0), Point(x, 0.0));
+		AddDraw(w, Segment(Point(-x, 0.0), Point(x, 0.0)));
 	}
 }
 

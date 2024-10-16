@@ -21,34 +21,18 @@
 #ifndef GRAPHICALOBJECT_H_
 #define GRAPHICALOBJECT_H_
 
-#include "Aperture.h"
-#include "ApertureTransformation.h"
-#include "Point.h"
 #include "Serializable.h"
-#include <memory>
 
 namespace gerbex {
-
-//TODO remove aperture or origin, e.g. for Regions, and make a new subclass
 
 /*
  * Represents a plane figure, with shape, size, position and polarity (dark/clear).
  */
 class GraphicalObject: public Serializable {
 public:
-	GraphicalObject();
-	GraphicalObject(const Point &origin,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~GraphicalObject();
-	const std::shared_ptr<Aperture> GetAperture() const;
-	const Point& GetOrigin() const;
-	const ApertureTransformation& GetTransformation() const;
+	virtual ~GraphicalObject() = default;
 	void Serialize(Serializer &serializer) = 0;
 
-protected:
-	Point m_origin;
-	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transformation;
 };
 
 } /* namespace gerbex */

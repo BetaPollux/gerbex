@@ -207,7 +207,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == flash->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == flash->GetTransform());
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
@@ -258,7 +258,7 @@ TEST(CommandsProcessor_PlotDraw, Origin) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor.GetObjects());
 
-	CHECK(origin == draw->GetOrigin());
+	CHECK(origin == draw->GetSegment().GetStart());
 }
 
 TEST(CommandsProcessor_PlotDraw, End) {
@@ -266,7 +266,7 @@ TEST(CommandsProcessor_PlotDraw, End) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor.GetObjects());
 
-	CHECK(end == draw->GetEndPoint());
+	CHECK(end == draw->GetSegment().GetEnd());
 }
 
 TEST(CommandsProcessor_PlotDraw, Aperture) {
@@ -283,7 +283,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == draw->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == draw->GetTransform());
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
@@ -340,7 +340,7 @@ TEST(CommandsProcessor_PlotArc, Origin) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(origin == arc->GetOrigin());
+	CHECK(origin == arc->GetSegment().GetStart());
 }
 
 TEST(CommandsProcessor_PlotArc, End) {
@@ -348,7 +348,7 @@ TEST(CommandsProcessor_PlotArc, End) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(end == arc->GetEndPoint());
+	CHECK(end == arc->GetSegment().GetEnd());
 }
 
 TEST(CommandsProcessor_PlotArc, Offset) {
@@ -356,7 +356,7 @@ TEST(CommandsProcessor_PlotArc, Offset) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(offset == arc->GetCenterOffset());
+	CHECK(offset == arc->GetSegment().GetCenterOffset());
 }
 
 TEST(CommandsProcessor_PlotArc, Direction_CW) {
@@ -364,7 +364,7 @@ TEST(CommandsProcessor_PlotArc, Direction_CW) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(ArcDirection::Clockwise == arc->GetDirection());
+	CHECK(ArcDirection::Clockwise == arc->GetSegment().GetDirection());
 }
 
 TEST(CommandsProcessor_PlotArc, Direction_CCW) {
@@ -373,7 +373,7 @@ TEST(CommandsProcessor_PlotArc, Direction_CCW) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(ArcDirection::CounterClockwise == arc->GetDirection());
+	CHECK(ArcDirection::CounterClockwise == arc->GetSegment().GetDirection());
 }
 
 TEST(CommandsProcessor_PlotArc, Aperture) {
@@ -390,7 +390,7 @@ TEST(CommandsProcessor_PlotArc, Transform) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == arc->GetTransformation());
+	CHECK(processor.GetGraphicsState().GetTransformation() == arc->GetTransform());
 }
 
 /***
@@ -491,7 +491,7 @@ TEST(CommandsProcessor_AfterRegion, AddsDrawsAgain) {
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor.GetObjects(), 1);
-	CHECK(end == draw->GetEndPoint());
+	CHECK(end == draw->GetSegment().GetEnd());
 }
 
 TEST(CommandsProcessor_AfterRegion, ClearsState) {
@@ -509,7 +509,7 @@ TEST(CommandsProcessor_AfterRegion, CannotEndRegion) {
 TEST(CommandsProcessor_AfterRegion, TakesPolarity) {
 	std::shared_ptr<Region> region = GetGraphicalObject<Region>(processor.GetObjects());
 
-	CHECK(Polarity::Clear == region->GetTransformation().GetPolarity());
+	CHECK(Polarity::Clear == region->GetPolarity());
 }
 
 /***
@@ -548,9 +548,10 @@ TEST(CommandsProcessor_ApertureBlock, DoesNotFlash) {
 
 TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(processor, blockId);
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(*block->GetObjectList());
 
 	LONGS_EQUAL(2, block->GetObjectList()->size());
-	CHECK(origin == block->GetObjectList()->at(0)->GetOrigin());
+	CHECK(origin == draw->GetSegment().GetStart());
 }
 
 TEST(CommandsProcessor_ApertureBlock, ClearsCurrentPoint) {
@@ -610,9 +611,9 @@ TEST(CommandsProcessor_NestedApertureBlock, OuterContainsInner) {
 	CHECK(nullptr != outerBlock);
 	CHECK(nullptr != innerBlock);
 
-	std::shared_ptr<GraphicalObject> obj = outerBlock->GetObjectList()->at(0);
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(*outerBlock->GetObjectList());
 	std::shared_ptr<BlockAperture> aperture =
-			std::dynamic_pointer_cast<BlockAperture>(obj->GetAperture());
+			std::dynamic_pointer_cast<BlockAperture>(flash->GetAperture());
 	CHECK(innerBlock == aperture);
 }
 

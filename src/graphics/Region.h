@@ -21,6 +21,8 @@
 #ifndef REGION_H_
 #define REGION_H_
 
+#include "ApertureTransformation.h"
+#include "GraphicalObject.h"
 #include "RegionContour.h"
 #include <memory>
 #include <vector>
@@ -33,16 +35,18 @@ namespace gerbex {
 class Region: public GraphicalObject {
 public:
 	Region();
-	Region(ApertureTransformation transformation);
+	Region(Polarity polarity);
 	virtual ~Region();
 	void StartContour();
-	void AddSegment(std::shared_ptr<Segment> segment);
+	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<RegionContour>& GetContours() const;
 	bool AreContoursClosed() const;
 	void Serialize(Serializer &serializer) override;
+	Polarity GetPolarity() const;
 
 private:
 	std::vector<RegionContour> m_contours;
+	Polarity m_polarity;
 
 };
 

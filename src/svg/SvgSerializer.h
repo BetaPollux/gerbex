@@ -38,9 +38,8 @@ public:
 	void SetViewPort(int width, int height);
 	void SetViewBox(double xMin, double yMin, double width, double height);
 	void SaveFile(const std::string &path);
-	void AddDraw(double width, const Point &start, const Point &end) override;
-	void AddArc(double width, const Point &start, const Point &end,
-			const Point &center, ArcDirection direction) override;
+	void AddDraw(double width, const Segment &segment) override;
+	void AddArc(double width, const ArcSegment &segment) override;
 	void AddCircle(double radius, const Point &center) override;
 	void AddRectangle(double width, double height, const Point &topLeft)
 			override;

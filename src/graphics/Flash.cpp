@@ -18,20 +18,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Circle.h"
 #include "Flash.h"
 #include "Serializer.h"
 
 namespace gerbex {
 
-Flash::Flash() {
+Flash::Flash() :
+		m_origin { }, m_aperture { std::make_shared<Circle>() }, m_transform { } {
 	// Empty
 
 }
 
 Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation)
-	: GraphicalObject(origin, aperture, transformation)
-{
+		const ApertureTransformation &transformation) :
+		m_origin { origin }, m_aperture { aperture }, m_transform {
+				transformation } {
 	// Empty
 }
 
@@ -40,17 +42,29 @@ Flash::~Flash() {
 }
 
 void Flash::Serialize(Serializer &serializer) {
-	if (m_transformation.GetPolarity() == Polarity::Clear) {
+	if (m_transform.GetPolarity() == Polarity::Clear) {
 		serializer.TogglePolarity();
 	}
 	serializer.PushOffset(m_origin);
-	serializer.PushRotation(m_transformation.GetRotationDegrees());
+	serializer.PushRotation(m_transform.GetRotationDegrees());
 	m_aperture->Serialize(serializer);
 	serializer.PopRotation();
 	serializer.PopOffset();
-	if (m_transformation.GetPolarity() == Polarity::Clear) {
+	if (m_transform.GetPolarity() == Polarity::Clear) {
 		serializer.TogglePolarity();
 	}
+}
+
+std::shared_ptr<Aperture> Flash::GetAperture() const {
+	return m_aperture;
+}
+
+const Point& Flash::GetOrigin() const {
+	return m_origin;
+}
+
+const ApertureTransformation& Flash::GetTransform() const {
+	return m_transform;
 }
 
 } /* namespace gerbex */

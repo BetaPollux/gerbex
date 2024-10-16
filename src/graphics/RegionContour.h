@@ -39,7 +39,7 @@ public:
 	RegionContour();
 	virtual ~RegionContour();
 	bool IsClosed() const;
-	void AddSegment(std::shared_ptr<Segment> object);
+	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
 	void Serialize(Serializer &serializer) override;
 

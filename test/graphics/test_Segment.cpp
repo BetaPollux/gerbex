@@ -18,12 +18,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Circle.h"
 #include "Segment.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
-
 
 TEST_GROUP(Segment) {
 };
@@ -31,7 +29,7 @@ TEST_GROUP(Segment) {
 TEST(Segment, DefaultCtor) {
 	Segment segment;
 
-	CHECK(nullptr == segment.GetAperture());
+	CHECK(segment.GetStart() != segment.GetEnd());
 }
 
 TEST(Segment, PointsCtor) {
@@ -40,22 +38,7 @@ TEST(Segment, PointsCtor) {
 
 	Segment segment(origin, endPoint);
 
-	CHECK(origin == segment.GetOrigin());
-	CHECK(endPoint == segment.GetEndPoint());
-	CHECK(nullptr == segment.GetAperture());
-}
-
-TEST(Segment, FullCtor) {
-	Point origin(2500, 5000);
-	Point endPoint(7500, 1500);
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-	ApertureTransformation transform(Polarity::Clear, Mirroring::XY, 45.0, 1.5);
-
-	Segment segment(origin, endPoint, circle, transform);
-
-	CHECK(origin == segment.GetOrigin());
-	CHECK(endPoint == segment.GetEndPoint());
-	CHECK(circle == segment.GetAperture());
-	CHECK(transform == segment.GetTransformation());
+	CHECK(origin == segment.GetStart());
+	CHECK(endPoint == segment.GetEnd());
 }
 

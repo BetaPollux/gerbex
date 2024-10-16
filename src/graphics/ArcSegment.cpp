@@ -1,7 +1,7 @@
 /*
- * GraphicalObject.cpp
+ * ArcSegment.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Oct. 15, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,42 +17,36 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#include "GraphicalObject.h"
+#include "ArcSegment.h"
 
 namespace gerbex {
 
-GraphicalObject::GraphicalObject()
-	: m_origin{},
-	  m_aperture{ nullptr },
-	  m_transformation{}
-{
+ArcSegment::ArcSegment() :
+		Segment(), m_centerOffset { }, m_direction { ArcDirection::Clockwise } {
 	// Empty
 }
 
-GraphicalObject::GraphicalObject(const Point &origin,
-		std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation)
-	: m_origin{ origin },
-	  m_aperture{ aperture },
-	  m_transformation{ transformation }
-{
+ArcSegment::ArcSegment(const Point &start, const Point &end,
+		const Point &centerOffset, ArcDirection direction) :
+		Segment(start, end), m_centerOffset { centerOffset }, m_direction {
+				direction } {
 	// Empty
 }
 
-GraphicalObject::~GraphicalObject() {
-	// Empty
+const Point& ArcSegment::GetCenterOffset() const {
+	return m_centerOffset;
 }
 
-const std::shared_ptr<Aperture> GraphicalObject::GetAperture() const {
-	return m_aperture;
+Point ArcSegment::GetCenter() const {
+	return m_start + m_centerOffset;
 }
 
-const Point& GraphicalObject::GetOrigin() const {
-	return m_origin;
+ArcDirection ArcSegment::GetDirection() const {
+	return m_direction;
 }
 
-const ApertureTransformation& GraphicalObject::GetTransformation() const {
-	return m_transformation;
+bool ArcSegment::IsCircle() const {
+	return m_start == m_end;
 }
 
 } /* namespace gerbex */

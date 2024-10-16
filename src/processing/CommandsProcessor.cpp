@@ -89,20 +89,19 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		throw std::logic_error("draw requires valid current point");
 	}
 
-	if (m_commandState != CommandState::InsideRegion
-			&& m_graphicsState.GetCurrentAperture() == nullptr) {
-		throw std::logic_error("draw requires valid current aperture");
-	}
-
-	std::shared_ptr<Draw> obj = std::make_shared<Draw>(
-			*m_graphicsState.GetCurrentPoint(), coord,
-			m_graphicsState.GetCurrentAperture(),
-			m_graphicsState.GetTransformation());
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(
+			*m_graphicsState.GetCurrentPoint(), coord);
 
 	if (m_commandState != CommandState::InsideRegion) {
+		if (m_graphicsState.GetCurrentAperture() == nullptr) {
+			throw std::logic_error("draw requires valid current aperture");
+		}
+		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment,
+				m_graphicsState.GetCurrentAperture(),
+				m_graphicsState.GetTransformation());
 		m_objectDest.top()->push_back(obj);
 	} else {
-		m_activeRegion->AddSegment(obj);
+		m_activeRegion->AddSegment(segment);
 	}
 
 	m_graphicsState.SetCurrentPoint(coord);
@@ -123,20 +122,19 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 		throw std::logic_error("arc requires valid current point");
 	}
 
-	if (m_commandState != CommandState::InsideRegion
-			&& m_graphicsState.GetCurrentAperture() == nullptr) {
-		throw std::logic_error("arc requires valid current aperture");
-	}
-
-	std::shared_ptr<Arc> obj = std::make_shared<Arc>(
-			*m_graphicsState.GetCurrentPoint(), coord, offset, direction,
-			m_graphicsState.GetCurrentAperture(),
-			m_graphicsState.GetTransformation());
+	std::shared_ptr<ArcSegment> segment = std::make_shared<ArcSegment>(
+			*m_graphicsState.GetCurrentPoint(), coord, offset, direction);
 
 	if (m_commandState != CommandState::InsideRegion) {
+		if (m_graphicsState.GetCurrentAperture() == nullptr) {
+			throw std::logic_error("arc requires valid current aperture");
+		}
+		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment,
+				m_graphicsState.GetCurrentAperture(),
+				m_graphicsState.GetTransformation());
 		m_objectDest.top()->push_back(obj);
 	} else {
-		m_activeRegion->AddSegment(obj);
+		m_activeRegion->AddSegment(segment);
 	}
 
 	m_graphicsState.SetCurrentPoint(coord);
@@ -200,7 +198,8 @@ void CommandsProcessor::StartRegion() {
 	if (m_commandState == CommandState::InsideRegion) {
 		throw std::logic_error("cannot start a region inside a region");
 	}
-	m_activeRegion = std::make_unique<Region>(m_graphicsState.GetTransformation());
+	m_activeRegion = std::make_unique<Region>(
+			m_graphicsState.GetTransformation().GetPolarity());
 	m_commandState = CommandState::InsideRegion;
 }
 

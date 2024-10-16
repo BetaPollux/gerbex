@@ -24,13 +24,14 @@
 
 namespace gerbex {
 
-Region::Region() {
+Region::Region() :
+		m_polarity { Polarity::Dark } {
 	// Empty
 
 }
 
-Region::Region(ApertureTransformation transformation) :
-		GraphicalObject(Point(), nullptr, transformation) {
+Region::Region(Polarity polarity) :
+		m_polarity { polarity } {
 }
 
 Region::~Region() {
@@ -44,7 +45,7 @@ void Region::StartContour() {
 	m_contours.push_back(RegionContour());
 }
 
-void Region::AddSegment(std::shared_ptr<Segment> segment) {
+void Region::AddSegment(const std::shared_ptr<Segment> &segment) {
 	if (m_contours.empty()) {
 		throw std::logic_error("need to start a contour before adding segment");
 	}
@@ -65,15 +66,19 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer) {
-	if (m_transformation.GetPolarity() == Polarity::Clear) {
+	if (m_polarity == Polarity::Clear) {
 		serializer.TogglePolarity();
 	}
-	for (RegionContour &c: m_contours) {
+	for (RegionContour &c : m_contours) {
 		c.Serialize(serializer);
 	}
-	if (m_transformation.GetPolarity() == Polarity::Clear) {
+	if (m_polarity == Polarity::Clear) {
 		serializer.TogglePolarity();
 	}
+}
+
+Polarity Region::GetPolarity() const {
+	return m_polarity;
 }
 
 } /* namespace gerbex */

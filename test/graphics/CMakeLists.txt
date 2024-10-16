@@ -3,6 +3,7 @@ add_library(test_graphics OBJECT
 	test_Arc.cpp
 	test_ApertureTransformation.cpp
 	test_Arc.cpp
+	test_ArcSegment.cpp
 	test_BlockAperture.cpp
 	test_Circle.cpp
 	test_CircleTemplate.cpp

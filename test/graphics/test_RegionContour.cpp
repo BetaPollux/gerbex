@@ -19,7 +19,6 @@
  */
 
 #include "Circle.h"
-#include "Draw.h"
 #include "RegionContour.h"
 #include <memory>
 #include <stdexcept>
@@ -38,13 +37,13 @@ TEST(RegionContourTest, Initial) {
 
 TEST(RegionContourTest, AddSegment) {
 	RegionContour contour;
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0),
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0),
 			Point(0, 100));
 
-	contour.AddSegment(draw);
+	contour.AddSegment(segment);
 
 	LONGS_EQUAL(1, contour.GetSegments().size());
-	POINTERS_EQUAL(draw.get(), contour.GetSegments().back().get());
+	POINTERS_EQUAL(segment.get(), contour.GetSegments().back().get());
 }
 
 TEST(RegionContourTest, AddSegment_ZeroLength) {
@@ -54,7 +53,7 @@ TEST(RegionContourTest, AddSegment_ZeroLength) {
 	Point pt2 = Point(0, 0);
 
 	CHECK_THROWS(std::invalid_argument,
-			contour.AddSegment(std::make_shared<Draw>(pt1, pt2)));
+			contour.AddSegment(std::make_shared<Segment>(pt1, pt2)));
 }
 
 TEST(RegionContourTest, IsClosed_Empty) {
@@ -68,8 +67,8 @@ TEST(RegionContourTest, IsClosed_TwoSegments) {
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
 
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt1));
+	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Segment>(pt2, pt1));
 
 	LONGS_EQUAL(2, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
@@ -82,9 +81,9 @@ TEST(RegionContourTest, IsClosed_Triangle) {
 	Point pt2 = Point(100, 0);
 	Point pt3 = Point(50, 100);
 
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt3));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt1));
+	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Segment>(pt2, pt3));
+	contour.AddSegment(std::make_shared<Segment>(pt3, pt1));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(contour.IsClosed());
@@ -98,9 +97,9 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenEnd) {
 	Point pt3 = Point(50, 100);
 	Point pt4 = Point(5, 5);
 
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Draw>(pt2, pt3));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt4));
+	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Segment>(pt2, pt3));
+	contour.AddSegment(std::make_shared<Segment>(pt3, pt4));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
@@ -114,9 +113,9 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenTop) {
 	Point pt3 = Point(105, 0);
 	Point pt4 = Point(50, 100);
 
-	contour.AddSegment(std::make_shared<Draw>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Draw>(pt3, pt4));
-	contour.AddSegment(std::make_shared<Draw>(pt4, pt1));
+	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
+	contour.AddSegment(std::make_shared<Segment>(pt3, pt4));
+	contour.AddSegment(std::make_shared<Segment>(pt4, pt1));
 
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());

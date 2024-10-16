@@ -23,7 +23,6 @@
 
 #include "Arc.h"
 #include "Point.h"
-#include <vector>
 #include <string>
 #include <vector>
 
@@ -66,10 +65,8 @@ public:
 	virtual void AddObround(double width, double height,
 			const Point &center) = 0;
 	virtual void AddPolygon(const std::vector<Point> &points) = 0;
-	virtual void AddDraw(double width, const Point &start,
-			const Point &end) = 0;
-	virtual void AddArc(double width, const Point &start, const Point &end,
-			const Point &center, ArcDirection direction) = 0;
+	virtual void AddDraw(double width, const Segment &segment) = 0;
+	virtual void AddArc(double width, const ArcSegment &segment) = 0;
 	//TODO add path builder
 	//TODO add transform
 

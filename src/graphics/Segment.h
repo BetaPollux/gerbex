@@ -21,27 +21,23 @@
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
 
-#include "GraphicalObject.h"
+#include "Point.h"
 
 namespace gerbex {
-
-//TODO segment should not be a graphical object
 
 /*
  * A graphical object with an origin and end point that can be used to define a contour.
  */
-class Segment: public GraphicalObject {
+class Segment {
 public:
 	Segment();
-	Segment(const Point &origin, const Point &endPoint);
-	Segment(const Point &origin, const Point &endPoint,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
+	Segment(const Point &start, const Point &end);
 	virtual ~Segment();
-	const Point& GetEndPoint() const;
-	void Serialize(Serializer &serializer) override;
+	const Point& GetStart() const;
+	const Point& GetEnd() const;
 
 protected:
-	Point m_endPoint;
+	Point m_start, m_end;
 };
 
 } /* namespace gerbex */

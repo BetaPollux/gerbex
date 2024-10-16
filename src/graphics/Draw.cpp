@@ -24,19 +24,15 @@
 
 namespace gerbex {
 
-Draw::Draw() {
+Draw::Draw() :
+		m_segment { }, m_aperture { std::make_shared<Circle>() }, m_transform { } {
 	// Empty
 }
 
-Draw::Draw(const Point &origin, const Point &endPoint) :
-		Segment(origin, endPoint) {
-	// Empty
-}
-
-Draw::Draw(const Point &origin, const Point &endPoint,
-		std::shared_ptr<Aperture> aperture,
+Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation) :
-		Segment(origin, endPoint, aperture, transformation) {
+		m_segment { segment }, m_aperture { aperture }, m_transform {
+				transformation } {
 	// Empty
 }
 
@@ -47,7 +43,19 @@ Draw::~Draw() {
 void Draw::Serialize(Serializer &serializer) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	serializer.AddDraw(circle->GetDiameter(), m_origin, m_endPoint);
+	serializer.AddDraw(circle->GetDiameter(), m_segment);
+}
+
+std::shared_ptr<Aperture> Draw::GetAperture() const {
+	return m_aperture;
+}
+
+const Segment& Draw::GetSegment() const {
+	return m_segment;
+}
+
+const ApertureTransformation& Draw::GetTransform() const {
+	return m_transform;
 }
 
 } /* namespace gerbex */

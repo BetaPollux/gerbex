@@ -26,22 +26,14 @@
 namespace gerbex {
 
 Arc::Arc() :
-		m_direction { ArcDirection::Clockwise }, m_centerOffset { } {
+		m_segment { }, m_aperture { std::make_shared<Circle>() }, m_transform { } {
 	// Empty
 }
 
-Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
-		ArcDirection direction) :
-		Segment(origin, endPoint), m_direction { direction }, m_centerOffset {
-				centerOffset } {
-	// Empty
-}
-
-Arc::Arc(const Point &origin, const Point &endPoint, const Point &centerOffset,
-		ArcDirection direction, std::shared_ptr<Aperture> aperture,
+Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
 		const ApertureTransformation &transformation) :
-		Segment(origin, endPoint, aperture, transformation), m_direction {
-				direction }, m_centerOffset { centerOffset } {
+		m_segment { segment }, m_aperture { aperture }, m_transform {
+				transformation } {
 	// Empty
 }
 
@@ -49,20 +41,22 @@ Arc::~Arc() {
 	// Empty
 }
 
-const Point& Arc::GetCenterOffset() const {
-	return m_centerOffset;
-}
-
-ArcDirection Arc::GetDirection() const {
-	return m_direction;
-}
-
 void Arc::Serialize(Serializer &serializer) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	Point center = m_centerOffset + m_origin;
-	serializer.AddArc(circle->GetDiameter(), m_origin, m_endPoint, center,
-			m_direction);
+	serializer.AddArc(circle->GetDiameter(), m_segment);
+}
+
+std::shared_ptr<Aperture> Arc::GetAperture() const {
+	return m_aperture;
+}
+
+const ArcSegment& Arc::GetSegment() const {
+	return m_segment;
+}
+
+const ApertureTransformation& Arc::GetTransform() const {
+	return m_transform;
 }
 
 } /* namespace gerbex */

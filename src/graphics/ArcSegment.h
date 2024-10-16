@@ -1,7 +1,7 @@
 /*
- * Aperture.cpp
+ * ArcSegment.h
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Oct. 15, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,13 +17,33 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#ifndef ARCSEGMENT_H_
+#define ARCSEGMENT_H_
 
-#include "Aperture.h"
+#include "Segment.h"
 
 namespace gerbex {
 
-Aperture::~Aperture() {
-	// Empty
-}
+enum class ArcDirection {
+	Clockwise, CounterClockwise
+};
+
+class ArcSegment: public Segment {
+public:
+	ArcSegment();
+	ArcSegment(const Point &start, const Point &end, const Point &centerOffset,
+			ArcDirection direction);
+	virtual ~ArcSegment() = default;
+	const Point& GetCenterOffset() const;
+	Point GetCenter() const;
+	ArcDirection GetDirection() const;
+	bool IsCircle() const;
+
+protected:
+	Point m_centerOffset;
+	ArcDirection m_direction;
+};
 
 } /* namespace gerbex */
+
+#endif /* ARCSEGMENT_H_ */

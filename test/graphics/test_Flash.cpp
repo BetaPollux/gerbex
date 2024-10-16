@@ -50,6 +50,6 @@ TEST(FlashTest, Aperture) {
 }
 
 TEST(FlashTest, Transform) {
-	CHECK(transform == flash.GetTransformation());
+	CHECK(transform == flash.GetTransform());
 }
 

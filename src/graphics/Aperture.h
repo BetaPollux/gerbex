@@ -29,9 +29,9 @@ namespace gerbex {
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
  * They can be rotated, mirrored or scaled.
  */
-class Aperture : public Serializable {
+class Aperture: public Serializable {
 public:
-	virtual ~Aperture();
+	virtual ~Aperture() = default;
 	virtual void Serialize(Serializer &serializer) = 0;
 };
 

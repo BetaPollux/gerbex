@@ -150,9 +150,9 @@ TEST(GerberPolaritiesAndApertures, TwoRegionsWithPolarity) {
 			processor->GetObjects(), 18);
 
 	LONGS_EQUAL(4, outer_region->GetContours().front().GetSegments().size());
-	CHECK(outer_region->GetTransformation().GetPolarity() == Polarity::Dark);
+	CHECK(outer_region->GetPolarity() == Polarity::Dark);
 	LONGS_EQUAL(5, inner_region->GetContours().front().GetSegments().size());
-	CHECK(inner_region->GetTransformation().GetPolarity() == Polarity::Clear);
+	CHECK(inner_region->GetPolarity() == Polarity::Clear);
 }
 
 /**
@@ -183,8 +183,10 @@ TEST(GerberNestedBlocks, MadeAllBlocks) {
 	LONGS_EQUAL(4, b101->GetObjectList()->size());
 	LONGS_EQUAL(7, b102->GetObjectList()->size());
 
-	auto nb100 = CheckAperture<BlockAperture>(*b101->GetObjectList()->at(0));
-	auto nb101 = CheckAperture<BlockAperture>(*b102->GetObjectList()->at(0));
+	auto flash1 = GetGraphicalObject<Flash>(*b101->GetObjectList());
+	auto flash2 = GetGraphicalObject<Flash>(*b102->GetObjectList());
+	auto nb100 = CheckAperture<BlockAperture>(*flash1);
+	auto nb101 = CheckAperture<BlockAperture>(*flash2);
 	POINTERS_EQUAL(b100.get(), nb100.get());
 	POINTERS_EQUAL(b101.get(), nb101.get());
 }
@@ -219,14 +221,14 @@ TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(),
 			4);
 
-	CHECK(Polarity::Dark == c1->GetTransformation().GetPolarity());
-	CHECK(Polarity::Dark == c2->GetTransformation().GetPolarity());
-	CHECK(Polarity::Clear == c3->GetTransformation().GetPolarity());
+	CHECK(Polarity::Dark == c1->GetTransform().GetPolarity());
+	CHECK(Polarity::Dark == c2->GetTransform().GetPolarity());
+	CHECK(Polarity::Clear == c3->GetTransform().GetPolarity());
 
-	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetOrigin());
-	CHECK_EQUAL(Point(2.5, -1.0), d1->GetEndPoint());
+	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetSegment().GetStart());
+	CHECK_EQUAL(Point(2.5, -1.0), d1->GetSegment().GetEnd());
 
-	CHECK(ArcDirection::CounterClockwise == a1->GetDirection());
+	CHECK(ArcDirection::CounterClockwise == a1->GetSegment().GetDirection());
 }
 
 TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
@@ -239,20 +241,20 @@ TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
 	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(
 			processor->GetObjects(), 3);
 
-	DOUBLES_EQUAL(0.0, b1->GetTransformation().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, b2->GetTransformation().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(30.0, b3->GetTransformation().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(45.0, b4->GetTransformation().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, b1->GetTransform().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, b2->GetTransform().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(30.0, b3->GetTransform().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(45.0, b4->GetTransform().GetRotationDegrees(), DBL_TOL);
 
-	CHECK(Mirroring::None == b1->GetTransformation().GetMirroring());
-	CHECK(Mirroring::X == b2->GetTransformation().GetMirroring());
-	CHECK(Mirroring::Y == b3->GetTransformation().GetMirroring());
-	CHECK(Mirroring::XY == b4->GetTransformation().GetMirroring());
+	CHECK(Mirroring::None == b1->GetTransform().GetMirroring());
+	CHECK(Mirroring::X == b2->GetTransform().GetMirroring());
+	CHECK(Mirroring::Y == b3->GetTransform().GetMirroring());
+	CHECK(Mirroring::XY == b4->GetTransform().GetMirroring());
 
-	DOUBLES_EQUAL(1.0, b1->GetTransformation().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, b2->GetTransformation().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, b3->GetTransformation().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(0.8, b4->GetTransformation().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b1->GetTransform().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b2->GetTransform().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b3->GetTransform().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(0.8, b4->GetTransform().GetScalingFactor(), DBL_TOL);
 }
 
 /**

@@ -22,6 +22,7 @@
 #define CASTHELPERS_H_
 
 #include "CommandsProcessor.h"
+#include "Flash.h"
 #include "Macro.h"
 #include <memory>
 #include "CppUTest/TestHarness.h"
@@ -50,9 +51,8 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<st
 	return result;
 }
 
-template <typename T> std::shared_ptr<T> CheckAperture(const GraphicalObject &obj) {
-	std::shared_ptr<Aperture> aperture = obj.GetAperture();
-	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(aperture);
+template <typename T> std::shared_ptr<T> CheckAperture(const Flash &flash) {
+	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(flash.GetAperture());
 
 	CHECK(result != nullptr);
 

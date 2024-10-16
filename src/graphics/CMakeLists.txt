@@ -1,8 +1,8 @@
 add_library(gerbex_graphics OBJECT
-	Aperture.cpp
 	ApertureTemplate.cpp
 	ApertureTransformation.cpp
 	Arc.cpp
+	ArcSegment.cpp
 	BlockAperture.cpp
 	Circle.cpp
 	CircleTemplate.cpp
@@ -10,7 +10,6 @@ add_library(gerbex_graphics OBJECT
 	Draw.cpp
 	Expression.cpp
 	Flash.cpp
-	GraphicalObject.cpp
 	Macro.cpp
 	MacroCenterLine.cpp
 	MacroCircle.cpp

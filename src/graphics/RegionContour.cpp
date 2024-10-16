@@ -38,12 +38,12 @@ bool RegionContour::IsClosed() const {
 	//Checks that all segments are connected.
 	//Does NOT check for more complex conditions which are invalid.
 	if (m_segments.size() > 2) {
-		bool closedEnd = (m_segments.front()->GetOrigin()
-				== m_segments.back()->GetEndPoint());
+		bool closedEnd = (m_segments.front()->GetStart()
+				== m_segments.back()->GetEnd());
 		bool connected = true;
 		for (size_t i = 1; i < m_segments.size(); i++) {
-			connected &= (m_segments[i]->GetOrigin()
-					== m_segments[i - 1]->GetEndPoint());
+			connected &= (m_segments[i]->GetStart()
+					== m_segments[i - 1]->GetEnd());
 		}
 		return closedEnd && connected;
 	} else {
@@ -51,8 +51,8 @@ bool RegionContour::IsClosed() const {
 	}
 }
 
-void RegionContour::AddSegment(std::shared_ptr<Segment> segment) {
-	if (segment->GetOrigin() == segment->GetEndPoint()) {
+void RegionContour::AddSegment(const std::shared_ptr<Segment> &segment) {
+	if (segment->GetStart() == segment->GetEnd()) {
 		throw std::invalid_argument("contour cannot have zero-length segment");
 	}
 	m_segments.push_back(segment);
@@ -63,11 +63,11 @@ const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const 
 }
 
 void RegionContour::Serialize(Serializer &serializer) {
-	//Closed contour, endpoints are redundant with origins
+	//Closed contour, end points are redundant with start points
 	std::vector<Point> points;
 	//TODO this needs to make a path using segment, draw vs arc
 	for (std::shared_ptr<Segment> s : m_segments) {
-		points.push_back(s->GetOrigin());
+		points.push_back(s->GetStart());
 	}
 	serializer.AddPolygon(points);
 }

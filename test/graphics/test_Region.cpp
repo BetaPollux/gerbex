@@ -18,8 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Arc.h"
-#include "Draw.h"
+#include "ArcSegment.h"
 #include "Region.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -40,9 +39,9 @@ TEST(Region_Init, ContoursSize) {
 }
 
 TEST(Region_Init, AddSegment_NoContours) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>();
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>();
 
-	CHECK_THROWS(std::logic_error, region.AddSegment(draw));
+	CHECK_THROWS(std::logic_error, region.AddSegment(segment));
 }
 
 /***
@@ -61,39 +60,39 @@ TEST(Region_OneContour, ContourSize) {
 }
 
 TEST(Region_OneContour, AddSegment) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0), Point(0, 100));
 
-	region.AddSegment(draw);
+	region.AddSegment(segment);
 
 	auto segments = region.GetContours().back().GetSegments();
 
 	LONGS_EQUAL(1, segments.size());
-	POINTERS_EQUAL(draw.get(), segments.back().get());
+	POINTERS_EQUAL(segment.get(), segments.back().get());
 }
 
 TEST(Region_OneContour, AddMultiSegments) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
-	std::shared_ptr<Arc> arc = std::make_shared<Arc>(Point(0, 100), Point(100, 0),
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0), Point(0, 100));
+	std::shared_ptr<ArcSegment> arcSegment = std::make_shared<ArcSegment>(Point(0, 100), Point(100, 0),
 			Point(0, 0), ArcDirection::Clockwise);
-	std::shared_ptr<Draw> draw2 = std::make_shared<Draw>(Point(100, 0), Point(0, 0));
+	std::shared_ptr<Segment> segment2 = std::make_shared<Segment>(Point(100, 0), Point(0, 0));
 
-	region.AddSegment(draw);
-	region.AddSegment(arc);
-	region.AddSegment(draw2);
+	region.AddSegment(segment);
+	region.AddSegment(arcSegment);
+	region.AddSegment(segment2);
 
 	auto segments = region.GetContours().back().GetSegments();
 
 	LONGS_EQUAL(3, segments.size());
-	POINTERS_EQUAL(draw.get(), segments[0].get());
-	POINTERS_EQUAL(arc.get(), segments[1].get());
-	POINTERS_EQUAL(draw2.get(), segments[2].get());
+	POINTERS_EQUAL(segment.get(), segments[0].get());
+	POINTERS_EQUAL(arcSegment.get(), segments[1].get());
+	POINTERS_EQUAL(segment2.get(), segments[2].get());
 }
 
 TEST(Region_OneContour, StartNextContour_NotClosed) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0), Point(0, 100));
 
 	//Open contour
-	region.AddSegment(draw);
+	region.AddSegment(segment);
 
 	CHECK_THROWS(std::logic_error, region.StartContour());
 }
@@ -106,9 +105,9 @@ TEST_GROUP(Region_MultiContour) {
 
 	void setup() {
 		region.StartContour();
-		region.AddSegment(std::make_shared<Draw>(Point(0, 0), Point(0, 100)));
-		region.AddSegment(std::make_shared<Draw>(Point(0, 100), Point(100, 0)));
-		region.AddSegment(std::make_shared<Draw>(Point(100, 0), Point(0, 0)));
+		region.AddSegment(std::make_shared<Segment>(Point(0, 0), Point(0, 100)));
+		region.AddSegment(std::make_shared<Segment>(Point(0, 100), Point(100, 0)));
+		region.AddSegment(std::make_shared<Segment>(Point(100, 0), Point(0, 0)));
 		region.StartContour();
 	}
 };
@@ -118,16 +117,16 @@ TEST(Region_MultiContour, ContourSize) {
 }
 
 TEST(Region_MultiContour, AddSegment) {
-	std::shared_ptr<Draw> draw = std::make_shared<Draw>(Point(0, 0), Point(0, 100));
+	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0), Point(0, 100));
 
 	int segments0_size = region.GetContours()[0].GetSegments().size();
-	region.AddSegment(draw);
+	region.AddSegment(segment);
 
 	auto segments0 = region.GetContours()[0].GetSegments();
 	auto segments1 = region.GetContours()[1].GetSegments();
 
 	LONGS_EQUAL(segments0_size, segments0.size());
 	LONGS_EQUAL(1, segments1.size());
-	POINTERS_EQUAL(draw.get(), segments1.back().get());
+	POINTERS_EQUAL(segment.get(), segments1.back().get());
 }
 
