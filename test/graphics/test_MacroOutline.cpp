@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "MacroOutline.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -52,9 +53,9 @@ TEST(MacroOutlineTest, CopiesVertices) {
 	MacroOutline outline(MacroExposure::ON, vertices, 0.0);
 	vertices.clear();
 
-	CHECK(Point(-1.0, 0.0) == outline.GetVertices()[0]);
-	CHECK(Point(1.0, 0.0) == outline.GetVertices()[1]);
-	CHECK(Point(0.0, 1.0) == outline.GetVertices()[2]);
+	CHECK_EQUAL(Point(-1.0, 0.0), outline.GetVertices()[0]);
+	CHECK_EQUAL(Point(1.0, 0.0), outline.GetVertices()[1]);
+	CHECK_EQUAL(Point(0.0, 1.0), outline.GetVertices()[2]);
 }
 
 TEST(MacroOutlineTest, TooFewVertices) {
@@ -76,7 +77,6 @@ TEST(MacroOutlineTest, FromParameters) {
 	CHECK(MacroExposure::ON == outline->GetExposure());
 	const std::vector<Point> vertices = outline->GetVertices();
 	LONGS_EQUAL(4, vertices.size());
-	CHECK(outline->GetCoord() == vertices[0]);
 	DOUBLES_EQUAL(1.0, vertices[0].GetX(), DBL_TOL);
 	DOUBLES_EQUAL(-1.0, vertices[0].GetY(), DBL_TOL);
 	DOUBLES_EQUAL(1.0, vertices[1].GetX(), DBL_TOL);

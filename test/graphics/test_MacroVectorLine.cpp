@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "MacroVectorLine.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -42,8 +43,8 @@ TEST(MacroVectorLineTest, Ctor) {
 
 	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
 	DOUBLES_EQUAL(1.25, line.GetWidth(), 1e-9);
-	CHECK(start == line.GetCoord());
-	CHECK(end == line.GetEnd());
+	CHECK_EQUAL(start, line.GetStart());
+	CHECK_EQUAL(end, line.GetEnd());
 	DOUBLES_EQUAL(45.0, line.GetRotation(), 1e-9);
 }
 
@@ -59,8 +60,8 @@ TEST(MacroVectorLineTest, FromParameters) {
 			params);
 	CHECK(MacroExposure::ON == line->GetExposure());
 	DOUBLES_EQUAL(0.9, line->GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, line->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.45, line->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, line->GetStart().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.45, line->GetStart().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(12.0, line->GetEnd().GetX(), DBL_TOL);
 	DOUBLES_EQUAL(0.75, line->GetEnd().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(22.5, line->GetRotation(), DBL_TOL);

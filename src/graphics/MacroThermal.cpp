@@ -31,7 +31,7 @@ MacroThermal::MacroThermal() :
 
 MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 		double innerDiameter, double gapThickness, double rotation) :
-		MacroPrimitive(MacroExposure::ON, center, rotation), m_outerDiameter {
+		MacroPrimitive(MacroExposure::ON, rotation), m_center { center }, m_outerDiameter {
 				outerDiameter }, m_innerDiameter { innerDiameter }, m_gapThickness {
 				gapThickness } {
 	if (outerDiameter < 0.0 || innerDiameter < 0.0 || gapThickness < 0.0) {
@@ -45,10 +45,6 @@ MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 		throw std::invalid_argument(
 				"Gap thickness must be less than (outer diameter)/sqrt(2)");
 	}
-}
-
-MacroThermal::~MacroThermal() {
-	// Empty
 }
 
 double MacroThermal::GetGapThickness() const {
@@ -81,10 +77,14 @@ void MacroThermal::Serialize(gerbex::Serializer &serializer) {
 	if (m_exposure == MacroExposure::OFF) {
 		serializer.TogglePolarity();
 	}
-	serializer.AddCircle(0.5 * m_outerDiameter, m_coord);
+	serializer.AddCircle(0.5 * m_outerDiameter, m_center);
 	if (m_exposure == MacroExposure::OFF) {
 		serializer.TogglePolarity();
 	}
+}
+
+const Point& MacroThermal::GetCenter() const {
+	return m_center;
 }
 
 } /* namespace gerbex */

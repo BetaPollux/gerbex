@@ -292,11 +292,11 @@ TEST(GerberSampleMacro, BOXR_D12) {
 	DOUBLES_EQUAL(0.2550, s1->GetWidth(), DBL_TOL);
 	DOUBLES_EQUAL(0.1 - 2 * 0.02, s1->GetHeight(), DBL_TOL);
 	DOUBLES_EQUAL(30.0, s1->GetRotation(), DBL_TOL);
-	CHECK(Point(0.0, 0.0) == s1->GetCoord());
+	CHECK_EQUAL(Point(0.0, 0.0), s1->GetCenter());
 
 	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
 	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)),
-			c4->GetCoord());
+			c4->GetCenter());
 }
 
 TEST(GerberSampleMacro, MadeStepRepeats) {

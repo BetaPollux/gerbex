@@ -32,7 +32,7 @@ MacroPolygon::MacroPolygon() :
 
 MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
 		const Point &center, double diameter, double rotation) :
-		MacroPrimitive(exposure, center, rotation), m_numVertices { numVertices }, m_diameter {
+		MacroPrimitive(exposure, rotation), m_center { center }, m_numVertices { numVertices }, m_diameter {
 				diameter } {
 	if (numVertices < 3 || numVertices > 12) {
 		throw std::invalid_argument("Number of vertices must be from 3 to 12");
@@ -86,6 +86,10 @@ void MacroPolygon::Serialize(gerbex::Serializer &serializer) {
 	if (m_exposure == MacroExposure::OFF) {
 		serializer.TogglePolarity();
 	}
+}
+
+const Point& MacroPolygon::GetCenter() const {
+	return m_center;
 }
 
 } /* namespace gerbex */

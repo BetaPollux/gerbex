@@ -35,12 +35,14 @@ public:
 	MacroCircle();
 	MacroCircle(MacroExposure exposure, double diameter,
 			const Point &center, double rotation = 0.0);
-	virtual ~MacroCircle();
+	virtual ~MacroCircle() = default;
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;
+	const Point& GetCenter() const;
 
 private:
+	Point m_center;
 	double m_diameter;
 };
 

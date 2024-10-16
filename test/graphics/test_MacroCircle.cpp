@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "MacroCircle.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -41,7 +42,7 @@ TEST(MacroCircleTest, Ctor) {
 
 	LONGS_EQUAL(MacroExposure::OFF, circle.GetExposure());
 	DOUBLES_EQUAL(1.25, circle.GetDiameter(), 1e-9);
-	CHECK(center == circle.GetCoord());
+	CHECK_EQUAL(center, circle.GetCenter());
 	DOUBLES_EQUAL(45.0, circle.GetRotation(), 1e-9);
 }
 
@@ -55,8 +56,8 @@ TEST(MacroCircleTest, FromParameters) {
 	std::shared_ptr<MacroCircle> circle = MacroCircle::FromParameters(params);
 	CHECK(MacroExposure::ON == circle->GetExposure());
 	DOUBLES_EQUAL(1.5, circle->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(-3.0, circle->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(2.0, circle->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(-3.0, circle->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(2.0, circle->GetCenter().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(45.0, circle->GetRotation(), DBL_TOL);
 }
 

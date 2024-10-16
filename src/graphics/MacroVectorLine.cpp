@@ -32,15 +32,11 @@ MacroVectorLine::MacroVectorLine() :
 
 MacroVectorLine::MacroVectorLine(MacroExposure exposure, double width,
 		const Point &start, const Point &end, double rotation) :
-		MacroPrimitive(exposure, start, rotation), m_width { width }, m_end {
-				end } {
+		MacroPrimitive(exposure, rotation), m_start { start }, m_end {
+				end }, m_width { width } {
 	if (width < 0.0) {
 		throw std::invalid_argument("Width must be >= 0.0");
 	}
-}
-
-MacroVectorLine::~MacroVectorLine() {
-	// Empty
 }
 
 const Point& MacroVectorLine::GetEnd() const {
@@ -67,6 +63,10 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 
 void MacroVectorLine::Serialize(gerbex::Serializer &serializer) {
 	//TODO draw vector line
+}
+
+const Point& MacroVectorLine::GetStart() const {
+	return m_start;
 }
 
 } /* namespace gerbex */

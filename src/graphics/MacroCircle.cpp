@@ -31,14 +31,10 @@ MacroCircle::MacroCircle() :
 
 MacroCircle::MacroCircle(MacroExposure exposure, double diameter,
 		const Point &center, double rotation) :
-		MacroPrimitive(exposure, center, rotation), m_diameter { diameter } {
+		MacroPrimitive(exposure, rotation), m_center { center }, m_diameter { diameter } {
 	if (diameter < 0.0) {
 		throw std::invalid_argument("Diameter must be >= 0.0");
 	}
-}
-
-MacroCircle::~MacroCircle() {
-	// Empty
 }
 
 double MacroCircle::GetDiameter() const {
@@ -68,11 +64,15 @@ void MacroCircle::Serialize(gerbex::Serializer &serializer) {
 		serializer.TogglePolarity();
 	}
 	serializer.PushRotation(m_rotation);
-	serializer.AddCircle(0.5 * m_diameter, m_coord);
+	serializer.AddCircle(0.5 * m_diameter, m_center);
 	serializer.PopRotation();
 	if (m_exposure == MacroExposure::OFF) {
 		serializer.TogglePolarity();
 	}
+}
+
+const Point& MacroCircle::GetCenter() const {
+	return m_center;
 }
 
 } /* namespace gerbex */

@@ -43,7 +43,7 @@ TEST(MacroCenterLineTest, Ctor) {
 	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
 	DOUBLES_EQUAL(1.25, line.GetWidth(), 1e-9);
 	DOUBLES_EQUAL(0.75, line.GetHeight(), 1e-9);
-	CHECK(start == line.GetCoord());
+	CHECK(start == line.GetCenter());
 	DOUBLES_EQUAL(45.0, line.GetRotation(), 1e-9);
 }
 
@@ -64,8 +64,8 @@ TEST(MacroCenterLineTest, FromParameters) {
 	CHECK(MacroExposure::ON == line->GetExposure());
 	DOUBLES_EQUAL(6.8, line->GetWidth(), DBL_TOL);
 	DOUBLES_EQUAL(1.2, line->GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(3.4, line->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.6, line->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(3.4, line->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.6, line->GetCenter().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(30.0, line->GetRotation(), DBL_TOL);
 }
 

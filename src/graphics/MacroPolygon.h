@@ -41,8 +41,10 @@ public:
 	int GetNumVertices() const;
 	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;
+	const Point& GetCenter() const;
 
 private:
+	Point m_center;
 	int m_numVertices;
 	double m_diameter;
 };

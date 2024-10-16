@@ -35,7 +35,7 @@ class MacroOutline: public MacroPrimitive {
 public:
 	MacroOutline();
 	MacroOutline(MacroExposure exposure, const std::vector<Point> &vertices, double rotation);
-	virtual ~MacroOutline();
+	virtual ~MacroOutline() = default;
 	const std::vector<Point>& GetVertices() const;
 	static std::unique_ptr<MacroOutline> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;

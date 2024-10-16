@@ -104,7 +104,6 @@ TEST(MacroTemplateTest, Outline) {
 	CHECK(MacroExposure::ON == outline->GetExposure());
 	const std::vector<Point> vertices = outline->GetVertices();
 	LONGS_EQUAL(4, vertices.size());
-	CHECK(outline->GetCoord() == vertices[0]);
 }
 
 TEST(MacroTemplateTest, Polygon) {
@@ -140,12 +139,12 @@ TEST(MacroTemplateTest, VariableDonut) {
 	std::shared_ptr<MacroCircle> inner = GetPrimitive<MacroCircle>(macro, 1);
 	CHECK(MacroExposure::ON == outer->GetExposure());
 	DOUBLES_EQUAL(0.100, outer->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.02, outer->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.03, outer->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, outer->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.03, outer->GetCenter().GetY(), DBL_TOL);
 	CHECK(MacroExposure::OFF == inner->GetExposure());
 	DOUBLES_EQUAL(0.080, inner->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.02, inner->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.03, inner->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, inner->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.03, inner->GetCenter().GetY(), DBL_TOL);
 }
 
 TEST(MacroTemplateTest, VariableDonut_TooFewParams) {
@@ -170,8 +169,8 @@ TEST(MacroTemplateTest, NewVariable_ArbitraryId) {
 			{ 0.01, 0.02 });
 	std::shared_ptr<MacroCircle> circ = GetPrimitive<MacroCircle>(macro, 0);
 	DOUBLES_EQUAL(0.015, circ->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.01, circ->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.02, circ->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.01, circ->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.02, circ->GetCenter().GetY(), DBL_TOL);
 }
 
 TEST(MacroTemplateTest, NewVariable_Redefine) {

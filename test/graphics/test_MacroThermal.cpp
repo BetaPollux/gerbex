@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "MacroThermal.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -49,7 +50,7 @@ TEST(MacroThermalTest, Ctor) {
 	DOUBLES_EQUAL(2.5, thermal.GetOuterDiameter(), 1e-9);
 	DOUBLES_EQUAL(1.2, thermal.GetInnerDiameter(), 1e-9);
 	DOUBLES_EQUAL(0.25, thermal.GetGapThickness(), 1e-9);
-	CHECK(center == thermal.GetCoord());
+	CHECK_EQUAL(center, thermal.GetCenter());
 	DOUBLES_EQUAL(45.0, thermal.GetRotation(), 1e-9);
 }
 
@@ -84,8 +85,8 @@ TEST(MacroThermalTest, Thermal) {
 	std::shared_ptr<MacroThermal> thermal = MacroThermal::FromParameters(
 			params);
 	CHECK(MacroExposure::ON == thermal->GetExposure());
-	DOUBLES_EQUAL(0.0, thermal->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.25, thermal->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, thermal->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(0.25, thermal->GetCenter().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(0.95, thermal->GetOuterDiameter(), DBL_TOL);
 	DOUBLES_EQUAL(0.75, thermal->GetInnerDiameter(), DBL_TOL);
 	DOUBLES_EQUAL(0.175, thermal->GetGapThickness(), DBL_TOL);

@@ -38,16 +38,14 @@ enum class MacroExposure {
 class MacroPrimitive : public Serializable {
 public:
 	MacroPrimitive();
-	MacroPrimitive(MacroExposure exposure, const Point &coord, double rotation);
-	virtual ~MacroPrimitive();
-	const Point& GetCoord() const;
+	MacroPrimitive(MacroExposure exposure, double rotation);
+	virtual ~MacroPrimitive() = default;
 	MacroExposure GetExposure() const;
 	double GetRotation() const;
 	static MacroExposure ExposureFromNum(int num);
 
 protected:
 	MacroExposure m_exposure;
-	Point m_coord;
 	double m_rotation;
 };
 

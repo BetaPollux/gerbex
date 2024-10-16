@@ -35,14 +35,16 @@ public:
 	MacroThermal();
 	MacroThermal(const Point &center, double outerDiameter, double innerDiameter,
 			double gapThickness, double rotation);
-	virtual ~MacroThermal();
+	virtual ~MacroThermal() = default;
 	double GetGapThickness() const;
 	double GetInnerDiameter() const;
 	double GetOuterDiameter() const;
 	static std::unique_ptr<MacroThermal> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;
+	const Point& GetCenter() const;
 
 private:
+	Point m_center;
 	double m_outerDiameter, m_innerDiameter, m_gapThickness;
 };
 

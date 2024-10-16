@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "MacroPolygon.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -44,7 +45,7 @@ TEST(MacroPolygonTest, Ctor) {
 	LONGS_EQUAL(MacroExposure::OFF, poly.GetExposure());
 	LONGS_EQUAL(5, poly.GetNumVertices());
 	DOUBLES_EQUAL(1.25, poly.GetDiameter(), 1e-9);
-	CHECK(center == poly.GetCoord());
+	CHECK_EQUAL(center, poly.GetCenter());
 	DOUBLES_EQUAL(45.0, poly.GetRotation(), 1e-9);
 }
 
@@ -63,8 +64,8 @@ TEST(MacroPolygonTest, FromParameters) {
 	std::shared_ptr<MacroPolygon> poly = MacroPolygon::FromParameters(params);
 	CHECK(MacroExposure::ON == poly->GetExposure());
 	LONGS_EQUAL(8, poly->GetNumVertices());
-	DOUBLES_EQUAL(3.0, poly->GetCoord().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(4.0, poly->GetCoord().GetY(), DBL_TOL);
+	DOUBLES_EQUAL(3.0, poly->GetCenter().GetX(), DBL_TOL);
+	DOUBLES_EQUAL(4.0, poly->GetCenter().GetY(), DBL_TOL);
 	DOUBLES_EQUAL(6.0, poly->GetDiameter(), DBL_TOL);
 	DOUBLES_EQUAL(12.0, poly->GetRotation(), DBL_TOL);
 }

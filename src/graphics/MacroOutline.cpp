@@ -32,15 +32,10 @@ MacroOutline::MacroOutline() :
 
 MacroOutline::MacroOutline(MacroExposure exposure,
 		const std::vector<Point> &vertices, double rotation) :
-		MacroPrimitive(exposure, Point(), rotation), m_vertices { vertices } {
+		MacroPrimitive(exposure, rotation), m_vertices { vertices } {
 	if (vertices.size() < 3) {
 		throw std::invalid_argument("There must at least 3 vertices");
 	}
-	m_coord = vertices[0];
-}
-
-MacroOutline::~MacroOutline() {
-	// Empty
 }
 
 const std::vector<Point>& MacroOutline::GetVertices() const {

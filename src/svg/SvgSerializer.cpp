@@ -159,14 +159,15 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 
 void SvgSerializer::AddObround(double width, double height,
 		const Point &center) {
+	Point c = center;
 	if (width < height) {
 		double w = width;
 		double y = 0.5 * (height - width);
-		AddDraw(w, Segment(Point(0.0, -y), Point(0.0, y)));
+		AddDraw(w, Segment(c + Point(0.0, -y), c + Point(0.0, y)));
 	} else {
 		double w = height;
 		double x = 0.5 * (width - height);
-		AddDraw(w, Segment(Point(-x, 0.0), Point(x, 0.0)));
+		AddDraw(w, Segment(c + Point(-x, 0.0), c + Point(x, 0.0)));
 	}
 }
 

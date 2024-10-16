@@ -34,14 +34,16 @@ class MacroCenterLine: public MacroPrimitive {
 public:
 	MacroCenterLine();
 	MacroCenterLine(MacroExposure exposure, double width, double height,
-			const Point &start, double rotation);
-	virtual ~MacroCenterLine();
+			const Point &center, double rotation);
+	virtual ~MacroCenterLine() = default;
 	double GetHeight() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroCenterLine> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;
+	const Point& GetCenter() const;
 
 private:
+	Point m_center;
 	double m_width, m_height;
 };
 

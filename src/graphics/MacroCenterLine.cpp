@@ -30,16 +30,12 @@ MacroCenterLine::MacroCenterLine() :
 }
 
 MacroCenterLine::MacroCenterLine(MacroExposure exposure, double width,
-		double height, const Point &start, double rotation) :
-		MacroPrimitive(exposure, start, rotation), m_width { width }, m_height {
+		double height, const Point &center, double rotation) :
+		MacroPrimitive(exposure, rotation), m_center { center }, m_width { width }, m_height {
 				height } {
 	if (width < 0.0 || height < 0.0) {
 		throw std::invalid_argument("Width and height must be >= 0.0");
 	}
-}
-
-MacroCenterLine::~MacroCenterLine() {
-	// Empty
 }
 
 double MacroCenterLine::GetHeight() const {
@@ -70,11 +66,15 @@ void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
 	}
 	serializer.PushRotation(m_rotation);
 	serializer.AddRectangle(m_width, m_height,
-			m_coord - Point(m_width, m_height) * 0.5);
+			m_center - Point(m_width, m_height) * 0.5);
 	serializer.PopRotation();
 	if (m_exposure == MacroExposure::OFF) {
 		serializer.TogglePolarity();
 	}
+}
+
+const Point& MacroCenterLine::GetCenter() const {
+	return m_center;
 }
 
 } /* namespace gerbex */

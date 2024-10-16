@@ -35,15 +35,16 @@ public:
 	MacroVectorLine();
 	MacroVectorLine(MacroExposure exposure, double width,
 			const Point &start, const Point &end, double rotation);
-	virtual ~MacroVectorLine();
+	virtual ~MacroVectorLine() = default;
+	const Point& GetStart() const;
 	const Point& GetEnd() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
 	void Serialize(gerbex::Serializer &serializer) override;
 
 private:
+	Point m_start, m_end;
 	double m_width;
-	Point m_end;
 };
 
 } /* namespace gerbex */
