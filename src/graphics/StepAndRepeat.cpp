@@ -70,11 +70,9 @@ int StepAndRepeat::GetNy() const {
 void StepAndRepeat::Serialize(Serializer &serializer) {
 	for (int ix = 0; ix < m_nx; ix++) {
 		for (int iy = 0; iy < m_ny; iy++) {
-			serializer.PushOffset(Point(ix * m_dx, iy * m_dy));
 			for (auto obj : m_objects) {
 				obj->Serialize(serializer);
 			}
-			serializer.PopOffset();
 		}
 	}
 }

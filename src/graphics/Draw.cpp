@@ -43,9 +43,7 @@ Draw::~Draw() {
 void Draw::Serialize(Serializer &serializer) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	serializer.PushTransform(m_transform);
 	serializer.AddDraw(circle->GetDiameter(), m_segment);
-	serializer.PopTransform();
 }
 
 std::shared_ptr<Aperture> Draw::GetAperture() const {

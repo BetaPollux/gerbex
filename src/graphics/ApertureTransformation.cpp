@@ -65,24 +65,8 @@ Mirroring ApertureTransformation::GetMirroring() const {
 }
 
 void ApertureTransformation::SetMirroring(Mirroring mirroring) {
-	switch (mirroring) {
-	case Mirroring::None:
-		m_mirrorX = false;
-		m_mirrorY = false;
-		break;
-	case Mirroring::X:
-		m_mirrorX = true;
-		m_mirrorY = false;
-		break;
-	case Mirroring::Y:
-		m_mirrorX = false;
-		m_mirrorY = true;
-		break;
-	case Mirroring::XY:
-		m_mirrorX = true;
-		m_mirrorY = true;
-		break;
-	}
+	m_mirrorX = mirroring == Mirroring::X || mirroring == Mirroring::XY;
+	m_mirrorY = mirroring == Mirroring::Y || mirroring == Mirroring::XY;
 }
 
 Polarity ApertureTransformation::GetPolarity() const {

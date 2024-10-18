@@ -67,9 +67,7 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 }
 
 void MacroOutline::Serialize(gerbex::Serializer &serializer) {
-	serializer.PushTransform(makeTransform());
 	serializer.AddPolygon(m_vertices);
-	serializer.PopTransform();
 }
 
 } /* namespace gerbex */

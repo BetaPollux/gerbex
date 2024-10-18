@@ -42,11 +42,7 @@ Flash::~Flash() {
 }
 
 void Flash::Serialize(Serializer &serializer) {
-	serializer.PushOffset(m_origin);
-	serializer.PushTransform(m_transform);
 	m_aperture->Serialize(serializer);
-	serializer.PopTransform();
-	serializer.PopOffset();
 }
 
 std::shared_ptr<Aperture> Flash::GetAperture() const {

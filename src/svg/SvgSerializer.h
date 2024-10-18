@@ -38,20 +38,25 @@ public:
 	void SetViewPort(int width, int height);
 	void SetViewBox(double xMin, double yMin, double width, double height);
 	void SaveFile(const std::string &path);
-	void AddDraw(double width, const Segment &segment) override;
-	void AddArc(double width, const ArcSegment &segment) override;
-	void AddCircle(double radius, const Point &center) override;
-	void AddRectangle(double width, double height, const Point &topLeft)
+	void AddDraw(double width, const Segment &segment, bool isDark = true)
 			override;
-	void AddPolygon(const std::vector<Point> &points) override;
-	void AddObround(double width, double height, const Point &center) override;
-	void AddContour(const std::vector<std::shared_ptr<Segment>> &segments)
+	void AddArc(double width, const ArcSegment &segment, bool isDark = true)
 			override;
+	void AddCircle(double radius, const Point &center, bool isDark = true)
+			override;
+	void AddRectangle(double width, double height, const Point &topLeft,
+			bool isDark = true) override;
+	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
+			override;
+	void AddObround(double width, double height, const Point &center,
+			bool isDark = true) override;
+	void AddContour(const std::vector<std::shared_ptr<Segment>> &segments,
+			bool isDark = true) override;
 
 private:
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	const char* getFillColour() const;
+	const char* getFillColour(bool isDark) const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 };

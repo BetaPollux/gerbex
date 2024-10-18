@@ -61,10 +61,8 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 }
 
 void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
-	serializer.PushTransform(makeTransform());
 	serializer.AddRectangle(m_width, m_height,
 			m_center - Point(m_width, m_height) * 0.5);
-	serializer.PopTransform();
 }
 
 const Point& MacroCenterLine::GetCenter() const {

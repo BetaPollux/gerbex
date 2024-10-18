@@ -36,54 +36,23 @@ namespace gerbex {
  */
 class Serializer {
 public:
-	Serializer() :
-			m_offset { }, m_offsetStack { }, m_transform { }, m_transformStack { } {
-	}
+	Serializer() = default;
 	virtual ~Serializer() = default;
-	virtual void PushOffset(const Point &delta) {
-		m_offsetStack.push_back(delta);
-		updateOffset();
-	}
-	virtual void PopOffset() {
-		m_offsetStack.pop_back();
-		updateOffset();
-	}
-	virtual void PushTransform(const ApertureTransformation &transform) {
-		m_transformStack.push_back(transform);
-		updateTransform();
-	}
-	virtual void PopTransform() {
-		m_transformStack.pop_back();
-		updateTransform();
-	}
-	virtual void AddCircle(double radius, const Point &center) = 0;
-	virtual void AddRectangle(double width, double height,
-			const Point &topLeft) = 0;
-	virtual void AddObround(double width, double height,
-			const Point &center) = 0;
-	virtual void AddPolygon(const std::vector<Point> &points) = 0;
-	virtual void AddDraw(double width, const Segment &segment) = 0;
-	virtual void AddArc(double width, const ArcSegment &segment) = 0;
+	virtual void AddCircle(double radius, const Point &center, bool isDark =
+			true) = 0;
+	virtual void AddRectangle(double width, double height, const Point &topLeft,
+			bool isDark = true) = 0;
+	virtual void AddObround(double width, double height, const Point &center,
+			bool isDark = true) = 0;
+	virtual void AddPolygon(const std::vector<Point> &points,
+			bool isDark = true) = 0;
+	virtual void AddDraw(double width, const Segment &segment, bool isDark =
+			true) = 0;
+	virtual void AddArc(double width, const ArcSegment &segment, bool isDark =
+			true) = 0;
 	virtual void AddContour(
-			const std::vector<std::shared_ptr<Segment>> &segments) = 0;
-
-protected:
-	virtual void updateOffset() {
-		m_offset = Point();
-		for (const Point &pt : m_offsetStack) {
-			m_offset += pt;
-		}
-	}
-	virtual void updateTransform() {
-		m_transform = ApertureTransformation();
-		for (const ApertureTransformation &t : m_transformStack) {
-			m_transform.Stack(t);
-		}
-	}
-	Point m_offset;
-	std::vector<Point> m_offsetStack;
-	ApertureTransformation m_transform;
-	std::vector<ApertureTransformation> m_transformStack;
+			const std::vector<std::shared_ptr<Segment>> &segments, bool isDark =
+					true) = 0;
 };
 
 } /* namespace gerbex */
