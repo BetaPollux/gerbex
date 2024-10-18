@@ -21,6 +21,7 @@
 #ifndef APERTURETRANSFORMATION_H_
 #define APERTURETRANSFORMATION_H_
 
+#include "Point.h"
 #include <string>
 
 namespace gerbex {
@@ -50,7 +51,8 @@ class ApertureTransformation {
 public:
 	ApertureTransformation();
 	ApertureTransformation(Polarity polarity, Mirroring mirroring, double rotation, double scaling);
-	virtual ~ApertureTransformation();
+	virtual ~ApertureTransformation() = default;
+	void Stack(const ApertureTransformation &transform);
 	bool operator==	(const ApertureTransformation& rhs) const;
 	bool operator!=	(const ApertureTransformation& rhs) const;
 	Mirroring GetMirroring() const;
@@ -61,12 +63,14 @@ public:
 	void SetRotationDegrees(double rotationDegrees);
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
+	Point Apply(const Point &point, const Point &reference = Point());
+	double ApplyScaling(double value);
 	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);
 
 private:
-	Polarity m_polarity;
-	Mirroring m_mirroring;
+	bool m_isDark;
+	bool m_mirrorX, m_mirrorY;
 	double m_rotation_degrees;
 	double m_scaling_factor;
 };

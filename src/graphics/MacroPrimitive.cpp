@@ -23,16 +23,13 @@
 
 namespace gerbex {
 
-MacroPrimitive::MacroPrimitive()
-	: MacroPrimitive(MacroExposure::ON, 0.0)
-{
+MacroPrimitive::MacroPrimitive() :
+		MacroPrimitive(MacroExposure::ON, 0.0) {
 	// Empty
 }
 
-MacroPrimitive::MacroPrimitive(MacroExposure exposure, double rotation)
-	: m_exposure{ exposure },
-	  m_rotation{ rotation }
-{
+MacroPrimitive::MacroPrimitive(MacroExposure exposure, double rotation) :
+		m_exposure { exposure }, m_rotation { rotation } {
 	// Empty
 }
 
@@ -53,6 +50,15 @@ MacroExposure MacroPrimitive::ExposureFromNum(int num) {
 	default:
 		throw std::invalid_argument("macro exposure must be 0 or 1");
 	}
+}
+
+ApertureTransformation MacroPrimitive::makeTransform() const {
+	ApertureTransformation transform;
+	Polarity polarity =
+			m_exposure == MacroExposure::ON ? Polarity::Dark : Polarity::Clear;
+	transform.SetRotationDegrees(m_rotation);
+	transform.SetPolarity(polarity);
+	return transform;
 }
 
 } /* namespace gerbex */

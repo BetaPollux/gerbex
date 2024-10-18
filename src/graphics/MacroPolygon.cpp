@@ -79,9 +79,9 @@ void MacroPolygon::Serialize(gerbex::Serializer &serializer) {
 		double y = 0.5 * m_diameter * sin(angle);
 		points.push_back( { x, y });
 	}
-	serializer.PushPolarity(m_exposure);
+	serializer.PushTransform(makeTransform());
 	serializer.AddPolygon(points);
-	serializer.PopPolarity();
+	serializer.PopTransform();
 }
 
 const Point& MacroPolygon::GetCenter() const {

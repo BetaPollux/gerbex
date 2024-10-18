@@ -41,63 +41,107 @@ namespace gerbex {
  *		X points to the right.
  *		Y points upwards.
  */
-template<typename T>
-class GenericPoint {
+
+using FixedPointType = int32_t;
+
+class FixedPoint {
 public:
-	GenericPoint() : GenericPoint(0, 0) {
+	FixedPoint() :
+			FixedPoint(0, 0) {
 	}
-	GenericPoint(T x, T y) :
+	FixedPoint(FixedPointType x, FixedPointType y) :
 			m_x { x }, m_y { y } {
 	}
-	virtual ~GenericPoint() {
-	}
-	bool operator==(const GenericPoint<T> &rhs) const {
-		return (m_x == rhs.m_x) && (m_y == rhs.m_y);
-	}
-	bool operator!=(const GenericPoint<T> &rhs) const {
-		return (m_x != rhs.m_x) || (m_y != rhs.m_y);
-	}
-	GenericPoint operator+(const GenericPoint<T> &rhs) const {
-		return GenericPoint<T>(m_x + rhs.m_x, m_y + rhs.m_y);
-	}
-	GenericPoint operator-(const GenericPoint<T> &rhs) const {
-		return GenericPoint<T>(m_x - rhs.m_x, m_y - rhs.m_y);
-	}
-	GenericPoint operator*(double factor) const {
-		return GenericPoint<T>(m_x * factor, m_y * factor);
-	}
-	T GetX() const {
+	virtual ~FixedPoint() = default;
+	FixedPointType GetX() const {
 		return m_x;
 	}
-	T GetY() const {
+	void SetX(FixedPointType x) {
+		m_x = x;
+	}
+	FixedPointType GetY() const {
+		return m_y;
+	}
+	void SetY(FixedPointType y) {
+		m_y = y;
+	}
+
+private:
+	FixedPointType m_x, m_y;
+};
+
+class Point {
+public:
+	Point() :
+			Point(0.0, 0.0) {
+	}
+	Point(double x, double y) :
+			m_x { x }, m_y { y } {
+	}
+	virtual ~Point() = default;
+	bool operator==(const Point &rhs) const {
+		return fabs(m_x - rhs.m_x) <= kEqualityThreshold
+				&& fabs(m_y - rhs.m_y) <= kEqualityThreshold;
+	}
+	bool operator!=(const Point &rhs) const {
+		return fabs(m_x - rhs.m_x) > kEqualityThreshold
+				|| fabs(m_y - rhs.m_y) > kEqualityThreshold;
+	}
+	Point operator+(const Point &rhs) const {
+		return Point(m_x + rhs.m_x, m_y + rhs.m_y);
+	}
+	Point& operator+=(const Point &rhs) {
+		m_x += rhs.m_x;
+		m_y += rhs.m_y;
+		return *this;
+	}
+	Point operator-(const Point &rhs) const {
+		return Point(m_x - rhs.m_x, m_y - rhs.m_y);
+	}
+	Point& operator-=(const Point &rhs) {
+		m_x -= rhs.m_x;
+		m_y -= rhs.m_y;
+		return *this;
+	}
+	Point operator*(double factor) const {
+		return Point(m_x * factor, m_y * factor);
+	}
+	Point& operator*=(double factor) {
+		m_x *= factor;
+		m_y *= factor;
+		return *this;
+	}
+	double GetX() const {
+		return m_x;
+	}
+	double GetY() const {
 		return m_y;
 	}
 	void Rotate(double degrees) {
-		//TODO add a rotate around a reference point
 		if (degrees != 0.0) {
 			double rad = M_PI * degrees / 180.0;
-			T newX = cos(rad) * m_x - sin(rad) * m_y;
-			T newY = sin(rad) * m_x + cos(rad) * m_y;
+			double newX = cos(rad) * m_x - sin(rad) * m_y;
+			double newY = sin(rad) * m_x + cos(rad) * m_y;
 			m_x = newX;
 			m_y = newY;
 		}
 	}
-	double Distance(const GenericPoint<T> &rhs) const {
+	double Distance(const Point &rhs) const {
 		double dx = m_x - rhs.m_x;
 		double dy = m_y - rhs.m_y;
 		return sqrt(dx * dx + dy * dy);
 	}
+	void SetX(double x) {
+		m_x = x;
+	}
+	void SetY(double y) {
+		m_y = y;
+	}
 
 private:
-	T m_x, m_y;
+	static constexpr double kEqualityThreshold = 1e-9;
+	double m_x, m_y;
 };
-
-// TODO double needs comparison with tolerance
-
-using FixedPointType = int32_t;
-using FixedPoint = GenericPoint<FixedPointType>;
-using PointType = double;
-using Point = GenericPoint<PointType>;
 
 } /* namespace gerbex */
 

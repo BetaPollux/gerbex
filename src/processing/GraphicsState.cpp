@@ -131,7 +131,7 @@ Point GraphicsState::GetPoint(const CoordinateData &data) const {
 		throw std::invalid_argument("coordinate data is not fully defined");
 	}
 
-	std::optional<PointType> newX, newY;
+	std::optional<double> newX, newY;
 	if (data.GetX().has_value()) {
 		newX = m_format->Convert(*data.GetX());
 	}

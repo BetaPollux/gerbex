@@ -64,7 +64,7 @@ Point CoordinateFormat::Convert(const FixedPoint &point) const {
 	return Point(Convert(point.GetX()), Convert(point.GetY()));
 }
 
-PointType CoordinateFormat::Convert(FixedPointType value) const {
+double CoordinateFormat::Convert(FixedPointType value) const {
 	return m_resolution * value;
 }
 

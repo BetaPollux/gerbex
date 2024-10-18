@@ -24,56 +24,73 @@
 namespace gerbex {
 
 ApertureTransformation::ApertureTransformation() :
-		m_polarity { Polarity::Dark }, m_mirroring { Mirroring::None }, m_rotation_degrees {
-				0.0 }, m_scaling_factor { 1.0 }
-
-{
+		m_isDark { true }, m_mirrorX { false }, m_mirrorY { false }, m_rotation_degrees {
+				0.0 }, m_scaling_factor { 1.0 } {
 	// Empty
-
 }
 
 ApertureTransformation::ApertureTransformation(Polarity polarity,
 		Mirroring mirroring, double rotation, double scaling) :
-		m_polarity { polarity }, m_mirroring { mirroring }, m_rotation_degrees {
-				rotation }, m_scaling_factor { scaling }
-
-{
-	// Empty
-
-}
-
-ApertureTransformation::~ApertureTransformation() {
-	// Empty
+		m_rotation_degrees { rotation }, m_scaling_factor { scaling } {
+	SetPolarity(polarity);
+	SetMirroring(mirroring);
 }
 
 bool ApertureTransformation::operator ==(
 		const ApertureTransformation &rhs) const {
-	return (m_polarity == rhs.m_polarity) && (m_mirroring == rhs.m_mirroring)
+	return (m_isDark == rhs.m_isDark) && (m_mirrorX == rhs.m_mirrorX)
+			&& (m_mirrorY == rhs.m_mirrorY)
 			&& (m_rotation_degrees == rhs.m_rotation_degrees)
 			&& (m_scaling_factor == rhs.m_scaling_factor);
 }
 
 bool ApertureTransformation::operator !=(
 		const ApertureTransformation &rhs) const {
-	return (m_polarity != rhs.m_polarity) || (m_mirroring != rhs.m_mirroring)
+	return (m_isDark != rhs.m_isDark) || (m_mirrorX != rhs.m_mirrorX)
+			|| (m_mirrorY != rhs.m_mirrorY)
 			|| (m_rotation_degrees != rhs.m_rotation_degrees)
 			|| (m_scaling_factor != rhs.m_scaling_factor);
 }
 
 Mirroring ApertureTransformation::GetMirroring() const {
-	return m_mirroring;
+	if (m_mirrorX && m_mirrorY) {
+		return Mirroring::XY;
+	} else if (m_mirrorX) {
+		return Mirroring::X;
+	} else if (m_mirrorY) {
+		return Mirroring::Y;
+	} else {
+		return Mirroring::None;
+	}
 }
 
 void ApertureTransformation::SetMirroring(Mirroring mirroring) {
-	m_mirroring = mirroring;
+	switch (mirroring) {
+	case Mirroring::None:
+		m_mirrorX = false;
+		m_mirrorY = false;
+		break;
+	case Mirroring::X:
+		m_mirrorX = true;
+		m_mirrorY = false;
+		break;
+	case Mirroring::Y:
+		m_mirrorX = false;
+		m_mirrorY = true;
+		break;
+	case Mirroring::XY:
+		m_mirrorX = true;
+		m_mirrorY = true;
+		break;
+	}
 }
 
 Polarity ApertureTransformation::GetPolarity() const {
-	return m_polarity;
+	return m_isDark ? Polarity::Dark : Polarity::Clear;
 }
 
 void ApertureTransformation::SetPolarity(Polarity polarity) {
-	m_polarity = polarity;
+	m_isDark = polarity == Polarity::Dark;
 }
 
 double ApertureTransformation::GetRotationDegrees() const {
@@ -89,6 +106,9 @@ double ApertureTransformation::GetScalingFactor() const {
 }
 
 void ApertureTransformation::SetScalingFactor(double scalingFactor) {
+	if (scalingFactor <= 0.0) {
+		throw std::invalid_argument("scaling factor must be > 0");
+	}
 	m_scaling_factor = scalingFactor;
 }
 
@@ -99,6 +119,24 @@ Polarity ApertureTransformation::PolarityFromCommand(const std::string &str) {
 		return Polarity::Dark;
 	} else {
 		throw std::invalid_argument("invalid polarity");
+	}
+}
+
+double ApertureTransformation::ApplyScaling(double value) {
+	return value * m_scaling_factor;
+}
+
+void ApertureTransformation::Stack(const ApertureTransformation &transform) {
+	m_scaling_factor *= transform.m_scaling_factor;
+	m_rotation_degrees += transform.m_rotation_degrees;
+	if (!transform.m_isDark) {
+		m_isDark = !m_isDark;
+	}
+	if (transform.m_mirrorX) {
+		m_mirrorX = !m_mirrorX;
+	}
+	if (transform.m_mirrorY) {
+		m_mirrorY = !m_mirrorY;
 	}
 }
 
@@ -114,6 +152,20 @@ Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
 	} else {
 		throw std::invalid_argument("invalid mirroring");
 	}
+}
+
+Point ApertureTransformation::Apply(const Point &point,
+		const Point &reference) {
+	Point result = point - reference;
+	if (m_mirrorX) {
+		result.SetX(-result.GetX());
+	}
+	if (m_mirrorY) {
+		result.SetY(-result.GetY());
+	}
+	result *= m_scaling_factor;
+	result.Rotate(m_rotation_degrees);
+	return result + reference;
 }
 
 } /* namespace gerbex */

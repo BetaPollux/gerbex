@@ -18,10 +18,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdexcept>
-
 #include "ApertureTransformation.h"
+#include "GraphicsStringFrom.h"
+#include <stdexcept>
 #include "CppUTest/TestHarness.h"
+
+#define DBL_TOL	1e-9
 
 using namespace gerbex;
 
@@ -43,6 +45,13 @@ TEST(ApertureTransformationTest, Rotation) {
 
 TEST(ApertureTransformationTest, Scaling) {
 	CHECK(1.0 == transform.GetScalingFactor());
+}
+
+TEST(ApertureTransformationTest, ApplyScaling) {
+	transform.SetScalingFactor(0.8);
+	double result = transform.ApplyScaling(5.0);
+
+	CHECK_EQUAL(4.0, result);
 }
 
 TEST(ApertureTransformationTest, Equal) {
@@ -84,18 +93,212 @@ TEST(ApertureTransformationTest, NotEqual_Scaling) {
 	CHECK(other != transform);
 }
 
-TEST(ApertureTransformationTest, PolarityFromCommand)
-{
-	CHECK(Polarity::Clear == ApertureTransformation::PolarityFromCommand("C"));
-	CHECK(Polarity::Dark  == ApertureTransformation::PolarityFromCommand("D"));
-	CHECK_THROWS(std::invalid_argument, ApertureTransformation::PolarityFromCommand("Q"));
+TEST(ApertureTransformationTest, RejectsScaling) {
+	CHECK_THROWS(std::invalid_argument, transform.SetScalingFactor(0.0));
+	CHECK_THROWS(std::invalid_argument, transform.SetScalingFactor(-1.0));
 }
 
-TEST(ApertureTransformationTest, MirroringFromCommand)
-{
+TEST(ApertureTransformationTest, PolarityFromCommand) {
+	CHECK(Polarity::Clear == ApertureTransformation::PolarityFromCommand("C"));
+	CHECK(Polarity::Dark == ApertureTransformation::PolarityFromCommand("D"));
+	CHECK_THROWS(std::invalid_argument,
+			ApertureTransformation::PolarityFromCommand("Q"));
+}
+
+TEST(ApertureTransformationTest, MirroringFromCommand) {
 	CHECK(Mirroring::None == ApertureTransformation::MirroringFromCommand("N"));
-	CHECK(Mirroring::X  == ApertureTransformation::MirroringFromCommand("X"));
-	CHECK(Mirroring::Y  == ApertureTransformation::MirroringFromCommand("Y"));
-	CHECK(Mirroring::XY  == ApertureTransformation::MirroringFromCommand("XY"));
-	CHECK_THROWS(std::invalid_argument, ApertureTransformation::MirroringFromCommand("Q"));
+	CHECK(Mirroring::X == ApertureTransformation::MirroringFromCommand("X"));
+	CHECK(Mirroring::Y == ApertureTransformation::MirroringFromCommand("Y"));
+	CHECK(Mirroring::XY == ApertureTransformation::MirroringFromCommand("XY"));
+	CHECK_THROWS(std::invalid_argument,
+			ApertureTransformation::MirroringFromCommand("Q"));
+}
+
+TEST_GROUP(ApertureTransformation_Apply) {
+	ApertureTransformation transform;
+	Point point;
+	Point ref;
+
+	void setup() {
+		point = Point(1.0, 1.0);
+		ref = Point(0.5, 0.5);
+	}
+};
+
+TEST(ApertureTransformation_Apply, Neutral) {
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(point, result);
+}
+
+TEST(ApertureTransformation_Apply, Scaling) {
+	transform.SetScalingFactor(0.6);
+	Point expected(0.6, 0.6);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorX) {
+	transform.SetMirroring(Mirroring::X);
+	Point expected(-1.0, 1.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorY) {
+	transform.SetMirroring(Mirroring::Y);
+	Point expected(1.0, -1.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorXY) {
+	transform.SetMirroring(Mirroring::XY);
+	Point expected(-1.0, -1.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, RotateCCW) {
+	transform.SetRotationDegrees(45.0);
+	Point expected(0.0, sqrt(2.0));
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, RotateCW) {
+	transform.SetRotationDegrees(-45.0);
+	Point expected(sqrt(2.0), 0.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorXThenRotate) {
+	transform.SetMirroring(Mirroring::X);
+	transform.SetRotationDegrees(45.0);
+	Point expected(-sqrt(2.0), 0.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorYThenRotate) {
+	transform.SetMirroring(Mirroring::Y);
+	transform.SetRotationDegrees(45.0);
+	Point expected(sqrt(2.0), 0.0);
+	Point result = transform.Apply(point);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, MirrorXY_Ref) {
+	transform.SetMirroring(Mirroring::XY);
+	Point expected(0.0, 0.0);
+	Point result = transform.Apply(point, ref);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, Scaling_Ref) {
+	transform.SetScalingFactor(0.6);
+	Point expected(0.8, 0.8);
+	Point result = transform.Apply(point, ref);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST(ApertureTransformation_Apply, RotateCCW_Ref) {
+	transform.SetRotationDegrees(45.0);
+	Point expected(0.5, 0.5 + sqrt(0.5));
+	Point result = transform.Apply(point, ref);
+
+	CHECK_EQUAL(expected, result);
+}
+
+TEST_GROUP(ApertureTransformation_Stack) {
+	ApertureTransformation transform;
+	ApertureTransformation other;
+
+	void setup() {
+		transform = ApertureTransformation();
+		other = ApertureTransformation();
+	}
+};
+
+TEST(ApertureTransformation_Stack, Scaling) {
+	transform.SetScalingFactor(0.8);
+	other.SetScalingFactor(0.5);
+	transform.Stack(other);
+
+	DOUBLES_EQUAL(0.4, transform.GetScalingFactor(), DBL_TOL);
+}
+
+TEST(ApertureTransformation_Stack, Rotation) {
+	transform.SetRotationDegrees(30.0);
+	other.SetRotationDegrees(-10.0);
+	transform.Stack(other);
+
+	DOUBLES_EQUAL(20.0, transform.GetRotationDegrees(), DBL_TOL);
+}
+
+TEST(ApertureTransformation_Stack, PolarityClearIgnoresDark) {
+	transform.SetPolarity(Polarity::Clear);
+	other.SetPolarity(Polarity::Dark);
+	transform.Stack(other);
+
+	CHECK(Polarity::Clear == transform.GetPolarity());
+}
+
+TEST(ApertureTransformation_Stack, PolarityDarkToClear) {
+	transform.SetPolarity(Polarity::Dark);
+	other.SetPolarity(Polarity::Clear);
+	transform.Stack(other);
+
+	CHECK(Polarity::Clear == transform.GetPolarity());
+}
+
+TEST(ApertureTransformation_Stack, PolarityClearToDark) {
+	transform.SetPolarity(Polarity::Clear);
+	other.SetPolarity(Polarity::Clear);
+	transform.Stack(other);
+
+	CHECK(Polarity::Dark == transform.GetPolarity());
+}
+
+TEST(ApertureTransformation_Stack, MirrorNoneToX) {
+	transform.SetMirroring(Mirroring::None);
+	other.SetMirroring(Mirroring::X);
+	transform.Stack(other);
+
+	CHECK(Mirroring::X == transform.GetMirroring());
+}
+
+TEST(ApertureTransformation_Stack, MirrorXToNone) {
+	transform.SetMirroring(Mirroring::X);
+	other.SetMirroring(Mirroring::X);
+	transform.Stack(other);
+
+	CHECK(Mirroring::None == transform.GetMirroring());
+}
+
+TEST(ApertureTransformation_Stack, MirrorNoneToY) {
+	transform.SetMirroring(Mirroring::None);
+	other.SetMirroring(Mirroring::Y);
+	transform.Stack(other);
+
+	CHECK(Mirroring::Y == transform.GetMirroring());
+}
+
+TEST(ApertureTransformation_Stack, MirrorYToNone) {
+	transform.SetMirroring(Mirroring::Y);
+	other.SetMirroring(Mirroring::Y);
+	transform.Stack(other);
+
+	CHECK(Mirroring::None == transform.GetMirroring());
 }

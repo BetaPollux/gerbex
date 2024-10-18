@@ -37,8 +37,7 @@ namespace gerbex {
 class Serializer {
 public:
 	Serializer() :
-			m_offset { }, m_offsetStack { }, m_rotation { }, m_rotationStack { }, m_polarityStack { }, m_isDark {
-					true } {
+			m_offset { }, m_offsetStack { }, m_transform { }, m_transformStack { } {
 	}
 	virtual ~Serializer() = default;
 	virtual void PushOffset(const Point &delta) {
@@ -49,29 +48,13 @@ public:
 		m_offsetStack.pop_back();
 		updateOffset();
 	}
-	virtual void PushRotation(double degrees) {
-		m_rotationStack.push_back(degrees);
-		updateRotation();
+	virtual void PushTransform(const ApertureTransformation &transform) {
+		m_transformStack.push_back(transform);
+		updateTransform();
 	}
-	virtual void PopRotation() {
-		m_rotationStack.pop_back();
-		updateRotation();
-	}
-	virtual void PushPolarity(Polarity polarity) {
-		m_polarityStack.push_back(polarity);
-		updatePolarity();
-	}
-	virtual void PushPolarity(MacroExposure exposure) {
-		Polarity polarity =
-				exposure == MacroExposure::ON ?
-						Polarity::Dark : Polarity::Clear;
-		m_polarityStack.push_back(polarity);
-		updatePolarity();
-
-	}
-	virtual void PopPolarity() {
-		m_polarityStack.pop_back();
-		updatePolarity();
+	virtual void PopTransform() {
+		m_transformStack.pop_back();
+		updateTransform();
 	}
 	virtual void AddCircle(double radius, const Point &center) = 0;
 	virtual void AddRectangle(double width, double height,
@@ -83,35 +66,24 @@ public:
 	virtual void AddArc(double width, const ArcSegment &segment) = 0;
 	virtual void AddContour(
 			const std::vector<std::shared_ptr<Segment>> &segments) = 0;
-	//TODO add transform
 
 protected:
 	virtual void updateOffset() {
 		m_offset = Point();
 		for (const Point &pt : m_offsetStack) {
-			m_offset = m_offset + pt;
+			m_offset += pt;
 		}
 	}
-	virtual void updateRotation() {
-		m_rotation = 0;
-		for (double r : m_rotationStack) {
-			m_rotation += r;
-		}
-	}
-	virtual void updatePolarity() {
-		m_isDark = true;
-		for (Polarity p : m_polarityStack) {
-			if (p == Polarity::Clear) {
-				m_isDark = !m_isDark;
-			}
+	virtual void updateTransform() {
+		m_transform = ApertureTransformation();
+		for (const ApertureTransformation &t : m_transformStack) {
+			m_transform.Stack(t);
 		}
 	}
 	Point m_offset;
 	std::vector<Point> m_offsetStack;
-	double m_rotation;
-	std::vector<double> m_rotationStack;
-	std::vector<Polarity> m_polarityStack;
-	bool m_isDark;
+	ApertureTransformation m_transform;
+	std::vector<ApertureTransformation> m_transformStack;
 };
 
 } /* namespace gerbex */
