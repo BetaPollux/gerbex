@@ -4,6 +4,7 @@ add_library(gerbex_graphics OBJECT
 	Arc.cpp
 	ArcSegment.cpp
 	BlockAperture.cpp
+	Box.cpp
 	Circle.cpp
 	CircleTemplate.cpp
 	DataTypeParser.cpp

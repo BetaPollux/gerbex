@@ -69,5 +69,9 @@ void Rectangle::Serialize(Serializer &serializer, const Point &origin,
 	serializer.AddPolygon(corners);
 }
 
+Box Rectangle::GetBox() const {
+	//TODO rectangle getbox
+}
+
 } /* namespace gerbex */
 

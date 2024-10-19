@@ -79,4 +79,8 @@ void StepAndRepeat::Serialize(Serializer &serializer, const Point &origin,
 	}
 }
 
+Box StepAndRepeat::GetBox() const {
+	//TODO step and repeat GetBox
+}
+
 } /* namespace gerbex */

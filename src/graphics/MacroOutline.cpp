@@ -59,7 +59,7 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	for (size_t i = 0; i < num; i++) {
 		double x = *it++;
 		double y = *it++;
-		vertices.push_back(Point(x, y));
+		vertices[i] = Point(x, y);
 	}
 	double rotation = params.back();
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);

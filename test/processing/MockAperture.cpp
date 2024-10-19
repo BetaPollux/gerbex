@@ -38,4 +38,8 @@ void MockAperture::Serialize(Serializer &serializer, const Point &origin,
 	(void)transform;
 }
 
+Box MockAperture::GetBox() const {
+	return Box();
+}
+
 } /* namespace gerbex */

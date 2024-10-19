@@ -59,4 +59,8 @@ const ApertureTransformation& Arc::GetTransform() const {
 	return m_transform;
 }
 
+Box Arc::GetBox() const {
+	//TODO arc GetBox
+}
+
 } /* namespace gerbex */

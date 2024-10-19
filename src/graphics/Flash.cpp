@@ -55,4 +55,8 @@ const ApertureTransformation& Flash::GetTransform() const {
 	return m_transform;
 }
 
+Box Flash::GetBox() const {
+	//TODO Flash GetBox
+}
+
 } /* namespace gerbex */

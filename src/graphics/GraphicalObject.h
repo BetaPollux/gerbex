@@ -21,6 +21,7 @@
 #ifndef GRAPHICALOBJECT_H_
 #define GRAPHICALOBJECT_H_
 
+#include "Box.h"
 #include "Serializable.h"
 
 namespace gerbex {
@@ -31,7 +32,7 @@ namespace gerbex {
 class GraphicalObject: public Serializable {
 public:
 	virtual ~GraphicalObject() = default;
-
+	virtual Box GetBox() const = 0;
 };
 
 } /* namespace gerbex */

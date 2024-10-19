@@ -44,6 +44,7 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) override;
 	Polarity GetPolarity() const;
+	Box GetBox() const override;
 
 private:
 	std::vector<RegionContour> m_contours;

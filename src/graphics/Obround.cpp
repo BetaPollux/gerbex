@@ -67,4 +67,8 @@ void Obround::Serialize(Serializer &serializer, const Point &origin,
 	serializer.AddObround(width, height, origin);
 }
 
+Box Obround::GetBox() const {
+	//todo obround getbox
+}
+
 } /* namespace gerbex */

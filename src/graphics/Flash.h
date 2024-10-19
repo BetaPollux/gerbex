@@ -44,6 +44,7 @@ public:
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
 	const ApertureTransformation& GetTransform() const;
+	Box GetBox() const override;
 
 private:
 	Point m_origin;

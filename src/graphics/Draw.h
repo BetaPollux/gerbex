@@ -42,6 +42,7 @@ public:
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Segment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;
+	Box GetBox() const override;
 
 private:
 	Segment m_segment;

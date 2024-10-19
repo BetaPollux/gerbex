@@ -40,6 +40,7 @@ public:
 	double GetRotation() const;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) override;
+	Box GetBox() const override;
 
 private:
 	double m_outerDiameter;

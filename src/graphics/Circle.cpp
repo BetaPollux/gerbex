@@ -61,5 +61,9 @@ void Circle::Serialize(Serializer &serializer, const Point &origin,
 	serializer.AddCircle(radius, origin, transform.GetPolarity() == Polarity::Dark);
 }
 
+Box Circle::GetBox() const {
+	//TODO circle GetBox
+}
+
 } /* namespace gerbex */
 

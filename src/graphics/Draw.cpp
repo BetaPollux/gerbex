@@ -59,4 +59,8 @@ const ApertureTransformation& Draw::GetTransform() const {
 	return m_transform;
 }
 
+Box Draw::GetBox() const {
+	//TODO Draw GetBox
+}
+
 } /* namespace gerbex */

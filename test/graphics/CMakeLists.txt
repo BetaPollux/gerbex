@@ -5,6 +5,7 @@ add_library(test_graphics OBJECT
 	test_Arc.cpp
 	test_ArcSegment.cpp
 	test_BlockAperture.cpp
+	test_Box.cpp
 	test_Circle.cpp
 	test_CircleTemplate.cpp
 	test_DataTypeParser.cpp

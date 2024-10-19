@@ -82,5 +82,9 @@ void Polygon::Serialize(Serializer &serializer, const Point &origin,
 	serializer.AddPolygon(points);
 }
 
+Box Polygon::GetBox() const {
+	//TODO polygon getbox
+}
+
 } /* namespace gerbex */
 

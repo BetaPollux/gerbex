@@ -45,6 +45,7 @@ public:
 	int GetNy() const;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) override;
+	Box GetBox() const override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

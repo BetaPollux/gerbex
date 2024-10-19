@@ -21,6 +21,7 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
+#include "Box.h"
 #include "Serializable.h"
 
 namespace gerbex {
@@ -32,6 +33,7 @@ namespace gerbex {
 class Aperture: public Serializable {
 public:
 	virtual ~Aperture() = default;
+	virtual Box GetBox() const = 0;
 };
 
 } /* namespace gerbex */

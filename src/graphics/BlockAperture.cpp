@@ -48,4 +48,8 @@ void BlockAperture::Serialize(Serializer &serializer, const Point &origin,
 	}
 }
 
+Box BlockAperture::GetBox() const {
+	//TODO block getbox
+}
+
 } /* namespace gerbex */

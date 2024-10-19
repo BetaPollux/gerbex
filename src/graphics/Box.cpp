@@ -1,7 +1,7 @@
 /*
- * Macro.cpp
+ * Box.cpp
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Oct 19, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,38 +17,43 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#include "Macro.h"
-#include "Serializer.h"
+#include "Box.h"
+#include <algorithm>
 
 namespace gerbex {
 
-Macro::Macro() {
-	// Empty
-
-}
-
-Macro::~Macro() {
+Box::Box() :
+		Box(1.0, 1.0, 0.0, 0.0) {
 	// Empty
 }
 
-void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
-	m_primitives.push_back(primitive);
+Box::Box(double width, double height, double left, double bottom) :
+		m_width { width }, m_height { height }, m_left { left }, m_bottom {
+				bottom } {
 }
 
-const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() const {
-	return m_primitives;
+double Box::GetHeight() const {
+	return m_height;
 }
 
-void Macro::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
-	for (auto prim : m_primitives) {
-		prim->Serialize(serializer, origin, transform);
-	}
+double Box::GetWidth() const {
+	return m_width;
 }
 
-Box Macro::GetBox() const {
-	//TODO macro getbox
+double Box::GetBottom() const {
+	return m_bottom;
+}
+
+double Box::GetLeft() const {
+	return m_left;
+}
+
+Box Box::Extend(const Box &other) {
+	double width = std::max(m_width, other.m_width);
+	double height = std::max(m_height, other.m_height);
+	double left = std::min(m_left, other.m_left);
+	double bottom = std::min(m_bottom, other.m_bottom);
+	return Box(width, height, left, bottom);
 }
 
 } /* namespace gerbex */

@@ -67,6 +67,8 @@ bool Region::AreContoursClosed() const {
 
 void Region::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
+	(void)origin;
+	(void)transform;
 	for (RegionContour &c : m_contours) {
 		serializer.AddContour(c.GetSegments(), m_polarity == Polarity::Dark);
 	}
@@ -74,6 +76,10 @@ void Region::Serialize(Serializer &serializer, const Point &origin,
 
 Polarity Region::GetPolarity() const {
 	return m_polarity;
+}
+
+Box Region::GetBox() const {
+	//TODO region GetBox
 }
 
 } /* namespace gerbex */

@@ -1,7 +1,7 @@
 /*
- * Macro.cpp
+ * test_Box.cpp
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Oct 19, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,38 +17,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "Box.h"
+#include "CppUTest/TestHarness.h"
 
-#include "Macro.h"
-#include "Serializer.h"
+#define DBL_TOL 1e-9
 
 namespace gerbex {
 
-Macro::Macro() {
-	// Empty
+TEST_GROUP(Box) {
+};
 
-}
+TEST(Box, Extend) {
+	Box one(5.0, 2.0, -2.5, -1.0);
+	Box two(4.0, 4.0, -2.0, -2.0);
+	Box three = one.Extend(two);
 
-Macro::~Macro() {
-	// Empty
-}
-
-void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
-	m_primitives.push_back(primitive);
-}
-
-const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() const {
-	return m_primitives;
-}
-
-void Macro::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
-	for (auto prim : m_primitives) {
-		prim->Serialize(serializer, origin, transform);
-	}
-}
-
-Box Macro::GetBox() const {
-	//TODO macro getbox
+	DOUBLES_EQUAL(5.0, three.GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(4.0, three.GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(-2.5, three.GetLeft(), DBL_TOL);
+	DOUBLES_EQUAL(-2.0, three.GetBottom(), DBL_TOL);
 }
 
 } /* namespace gerbex */

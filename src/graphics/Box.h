@@ -1,7 +1,7 @@
 /*
- * Macro.cpp
+ * Box.h
  *
- *  Created on: Mar. 30, 2024
+ *  Created on: Oct 19, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,38 +17,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#include "Macro.h"
-#include "Serializer.h"
+#ifndef BOX_H_
+#define BOX_H_
 
 namespace gerbex {
 
-Macro::Macro() {
-	// Empty
+class Box {
+public:
+	Box();
+	Box(double width, double height, double left, double bottom);
+	virtual ~Box() = default;
+	double GetHeight() const;
+	double GetWidth() const;
+	double GetBottom() const;
+	double GetLeft() const;
+	Box Extend(const Box &other);
 
-}
-
-Macro::~Macro() {
-	// Empty
-}
-
-void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
-	m_primitives.push_back(primitive);
-}
-
-const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() const {
-	return m_primitives;
-}
-
-void Macro::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
-	for (auto prim : m_primitives) {
-		prim->Serialize(serializer, origin, transform);
-	}
-}
-
-Box Macro::GetBox() const {
-	//TODO macro getbox
-}
+private:
+	double m_width, m_height;
+	double m_left, m_bottom;
+};
 
 } /* namespace gerbex */
+
+#endif /* BOX_H_ */
