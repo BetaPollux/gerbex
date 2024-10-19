@@ -40,8 +40,6 @@ public:
 	virtual ~Serializer() = default;
 	virtual void AddCircle(double radius, const Point &center, bool isDark =
 			true) = 0;
-	virtual void AddRectangle(double width, double height, const Point &topLeft,
-			bool isDark = true) = 0;
 	virtual void AddObround(double width, double height, const Point &center,
 			bool isDark = true) = 0;
 	virtual void AddPolygon(const std::vector<Point> &points,

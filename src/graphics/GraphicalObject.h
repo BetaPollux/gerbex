@@ -31,7 +31,6 @@ namespace gerbex {
 class GraphicalObject: public Serializable {
 public:
 	virtual ~GraphicalObject() = default;
-	void Serialize(Serializer &serializer) = 0;
 
 };
 

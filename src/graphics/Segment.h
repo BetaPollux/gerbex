@@ -21,6 +21,7 @@
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
 
+#include "ApertureTransformation.h"
 #include "Point.h"
 
 namespace gerbex {
@@ -35,6 +36,8 @@ public:
 	virtual ~Segment();
 	const Point& GetStart() const;
 	const Point& GetEnd() const;
+	virtual void Translate(const Point &offset);
+	virtual void Transform(const ApertureTransformation &transform);
 
 protected:
 	Point m_start, m_end;

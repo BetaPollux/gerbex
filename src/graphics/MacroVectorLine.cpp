@@ -32,8 +32,8 @@ MacroVectorLine::MacroVectorLine() :
 
 MacroVectorLine::MacroVectorLine(MacroExposure exposure, double width,
 		const Point &start, const Point &end, double rotation) :
-		MacroPrimitive(exposure, rotation), m_start { start }, m_end {
-				end }, m_width { width } {
+		MacroPrimitive(exposure, rotation), m_start { start }, m_end { end }, m_width {
+				width } {
 	if (width < 0.0) {
 		throw std::invalid_argument("Width must be >= 0.0");
 	}
@@ -61,8 +61,22 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 			rotation);
 }
 
-void MacroVectorLine::Serialize(gerbex::Serializer &serializer) {
-	//TODO draw vector line
+void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	// Vector line is defined by end points
+	double length = m_end.Distance(m_start);
+	Point unit_vec = (m_end - m_start) / length;
+	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
+	Point delta = normal_vec * 0.5 * transform.ApplyScaling(m_width);
+
+	std::vector<Point> corners = { m_start + delta, m_start - delta, m_end
+			- delta, m_end + delta };
+	ApertureTransformation t = transform.Stack(makeTransform());
+	for (Point &c : corners) {
+		c = t.Apply(c);
+		c += origin;
+	}
+	serializer.AddPolygon(corners, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroVectorLine::GetStart() const {

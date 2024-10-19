@@ -37,7 +37,8 @@ public:
 	double GetHoleDiameter() const;
 	double GetXSize() const;
 	double GetYSize() const;
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	double m_xSize;

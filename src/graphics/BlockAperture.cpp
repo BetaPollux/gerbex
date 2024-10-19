@@ -41,9 +41,10 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
-void BlockAperture::Serialize(Serializer &serializer) {
+void BlockAperture::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	for (auto obj : m_objects) {
-		obj->Serialize(serializer);
+		obj->Serialize(serializer, origin, transform);
 	}
 }
 

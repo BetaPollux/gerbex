@@ -67,15 +67,17 @@ double Polygon::GetRotation() const {
 	return m_rotation;
 }
 
-void Polygon::Serialize(Serializer &serializer) {
+void Polygon::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	//Regular polygon
 	std::vector<Point> points;
 	double angle_step = 2.0 * M_PI / m_numVertices;
+	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
 	for (int i = 0; i < m_numVertices; i++) {
 		double angle = angle_step * i;
-		double x = 0.5 * m_outerDiameter * cos(angle);
-		double y = 0.5 * m_outerDiameter * sin(angle);
-		points.push_back( { x, y });
+		double x = radius * cos(angle);
+		double y = radius * sin(angle);
+		points.push_back(Point(x, y) + origin);
 	}
 	serializer.AddPolygon(points);
 }

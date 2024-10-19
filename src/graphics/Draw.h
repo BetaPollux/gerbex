@@ -36,8 +36,9 @@ public:
 	Draw();
 	Draw(const Segment &segment,
 			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
-	virtual ~Draw();
-	void Serialize(Serializer &serializer) override;
+	virtual ~Draw() = default;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Segment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;

@@ -60,9 +60,20 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 			rotation);
 }
 
-void MacroCenterLine::Serialize(gerbex::Serializer &serializer) {
-	serializer.AddRectangle(m_width, m_height,
-			m_center - Point(m_width, m_height) * 0.5);
+void MacroCenterLine::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	// Center line is centered on origin
+	double dx = 0.5 * m_width;
+	double dy = 0.5 * m_height;
+	std::vector<Point> corners = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
+			-dy } };
+	ApertureTransformation t = transform.Stack(makeTransform());
+	for (Point &c : corners) {
+		c += m_center;
+		c = t.Apply(c);
+		c += origin;
+	}
+	serializer.AddPolygon(corners, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroCenterLine::GetCenter() const {

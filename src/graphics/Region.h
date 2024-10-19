@@ -41,7 +41,8 @@ public:
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<RegionContour>& GetContours() const;
 	bool AreContoursClosed() const;
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	Polarity GetPolarity() const;
 
 private:

@@ -62,9 +62,5 @@ const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const 
 	return m_segments;
 }
 
-void RegionContour::Serialize(Serializer &serializer) {
-	serializer.AddContour(m_segments);
-}
-
 } /* namespace gerbex */
 

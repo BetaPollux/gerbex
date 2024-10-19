@@ -38,7 +38,8 @@ public:
 	virtual ~MacroCircle() = default;
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
-	void Serialize(gerbex::Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	const Point& GetCenter() const;
 
 private:

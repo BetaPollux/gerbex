@@ -72,10 +72,14 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
 }
 
-void MacroThermal::Serialize(gerbex::Serializer &serializer) {
+void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	//TODO need to draw thermal
 	// Exposure is always ON
-	serializer.AddCircle(0.5 * m_outerDiameter, m_center);
+	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
+	ApertureTransformation t = transform.Stack(makeTransform());
+	Point center = t.Apply(m_center) + origin;
+	serializer.AddCircle(radius, center, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroThermal::GetCenter() const {

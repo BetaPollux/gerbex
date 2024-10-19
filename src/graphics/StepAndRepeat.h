@@ -43,7 +43,8 @@ public:
 	double GetDy() const;
 	int GetNx() const;
 	int GetNy() const;
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

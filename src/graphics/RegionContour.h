@@ -22,7 +22,6 @@
 #define REGIONCONTOUR_H_
 
 #include "Segment.h"
-#include "Serializable.h"
 #include <memory>
 #include <vector>
 
@@ -34,14 +33,13 @@ namespace gerbex {
  * Valid contours are closed, where the end point of the last segment coincides
  * with the start point of the first segment.
  */
-class RegionContour: public Serializable {
+class RegionContour {
 public:
 	RegionContour();
 	virtual ~RegionContour();
 	bool IsClosed() const;
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
-	void Serialize(Serializer &serializer) override;
 
 private:
 	std::vector<std::shared_ptr<Segment>> m_segments;

@@ -36,14 +36,15 @@ Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture,
 	// Empty
 }
 
-Draw::~Draw() {
-	// Empty
-}
-
-void Draw::Serialize(Serializer &serializer) {
+void Draw::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 			m_aperture);
-	serializer.AddDraw(circle->GetDiameter(), m_segment);
+	double width = transform.ApplyScaling(circle->GetDiameter());
+	Segment segment = m_segment;
+	segment.Transform(transform);
+	segment.Translate(origin);
+	serializer.AddDraw(width, segment);
 }
 
 std::shared_ptr<Aperture> Draw::GetAperture() const {

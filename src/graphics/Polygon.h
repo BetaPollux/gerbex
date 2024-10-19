@@ -38,7 +38,8 @@ public:
 	int GetNumVertices() const;
 	double GetOuterDiameter() const;
 	double GetRotation() const;
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	double m_outerDiameter;

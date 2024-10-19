@@ -49,4 +49,17 @@ bool ArcSegment::IsCircle() const {
 	return m_start == m_end;
 }
 
+void ArcSegment::Transform(const ApertureTransformation &transform) {
+	m_start = transform.Apply(m_start);
+	m_end = transform.Apply(m_end);
+	if (transform.GetMirroring() == Mirroring::X
+			|| transform.GetMirroring() == Mirroring::Y) {
+		if (m_direction == ArcDirection::CounterClockwise) {
+			m_direction = ArcDirection::Clockwise;
+		} else {
+			m_direction = ArcDirection::CounterClockwise;
+		}
+	}
+}
+
 } /* namespace gerbex */

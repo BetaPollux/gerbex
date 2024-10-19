@@ -38,7 +38,8 @@ public:
 	virtual ~MacroOutline() = default;
 	const std::vector<Point>& GetVertices() const;
 	static std::unique_ptr<MacroOutline> FromParameters(const Parameters &params);
-	void Serialize(gerbex::Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	std::vector<Point> m_vertices;

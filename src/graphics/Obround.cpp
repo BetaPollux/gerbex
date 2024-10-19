@@ -60,8 +60,11 @@ double Obround::GetYSize() const {
 	return m_ySize;
 }
 
-void Obround::Serialize(Serializer &serializer) {
-	serializer.AddObround(m_xSize, m_ySize, Point());
+void Obround::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	double width = transform.ApplyScaling(m_xSize);
+	double height = transform.ApplyScaling(m_ySize);
+	serializer.AddObround(width, height, origin);
 }
 
 } /* namespace gerbex */

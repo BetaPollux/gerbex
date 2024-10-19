@@ -31,8 +31,11 @@ MockAperture::~MockAperture() {
 	// Empty
 }
 
-void MockAperture::Serialize(Serializer &serializer) {
+void MockAperture::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	(void)serializer;
+	(void)origin;
+	(void)transform;
 }
 
 } /* namespace gerbex */

@@ -40,7 +40,8 @@ public:
 	double GetDiameter() const;
 	int GetNumVertices() const;
 	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
-	void Serialize(gerbex::Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	const Point& GetCenter() const;
 
 private:

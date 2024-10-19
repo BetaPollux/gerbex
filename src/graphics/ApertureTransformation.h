@@ -52,7 +52,7 @@ public:
 	ApertureTransformation();
 	ApertureTransformation(Polarity polarity, Mirroring mirroring, double rotation, double scaling);
 	virtual ~ApertureTransformation() = default;
-	void Stack(const ApertureTransformation &transform);
+	ApertureTransformation Stack(const ApertureTransformation &transform) const;
 	bool operator==	(const ApertureTransformation& rhs) const;
 	bool operator!=	(const ApertureTransformation& rhs) const;
 	Mirroring GetMirroring() const;
@@ -63,8 +63,8 @@ public:
 	void SetRotationDegrees(double rotationDegrees);
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
-	Point Apply(const Point &point, const Point &reference = Point());
-	double ApplyScaling(double value);
+	Point Apply(const Point &point, const Point &reference = Point()) const;
+	double ApplyScaling(double value) const;
 	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);
 

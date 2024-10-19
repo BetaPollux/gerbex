@@ -106,6 +106,9 @@ public:
 	Point operator*(double factor) const {
 		return Point(m_x * factor, m_y * factor);
 	}
+	Point operator/(double factor) const {
+		return Point(m_x / factor, m_y / factor);
+	}
 	Point& operator*=(double factor) {
 		m_x *= factor;
 		m_y *= factor;

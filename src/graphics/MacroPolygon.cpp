@@ -32,8 +32,8 @@ MacroPolygon::MacroPolygon() :
 
 MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
 		const Point &center, double diameter, double rotation) :
-		MacroPrimitive(exposure, rotation), m_center { center }, m_numVertices { numVertices }, m_diameter {
-				diameter } {
+		MacroPrimitive(exposure, rotation), m_center { center }, m_numVertices {
+				numVertices }, m_diameter { diameter } {
 	if (numVertices < 3 || numVertices > 12) {
 		throw std::invalid_argument("Number of vertices must be from 3 to 12");
 	}
@@ -69,17 +69,21 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 			rotation);
 }
 
-void MacroPolygon::Serialize(gerbex::Serializer &serializer) {
-	//Regular polygon
+void MacroPolygon::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	//TODO move regular polygon to a general helper function
 	std::vector<Point> points;
 	double angle_step = 2.0 * M_PI / m_numVertices;
+	double radius = 0.5 * transform.ApplyScaling(m_diameter);
+	ApertureTransformation t = transform.Stack(makeTransform());
 	for (int i = 0; i < m_numVertices; i++) {
 		double angle = angle_step * i;
-		double x = 0.5 * m_diameter * cos(angle);
-		double y = 0.5 * m_diameter * sin(angle);
-		points.push_back( { x, y });
+		double x = radius * cos(angle);
+		double y = radius * sin(angle);
+		Point vertex = Point(x, y) + t.Apply(m_center);
+		points.push_back(vertex + origin);
 	}
-	serializer.AddPolygon(points);
+	serializer.AddPolygon(points, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroPolygon::GetCenter() const {

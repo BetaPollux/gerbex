@@ -234,71 +234,71 @@ TEST_GROUP(ApertureTransformation_Stack) {
 TEST(ApertureTransformation_Stack, Scaling) {
 	transform.SetScalingFactor(0.8);
 	other.SetScalingFactor(0.5);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	DOUBLES_EQUAL(0.4, transform.GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(0.4, result.GetScalingFactor(), DBL_TOL);
 }
 
 TEST(ApertureTransformation_Stack, Rotation) {
 	transform.SetRotationDegrees(30.0);
 	other.SetRotationDegrees(-10.0);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	DOUBLES_EQUAL(20.0, transform.GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(20.0, result.GetRotationDegrees(), DBL_TOL);
 }
 
 TEST(ApertureTransformation_Stack, PolarityClearIgnoresDark) {
 	transform.SetPolarity(Polarity::Clear);
 	other.SetPolarity(Polarity::Dark);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Polarity::Clear == transform.GetPolarity());
+	CHECK(Polarity::Clear == result.GetPolarity());
 }
 
 TEST(ApertureTransformation_Stack, PolarityDarkToClear) {
 	transform.SetPolarity(Polarity::Dark);
 	other.SetPolarity(Polarity::Clear);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Polarity::Clear == transform.GetPolarity());
+	CHECK(Polarity::Clear == result.GetPolarity());
 }
 
 TEST(ApertureTransformation_Stack, PolarityClearToDark) {
 	transform.SetPolarity(Polarity::Clear);
 	other.SetPolarity(Polarity::Clear);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Polarity::Dark == transform.GetPolarity());
+	CHECK(Polarity::Dark == result.GetPolarity());
 }
 
 TEST(ApertureTransformation_Stack, MirrorNoneToX) {
 	transform.SetMirroring(Mirroring::None);
 	other.SetMirroring(Mirroring::X);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Mirroring::X == transform.GetMirroring());
+	CHECK(Mirroring::X == result.GetMirroring());
 }
 
 TEST(ApertureTransformation_Stack, MirrorXToNone) {
 	transform.SetMirroring(Mirroring::X);
 	other.SetMirroring(Mirroring::X);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Mirroring::None == transform.GetMirroring());
+	CHECK(Mirroring::None == result.GetMirroring());
 }
 
 TEST(ApertureTransformation_Stack, MirrorNoneToY) {
 	transform.SetMirroring(Mirroring::None);
 	other.SetMirroring(Mirroring::Y);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Mirroring::Y == transform.GetMirroring());
+	CHECK(Mirroring::Y == result.GetMirroring());
 }
 
 TEST(ApertureTransformation_Stack, MirrorYToNone) {
 	transform.SetMirroring(Mirroring::Y);
 	other.SetMirroring(Mirroring::Y);
-	transform.Stack(other);
+	ApertureTransformation result = transform.Stack(other);
 
-	CHECK(Mirroring::None == transform.GetMirroring());
+	CHECK(Mirroring::None == result.GetMirroring());
 }

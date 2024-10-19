@@ -37,7 +37,8 @@ public:
 	virtual ~Macro();
 	void AddPrimitive(std::shared_ptr<MacroPrimitive> primitive);
 	const std::vector<std::shared_ptr<MacroPrimitive>>& GetPrimitives() const;
-	void Serialize(gerbex::Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	std::vector<std::shared_ptr<MacroPrimitive>> m_primitives;

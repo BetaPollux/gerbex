@@ -32,7 +32,6 @@ namespace gerbex {
 class Aperture: public Serializable {
 public:
 	virtual ~Aperture() = default;
-	virtual void Serialize(Serializer &serializer) = 0;
 };
 
 } /* namespace gerbex */

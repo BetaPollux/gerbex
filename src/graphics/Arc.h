@@ -37,8 +37,9 @@ public:
 	Arc();
 	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
 			const ApertureTransformation &transformation);
-	virtual ~Arc();
-	void Serialize(Serializer &serializer) override;
+	virtual ~Arc() = default;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const ArcSegment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;

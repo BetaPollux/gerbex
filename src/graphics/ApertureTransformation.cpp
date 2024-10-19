@@ -106,22 +106,24 @@ Polarity ApertureTransformation::PolarityFromCommand(const std::string &str) {
 	}
 }
 
-double ApertureTransformation::ApplyScaling(double value) {
+double ApertureTransformation::ApplyScaling(double value) const {
 	return value * m_scaling_factor;
 }
 
-void ApertureTransformation::Stack(const ApertureTransformation &transform) {
-	m_scaling_factor *= transform.m_scaling_factor;
-	m_rotation_degrees += transform.m_rotation_degrees;
+ApertureTransformation ApertureTransformation::Stack(const ApertureTransformation &transform) const {
+	ApertureTransformation result = *this;
+	result.m_scaling_factor = this->m_scaling_factor * transform.m_scaling_factor;
+	result.m_rotation_degrees = this->m_rotation_degrees + transform.m_rotation_degrees;
 	if (!transform.m_isDark) {
-		m_isDark = !m_isDark;
+		result.m_isDark = !this->m_isDark;
 	}
 	if (transform.m_mirrorX) {
-		m_mirrorX = !m_mirrorX;
+		result.m_mirrorX = !this->m_mirrorX;
 	}
 	if (transform.m_mirrorY) {
-		m_mirrorY = !m_mirrorY;
+		result.m_mirrorY = !this->m_mirrorY;
 	}
+	return result;
 }
 
 Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
@@ -139,7 +141,7 @@ Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
 }
 
 Point ApertureTransformation::Apply(const Point &point,
-		const Point &reference) {
+		const Point &reference) const {
 	Point result = point - reference;
 	if (m_mirrorX) {
 		result.SetX(-result.GetX());

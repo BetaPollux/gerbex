@@ -45,4 +45,14 @@ const Point& Segment::GetEnd() const {
 	return m_end;
 }
 
+void Segment::Translate(const Point &offset) {
+	m_start += offset;
+	m_end += offset;
+}
+
+void Segment::Transform(const ApertureTransformation &transform) {
+	m_start = transform.Apply(m_start);
+	m_end = transform.Apply(m_end);
+}
+
 } /* namespace gerbex */

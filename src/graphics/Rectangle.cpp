@@ -24,17 +24,13 @@
 
 namespace gerbex {
 
-Rectangle::Rectangle()
-	: Rectangle{ 1.0, 1.0 }
-{
+Rectangle::Rectangle() :
+		Rectangle { 1.0, 1.0 } {
 	// Empty
 }
 
-Rectangle::Rectangle(double xSize, double ySize, double holeDiameter)
-	: m_xSize{ xSize },
-	  m_ySize{ ySize },
-	  m_holeDiameter{ holeDiameter }
-{
+Rectangle::Rectangle(double xSize, double ySize, double holeDiameter) :
+		m_xSize { xSize }, m_ySize { ySize }, m_holeDiameter { holeDiameter } {
 	if (xSize <= 0.0 || ySize <= 0.0) {
 		throw std::invalid_argument("Size must be > 0");
 	}
@@ -60,9 +56,17 @@ double Rectangle::GetYSize() const {
 	return m_ySize;
 }
 
-void Rectangle::Serialize(Serializer &serializer) {
-	//TODO fix top coord
-	serializer.AddRectangle(m_xSize, m_ySize, Point(-0.5 * m_xSize, -0.5 * m_ySize));
+void Rectangle::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	// Rectangle is centered on origin
+	double dx = 0.5 * transform.ApplyScaling(m_xSize);
+	double dy = 0.5 * transform.ApplyScaling(m_ySize);
+	std::vector<Point> corners = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
+			-dy } };
+	for (Point &c : corners) {
+		c += origin;
+	}
+	serializer.AddPolygon(corners);
 }
 
 } /* namespace gerbex */

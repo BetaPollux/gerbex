@@ -31,7 +31,8 @@ MacroCircle::MacroCircle() :
 
 MacroCircle::MacroCircle(MacroExposure exposure, double diameter,
 		const Point &center, double rotation) :
-		MacroPrimitive(exposure, rotation), m_center { center }, m_diameter { diameter } {
+		MacroPrimitive(exposure, rotation), m_center { center }, m_diameter {
+				diameter } {
 	if (diameter < 0.0) {
 		throw std::invalid_argument("Diameter must be >= 0.0");
 	}
@@ -59,8 +60,12 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
 }
 
-void MacroCircle::Serialize(gerbex::Serializer &serializer) {
-	serializer.AddCircle(0.5 * m_diameter, m_center);
+void MacroCircle::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	double radius = 0.5 * transform.ApplyScaling(m_diameter);
+	ApertureTransformation t = transform.Stack(makeTransform());
+	Point center = t.Apply(m_center) + origin;
+	serializer.AddCircle(radius, center, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroCircle::GetCenter() const {

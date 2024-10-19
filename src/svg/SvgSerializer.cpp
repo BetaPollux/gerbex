@@ -102,16 +102,6 @@ void SvgSerializer::AddCircle(double radius, const Point &center, bool isDark) {
 	circle.append_attribute("fill") = getFillColour(isDark);
 }
 
-void SvgSerializer::AddRectangle(double width, double height,
-		const Point &topLeft, bool isDark) {
-	pugi::xml_node rect = m_svg.append_child("rect");
-	rect.append_attribute("width") = width;
-	rect.append_attribute("height") = height;
-	rect.append_attribute("x") = topLeft.GetX();
-	rect.append_attribute("y") = topLeft.GetY();
-	rect.append_attribute("fill") = getFillColour(isDark);
-}
-
 void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;

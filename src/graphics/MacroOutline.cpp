@@ -54,8 +54,7 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	if (params.size() != (5 + 2 * (num - 1))) {
 		throw std::invalid_argument("macro outline expects 5+2n parameters");
 	}
-	std::vector<Point> vertices;
-	vertices.reserve(num);
+	std::vector<Point> vertices(num);
 	auto it = params.begin() + 2;
 	for (size_t i = 0; i < num; i++) {
 		double x = *it++;
@@ -66,8 +65,15 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
 }
 
-void MacroOutline::Serialize(gerbex::Serializer &serializer) {
-	serializer.AddPolygon(m_vertices);
+void MacroOutline::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
+	std::vector<Point> vertices = m_vertices;
+	ApertureTransformation t = transform.Stack(makeTransform());
+	for (Point &v : vertices) {
+		v = t.Apply(v);
+		v += origin;
+	}
+	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
 }
 
 } /* namespace gerbex */

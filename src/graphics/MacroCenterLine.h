@@ -39,7 +39,8 @@ public:
 	double GetHeight() const;
 	double GetWidth() const;
 	static std::unique_ptr<MacroCenterLine> FromParameters(const Parameters &params);
-	void Serialize(gerbex::Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	const Point& GetCenter() const;
 
 private:

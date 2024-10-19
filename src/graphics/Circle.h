@@ -36,7 +36,8 @@ public:
 	virtual ~Circle();
 	double GetDiameter() const;
 	double GetHoleDiameter() const;
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 
 private:
 	double m_diameter;

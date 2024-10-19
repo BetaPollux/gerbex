@@ -32,7 +32,8 @@ class MockAperture : public Aperture {
 public:
 	MockAperture();
 	virtual ~MockAperture();
-	void Serialize(Serializer &serializer) override;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 };
 
 } /* namespace gerbex */

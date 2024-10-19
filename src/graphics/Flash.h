@@ -38,8 +38,9 @@ public:
 	Flash();
 	Flash(const Point &origin, std::shared_ptr<Aperture> aperture,
 			const ApertureTransformation &transformation);
-	virtual ~Flash();
-	void Serialize(Serializer &serializer) override;
+	virtual ~Flash() = default;
+	void Serialize(Serializer &serializer, const Point &origin,
+			const ApertureTransformation &transform) override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
 	const ApertureTransformation& GetTransform() const;

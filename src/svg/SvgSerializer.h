@@ -44,8 +44,6 @@ public:
 			override;
 	void AddCircle(double radius, const Point &center, bool isDark = true)
 			override;
-	void AddRectangle(double width, double height, const Point &topLeft,
-			bool isDark = true) override;
 	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
 			override;
 	void AddObround(double width, double height, const Point &center,

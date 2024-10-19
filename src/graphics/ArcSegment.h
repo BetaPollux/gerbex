@@ -38,6 +38,7 @@ public:
 	Point GetCenter() const;
 	ArcDirection GetDirection() const;
 	bool IsCircle() const;
+	void Transform(const ApertureTransformation &transform) override;
 
 protected:
 	Point m_centerOffset;

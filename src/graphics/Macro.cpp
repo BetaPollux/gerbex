@@ -40,9 +40,10 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 	return m_primitives;
 }
 
-void Macro::Serialize(Serializer &serializer) {
+void Macro::Serialize(Serializer &serializer, const Point &origin,
+		const ApertureTransformation &transform) {
 	for (auto prim : m_primitives) {
-		prim->Serialize(serializer);
+		prim->Serialize(serializer, origin, transform);
 	}
 }
 
