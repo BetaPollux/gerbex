@@ -21,7 +21,6 @@
 #include "Arc.h"
 #include "Circle.h"
 #include "Serializer.h"
-#include <memory>
 
 namespace gerbex {
 

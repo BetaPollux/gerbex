@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <ostream>
 
 namespace gerbex {
 
@@ -140,6 +141,7 @@ public:
 	void SetY(double y) {
 		m_y = y;
 	}
+	friend std::ostream& operator<<(std::ostream& os, const Point& point);
 
 private:
 	static constexpr double kEqualityThreshold = 1e-9;

@@ -21,6 +21,7 @@ add_library(gerbex_graphics OBJECT
 	MacroVectorLine.cpp
 	Obround.cpp
 	ObroundTemplate.cpp
+	Point.cpp
 	Polygon.cpp
 	PolygonTemplate.cpp
 	Rectangle.cpp

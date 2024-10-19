@@ -39,7 +39,8 @@ Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture,
 
 void Flash::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
-	m_aperture->Serialize(serializer, m_origin + origin, transform.Stack(m_transform));
+	Point new_origin = transform.Apply(m_origin) + origin;
+	m_aperture->Serialize(serializer, new_origin, transform.Stack(m_transform));
 }
 
 std::shared_ptr<Aperture> Flash::GetAperture() const {

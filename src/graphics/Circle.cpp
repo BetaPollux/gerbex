@@ -58,8 +58,7 @@ double Circle::GetHoleDiameter() const {
 void Circle::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
 	double radius = 0.5 * transform.ApplyScaling(m_diameter);
-	Point center = origin;
-	serializer.AddCircle(radius, center, transform.GetPolarity() == Polarity::Dark);
+	serializer.AddCircle(radius, origin, transform.GetPolarity() == Polarity::Dark);
 }
 
 } /* namespace gerbex */
