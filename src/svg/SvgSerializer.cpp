@@ -25,7 +25,9 @@
 
 namespace gerbex {
 
-//TODO need to fix y-axis
+// SVG Y-axis has 0 is at the top, whereas Gerber has 0 at the bottom.
+// This class negates all Y-coords to compensate.
+// This is also results in the arc CW vs CCW being reversed.
 
 SvgSerializer::SvgSerializer() {
 	m_svg = m_doc.append_child("svg");
@@ -63,9 +65,9 @@ void SvgSerializer::AddDraw(double width, const Segment &segment, bool isDark) {
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
 	line.append_attribute("x1") = s.GetX();
-	line.append_attribute("y1") = s.GetY();
+	line.append_attribute("y1") = -s.GetY();
 	line.append_attribute("x2") = e.GetX();
-	line.append_attribute("y2") = e.GetY();
+	line.append_attribute("y2") = -e.GetY();
 }
 
 void SvgSerializer::AddArc(double width, const ArcSegment &segment,
@@ -76,14 +78,14 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		pugi::xml_node circle = m_svg.append_child("circle");
 		circle.append_attribute("r") = radius;
 		circle.append_attribute("cx") = c.GetX();
-		circle.append_attribute("cy") = c.GetY();
+		circle.append_attribute("cy") = -c.GetY();
 		circle.append_attribute("fill") = "none";
 		circle.append_attribute("stroke") = getFillColour(isDark);
 		circle.append_attribute("stroke-width") = width;
 	} else {
 		Point s = segment.GetStart();
 		std::stringstream d;
-		d << "M " << s.GetX() << " " << s.GetY() << " ";
+		d << "M " << s.GetX() << " " << -s.GetY() << " ";
 		d << makePathArc(segment);
 		pugi::xml_node path = m_svg.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
@@ -98,7 +100,7 @@ void SvgSerializer::AddCircle(double radius, const Point &center, bool isDark) {
 	pugi::xml_node circle = m_svg.append_child("circle");
 	circle.append_attribute("r") = radius;
 	circle.append_attribute("cx") = center.GetX();
-	circle.append_attribute("cy") = center.GetY();
+	circle.append_attribute("cy") = -center.GetY();
 	circle.append_attribute("fill") = getFillColour(isDark);
 }
 
@@ -106,7 +108,7 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
 	for (auto pt : points) {
-		pts_stream << pt.GetX() << "," << pt.GetY() << " ";
+		pts_stream << pt.GetX() << "," << -pt.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
 	poly.append_attribute("fill") = getFillColour(isDark);
@@ -138,7 +140,7 @@ void SvgSerializer::AddContour(
 		const std::vector<std::shared_ptr<Segment>> &segments, bool isDark) {
 	Point s = segments[0]->GetStart();
 	std::stringstream d;
-	d << "M " << s.GetX() << " " << s.GetY() << " ";
+	d << "M " << s.GetX() << " " << -s.GetY() << " ";
 	for (std::shared_ptr<Segment> segment : segments) {
 		std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<ArcSegment>(
 				segment);
@@ -160,18 +162,18 @@ std::string SvgSerializer::makePathArc(const ArcSegment &segment) {
 	double rot = 0.0;
 	int large_arc_flag = 0;
 	int sweep_flag =
-			segment.GetDirection() == ArcDirection::CounterClockwise ? 1 : 0;
+			segment.GetDirection() == ArcDirection::CounterClockwise ? 0 : 1;
 	std::stringstream d;
 	d << "A " << radius << " " << radius << " ";
 	d << rot << " " << large_arc_flag << " " << sweep_flag << " ";
-	d << e.GetX() << " " << e.GetY() << " ";
+	d << e.GetX() << " " << -e.GetY() << " ";
 	return d.str();
 }
 
 std::string SvgSerializer::makePathLine(const Segment &segment) {
 	Point e = segment.GetEnd();
 	std::stringstream d;
-	d << "L " << e.GetX() << " " << e.GetY() << " ";
+	d << "L " << e.GetX() << " " << -e.GetY() << " ";
 	return d.str();
 }
 

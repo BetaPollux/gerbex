@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 	SvgSerializer serializer;
 	serializer.SetViewPort(400, 400);
 	//TODO set viewbox to match extents
-	serializer.SetViewBox(-10.0, -10.0, 50.0, 50.0);
+	serializer.SetViewBox(-10.0, -40.0, 50.0, 50.0);
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();
