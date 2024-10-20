@@ -73,7 +73,7 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 }
 
 void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const  {
 	//TODO need to draw thermal
 	// Exposure is always ON
 	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);

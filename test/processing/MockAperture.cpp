@@ -32,7 +32,7 @@ MockAperture::~MockAperture() {
 }
 
 void MockAperture::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	(void)serializer;
 	(void)origin;
 	(void)transform;

@@ -68,7 +68,7 @@ double Polygon::GetRotation() const {
 }
 
 void Polygon::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	//Regular polygon
 	std::vector<Point> points;
 	double angle_step = 2.0 * M_PI / m_numVertices;

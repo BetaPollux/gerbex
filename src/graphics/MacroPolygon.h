@@ -41,7 +41,7 @@ public:
 	int GetNumVertices() const;
 	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	const Point& GetCenter() const;
 
 private:

@@ -23,6 +23,7 @@
 
 #include "Aperture.h"
 #include "ApertureTemplate.h"
+#include "Box.h"
 #include "GraphicalObject.h"
 #include "GraphicsState.h"
 #include "Region.h"
@@ -68,6 +69,7 @@ public:
 	virtual void SetEndOfFile();
 	virtual void OpenStepAndRepeat(int nx, int ny, double dx, double dy);
 	virtual void CloseStepAndRepeat();
+	virtual Box GetBox() const;
 
 private:
 	CommandState m_commandState;

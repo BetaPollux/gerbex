@@ -19,7 +19,9 @@
  */
 
 #include "BlockAperture.h"
+#include "Circle.h"
 #include "Flash.h"
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
@@ -36,4 +38,23 @@ TEST(BlockApertureTest, AddObject) {
 	std::shared_ptr<Flash> flash = std::make_shared<Flash>();
 	block.AddObject(flash);
 	LONGS_EQUAL(1, block.GetObjectList()->size());
+}
+
+TEST(BlockApertureTest, GetBox) {
+	std::shared_ptr<Circle> circle = std::make_shared<Circle>(2.0);
+	Point origin1(5.0, 5.0);
+	Point origin2(25.0, 15.0);
+	ApertureTransformation transform;
+	std::shared_ptr<Flash> flash1 = std::make_shared<Flash>(origin1, circle, transform);
+	std::shared_ptr<Flash> flash2 = std::make_shared<Flash>(origin2, circle, transform);
+	block.AddObject(flash1);
+	block.AddObject(flash2);
+
+	Box expected(22.0, 12.0, 4.0, 4.0);
+
+	CHECK_EQUAL(expected, block.GetBox());
+}
+
+TEST(BlockApertureTest, GetBox_Empty) {
+	CHECK_THROWS(std::invalid_argument, block.GetBox());
 }

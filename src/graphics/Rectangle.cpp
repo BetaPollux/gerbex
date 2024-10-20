@@ -57,7 +57,7 @@ double Rectangle::GetYSize() const {
 }
 
 void Rectangle::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	// Rectangle is centered on origin
 	double dx = 0.5 * transform.ApplyScaling(m_xSize);
 	double dy = 0.5 * transform.ApplyScaling(m_ySize);

@@ -61,7 +61,7 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 }
 
 void MacroCenterLine::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	// Center line is centered on origin
 	double dx = 0.5 * m_width;
 	double dy = 0.5 * m_height;

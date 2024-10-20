@@ -24,7 +24,7 @@ namespace gerbex {
 
 std::ostream& operator<<(std::ostream& os, const Point& point)
 {
-    os << point.m_x << "," << point.m_y;
+    os << "(" << point.m_x << "," << point.m_y << ")";
     return os;
 }
 

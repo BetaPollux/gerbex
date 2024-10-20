@@ -42,7 +42,7 @@ public:
 	const std::vector<RegionContour>& GetContours() const;
 	bool AreContoursClosed() const;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	Polarity GetPolarity() const;
 	Box GetBox() const override;
 

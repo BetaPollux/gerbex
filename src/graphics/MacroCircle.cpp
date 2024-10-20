@@ -61,7 +61,7 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 }
 
 void MacroCircle::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	double radius = 0.5 * transform.ApplyScaling(m_diameter);
 	ApertureTransformation t = transform.Stack(makeTransform());
 	Point center = t.Apply(m_center) + origin;

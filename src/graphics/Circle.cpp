@@ -53,7 +53,7 @@ double Circle::GetHoleDiameter() const {
 }
 
 void Circle::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	double radius = 0.5 * transform.ApplyScaling(m_diameter);
 	serializer.AddCircle(radius, origin,
 			transform.GetPolarity() == Polarity::Dark);

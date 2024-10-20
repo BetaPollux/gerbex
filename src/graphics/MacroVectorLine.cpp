@@ -62,7 +62,7 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 }
 
 void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	// Vector line is defined by end points
 	double length = m_end.Distance(m_start);
 	Point unit_vec = (m_end - m_start) / length;

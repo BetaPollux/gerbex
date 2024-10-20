@@ -34,9 +34,9 @@ enum class Polarity {
 
 enum class Mirroring {
 	None,	// None
-	X,	// X-axis
-	Y,	// Y-axis
-	XY	// Both X and Y axes
+	X,		// X-axis
+	Y,		// Y-axis
+	XY		// Both X and Y axes
 };
 
 

@@ -40,10 +40,6 @@ Obround::Obround(double xSize, double ySize, double holeDiameter) :
 	}
 }
 
-Obround::~Obround() {
-	// Empty
-}
-
 double Obround::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
@@ -57,7 +53,8 @@ double Obround::GetYSize() const {
 }
 
 void Obround::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
+	//TODO obround needs transform
 	double width = transform.ApplyScaling(m_xSize);
 	double height = transform.ApplyScaling(m_ySize);
 	serializer.AddObround(width, height, origin);

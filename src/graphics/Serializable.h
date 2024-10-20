@@ -34,7 +34,7 @@ public:
 	virtual ~Serializable() {
 	}
 	virtual void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) = 0;
+			const ApertureTransformation &transform) const = 0;
 };
 
 } /* namespace gerbex */

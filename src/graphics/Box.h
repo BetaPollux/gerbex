@@ -21,6 +21,7 @@
 #define BOX_H_
 
 #include "Point.h"
+#include <ostream>
 
 namespace gerbex {
 
@@ -37,9 +38,11 @@ public:
 	double GetTop() const;
 	double GetLeft() const;
 	double GetRight() const;
+	double GetAspectRatio() const;
 	Box Extend(const Box &other) const;
 	Box Pad(double pad) const;
 	Box Translate(const Point &offset) const;
+	friend std::ostream& operator<<(std::ostream& os, const Box& box);
 
 private:
 	double m_width, m_height;

@@ -66,7 +66,7 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 }
 
 void MacroOutline::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	std::vector<Point> vertices = m_vertices;
 	ApertureTransformation t = transform.Stack(makeTransform());
 	for (Point &v : vertices) {

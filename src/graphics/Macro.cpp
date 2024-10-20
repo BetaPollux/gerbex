@@ -41,7 +41,7 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 }
 
 void Macro::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	for (auto prim : m_primitives) {
 		prim->Serialize(serializer, origin, transform);
 	}

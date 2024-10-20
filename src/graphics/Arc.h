@@ -40,7 +40,7 @@ public:
 			const ApertureTransformation &transformation);
 	virtual ~Arc() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	std::shared_ptr<Circle> GetAperture() const;
 	const ArcSegment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;

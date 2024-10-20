@@ -21,6 +21,7 @@
 #ifndef SVGSERIALIZER_H_
 #define SVGSERIALIZER_H_
 
+#include "Box.h"
 #include "Serializer.h"
 #include <string>
 #include <vector>
@@ -34,10 +35,12 @@ namespace gerbex {
 class SvgSerializer: public Serializer {
 public:
 	SvgSerializer();
-	virtual ~SvgSerializer();
+	virtual ~SvgSerializer() = default;
 	void SetViewPort(int width, int height);
-	void SetViewBox(double xMin, double yMin, double width, double height);
+	void SetViewBox(const Box &box);
 	void SaveFile(const std::string &path);
+	void SetForeground(const std::string &color);
+	void SetBackground(const std::string &color);
 	void AddDraw(double width, const Segment &segment, bool isDark = true)
 			override;
 	void AddArc(double width, const ArcSegment &segment, bool isDark = true)
@@ -54,9 +57,11 @@ public:
 private:
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	const char* getFillColour(bool isDark) const;
+	const char* getFillColor(bool isDark) const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
+	std::string m_fgColor;
+	std::string m_bgColor;
 };
 
 } /* namespace gerbex */

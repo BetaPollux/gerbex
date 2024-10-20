@@ -39,7 +39,7 @@ public:
 			std::shared_ptr<Circle> aperture, const ApertureTransformation &transformation);
 	virtual ~Draw() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	std::shared_ptr<Circle> GetAperture() const;
 	const Segment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;

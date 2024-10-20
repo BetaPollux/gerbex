@@ -40,7 +40,7 @@ public:
 			const ApertureTransformation &transformation);
 	virtual ~Flash() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
 	const ApertureTransformation& GetTransform() const;

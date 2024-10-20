@@ -250,4 +250,15 @@ void CommandsProcessor::CloseStepAndRepeat() {
 	}
 }
 
+Box CommandsProcessor::GetBox() const {
+	if (m_objects.empty()) {
+		throw std::invalid_argument("cannot get box for empty file");
+	}
+	Box box = m_objects.front()->GetBox();
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
+		box = box.Extend(obj->GetBox());
+	}
+	return box;
+}
+
 } /* namespace gerbex */

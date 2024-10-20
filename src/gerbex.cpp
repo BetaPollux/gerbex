@@ -48,11 +48,13 @@ int main(int argc, char *argv[]) {
 	}
 	FileProcessor fileProcessor;
 	fileProcessor.Process(gerber);
+	Box box = fileProcessor.GetProcessor().GetBox();
+	std::cout << "Dimensions: " << box << std::endl;
 
 	SvgSerializer serializer;
-	serializer.SetViewPort(400, 400);
-	//TODO set viewbox to match extents
-	serializer.SetViewBox(-10.0, -40.0, 60.0, 50.0);
+	serializer.SetViewBox(box.Pad(0.5));
+	serializer.SetForeground("red");
+	serializer.SetBackground("black");
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();

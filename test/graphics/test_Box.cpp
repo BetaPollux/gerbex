@@ -21,10 +21,18 @@
 #include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
+#define DBL_TOL	1e-9
+
 namespace gerbex {
 
 TEST_GROUP(Box) {
 };
+
+TEST(Box, AspectRatio) {
+	Box box(16.0, 9.0, 0.0, 0.0);
+
+	DOUBLES_EQUAL(16.0/9.0, box.GetAspectRatio(), DBL_TOL);
+}
 
 TEST(Box, Extend) {
 	Box expected(5.0, 4.0, -2.5, -2.0);

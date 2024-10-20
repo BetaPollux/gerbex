@@ -33,12 +33,12 @@ class Obround: public Aperture {
 public:
 	Obround();
 	Obround(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Obround();
+	virtual ~Obround() = default;
 	double GetHoleDiameter() const;
 	double GetXSize() const;
 	double GetYSize() const;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) override;
+			const ApertureTransformation &transform) const override;
 	Box GetBox() const override;
 
 private:

@@ -20,18 +20,18 @@
 
 #include "Circle.h"
 #include "Flash.h"
+#include "GraphicsStringFrom.h"
 #include "StepAndRepeat.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
 
-
 TEST_GROUP(StepAndRepeatTest) {
-	StepAndRepeat sr;
 };
 
 TEST(StepAndRepeatTest, DefaultCtor) {
+	StepAndRepeat sr;
 	CHECK(sr.GetNx() == 1);
 	CHECK(sr.GetNy() == 1);
 	CHECK(sr.GetDx() == 0.0);
@@ -57,13 +57,40 @@ TEST(StepAndRepeatTest, Invalid_dY) {
 }
 
 TEST(StepAndRepeatTest, GetObjectList) {
+	StepAndRepeat sr;
 	CHECK(nullptr != sr.GetObjectList());
 }
 
 TEST(StepAndRepeatTest, AddObject) {
+	StepAndRepeat sr;
 	std::shared_ptr<Flash> flash = std::make_shared<Flash>();
 
 	sr.AddObject(flash);
 	LONGS_EQUAL(1, sr.GetObjectList()->size());
 }
 
+TEST(StepAndRepeatTest, GetBox) {
+	double radius = 1.0;
+	std::shared_ptr<Circle> circle = std::make_shared<Circle>(2 * radius);
+	Point origin(5.0, 5.0);
+	ApertureTransformation transform;
+	std::shared_ptr<Flash> flash = std::make_shared<Flash>(origin, circle,
+			transform);
+
+	StepAndRepeat sr(3, 2, 5.0, 4.0);
+	sr.AddObject(flash);
+
+	double left = origin.GetX() - radius;
+	double right = origin.GetX() + (sr.GetNx() - 1) * sr.GetDx() + radius;
+	double bottom = origin.GetY() - radius;
+	double top = origin.GetY() + (sr.GetNy() - 1) * sr.GetDy() + radius;
+	Box expected(right - left, top - bottom, left, bottom);
+
+	CHECK_EQUAL(expected, sr.GetBox());
+}
+
+TEST(StepAndRepeatTest, GetBox_Empty) {
+	StepAndRepeat sr(3, 2, 5.0, 5.0);
+
+	CHECK_THROWS(std::invalid_argument, sr.GetBox());
+}

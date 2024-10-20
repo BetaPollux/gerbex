@@ -56,6 +56,10 @@ double Box::GetRight() const {
 	return m_left + m_width;
 }
 
+double Box::GetAspectRatio() const {
+	return m_width / m_height;
+}
+
 bool Box::operator ==(const Box &rhs) const {
 	return m_width == rhs.m_width && m_height == rhs.m_height
 			&& m_left == rhs.m_left && m_bottom == rhs.m_bottom;
@@ -86,6 +90,12 @@ Box Box::Translate(const Point &offset) const {
 	double left = m_left + offset.GetX();
 	double bottom = m_bottom + offset.GetY();
 	return Box(m_width, m_height, left, bottom);
+}
+
+std::ostream& operator<<(std::ostream& os, const Box& box)
+{
+    os << box.m_width << " x " << box.m_height << " at (" << box.m_left << "," << box.m_bottom << ")";
+    return os;
 }
 
 } /* namespace gerbex */

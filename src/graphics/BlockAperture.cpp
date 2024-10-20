@@ -42,15 +42,22 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 }
 
 void BlockAperture::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) {
+		const ApertureTransformation &transform) const {
 	for (auto obj : m_objects) {
 		obj->Serialize(serializer, origin, transform);
 	}
 }
 
 Box BlockAperture::GetBox() const {
-	//TODO block getbox
-	return Box();
+	//TODO consider transforms
+	if (m_objects.empty()) {
+		throw std::invalid_argument("cannot get box for empty block aperture");
+	}
+	Box box = m_objects.front()->GetBox();
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
+		box = box.Extend(obj->GetBox());
+	}
+	return box;
 }
 
 } /* namespace gerbex */

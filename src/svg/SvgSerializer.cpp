@@ -25,17 +25,20 @@
 
 namespace gerbex {
 
-// SVG Y-axis has 0 is at the top, whereas Gerber has 0 at the bottom.
+// SVG Y-axis has 0 at the top, whereas Gerber has 0 at the bottom.
 // This class negates all Y-coords to compensate.
 // This is also results in the arc CW vs CCW being reversed.
+//	Gerber 	-> SVG
+//		left 	-> min x
+//		right 	-> max x
+//		bottom 	-> max y
+//		top 	-> -1 * min y
 
 SvgSerializer::SvgSerializer() {
 	m_svg = m_doc.append_child("svg");
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
-}
-
-SvgSerializer::~SvgSerializer() {
-	// Empty
+	m_fgColor = "black";
+	m_bgColor = "white";
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -43,17 +46,17 @@ void SvgSerializer::SetViewPort(int width, int height) {
 	m_svg.append_attribute("height") = height;
 }
 
-void SvgSerializer::SetViewBox(double xMin, double yMin, double width,
-		double height) {
+void SvgSerializer::SetViewBox(const Box &box) {
 	std::stringstream box_stream;
-	box_stream << xMin << " ";
-	box_stream << yMin << " ";
-	box_stream << width << " ";
-	box_stream << height;
+	box_stream << box.GetLeft() << " ";
+	box_stream << -box.GetTop() << " ";
+	box_stream << box.GetWidth() << " ";
+	box_stream << box.GetHeight();
 	m_svg.append_attribute("viewBox") = box_stream.str().c_str();
 }
 
 void SvgSerializer::SaveFile(const std::string &path) {
+	m_svg.append_attribute("style") = ("background-color:"+ m_bgColor).c_str();
 	m_doc.save_file(path.c_str());
 }
 
@@ -61,7 +64,7 @@ void SvgSerializer::AddDraw(double width, const Segment &segment, bool isDark) {
 	Point s = segment.GetStart();
 	Point e = segment.GetEnd();
 	pugi::xml_node line = m_svg.append_child("line");
-	line.append_attribute("stroke") = getFillColour(isDark);
+	line.append_attribute("stroke") = getFillColor(isDark);
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
 	line.append_attribute("x1") = s.GetX();
@@ -79,7 +82,7 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		circle.append_attribute("cx") = c.GetX();
 		circle.append_attribute("cy") = -c.GetY();
 		circle.append_attribute("fill") = "none";
-		circle.append_attribute("stroke") = getFillColour(isDark);
+		circle.append_attribute("stroke") = getFillColor(isDark);
 		circle.append_attribute("stroke-width") = width;
 	} else {
 		Point s = segment.GetStart();
@@ -89,7 +92,7 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		pugi::xml_node path = m_svg.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
 		path.append_attribute("fill") = "none";
-		path.append_attribute("stroke") = getFillColour(isDark);
+		path.append_attribute("stroke") = getFillColor(isDark);
 		path.append_attribute("stroke-width") = width;
 		path.append_attribute("stroke-linecap") = "round";
 	}
@@ -100,7 +103,7 @@ void SvgSerializer::AddCircle(double radius, const Point &center, bool isDark) {
 	circle.append_attribute("r") = radius;
 	circle.append_attribute("cx") = center.GetX();
 	circle.append_attribute("cy") = -center.GetY();
-	circle.append_attribute("fill") = getFillColour(isDark);
+	circle.append_attribute("fill") = getFillColor(isDark);
 }
 
 void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
@@ -110,7 +113,7 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
 		pts_stream << pt.GetX() << "," << -pt.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
-	poly.append_attribute("fill") = getFillColour(isDark);
+	poly.append_attribute("fill") = getFillColor(isDark);
 }
 
 void SvgSerializer::AddObround(double width, double height, const Point &center,
@@ -127,11 +130,11 @@ void SvgSerializer::AddObround(double width, double height, const Point &center,
 	}
 }
 
-const char* SvgSerializer::getFillColour(bool isDark) const {
+const char* SvgSerializer::getFillColor(bool isDark) const {
 	if (isDark) {
-		return "black";
+		return m_fgColor.c_str();
 	} else {
-		return "white";
+		return m_bgColor.c_str();
 	}
 }
 
@@ -151,7 +154,7 @@ void SvgSerializer::AddContour(
 	}
 	pugi::xml_node path = m_svg.append_child("path");
 	path.append_attribute("d") = d.str().c_str();
-	path.append_attribute("fill") = getFillColour(isDark);
+	path.append_attribute("fill") = getFillColor(isDark);
 }
 
 std::string SvgSerializer::makePathArc(const ArcSegment &segment) {
@@ -174,6 +177,14 @@ std::string SvgSerializer::makePathLine(const Segment &segment) {
 	std::stringstream d;
 	d << "L " << e.GetX() << " " << -e.GetY() << " ";
 	return d.str();
+}
+
+void SvgSerializer::SetForeground(const std::string &color) {
+	m_fgColor = color;
+}
+
+void SvgSerializer::SetBackground(const std::string &color) {
+	m_bgColor = color;
 }
 
 } /* namespace gerbex */
