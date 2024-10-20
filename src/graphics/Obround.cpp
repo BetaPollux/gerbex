@@ -53,7 +53,7 @@ double Obround::GetYSize() const {
 }
 
 void Obround::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	//TODO obround needs transform
 	double width = transform.ApplyScaling(m_xSize);
 	double height = transform.ApplyScaling(m_ySize);

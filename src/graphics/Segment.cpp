@@ -58,7 +58,7 @@ void Segment::Translate(const Point &offset) {
 	m_end += offset;
 }
 
-void Segment::Transform(const ApertureTransformation &transform) {
+void Segment::Transform(const gerbex::Transform &transform) {
 	m_start = transform.Apply(m_start);
 	m_end = transform.Apply(m_end);
 }

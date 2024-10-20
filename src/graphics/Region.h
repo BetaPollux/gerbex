@@ -21,7 +21,7 @@
 #ifndef REGION_H_
 #define REGION_H_
 
-#include "ApertureTransformation.h"
+#include <Transform.h>
 #include "GraphicalObject.h"
 #include "RegionContour.h"
 #include <memory>
@@ -42,7 +42,7 @@ public:
 	const std::vector<RegionContour>& GetContours() const;
 	bool AreContoursClosed() const;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const override;
+			const Transform &transform) const override;
 	Polarity GetPolarity() const;
 	Box GetBox() const override;
 

@@ -73,9 +73,7 @@ TEST(StepAndRepeatTest, GetBox) {
 	double radius = 1.0;
 	std::shared_ptr<Circle> circle = std::make_shared<Circle>(2 * radius);
 	Point origin(5.0, 5.0);
-	ApertureTransformation transform;
-	std::shared_ptr<Flash> flash = std::make_shared<Flash>(origin, circle,
-			transform);
+	std::shared_ptr<Flash> flash = std::make_shared<Flash>(origin, circle);
 
 	StepAndRepeat sr(3, 2, 5.0, 4.0);
 	sr.AddObject(flash);

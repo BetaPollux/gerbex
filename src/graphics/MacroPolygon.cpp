@@ -66,12 +66,10 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 }
 
 void MacroPolygon::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
 			origin);
-	//TODO simplify polarity handling
-	ApertureTransformation t = transform.Stack(makeTransform());
-	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
+	serializer.AddPolygon(vertices, isDark(transform));
 }
 
 const Point& MacroPolygon::GetCenter() const {

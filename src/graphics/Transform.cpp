@@ -1,5 +1,5 @@
 /*
- * ApertureTransformation.cpp
+ * Transform.cpp
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,41 +18,37 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ApertureTransformation.h"
+#include <Transform.h>
 #include <stdexcept>
 
 namespace gerbex {
 
-ApertureTransformation::ApertureTransformation() :
-		m_isDark { true }, m_mirrorX { false }, m_mirrorY { false }, m_rotation_degrees {
-				0.0 }, m_scaling_factor { 1.0 } {
+Transform::Transform() :
+		m_isDark { true }, m_mirrorX { false }, m_mirrorY { false }, m_rotation {
+				0.0 }, m_scaling { 1.0 } {
 	// Empty
 }
 
-ApertureTransformation::ApertureTransformation(Polarity polarity,
-		Mirroring mirroring, double rotation, double scaling) :
-		m_rotation_degrees { rotation }, m_scaling_factor { scaling } {
+Transform::Transform(Polarity polarity, Mirroring mirroring, double rotation,
+		double scaling) :
+		m_rotation { rotation }, m_scaling { scaling } {
 	SetPolarity(polarity);
 	SetMirroring(mirroring);
 }
 
-bool ApertureTransformation::operator ==(
-		const ApertureTransformation &rhs) const {
+bool Transform::operator ==(const Transform &rhs) const {
 	return (m_isDark == rhs.m_isDark) && (m_mirrorX == rhs.m_mirrorX)
-			&& (m_mirrorY == rhs.m_mirrorY)
-			&& (m_rotation_degrees == rhs.m_rotation_degrees)
-			&& (m_scaling_factor == rhs.m_scaling_factor);
+			&& (m_mirrorY == rhs.m_mirrorY) && (m_rotation == rhs.m_rotation)
+			&& (m_scaling == rhs.m_scaling);
 }
 
-bool ApertureTransformation::operator !=(
-		const ApertureTransformation &rhs) const {
+bool Transform::operator !=(const Transform &rhs) const {
 	return (m_isDark != rhs.m_isDark) || (m_mirrorX != rhs.m_mirrorX)
-			|| (m_mirrorY != rhs.m_mirrorY)
-			|| (m_rotation_degrees != rhs.m_rotation_degrees)
-			|| (m_scaling_factor != rhs.m_scaling_factor);
+			|| (m_mirrorY != rhs.m_mirrorY) || (m_rotation != rhs.m_rotation)
+			|| (m_scaling != rhs.m_scaling);
 }
 
-Mirroring ApertureTransformation::GetMirroring() const {
+Mirroring Transform::GetMirroring() const {
 	if (m_mirrorX && m_mirrorY) {
 		return Mirroring::XY;
 	} else if (m_mirrorX) {
@@ -64,39 +60,39 @@ Mirroring ApertureTransformation::GetMirroring() const {
 	}
 }
 
-void ApertureTransformation::SetMirroring(Mirroring mirroring) {
+void Transform::SetMirroring(Mirroring mirroring) {
 	m_mirrorX = mirroring == Mirroring::X || mirroring == Mirroring::XY;
 	m_mirrorY = mirroring == Mirroring::Y || mirroring == Mirroring::XY;
 }
 
-Polarity ApertureTransformation::GetPolarity() const {
+Polarity Transform::GetPolarity() const {
 	return m_isDark ? Polarity::Dark : Polarity::Clear;
 }
 
-void ApertureTransformation::SetPolarity(Polarity polarity) {
+void Transform::SetPolarity(Polarity polarity) {
 	m_isDark = polarity == Polarity::Dark;
 }
 
-double ApertureTransformation::GetRotationDegrees() const {
-	return m_rotation_degrees;
+double Transform::GetRotation() const {
+	return m_rotation;
 }
 
-void ApertureTransformation::SetRotationDegrees(double rotationDegrees) {
-	m_rotation_degrees = rotationDegrees;
+void Transform::SetRotation(double degrees) {
+	m_rotation = degrees;
 }
 
-double ApertureTransformation::GetScalingFactor() const {
-	return m_scaling_factor;
+double Transform::GetScaling() const {
+	return m_scaling;
 }
 
-void ApertureTransformation::SetScalingFactor(double scalingFactor) {
-	if (scalingFactor <= 0.0) {
+void Transform::SetScaling(double factor) {
+	if (factor <= 0.0) {
 		throw std::invalid_argument("scaling factor must be > 0");
 	}
-	m_scaling_factor = scalingFactor;
+	m_scaling = factor;
 }
 
-Polarity ApertureTransformation::PolarityFromCommand(const std::string &str) {
+Polarity Transform::PolarityFromCommand(const std::string &str) {
 	if (str == "C") {
 		return Polarity::Clear;
 	} else if (str == "D") {
@@ -106,17 +102,14 @@ Polarity ApertureTransformation::PolarityFromCommand(const std::string &str) {
 	}
 }
 
-double ApertureTransformation::ApplyScaling(double value) const {
-	return value * m_scaling_factor;
+double Transform::ApplyScaling(double value) const {
+	return value * m_scaling;
 }
 
-ApertureTransformation ApertureTransformation::Stack(
-		const ApertureTransformation &transform) const {
-	ApertureTransformation result = *this;
-	result.m_scaling_factor = this->m_scaling_factor
-			* transform.m_scaling_factor;
-	result.m_rotation_degrees = this->m_rotation_degrees
-			+ transform.m_rotation_degrees;
+Transform Transform::Stack(const Transform &transform) const {
+	Transform result = *this;
+	result.m_scaling = this->m_scaling * transform.m_scaling;
+	result.m_rotation = this->m_rotation + transform.m_rotation;
 	if (!transform.m_isDark) {
 		result.m_isDark = !this->m_isDark;
 	}
@@ -129,7 +122,7 @@ ApertureTransformation ApertureTransformation::Stack(
 	return result;
 }
 
-Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
+Mirroring Transform::MirroringFromCommand(const std::string &str) {
 	if (str == "N") {
 		return Mirroring::None;
 	} else if (str == "X") {
@@ -143,7 +136,7 @@ Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
 	}
 }
 
-Point ApertureTransformation::Apply(const Point &point) const {
+Point Transform::Apply(const Point &point) const {
 	Point result = point;
 	if (m_mirrorX) {
 		result.SetX(-result.GetX());
@@ -151,12 +144,12 @@ Point ApertureTransformation::Apply(const Point &point) const {
 	if (m_mirrorY) {
 		result.SetY(-result.GetY());
 	}
-	result *= m_scaling_factor;
-	result.Rotate(m_rotation_degrees);
+	result *= m_scaling;
+	result.Rotate(m_rotation);
 	return result;
 }
 
-std::vector<Point> ApertureTransformation::ApplyThenTranslate(
+std::vector<Point> Transform::ApplyThenTranslate(
 		const std::vector<Point> &points, const Point &offset) const {
 	std::vector<Point> result;
 	result.reserve(points.size());

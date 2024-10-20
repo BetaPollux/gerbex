@@ -83,7 +83,7 @@ TEST(GraphicsStateTest, SetArcMode_RejectsSingleQuadrant) {
 }
 
 TEST(GraphicsStateTest, Transform) {
-	CHECK(ApertureTransformation() == state.GetTransformation());
+	CHECK(Transform() == state.GetTransformation());
 }
 
 TEST_GROUP (GraphicsStateGetPoint) {

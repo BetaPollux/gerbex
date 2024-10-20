@@ -1,6 +1,5 @@
 add_library(gerbex_graphics OBJECT
 	ApertureTemplate.cpp
-	ApertureTransformation.cpp
 	Arc.cpp
 	ArcSegment.cpp
 	BlockAperture.cpp
@@ -31,6 +30,7 @@ add_library(gerbex_graphics OBJECT
 	RegionContour.cpp
 	Segment.cpp
 	StepAndRepeat.cpp
+	Transform.cpp
 )
 
 target_include_directories(gerbex_graphics

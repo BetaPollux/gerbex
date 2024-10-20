@@ -73,15 +73,13 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 }
 
 void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	//TODO need to draw thermal
 	// Exposure is always ON
 	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
 	Point center = transform.Apply(getRotatedCenter());
 	center += origin;
-	//TODO simplify polarity handling
-	ApertureTransformation t = transform.Stack(makeTransform());
-	serializer.AddCircle(radius, center, t.GetPolarity() == Polarity::Dark);
+	serializer.AddCircle(radius, center, isDark(transform));
 }
 
 const Point& MacroThermal::GetCenter() const {

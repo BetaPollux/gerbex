@@ -52,13 +52,12 @@ MacroExposure MacroPrimitive::ExposureFromNum(int num) {
 	}
 }
 
-ApertureTransformation MacroPrimitive::makeTransform() const {
-	ApertureTransformation transform;
-	Polarity polarity =
-			m_exposure == MacroExposure::ON ? Polarity::Dark : Polarity::Clear;
-	transform.SetRotationDegrees(m_rotation);
-	transform.SetPolarity(polarity);
-	return transform;
+bool MacroPrimitive::isDark(const Transform &transform) const {
+	bool isExposureOn = m_exposure == MacroExposure::ON;
+	if (transform.GetPolarity() == Polarity::Clear) {
+		isExposureOn = !isExposureOn;
+	}
+	return isExposureOn;
 }
 
 } /* namespace gerbex */

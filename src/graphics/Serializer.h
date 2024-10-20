@@ -21,7 +21,7 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
-#include "ApertureTransformation.h"
+#include <Transform.h>
 #include "Arc.h"
 #include "MacroPrimitive.h"
 #include "Point.h"

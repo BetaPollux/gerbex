@@ -66,12 +66,10 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 }
 
 void MacroOutline::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	std::vector<Point> vertices = transform.ApplyThenTranslate(
 			getRotatedVertices(), origin);
-	//TODO simplify polarity handling
-	ApertureTransformation t = transform.Stack(makeTransform());
-	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
+	serializer.AddPolygon(vertices, isDark(transform));
 }
 
 Box MacroOutline::GetBox() const {

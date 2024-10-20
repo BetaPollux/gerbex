@@ -62,7 +62,7 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	(void)origin;
 	(void)transform;
 	for (const RegionContour &c : m_contours) {

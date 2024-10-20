@@ -25,22 +25,20 @@
 namespace gerbex {
 
 Flash::Flash() :
-		m_origin { }, m_aperture { std::make_shared<Circle>() }, m_transform { } {
+		m_origin { }, m_aperture { std::make_shared<Circle>() } {
 	// Empty
 
 }
 
-Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture,
-		const ApertureTransformation &transformation) :
-		m_origin { origin }, m_aperture { aperture }, m_transform {
-				transformation } {
+Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture) :
+		m_origin { origin }, m_aperture { aperture } {
 	// Empty
 }
 
 void Flash::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	Point new_origin = transform.Apply(m_origin) + origin;
-	m_aperture->Serialize(serializer, new_origin, transform.Stack(m_transform));
+	m_aperture->Serialize(serializer, new_origin, transform);
 }
 
 std::shared_ptr<Aperture> Flash::GetAperture() const {
@@ -51,23 +49,8 @@ const Point& Flash::GetOrigin() const {
 	return m_origin;
 }
 
-const ApertureTransformation& Flash::GetTransform() const {
-	return m_transform;
-}
-
 Box Flash::GetBox() const {
-	//TODO needs test
-	//TODO this exaggerates size of apertures
-	Box apbox = m_aperture->GetBox();
-	std::vector<Point> corners = { { apbox.GetLeft(), apbox.GetBottom() }, {
-			apbox.GetRight(), apbox.GetBottom() }, { apbox.GetRight(), apbox.GetTop() },
-			{ apbox.GetLeft(), apbox.GetTop() } };
-	for (Point &c : corners) {
-		c = m_transform.Apply(c);
-	}
-	Box box(corners);
-	box = box.Translate(m_origin);
-	return box;
+	return m_aperture->GetBox().Translate(m_origin);
 }
 
 } /* namespace gerbex */

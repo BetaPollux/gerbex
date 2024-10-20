@@ -221,9 +221,9 @@ TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(),
 			4);
 
-	CHECK(Polarity::Dark == c1->GetTransform().GetPolarity());
-	CHECK(Polarity::Dark == c2->GetTransform().GetPolarity());
-	CHECK(Polarity::Clear == c3->GetTransform().GetPolarity());
+	CHECK(Polarity::Dark == c1->GetAperture()->GetTransform().GetPolarity());
+	CHECK(Polarity::Dark == c2->GetAperture()->GetTransform().GetPolarity());
+	CHECK(Polarity::Clear == c3->GetAperture()->GetTransform().GetPolarity());
 
 	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetSegment().GetStart());
 	CHECK_EQUAL(Point(2.5, -1.0), d1->GetSegment().GetEnd());
@@ -241,20 +241,28 @@ TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
 	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(
 			processor->GetObjects(), 3);
 
-	DOUBLES_EQUAL(0.0, b1->GetTransform().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, b2->GetTransform().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(30.0, b3->GetTransform().GetRotationDegrees(), DBL_TOL);
-	DOUBLES_EQUAL(45.0, b4->GetTransform().GetRotationDegrees(), DBL_TOL);
+	DOUBLES_EQUAL(0.0, b1->GetAperture()->GetTransform().GetRotation(),
+			DBL_TOL);
+	DOUBLES_EQUAL(0.0, b2->GetAperture()->GetTransform().GetRotation(),
+			DBL_TOL);
+	DOUBLES_EQUAL(30.0, b3->GetAperture()->GetTransform().GetRotation(),
+			DBL_TOL);
+	DOUBLES_EQUAL(45.0, b4->GetAperture()->GetTransform().GetRotation(),
+			DBL_TOL);
 
-	CHECK(Mirroring::None == b1->GetTransform().GetMirroring());
-	CHECK(Mirroring::X == b2->GetTransform().GetMirroring());
-	CHECK(Mirroring::Y == b3->GetTransform().GetMirroring());
-	CHECK(Mirroring::XY == b4->GetTransform().GetMirroring());
+	CHECK(Mirroring::None == b1->GetAperture()->GetTransform().GetMirroring());
+	CHECK(Mirroring::X == b2->GetAperture()->GetTransform().GetMirroring());
+	CHECK(Mirroring::Y == b3->GetAperture()->GetTransform().GetMirroring());
+	CHECK(Mirroring::XY == b4->GetAperture()->GetTransform().GetMirroring());
 
-	DOUBLES_EQUAL(1.0, b1->GetTransform().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, b2->GetTransform().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, b3->GetTransform().GetScalingFactor(), DBL_TOL);
-	DOUBLES_EQUAL(0.8, b4->GetTransform().GetScalingFactor(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, b1->GetAperture()->GetTransform().GetScaling(),
+			DBL_TOL);
+	DOUBLES_EQUAL(1.0, b2->GetAperture()->GetTransform().GetScaling(),
+			DBL_TOL);
+	DOUBLES_EQUAL(1.0, b3->GetAperture()->GetTransform().GetScaling(),
+			DBL_TOL);
+	DOUBLES_EQUAL(0.8, b4->GetAperture()->GetTransform().GetScaling(),
+			DBL_TOL);
 }
 
 /**

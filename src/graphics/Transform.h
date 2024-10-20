@@ -1,5 +1,5 @@
 /*
- * ApertureTransformation.h
+ * Transform.h
  *
  *  Created on: Mar. 24, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef APERTURETRANSFORMATION_H_
-#define APERTURETRANSFORMATION_H_
+#ifndef TRANSFORM_H_
+#define TRANSFORM_H_
 
 #include "Point.h"
 #include <string>
@@ -45,23 +45,23 @@ enum class Mirroring {
  * Rotation is around the aperture origin.
  * Scaling is centered on the aperture origin.
  */
-class ApertureTransformation {
+class Transform {
 public:
-	ApertureTransformation();
-	ApertureTransformation(Polarity polarity, Mirroring mirroring,
-			double rotation, double scaling);
-	virtual ~ApertureTransformation() = default;
-	ApertureTransformation Stack(const ApertureTransformation &transform) const;
-	bool operator==(const ApertureTransformation &rhs) const;
-	bool operator!=(const ApertureTransformation &rhs) const;
+	Transform();
+	Transform(Polarity polarity, Mirroring mirroring, double rotation,
+			double scaling);
+	virtual ~Transform() = default;
+	Transform Stack(const Transform &transform) const;
+	bool operator==(const Transform &rhs) const;
+	bool operator!=(const Transform &rhs) const;
 	Mirroring GetMirroring() const;
 	void SetMirroring(Mirroring mirroring);
 	Polarity GetPolarity() const;
 	void SetPolarity(Polarity polarity);
-	double GetRotationDegrees() const;
-	void SetRotationDegrees(double rotationDegrees);
-	double GetScalingFactor() const;
-	void SetScalingFactor(double scalingFactor);
+	double GetRotation() const;
+	void SetRotation(double degrees);
+	double GetScaling() const;
+	void SetScaling(double factor);
 	Point Apply(const Point &point) const;
 	std::vector<Point> ApplyThenTranslate(const std::vector<Point> &points,
 			const Point &offset) const;
@@ -72,10 +72,10 @@ public:
 private:
 	bool m_isDark;
 	bool m_mirrorX, m_mirrorY;
-	double m_rotation_degrees;
-	double m_scaling_factor;
+	double m_rotation;
+	double m_scaling;
 };
 
 } /* namespace gerbex */
 
-#endif /* APERTURETRANSFORMATION_H_ */
+#endif /* TRANSFORM_H_ */

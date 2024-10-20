@@ -22,7 +22,6 @@
 #define FLASH_H_
 
 #include "Aperture.h"
-#include "ApertureTransformation.h"
 #include "GraphicalObject.h"
 #include "Point.h"
 #include "Serializable.h"
@@ -36,20 +35,17 @@ namespace gerbex {
 class Flash: public GraphicalObject {
 public:
 	Flash();
-	Flash(const Point &origin, std::shared_ptr<Aperture> aperture,
-			const ApertureTransformation &transformation);
+	Flash(const Point &origin, std::shared_ptr<Aperture> aperture);
 	virtual ~Flash() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const override;
+			const Transform &transform) const override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
-	const ApertureTransformation& GetTransform() const;
 	Box GetBox() const override;
 
 private:
 	Point m_origin;
 	std::shared_ptr<Aperture> m_aperture;
-	ApertureTransformation m_transform;
 };
 
 } /* namespace gerbex */

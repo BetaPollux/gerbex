@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 			fileProcessor.GetProcessor().GetObjects();
 
 	for (std::shared_ptr<GraphicalObject> obj: objects) {
-		obj->Serialize(serializer, Point(), ApertureTransformation());
+		obj->Serialize(serializer, Point(), Transform());
 	}
 
 	serializer.SaveFile(svg_file);

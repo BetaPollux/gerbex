@@ -21,7 +21,7 @@
 #ifndef MACROPRIMITIVE_H_
 #define MACROPRIMITIVE_H_
 
-#include "ApertureTransformation.h"
+#include <Transform.h>
 #include "Point.h"
 #include "Serializable.h"
 
@@ -46,7 +46,7 @@ public:
 	static MacroExposure ExposureFromNum(int num);
 
 protected:
-	ApertureTransformation makeTransform() const;
+	bool isDark(const Transform &transform) const;
 	MacroExposure m_exposure;
 	double m_rotation;
 };

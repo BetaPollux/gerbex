@@ -39,7 +39,7 @@ public:
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const override;
+			const Transform &transform) const override;
 	const Point& GetCenter() const;
 	Box GetBox() const override;
 

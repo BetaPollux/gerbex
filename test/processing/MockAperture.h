@@ -33,7 +33,7 @@ public:
 	MockAperture();
 	virtual ~MockAperture();
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const override;
+			const Transform &transform) const override;
 	Box GetBox() const override;
 };
 

@@ -66,12 +66,12 @@ void GraphicsState::SetPlotState(std::optional<PlotState> plotState) {
 	m_plotState = plotState;
 }
 
-ApertureTransformation& GraphicsState::GetTransformation() {
+Transform& GraphicsState::GetTransformation() {
 	return m_transformation;
 }
 
 void GraphicsState::SetTransformation(
-		const ApertureTransformation &transformation) {
+		const Transform &transformation) {
 	m_transformation = transformation;
 }
 

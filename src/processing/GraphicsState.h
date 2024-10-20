@@ -21,8 +21,8 @@
 #ifndef GRAPHICSSTATE_H_
 #define GRAPHICSSTATE_H_
 
+#include <Transform.h>
 #include "Aperture.h"
-#include "ApertureTransformation.h"
 #include "CoordinateData.h"
 #include "CoordinateFormat.h"
 #include "Point.h"
@@ -63,8 +63,8 @@ public:
 	void SetFormat(std::optional<CoordinateFormat> format);
 	std::optional<PlotState> GetPlotState() const;
 	void SetPlotState(std::optional<PlotState> plotState);
-	ApertureTransformation& GetTransformation();
-	void SetTransformation(const ApertureTransformation &transformation);
+	Transform& GetTransformation();
+	void SetTransformation(const Transform &transformation);
 	std::optional<Unit> GetUnit() const;
 	void SetUnit(std::optional<Unit> unit);
 	static Unit UnitFromCommand(const std::string &str);
@@ -83,7 +83,7 @@ private:
 	std::shared_ptr<Aperture> m_currentAperture;
 	std::optional<PlotState> m_plotState;
 	std::optional<ArcMode> m_arcMode;
-	ApertureTransformation m_transformation;
+	Transform m_transformation;
 };
 
 } /* namespace gerbex */

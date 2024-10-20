@@ -207,7 +207,7 @@ TEST(CommandHandlerTest, Rotation) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LR-22.5" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetRotationDegrees() == -22.5);
+	CHECK(state.GetTransformation().GetRotation() == -22.5);
 }
 
 TEST(CommandHandlerTest, Scaling) {
@@ -215,7 +215,7 @@ TEST(CommandHandlerTest, Scaling) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LS0.4" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetScalingFactor() == 0.4);
+	CHECK(state.GetTransformation().GetScaling() == 0.4);
 }
 
 TEST(CommandHandlerTest, BlockAperture_open) {

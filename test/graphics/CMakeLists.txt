@@ -1,7 +1,6 @@
 add_library(test_graphics OBJECT
 	GraphicsStringFrom.cpp
 	test_Arc.cpp
-	test_ApertureTransformation.cpp
 	test_Arc.cpp
 	test_ArcSegment.cpp
 	test_BlockAperture.cpp
@@ -32,6 +31,7 @@ add_library(test_graphics OBJECT
 	test_RegionContour.cpp
 	test_Segment.cpp
 	test_StepAndRepeat.cpp
+	test_Transform.cpp
 )
 
 target_link_libraries(test_graphics

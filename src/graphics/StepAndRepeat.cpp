@@ -68,7 +68,7 @@ int StepAndRepeat::GetNy() const {
 }
 
 void StepAndRepeat::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
+		const Transform &transform) const {
 	for (int ix = 0; ix < m_nx; ix++) {
 		for (int iy = 0; iy < m_ny; iy++) {
 			for (auto obj : m_objects) {

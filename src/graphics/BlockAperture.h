@@ -38,7 +38,7 @@ public:
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const override;
+			const Transform &transform) const override;
 	Box GetBox() const override;
 
 private:

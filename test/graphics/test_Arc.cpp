@@ -27,7 +27,6 @@ using namespace gerbex;
 TEST_GROUP(ArcTest) {
 	Point start, end, offset;
 	std::shared_ptr<Circle> aperture;
-	ApertureTransformation transform;
 	ArcDirection direction;
 	Arc arc;
 
@@ -37,10 +36,8 @@ TEST_GROUP(ArcTest) {
 		offset = Point(0.5, 0.5);
 		aperture = std::make_shared<Circle>(1.5);
 		direction = ArcDirection::CounterClockwise;
-		transform.SetRotationDegrees(45.0);
 
-		arc = Arc(ArcSegment(start, end, offset, direction), aperture,
-				transform);
+		arc = Arc(ArcSegment(start, end, offset, direction), aperture);
 	}
 
 };
@@ -63,10 +60,6 @@ TEST(ArcTest, Direction) {
 
 TEST(ArcTest, Aperture) {
 	CHECK(aperture == arc.GetAperture());
-}
-
-TEST(ArcTest, Transform) {
-	CHECK(transform == arc.GetTransform());
 }
 
 TEST(ArcTest, Box) {

@@ -53,7 +53,7 @@ double ArcSegment::GetRadius() const {
 	return m_start.Distance(GetCenter());;
 }
 
-void ArcSegment::Transform(const ApertureTransformation &transform) {
+void ArcSegment::Transform(const gerbex::Transform &transform) {
 	m_start = transform.Apply(m_start);
 	m_end = transform.Apply(m_end);
 	if (transform.GetMirroring() == Mirroring::X

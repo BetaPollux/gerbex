@@ -44,9 +44,9 @@ TEST(BlockApertureTest, GetBox) {
 	std::shared_ptr<Circle> circle = std::make_shared<Circle>(2.0);
 	Point origin1(5.0, 5.0);
 	Point origin2(25.0, 15.0);
-	ApertureTransformation transform;
-	std::shared_ptr<Flash> flash1 = std::make_shared<Flash>(origin1, circle, transform);
-	std::shared_ptr<Flash> flash2 = std::make_shared<Flash>(origin2, circle, transform);
+
+	std::shared_ptr<Flash> flash1 = std::make_shared<Flash>(origin1, circle);
+	std::shared_ptr<Flash> flash2 = std::make_shared<Flash>(origin2, circle);
 	block.AddObject(flash1);
 	block.AddObject(flash2);
 

@@ -23,7 +23,7 @@
 
 namespace gerbex {
 
-class ApertureTransformation;
+class Transform;
 class Box;
 class Point;
 class Serializer;
@@ -35,7 +35,7 @@ public:
 	virtual ~Serializable() {
 	}
 	virtual void Serialize(Serializer &serializer, const Point &origin,
-			const ApertureTransformation &transform) const = 0;
+			const Transform &transform) const = 0;
 	virtual Box GetBox() const = 0;
 };
 

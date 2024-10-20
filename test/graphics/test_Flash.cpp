@@ -29,16 +29,13 @@ using namespace gerbex;
 TEST_GROUP(FlashTest) {
 	Point origin;
 	std::shared_ptr<Circle> aperture;
-	ApertureTransformation transform;
 	Flash flash;
 
 	void setup() {
 		origin = Point(2.5, -1.5);
 		aperture = std::make_shared<Circle>(2.0);
-		transform.SetRotationDegrees(0.0);
-		transform.SetPolarity(Polarity::Clear);
 
-		flash = Flash(origin, aperture, transform);
+		flash = Flash(origin, aperture);
 	}
 
 };
@@ -51,12 +48,7 @@ TEST(FlashTest, Aperture) {
 	CHECK(aperture == flash.GetAperture());
 }
 
-TEST(FlashTest, Transform) {
-	CHECK(transform == flash.GetTransform());
-}
-
 TEST(FlashTest, Box) {
-	//TODO add test with rotation
 	Box expected(2.0, 2.0, 1.5, -2.5);
 	CHECK_EQUAL(expected, flash.GetBox());
 }

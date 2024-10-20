@@ -207,7 +207,7 @@ TEST(CommandsProcessor_Flash, Transform) {
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == flash->GetTransform());
+	FAIL("check flash aperture got transform");
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
@@ -283,7 +283,7 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == draw->GetTransform());
+	FAIL("check draw aperture got transform");
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
@@ -390,7 +390,7 @@ TEST(CommandsProcessor_PlotArc, Transform) {
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK(processor.GetGraphicsState().GetTransformation() == arc->GetTransform());
+	FAIL("check arc aperture got transform");
 }
 
 /***
@@ -472,7 +472,7 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 		mid = Point(1500, 1000);
 		end = Point(750, -500);
 
-		ApertureTransformation transformation;
+		Transform transformation;
 		transformation.SetPolarity(Polarity::Clear);
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.GetGraphicsState().SetTransformation(transformation);

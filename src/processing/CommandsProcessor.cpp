@@ -93,13 +93,13 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 			*m_graphicsState.GetCurrentPoint(), coord);
 
 	if (m_commandState != CommandState::InsideRegion) {
+		//TODO make copy, set aperture transform
 		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 				m_graphicsState.GetCurrentAperture());
 		if (circle == nullptr) {
 			throw std::logic_error("draw requires valid circle aperture");
 		}
-		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, circle,
-				m_graphicsState.GetTransformation());
+		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, circle);
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -129,11 +129,11 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 	if (m_commandState != CommandState::InsideRegion) {
 		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 				m_graphicsState.GetCurrentAperture());
+		//TODO make copy, set aperture transform
 		if (circle == nullptr) {
 			throw std::logic_error("arc requires valid circle aperture");
 		}
-		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, circle,
-				m_graphicsState.GetTransformation());
+		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, circle);
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -154,9 +154,9 @@ void CommandsProcessor::Flash(const Point &coord) {
 		throw std::logic_error("flash requires defined current aperture");
 	}
 
+	//TODO make copy, set aperture transform
 	std::unique_ptr<gerbex::Flash> obj = std::make_unique<gerbex::Flash>(coord,
-			m_graphicsState.GetCurrentAperture(),
-			m_graphicsState.GetTransformation());
+			m_graphicsState.GetCurrentAperture());
 	m_objectDest.top()->push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }

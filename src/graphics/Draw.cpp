@@ -26,21 +26,18 @@
 namespace gerbex {
 
 Draw::Draw() :
-		m_segment { }, m_aperture { std::make_shared<Circle>() }, m_transform { } {
+		m_segment { }, m_aperture { std::make_shared<Circle>() } {
 	// Empty
 }
 
-Draw::Draw(const Segment &segment, std::shared_ptr<Circle> aperture,
-		const ApertureTransformation &transformation) :
-		m_segment { segment }, m_aperture { aperture }, m_transform {
-				transformation } {
+Draw::Draw(const Segment &segment, std::shared_ptr<Circle> aperture) :
+		m_segment { segment }, m_aperture { aperture } {
 	// Empty
 }
 
 void Draw::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const {
-	//m_transform only applies to aperture size, not the segment
-	double width = m_transform.ApplyScaling(m_aperture->GetDiameter());
+		const Transform &transform) const {
+	double width = m_aperture->GetDiameter();
 	width = transform.ApplyScaling(width);
 	Segment segment = m_segment;
 	segment.Transform(transform);
@@ -56,12 +53,8 @@ const Segment& Draw::GetSegment() const {
 	return m_segment;
 }
 
-const ApertureTransformation& Draw::GetTransform() const {
-	return m_transform;
-}
-
 Box Draw::GetBox() const {
-	double radius = 0.5 * m_transform.ApplyScaling(m_aperture->GetDiameter());
+	double radius = 0.5 * m_aperture->GetDiameter();
 	Box box = m_segment.GetBox().Pad(radius);
 	return box;
 }

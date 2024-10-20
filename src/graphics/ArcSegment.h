@@ -21,6 +21,7 @@
 #define ARCSEGMENT_H_
 
 #include "Segment.h"
+#include "Transform.h"
 
 namespace gerbex {
 
@@ -39,7 +40,7 @@ public:
 	ArcDirection GetDirection() const;
 	bool IsCircle() const;
 	double GetRadius() const;
-	void Transform(const ApertureTransformation &transform) override;
+	void Transform(const gerbex::Transform &transform) override;
 	Box GetBox() const override;
 
 protected:
