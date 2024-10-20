@@ -24,16 +24,13 @@
 
 namespace gerbex {
 
-Circle::Circle()
-	: Circle{ 1.0 }
-{
+Circle::Circle() :
+		Circle { 1.0 } {
 	// Empty
 }
 
-Circle::Circle(double diameter, double holeDiameter)
-	: m_diameter{ diameter },
-	  m_holeDiameter{ holeDiameter }
-{
+Circle::Circle(double diameter, double holeDiameter) :
+		m_diameter { diameter }, m_holeDiameter { holeDiameter } {
 	if (diameter < 0.0) {
 		throw std::invalid_argument("Diameter must be >= 0");
 	}
@@ -58,11 +55,12 @@ double Circle::GetHoleDiameter() const {
 void Circle::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
 	double radius = 0.5 * transform.ApplyScaling(m_diameter);
-	serializer.AddCircle(radius, origin, transform.GetPolarity() == Polarity::Dark);
+	serializer.AddCircle(radius, origin,
+			transform.GetPolarity() == Polarity::Dark);
 }
 
 Box Circle::GetBox() const {
-	//TODO circle GetBox
+	return Box(m_diameter, m_diameter, -0.5 * m_diameter, -0.5 * m_diameter);
 }
 
 } /* namespace gerbex */

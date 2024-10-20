@@ -19,7 +19,7 @@
  */
 
 #include "Arc.h"
-#include "Circle.h"
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
@@ -32,28 +32,29 @@ TEST_GROUP(ArcTest) {
 	Arc arc;
 
 	void setup() {
-		start = Point(2500, -1500);
-		end = Point(3750, 0);
-		offset = Point(500, 500);
-		aperture = std::make_shared<Circle>(0.75);
+		start = Point(2.5, -1.5);
+		end = Point(3.75, 0.0);
+		offset = Point(0.5, 0.5);
+		aperture = std::make_shared<Circle>(1.5);
 		direction = ArcDirection::CounterClockwise;
 		transform.SetRotationDegrees(45.0);
 
-		arc = Arc(ArcSegment(start, end, offset, direction), aperture, transform);
+		arc = Arc(ArcSegment(start, end, offset, direction), aperture,
+				transform);
 	}
 
 };
 
-TEST(ArcTest, Origin) {
-	CHECK(start == arc.GetSegment().GetStart());
+TEST(ArcTest, Start) {
+	CHECK_EQUAL(start, arc.GetSegment().GetStart());
 }
 
 TEST(ArcTest, End) {
-	CHECK(end == arc.GetSegment().GetEnd());
+	CHECK_EQUAL(end, arc.GetSegment().GetEnd());
 }
 
 TEST(ArcTest, Offset) {
-	CHECK(offset == arc.GetSegment().GetCenterOffset());
+	CHECK_EQUAL(offset, arc.GetSegment().GetCenterOffset());
 }
 
 TEST(ArcTest, Direction) {
@@ -66,5 +67,11 @@ TEST(ArcTest, Aperture) {
 
 TEST(ArcTest, Transform) {
 	CHECK(transform == arc.GetTransform());
+}
+
+TEST(ArcTest, Box) {
+	Box expected = arc.GetSegment().GetBox();
+	expected.Pad(0.5 * aperture->GetDiameter());
+	CHECK_EQUAL(expected, arc.GetBox());
 }
 

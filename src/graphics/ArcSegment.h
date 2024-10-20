@@ -38,7 +38,9 @@ public:
 	Point GetCenter() const;
 	ArcDirection GetDirection() const;
 	bool IsCircle() const;
+	double GetRadius() const;
 	void Transform(const ApertureTransformation &transform) override;
+	Box GetBox() const override;
 
 protected:
 	Point m_centerOffset;

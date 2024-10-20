@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "Segment.h"
 #include "CppUTest/TestHarness.h"
 
@@ -40,5 +41,15 @@ TEST(Segment, PointsCtor) {
 
 	CHECK(origin == segment.GetStart());
 	CHECK(endPoint == segment.GetEnd());
+}
+
+TEST(Segment, Box) {
+	Point start(1.0, 3.0);
+	Point end(-2.0, 0.0);
+	Box expected(3.0, 3.0, -2.0, 0.0);
+
+	Segment segment(start, end);
+
+	CHECK_EQUAL(expected, segment.GetBox());
 }
 

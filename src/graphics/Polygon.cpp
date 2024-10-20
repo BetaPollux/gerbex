@@ -83,7 +83,8 @@ void Polygon::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box Polygon::GetBox() const {
-	//TODO polygon getbox
+	return Box(m_outerDiameter, m_outerDiameter, -0.5 * m_outerDiameter,
+			-0.5 * m_outerDiameter);
 }
 
 } /* namespace gerbex */

@@ -20,6 +20,7 @@
 
 #include "Circle.h"
 #include "Draw.h"
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
@@ -31,9 +32,9 @@ TEST_GROUP(DrawTest) {
 	Draw draw;
 
 	void setup() {
-		start = Point(2500, -1500);
-		end = Point(3750, 0);
-		aperture = std::make_shared<Circle>(0.75);
+		start = Point(2.5, -1.5);
+		end = Point(4.0, 0);
+		aperture = std::make_shared<Circle>(1.0);
 		transform.SetRotationDegrees(45.0);
 
 		draw = Draw(Segment(start, end), aperture, transform);
@@ -42,11 +43,11 @@ TEST_GROUP(DrawTest) {
 };
 
 TEST(DrawTest, Origin) {
-	CHECK(start == draw.GetSegment().GetStart());
+	CHECK_EQUAL(start, draw.GetSegment().GetStart());
 }
 
 TEST(DrawTest, End) {
-	CHECK(end == draw.GetSegment().GetEnd());
+	CHECK_EQUAL(end, draw.GetSegment().GetEnd());
 }
 
 TEST(DrawTest, Aperture) {
@@ -56,3 +57,10 @@ TEST(DrawTest, Aperture) {
 TEST(DrawTest, Transform) {
 	CHECK(transform == draw.GetTransform());
 }
+
+TEST(DrawTest, Box) {
+	Box expected(2.5, 2.5, 2.0, -2.0);
+	CHECK_EQUAL(expected, draw.GetBox());
+}
+
+

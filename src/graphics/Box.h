@@ -20,6 +20,8 @@
 #ifndef BOX_H_
 #define BOX_H_
 
+#include "Point.h"
+
 namespace gerbex {
 
 class Box {
@@ -27,11 +29,15 @@ public:
 	Box();
 	Box(double width, double height, double left, double bottom);
 	virtual ~Box() = default;
+	bool operator==	(const Box& rhs) const;
+	bool operator!=	(const Box& rhs) const;
 	double GetHeight() const;
 	double GetWidth() const;
 	double GetBottom() const;
 	double GetLeft() const;
-	Box Extend(const Box &other);
+	void Extend(const Box &other);
+	void Pad(double pad);
+	void Translate(const Point &offset);
 
 private:
 	double m_width, m_height;

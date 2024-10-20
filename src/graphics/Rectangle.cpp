@@ -70,7 +70,7 @@ void Rectangle::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box Rectangle::GetBox() const {
-	//TODO rectangle getbox
+	return Box(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
 }
 
 } /* namespace gerbex */

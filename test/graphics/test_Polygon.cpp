@@ -19,6 +19,7 @@
  */
 
 #include "Polygon.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
@@ -62,4 +63,12 @@ TEST(PolygonTest, Rotation) {
 TEST(PolygonTest, DefaultHole) {
 	Polygon poly(1.0, 3);
 	CHECK(0.0 == poly.GetHoleDiameter());
+}
+
+TEST(PolygonTest, Box) {
+	double d = 5.0;
+	Polygon poly(d, 7, 0.0);
+
+	Box expected(d, d, -0.5 * d, -0.5 * d);
+	CHECK_EQUAL(expected, poly.GetBox());
 }

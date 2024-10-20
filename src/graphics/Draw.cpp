@@ -21,6 +21,7 @@
 #include "Circle.h"
 #include "Draw.h"
 #include "Serializer.h"
+#include <algorithm>
 
 namespace gerbex {
 
@@ -29,7 +30,7 @@ Draw::Draw() :
 	// Empty
 }
 
-Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture,
+Draw::Draw(const Segment &segment, std::shared_ptr<Circle> aperture,
 		const ApertureTransformation &transformation) :
 		m_segment { segment }, m_aperture { aperture }, m_transform {
 				transformation } {
@@ -38,16 +39,15 @@ Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture,
 
 void Draw::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
-	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
-			m_aperture);
-	double width = transform.ApplyScaling(circle->GetDiameter());
+	ApertureTransformation t = transform.Stack(m_transform);
+	double width = t.ApplyScaling(m_aperture->GetDiameter());
 	Segment segment = m_segment;
-	segment.Transform(transform);
+	segment.Transform(t);
 	segment.Translate(origin);
 	serializer.AddDraw(width, segment);
 }
 
-std::shared_ptr<Aperture> Draw::GetAperture() const {
+std::shared_ptr<Circle> Draw::GetAperture() const {
 	return m_aperture;
 }
 
@@ -60,7 +60,10 @@ const ApertureTransformation& Draw::GetTransform() const {
 }
 
 Box Draw::GetBox() const {
-	//TODO Draw GetBox
+	//TODO need to consider transform
+	Box box = m_segment.GetBox();
+	box.Pad(0.5 * m_aperture->GetDiameter());
+	return box;
 }
 
 } /* namespace gerbex */

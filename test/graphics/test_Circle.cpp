@@ -19,8 +19,11 @@
  */
 
 #include "Circle.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+
+#define DBL_TOL	1e-9
 
 using namespace gerbex;
 
@@ -37,16 +40,24 @@ TEST(CircleTest, NegativeHoleDiameter) {
 
 TEST(CircleTest, Diameter) {
 	Circle circle(2.3);
-	CHECK(2.3 == circle.GetDiameter());
+	DOUBLES_EQUAL(2.3, circle.GetDiameter(), DBL_TOL);
 }
 
 TEST(CircleTest, ZeroDiameter) {
 	Circle circle(0.0);
-	CHECK(0.0 == circle.GetDiameter());
+	DOUBLES_EQUAL(0.0, circle.GetDiameter(), DBL_TOL);
 }
 
 TEST(CircleTest, DefaultHole) {
 	Circle circle(1.5);
-	CHECK(0.0 == circle.GetHoleDiameter());
+	DOUBLES_EQUAL(0.0, circle.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(CircleTest, Box) {
+	double d = 10.0;
+	Circle circle(d);
+
+	Box expected(d, d, -0.5 * d, -0.5 * d);
+	CHECK_EQUAL(expected, circle.GetBox());
 }
 

@@ -56,7 +56,10 @@ const ApertureTransformation& Flash::GetTransform() const {
 }
 
 Box Flash::GetBox() const {
-	//TODO Flash GetBox
+	//TODO need to consider transform
+	Box box = m_aperture->GetBox();
+	box.Translate(m_origin);
+	return box;
 }
 
 } /* namespace gerbex */

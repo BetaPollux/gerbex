@@ -24,17 +24,13 @@
 
 namespace gerbex {
 
-Obround::Obround()
-	: Obround{ 1.0, 1.0 }
-{
+Obround::Obround() :
+		Obround { 1.0, 1.0 } {
 	// Empty
 }
 
-Obround::Obround(double xSize, double ySize, double holeDiameter)
-	: m_xSize{ xSize },
-	  m_ySize{ ySize },
-	  m_holeDiameter{ holeDiameter }
-{
+Obround::Obround(double xSize, double ySize, double holeDiameter) :
+		m_xSize { xSize }, m_ySize { ySize }, m_holeDiameter { holeDiameter } {
 	if (xSize <= 0.0 || ySize <= 0.0) {
 		throw std::invalid_argument("Size must be > 0");
 	}
@@ -68,7 +64,7 @@ void Obround::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box Obround::GetBox() const {
-	//todo obround getbox
+	return Box(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
 }
 
 } /* namespace gerbex */

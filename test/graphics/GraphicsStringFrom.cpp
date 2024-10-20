@@ -20,7 +20,11 @@
 
 #include "GraphicsStringFrom.h"
 
-SimpleString StringFrom(const gerbex::Point &pt) {
-	return StringFromFormat("%f, %f", pt.GetX(), pt.GetY());
+SimpleString StringFrom(const gerbex::Point &point) {
+	return StringFromFormat("%f, %f", point.GetX(), point.GetY());
 }
 
+SimpleString StringFrom(const gerbex::Box &box) {
+	return StringFromFormat("%f, %f, %f, %f", box.GetWidth(), box.GetHeight(),
+			box.GetLeft(), box.GetBottom());
+}

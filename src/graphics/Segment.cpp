@@ -19,6 +19,7 @@
  */
 
 #include "Segment.h"
+#include <algorithm>
 
 namespace gerbex {
 
@@ -43,6 +44,13 @@ const Point& Segment::GetStart() const {
 
 const Point& Segment::GetEnd() const {
 	return m_end;
+}
+
+Box Segment::GetBox() const {
+	Point delta = m_end - m_start;
+	double left = std::min(m_start.GetX(), m_end.GetX());
+	double bottom = std::min(m_start.GetY(), m_end.GetY());
+	return Box(fabs(delta.GetX()), fabs(delta.GetY()), left, bottom);
 }
 
 void Segment::Translate(const Point &offset) {

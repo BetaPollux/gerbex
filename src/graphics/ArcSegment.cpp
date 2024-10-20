@@ -49,6 +49,10 @@ bool ArcSegment::IsCircle() const {
 	return m_start == m_end;
 }
 
+double ArcSegment::GetRadius() const {
+	return m_start.Distance(GetCenter());;
+}
+
 void ArcSegment::Transform(const ApertureTransformation &transform) {
 	m_start = transform.Apply(m_start);
 	m_end = transform.Apply(m_end);
@@ -60,6 +64,13 @@ void ArcSegment::Transform(const ApertureTransformation &transform) {
 			m_direction = ArcDirection::CounterClockwise;
 		}
 	}
+}
+
+Box ArcSegment::GetBox() const {
+	//TODO this is for a full circle, not the real arc
+	Point c = GetCenter();
+	double r = GetRadius();
+	return Box(2.0 * r, 2.0 * r, c.GetX() - r, c.GetY() - r);
 }
 
 } /* namespace gerbex */

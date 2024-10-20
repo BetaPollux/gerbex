@@ -49,6 +49,7 @@ void Macro::Serialize(Serializer &serializer, const Point &origin,
 
 Box Macro::GetBox() const {
 	//TODO macro getbox
+	return Box();
 }
 
 } /* namespace gerbex */

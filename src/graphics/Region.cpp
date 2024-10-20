@@ -80,6 +80,7 @@ Polarity Region::GetPolarity() const {
 
 Box Region::GetBox() const {
 	//TODO region GetBox
+	return Box();
 }
 
 } /* namespace gerbex */

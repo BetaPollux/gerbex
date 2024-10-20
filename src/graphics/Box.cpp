@@ -48,12 +48,33 @@ double Box::GetLeft() const {
 	return m_left;
 }
 
-Box Box::Extend(const Box &other) {
-	double width = std::max(m_width, other.m_width);
-	double height = std::max(m_height, other.m_height);
-	double left = std::min(m_left, other.m_left);
-	double bottom = std::min(m_bottom, other.m_bottom);
-	return Box(width, height, left, bottom);
+bool Box::operator ==(const Box &rhs) const {
+	return m_width == rhs.m_width && m_height == rhs.m_height
+			&& m_left == rhs.m_left && m_bottom == rhs.m_bottom;
+}
+
+bool Box::operator !=(const Box &rhs) const {
+	return m_width != rhs.m_width || m_height != rhs.m_height
+			|| m_left != rhs.m_left || m_bottom != rhs.m_bottom;
+}
+
+void Box::Extend(const Box &other) {
+	m_width = std::max(m_width, other.m_width);
+	m_height = std::max(m_height, other.m_height);
+	m_left = std::min(m_left, other.m_left);
+	m_bottom = std::min(m_bottom, other.m_bottom);
+}
+
+void Box::Pad(double pad) {
+	m_width += 2 * pad;
+	m_height += 2 * pad;
+	m_left -= pad;
+	m_bottom -= pad;
+}
+
+void Box::Translate(const Point &offset) {
+	m_left += offset.GetX();
+	m_bottom += offset.GetY();
 }
 
 } /* namespace gerbex */

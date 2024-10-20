@@ -22,6 +22,7 @@
 #define DRAW_H_
 
 #include "ApertureTransformation.h"
+#include "Circle.h"
 #include "GraphicalObject.h"
 #include "Segment.h"
 #include <memory>
@@ -35,18 +36,18 @@ class Draw : public GraphicalObject {
 public:
 	Draw();
 	Draw(const Segment &segment,
-			std::shared_ptr<Aperture> aperture, const ApertureTransformation &transformation);
+			std::shared_ptr<Circle> aperture, const ApertureTransformation &transformation);
 	virtual ~Draw() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) override;
-	std::shared_ptr<Aperture> GetAperture() const;
+	std::shared_ptr<Circle> GetAperture() const;
 	const Segment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;
 	Box GetBox() const override;
 
 private:
 	Segment m_segment;
-	std::shared_ptr<Aperture> m_aperture;
+	std::shared_ptr<Circle> m_aperture;
 	ApertureTransformation m_transform;
 };
 

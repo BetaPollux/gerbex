@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
 	std::ifstream gerber = std::ifstream(path, std::ifstream::in);
 	if (!gerber.good()) {
-		std::cerr << "Failed to open file" << std::endl;
+		std::cerr << "failed to open file" << std::endl;
 		return EXIT_FAILURE;
 	}
 	FileProcessor fileProcessor;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 	SvgSerializer serializer;
 	serializer.SetViewPort(400, 400);
 	//TODO set viewbox to match extents
-	serializer.SetViewBox(-10.0, -40.0, 50.0, 50.0);
+	serializer.SetViewBox(-10.0, -40.0, 60.0, 50.0);
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();

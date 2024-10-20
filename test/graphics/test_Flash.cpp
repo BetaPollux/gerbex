@@ -20,6 +20,7 @@
 
 #include "Circle.h"
 #include "Flash.h"
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
@@ -32,8 +33,8 @@ TEST_GROUP(FlashTest) {
 	Flash flash;
 
 	void setup() {
-		origin = Point(2500, -1500);
-		aperture = std::make_shared<Circle>(0.75);
+		origin = Point(2.5, -1.5);
+		aperture = std::make_shared<Circle>(2.0);
 		transform.SetRotationDegrees(45.0);
 
 		flash = Flash(origin, aperture, transform);
@@ -42,7 +43,7 @@ TEST_GROUP(FlashTest) {
 };
 
 TEST(FlashTest, Origin) {
-	CHECK(origin == flash.GetOrigin());
+	CHECK_EQUAL(origin, flash.GetOrigin());
 }
 
 TEST(FlashTest, Aperture) {
@@ -52,4 +53,10 @@ TEST(FlashTest, Aperture) {
 TEST(FlashTest, Transform) {
 	CHECK(transform == flash.GetTransform());
 }
+
+TEST(FlashTest, Box) {
+	Box expected(2.0, 2.0, 1.5, -2.5);
+	CHECK_EQUAL(expected, flash.GetBox());
+}
+
 

@@ -73,10 +73,9 @@ void SvgSerializer::AddDraw(double width, const Segment &segment, bool isDark) {
 void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		bool isDark) {
 	if (segment.IsCircle()) {
-		double radius = segment.GetStart().Distance(segment.GetCenter());
 		Point c = segment.GetCenter();
 		pugi::xml_node circle = m_svg.append_child("circle");
-		circle.append_attribute("r") = radius;
+		circle.append_attribute("r") = segment.GetRadius();
 		circle.append_attribute("cx") = c.GetX();
 		circle.append_attribute("cy") = -c.GetY();
 		circle.append_attribute("fill") = "none";

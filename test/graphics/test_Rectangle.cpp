@@ -19,6 +19,7 @@
  */
 
 #include "Rectangle.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
@@ -55,4 +56,12 @@ TEST(RectangleTest, DefaultHole) {
 	CHECK(0.0 == rect.GetHoleDiameter());
 }
 
+TEST(RectangleTest, Box) {
+	double w = 2.0;
+	double h = 1.0;
+	Rectangle rect(w, h);
+
+	Box expected(w, h, -0.5 * w, -0.5 * h);
+	CHECK_EQUAL(expected, rect.GetBox());
+}
 

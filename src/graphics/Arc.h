@@ -24,6 +24,7 @@
 #include "Aperture.h"
 #include "ApertureTransformation.h"
 #include "ArcSegment.h"
+#include "Circle.h"
 #include "GraphicalObject.h"
 #include <memory>
 
@@ -35,19 +36,19 @@ namespace gerbex {
 class Arc: public GraphicalObject {
 public:
 	Arc();
-	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
+	Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture,
 			const ApertureTransformation &transformation);
 	virtual ~Arc() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) override;
-	std::shared_ptr<Aperture> GetAperture() const;
+	std::shared_ptr<Circle> GetAperture() const;
 	const ArcSegment& GetSegment() const;
 	const ApertureTransformation& GetTransform() const;
 	Box GetBox() const override;
 
 private:
 	ArcSegment m_segment;
-	std::shared_ptr<Aperture> m_aperture;
+	std::shared_ptr<Circle> m_aperture;
 	ApertureTransformation m_transform;
 };
 

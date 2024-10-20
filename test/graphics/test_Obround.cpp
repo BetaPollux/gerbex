@@ -19,6 +19,7 @@
  */
 
 #include "Obround.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
@@ -53,5 +54,14 @@ TEST(ObroundTest, YSize) {
 TEST(ObroundTest, DefaultHole) {
 	Obround obround(1.0, 0.5);
 	CHECK(0.0 == obround.GetHoleDiameter());
+}
+
+TEST(ObroundTest, Box) {
+	double w = 2.0;
+	double h = 1.0;
+	Obround obround(w, h);
+
+	Box expected(w, h, -0.5 * w, -0.5 * h);
+	CHECK_EQUAL(expected, obround.GetBox());
 }
 

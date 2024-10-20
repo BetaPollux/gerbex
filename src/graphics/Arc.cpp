@@ -29,7 +29,7 @@ Arc::Arc() :
 	// Empty
 }
 
-Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
+Arc::Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture,
 		const ApertureTransformation &transformation) :
 		m_segment { segment }, m_aperture { aperture }, m_transform {
 				transformation } {
@@ -38,16 +38,15 @@ Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture,
 
 void Arc::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) {
-	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
-			m_aperture);
-	double width = transform.ApplyScaling(circle->GetDiameter());
+	ApertureTransformation t = transform.Stack(m_transform);
+	double width = t.ApplyScaling(m_aperture->GetDiameter());
 	ArcSegment segment = m_segment;
-	segment.Transform(transform);
+	segment.Transform(t);
 	segment.Translate(origin);
 	serializer.AddArc(width, segment);
 }
 
-std::shared_ptr<Aperture> Arc::GetAperture() const {
+std::shared_ptr<Circle> Arc::GetAperture() const {
 	return m_aperture;
 }
 
@@ -60,7 +59,10 @@ const ApertureTransformation& Arc::GetTransform() const {
 }
 
 Box Arc::GetBox() const {
-	//TODO arc GetBox
+	//TODO need to consider transform
+	Box box = m_segment.GetBox();
+	box.Pad(0.5 * m_aperture->GetDiameter());
+	return box;
 }
 
 } /* namespace gerbex */

@@ -21,42 +21,50 @@
 #include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
+#define DBL_TOL	1e-9
+
 namespace gerbex {
 
 TEST_GROUP(ArcSegment) {
+	Point start, end, centerOffset;
+	ArcDirection direction;
+	ArcSegment segment;
+
+	void setup() {
+		start = Point(3.0, -2.0);
+		end = Point(-3.0, -2.0);
+		centerOffset = Point(-3.0, 4.0);
+		direction = ArcDirection::CounterClockwise;
+
+		segment = ArcSegment(start, end, centerOffset, direction);
+	}
 };
 
 TEST(ArcSegment, DefaultCtor) {
-	ArcSegment segment;
+	ArcSegment newSegment;
 
-	CHECK(segment.GetStart() != segment.GetEnd());
+	CHECK(newSegment.GetStart() != newSegment.GetEnd());
 }
 
 TEST(ArcSegment, PointsCtor) {
-	Point start(2500, 5000);
-	Point end(7500, 1500);
-	Point centerOffset(500, -200);
-	ArcDirection direction = ArcDirection::CounterClockwise;
-
-	ArcSegment segment(start, end, centerOffset, direction);
-
 	CHECK_EQUAL(start, segment.GetStart());
 	CHECK_EQUAL(end, segment.GetEnd());
 	CHECK_EQUAL(centerOffset, segment.GetCenterOffset());
 	CHECK_EQUAL((int )direction, (int )segment.GetDirection());
 }
 
-
 TEST(ArcSegment, GetCenter) {
-	Point start(2500, 5000);
-	Point end(7500, 1500);
-	Point centerOffset(500, -200);
+	CHECK_EQUAL(Point(0.0, 2.0), segment.GetCenter());
+}
 
-	ArcDirection direction = ArcDirection::CounterClockwise;
+TEST(ArcSegment, GetRadius) {
+	DOUBLES_EQUAL(5.0, segment.GetRadius(), DBL_TOL);
+}
 
-	ArcSegment segment(start, end, centerOffset, direction);
-
-	CHECK_EQUAL(Point(3000, 4800), segment.GetCenter());
+TEST(ArcSegment, GetBox) {
+	//TODO this is for a full circle, not the real arc
+	Box expected(10.0, 10.0, -5.0, -3.0);
+	CHECK_EQUAL(expected, segment.GetBox());
 }
 
 } /* namespace gerbex */

@@ -18,9 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Box.h"
+#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
-
-#define DBL_TOL 1e-9
 
 namespace gerbex {
 
@@ -28,14 +27,26 @@ TEST_GROUP(Box) {
 };
 
 TEST(Box, Extend) {
-	Box one(5.0, 2.0, -2.5, -1.0);
-	Box two(4.0, 4.0, -2.0, -2.0);
-	Box three = one.Extend(two);
+	Box expected(5.0, 4.0, -2.5, -2.0);
+	Box box(5.0, 2.0, -2.5, -1.0);
+	Box other(4.0, 4.0, -2.0, -2.0);
+	box.Extend(other);
 
-	DOUBLES_EQUAL(5.0, three.GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(4.0, three.GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(-2.5, three.GetLeft(), DBL_TOL);
-	DOUBLES_EQUAL(-2.0, three.GetBottom(), DBL_TOL);
+	CHECK_EQUAL(expected, box);
+}
+
+TEST(Box, Pad) {
+	Box expected(4.0, 6.0, -2.0, -3.0);
+	Box box(2.0, 4.0, -1.0, -2.0);
+	box.Pad(1.0);
+	CHECK_EQUAL(expected, box);
+}
+
+TEST(Box, Translate) {
+	Box expected(2.0, 4.0, 1.0, 5.0);
+	Box box(2.0, 4.0, -1.0, -2.0);
+	box.Translate(Point(2.0, 7.0));
+	CHECK_EQUAL(expected, box);
 }
 
 } /* namespace gerbex */
