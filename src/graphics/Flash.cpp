@@ -57,8 +57,7 @@ const ApertureTransformation& Flash::GetTransform() const {
 
 Box Flash::GetBox() const {
 	//TODO need to consider transform
-	Box box = m_aperture->GetBox();
-	box.Translate(m_origin);
+	Box box = m_aperture->GetBox().Translate(m_origin);
 	return box;
 }
 

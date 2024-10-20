@@ -34,10 +34,12 @@ public:
 	double GetHeight() const;
 	double GetWidth() const;
 	double GetBottom() const;
+	double GetTop() const;
 	double GetLeft() const;
-	void Extend(const Box &other);
-	void Pad(double pad);
-	void Translate(const Point &offset);
+	double GetRight() const;
+	Box Extend(const Box &other) const;
+	Box Pad(double pad) const;
+	Box Translate(const Point &offset) const;
 
 private:
 	double m_width, m_height;

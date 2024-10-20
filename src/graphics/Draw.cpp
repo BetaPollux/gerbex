@@ -61,8 +61,7 @@ const ApertureTransformation& Draw::GetTransform() const {
 
 Box Draw::GetBox() const {
 	//TODO need to consider transform
-	Box box = m_segment.GetBox();
-	box.Pad(0.5 * m_aperture->GetDiameter());
+	Box box = m_segment.GetBox().Pad(0.5 * m_aperture->GetDiameter());
 	return box;
 }
 

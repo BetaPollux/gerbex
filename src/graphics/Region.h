@@ -36,7 +36,7 @@ class Region: public GraphicalObject {
 public:
 	Region();
 	Region(Polarity polarity);
-	virtual ~Region();
+	virtual ~Region() = default;
 	void StartContour();
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<RegionContour>& GetContours() const;

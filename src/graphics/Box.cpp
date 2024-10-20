@@ -44,8 +44,16 @@ double Box::GetBottom() const {
 	return m_bottom;
 }
 
+double Box::GetTop() const {
+	return m_bottom + m_height;
+}
+
 double Box::GetLeft() const {
 	return m_left;
+}
+
+double Box::GetRight() const {
+	return m_left + m_width;
 }
 
 bool Box::operator ==(const Box &rhs) const {
@@ -58,23 +66,26 @@ bool Box::operator !=(const Box &rhs) const {
 			|| m_left != rhs.m_left || m_bottom != rhs.m_bottom;
 }
 
-void Box::Extend(const Box &other) {
-	m_width = std::max(m_width, other.m_width);
-	m_height = std::max(m_height, other.m_height);
-	m_left = std::min(m_left, other.m_left);
-	m_bottom = std::min(m_bottom, other.m_bottom);
+Box Box::Extend(const Box &other) const {
+	double left = std::min(GetLeft(), other.GetLeft());
+	double bottom = std::min(GetBottom(), other.GetBottom());
+	double right = std::max(GetRight(), other.GetRight());
+	double top = std::max(GetTop(), other.GetTop());
+	return Box(right - left, top - bottom, left, bottom);
 }
 
-void Box::Pad(double pad) {
-	m_width += 2 * pad;
-	m_height += 2 * pad;
-	m_left -= pad;
-	m_bottom -= pad;
+Box Box::Pad(double pad) const {
+	double width = m_width + 2 * pad;
+	double height = m_height + 2 * pad;
+	double left = m_left - pad;
+	double bottom = m_bottom - pad;
+	return Box(width, height, left, bottom);
 }
 
-void Box::Translate(const Point &offset) {
-	m_left += offset.GetX();
-	m_bottom += offset.GetY();
+Box Box::Translate(const Point &offset) const {
+	double left = m_left + offset.GetX();
+	double bottom = m_bottom + offset.GetY();
+	return Box(m_width, m_height, left, bottom);
 }
 
 } /* namespace gerbex */

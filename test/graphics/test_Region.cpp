@@ -19,6 +19,7 @@
  */
 
 #include "ArcSegment.h"
+#include "GraphicsStringFrom.h"
 #include "Region.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -128,5 +129,40 @@ TEST(Region_MultiContour, AddSegment) {
 	LONGS_EQUAL(segments0_size, segments0.size());
 	LONGS_EQUAL(1, segments1.size());
 	POINTERS_EQUAL(segment.get(), segments1.back().get());
+}
+
+/***
+ * Get box for region
+ */
+TEST_GROUP(Region_Box) {
+	Region region;
+
+	void setup() {
+		region.StartContour();
+		region.AddSegment(std::make_shared<Segment>(Point(0, 0), Point(0, 100)));
+		region.AddSegment(std::make_shared<Segment>(Point(0, 100), Point(100, 0)));
+		region.AddSegment(std::make_shared<Segment>(Point(100, 0), Point(0, 0)));
+	}
+};
+
+TEST(Region_Box, Single) {
+	Box expected(100.0, 100.0, 0.0, 0.0);
+	CHECK_EQUAL(expected, region.GetBox());
+}
+
+TEST(Region_Box, Open) {
+	region.StartContour();
+	CHECK_THROWS(std::invalid_argument, region.GetBox());
+}
+
+TEST(Region_Box, Multi) {
+	Box expected(200.0, 200.0, -100.0, -100.0);
+
+	region.StartContour();
+	region.AddSegment(std::make_shared<Segment>(Point(-100, -100), Point(-100, 0)));
+	region.AddSegment(std::make_shared<Segment>(Point(-100, 0), Point(0, -100)));
+	region.AddSegment(std::make_shared<Segment>(Point(0, -100), Point(-100, -100)));
+
+	CHECK_EQUAL(expected, region.GetBox());
 }
 

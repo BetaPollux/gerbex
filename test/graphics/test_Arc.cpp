@@ -70,8 +70,7 @@ TEST(ArcTest, Transform) {
 }
 
 TEST(ArcTest, Box) {
-	Box expected = arc.GetSegment().GetBox();
-	expected.Pad(0.5 * aperture->GetDiameter());
+	Box expected = arc.GetSegment().GetBox().Pad(0.5 * aperture->GetDiameter());
 	CHECK_EQUAL(expected, arc.GetBox());
 }
 

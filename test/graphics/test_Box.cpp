@@ -30,23 +30,32 @@ TEST(Box, Extend) {
 	Box expected(5.0, 4.0, -2.5, -2.0);
 	Box box(5.0, 2.0, -2.5, -1.0);
 	Box other(4.0, 4.0, -2.0, -2.0);
-	box.Extend(other);
 
-	CHECK_EQUAL(expected, box);
+	CHECK_EQUAL(expected, box.Extend(other));
+	CHECK_EQUAL(expected, other.Extend(box));
+}
+
+TEST(Box, Extend_Disjoint) {
+	Box expected(5.0, 5.0, -1.0, -1.0);
+	Box box(1.0, 1.0, -1.0, -1.0);
+	Box other(1.0, 1.0, 3.0, 3.0);
+
+	CHECK_EQUAL(expected, box.Extend(other));
+	CHECK_EQUAL(expected, other.Extend(box));
 }
 
 TEST(Box, Pad) {
 	Box expected(4.0, 6.0, -2.0, -3.0);
 	Box box(2.0, 4.0, -1.0, -2.0);
-	box.Pad(1.0);
-	CHECK_EQUAL(expected, box);
+
+	CHECK_EQUAL(expected, box.Pad(1.0));
 }
 
 TEST(Box, Translate) {
 	Box expected(2.0, 4.0, 1.0, 5.0);
 	Box box(2.0, 4.0, -1.0, -2.0);
-	box.Translate(Point(2.0, 7.0));
-	CHECK_EQUAL(expected, box);
+
+	CHECK_EQUAL(expected, box.Translate(Point(2.0, 7.0)));
 }
 
 } /* namespace gerbex */

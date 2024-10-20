@@ -34,10 +34,6 @@ Region::Region(Polarity polarity) :
 		m_polarity { polarity } {
 }
 
-Region::~Region() {
-	// Empty
-}
-
 void Region::StartContour() {
 	if (!m_contours.empty() && !m_contours.back().IsClosed()) {
 		throw std::logic_error("need to close contour before starting next");
@@ -79,8 +75,16 @@ Polarity Region::GetPolarity() const {
 }
 
 Box Region::GetBox() const {
-	//TODO region GetBox
-	return Box();
+	if (!AreContoursClosed()) {
+		throw std::invalid_argument("cannot get box for open contours");
+	}
+	Box box;
+	for (const RegionContour &c : m_contours) {
+		for (std::shared_ptr<Segment> s : c.GetSegments()) {
+			box = box.Extend(s->GetBox());
+		}
+	}
+	return box;
 }
 
 } /* namespace gerbex */
