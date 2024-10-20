@@ -64,14 +64,11 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 
 void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
-	// Vector line is defined by end points
-	std::vector<Point> corners = getCorners();
+	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
+			origin);
+	//TODO simplify polarity handling
 	ApertureTransformation t = transform.Stack(makeTransform());
-	for (Point &c : corners) {
-		c = t.Apply(c);
-		c += origin;
-	}
-	serializer.AddPolygon(corners, t.GetPolarity() == Polarity::Dark);
+	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroVectorLine::GetStart() const {
@@ -79,18 +76,21 @@ const Point& MacroVectorLine::GetStart() const {
 }
 
 Box MacroVectorLine::GetBox() const {
-	//TODO consider rotation
-	return Box(getCorners());
+	return Box(getVertices());
 }
 
-std::vector<Point> MacroVectorLine::getCorners() const {
+std::vector<Point> MacroVectorLine::getVertices() const {
+	// Vector line is defined by end points
 	double length = m_end.Distance(m_start);
 	Point unit_vec = (m_end - m_start) / length;
 	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
 	Point delta = normal_vec * 0.5;
-
-	return { m_start + delta, m_start - delta, m_end
+	std::vector<Point> vertices = { m_start + delta, m_start - delta, m_end
 			- delta, m_end + delta };
+	for (Point &v : vertices) {
+		v.Rotate(m_rotation);
+	}
+	return vertices;
 }
 
 } /* namespace gerbex */

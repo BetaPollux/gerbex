@@ -62,18 +62,11 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 
 void MacroCenterLine::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
-	// Center line is centered on origin
-	double dx = 0.5 * m_width;
-	double dy = 0.5 * m_height;
-	std::vector<Point> corners = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
-			-dy } };
+	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
+			origin);
+	//TODO simplify polarity handling
 	ApertureTransformation t = transform.Stack(makeTransform());
-	for (Point &c : corners) {
-		c += m_center;
-		c = t.Apply(c);
-		c += origin;
-	}
-	serializer.AddPolygon(corners, t.GetPolarity() == Polarity::Dark);
+	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroCenterLine::GetCenter() const {
@@ -81,10 +74,20 @@ const Point& MacroCenterLine::GetCenter() const {
 }
 
 Box MacroCenterLine::GetBox() const {
-	//TODO consider rotation
-	Box box(m_width, m_height, m_center.GetX() - 0.5 * m_width,
-			m_center.GetY() - 0.5 * m_height);
-	return box;
+	return Box(getVertices());
+}
+
+std::vector<Point> MacroCenterLine::getVertices() const {
+	// Center line is centered on origin
+	double dx = 0.5 * m_width;
+	double dy = 0.5 * m_height;
+	std::vector<Point> vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
+			-dy } };
+	for (Point &v : vertices) {
+		v += m_center;
+		v.Rotate(m_rotation);
+	}
+	return vertices;
 }
 
 } /* namespace gerbex */

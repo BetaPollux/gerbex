@@ -24,6 +24,7 @@
 #include "DataTypeParser.h"
 #include "MacroPrimitive.h"
 #include <memory>
+#include <vector>
 
 namespace gerbex {
 
@@ -46,6 +47,7 @@ public:
 	Box GetBox() const override;
 
 private:
+	std::vector<Point> getVertices() const;
 	Point m_center;
 	int m_numVertices;
 	double m_diameter;

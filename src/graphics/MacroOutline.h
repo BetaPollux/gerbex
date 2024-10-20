@@ -43,6 +43,7 @@ public:
 	Box GetBox() const override;
 
 private:
+	std::vector<Point> getRotatedVertices() const;
 	std::vector<Point> m_vertices;
 };
 

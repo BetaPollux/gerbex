@@ -46,6 +46,7 @@ public:
 	Box GetBox() const override;
 
 private:
+	Point getRotatedCenter() const;
 	Point m_center;
 	double m_outerDiameter, m_innerDiameter, m_gapThickness;
 };

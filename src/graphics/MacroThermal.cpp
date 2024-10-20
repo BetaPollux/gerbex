@@ -77,8 +77,10 @@ void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
 	//TODO need to draw thermal
 	// Exposure is always ON
 	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
+	Point center = transform.Apply(getRotatedCenter());
+	center += origin;
+	//TODO simplify polarity handling
 	ApertureTransformation t = transform.Stack(makeTransform());
-	Point center = t.Apply(m_center) + origin;
 	serializer.AddCircle(radius, center, t.GetPolarity() == Polarity::Dark);
 }
 
@@ -87,10 +89,13 @@ const Point& MacroThermal::GetCenter() const {
 }
 
 Box MacroThermal::GetBox() const {
-	Box box(m_outerDiameter, m_outerDiameter,
-			m_center.GetX() - 0.5 * m_outerDiameter,
-			m_center.GetY() - 0.5 * m_outerDiameter);
-	return box;
+	return Box(m_outerDiameter, getRotatedCenter());
+}
+
+Point MacroThermal::getRotatedCenter() const {
+	Point c = m_center;
+	c.Rotate(m_rotation);
+	return c;
 }
 
 } /* namespace gerbex */

@@ -23,14 +23,13 @@
 
 #include "Point.h"
 #include <string>
+#include <vector>
 
 namespace gerbex {
 
 enum class Polarity {
-	Dark,
-	Clear
+	Dark, Clear
 };
-
 
 enum class Mirroring {
 	None,	// None
@@ -38,7 +37,6 @@ enum class Mirroring {
 	Y,		// Y-axis
 	XY		// Both X and Y axes
 };
-
 
 /*
  * Parameters that transform the polarity and shape of the aperture when it is
@@ -50,11 +48,12 @@ enum class Mirroring {
 class ApertureTransformation {
 public:
 	ApertureTransformation();
-	ApertureTransformation(Polarity polarity, Mirroring mirroring, double rotation, double scaling);
+	ApertureTransformation(Polarity polarity, Mirroring mirroring,
+			double rotation, double scaling);
 	virtual ~ApertureTransformation() = default;
 	ApertureTransformation Stack(const ApertureTransformation &transform) const;
-	bool operator==	(const ApertureTransformation& rhs) const;
-	bool operator!=	(const ApertureTransformation& rhs) const;
+	bool operator==(const ApertureTransformation &rhs) const;
+	bool operator!=(const ApertureTransformation &rhs) const;
 	Mirroring GetMirroring() const;
 	void SetMirroring(Mirroring mirroring);
 	Polarity GetPolarity() const;
@@ -64,6 +63,8 @@ public:
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
 	Point Apply(const Point &point) const;
+	std::vector<Point> ApplyThenTranslate(const std::vector<Point> &points,
+			const Point &offset) const;
 	double ApplyScaling(double value) const;
 	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);

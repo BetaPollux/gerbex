@@ -63,8 +63,10 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 void MacroCircle::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
 	double radius = 0.5 * transform.ApplyScaling(m_diameter);
+	Point center = transform.Apply(getRotatedCenter());
+	center += origin;
+	//TODO simplify polarity handling
 	ApertureTransformation t = transform.Stack(makeTransform());
-	Point center = t.Apply(m_center) + origin;
 	serializer.AddCircle(radius, center, t.GetPolarity() == Polarity::Dark);
 }
 
@@ -73,9 +75,13 @@ const Point& MacroCircle::GetCenter() const {
 }
 
 Box MacroCircle::GetBox() const {
-	Box box(m_diameter, m_diameter, m_center.GetX() - 0.5 * m_diameter,
-			m_center.GetY() - 0.5 * m_diameter);
-	return box;
+	return Box(m_diameter, getRotatedCenter());
+}
+
+Point MacroCircle::getRotatedCenter() const {
+	Point c = m_center;
+	c.Rotate(m_rotation);
+	return c;
 }
 
 } /* namespace gerbex */

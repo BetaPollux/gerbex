@@ -67,19 +67,11 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 
 void MacroPolygon::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
-	//TODO move regular polygon to a general helper function
-	std::vector<Point> points;
-	double angle_step = 2.0 * M_PI / m_numVertices;
-	double radius = 0.5 * transform.ApplyScaling(m_diameter);
+	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
+			origin);
+	//TODO simplify polarity handling
 	ApertureTransformation t = transform.Stack(makeTransform());
-	for (int i = 0; i < m_numVertices; i++) {
-		double angle = angle_step * i;
-		double x = radius * cos(angle);
-		double y = radius * sin(angle);
-		Point vertex = Point(x, y) + t.Apply(m_center);
-		points.push_back(vertex + origin);
-	}
-	serializer.AddPolygon(points, t.GetPolarity() == Polarity::Dark);
+	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
 }
 
 const Point& MacroPolygon::GetCenter() const {
@@ -87,10 +79,23 @@ const Point& MacroPolygon::GetCenter() const {
 }
 
 Box MacroPolygon::GetBox() const {
-	//TODO consider rotation, actual shape
-	Box box(m_diameter, m_diameter, m_center.GetX() - 0.5 * m_diameter,
-			m_center.GetY() - 0.5 * m_diameter);
-	return box;
+	return Box(getVertices());
+}
+
+std::vector<Point> MacroPolygon::getVertices() const {
+	std::vector<Point> vertices;
+	vertices.reserve(m_numVertices);
+	double angle_step = 2.0 * M_PI / m_numVertices;
+	double radius = 0.5 * m_diameter;
+	for (int i = 0; i < m_numVertices; i++) {
+		double angle = angle_step * i;
+		double x = radius * cos(angle);
+		double y = radius * sin(angle);
+		Point vertex = Point(x, y) + m_center;
+		vertex.Rotate(m_rotation);
+		vertices.push_back(vertex);
+	}
+	return vertices;
 }
 
 } /* namespace gerbex */

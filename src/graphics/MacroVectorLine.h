@@ -46,7 +46,7 @@ public:
 	Box GetBox() const override;
 
 private:
-	std::vector<Point> getCorners() const;
+	std::vector<Point> getVertices() const;
 	Point m_start, m_end;
 	double m_width;
 };

@@ -31,6 +31,7 @@ public:
 	Box();
 	Box(double width, double height, double left, double bottom);
 	Box(const std::vector<Point> &points);
+	Box(double diameter, const Point& center);
 	virtual ~Box() = default;
 	bool operator==	(const Box& rhs) const;
 	bool operator!=	(const Box& rhs) const;

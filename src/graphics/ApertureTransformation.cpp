@@ -110,10 +110,13 @@ double ApertureTransformation::ApplyScaling(double value) const {
 	return value * m_scaling_factor;
 }
 
-ApertureTransformation ApertureTransformation::Stack(const ApertureTransformation &transform) const {
+ApertureTransformation ApertureTransformation::Stack(
+		const ApertureTransformation &transform) const {
 	ApertureTransformation result = *this;
-	result.m_scaling_factor = this->m_scaling_factor * transform.m_scaling_factor;
-	result.m_rotation_degrees = this->m_rotation_degrees + transform.m_rotation_degrees;
+	result.m_scaling_factor = this->m_scaling_factor
+			* transform.m_scaling_factor;
+	result.m_rotation_degrees = this->m_rotation_degrees
+			+ transform.m_rotation_degrees;
 	if (!transform.m_isDark) {
 		result.m_isDark = !this->m_isDark;
 	}
@@ -150,6 +153,18 @@ Point ApertureTransformation::Apply(const Point &point) const {
 	}
 	result *= m_scaling_factor;
 	result.Rotate(m_rotation_degrees);
+	return result;
+}
+
+std::vector<Point> ApertureTransformation::ApplyThenTranslate(
+		const std::vector<Point> &points, const Point &offset) const {
+	std::vector<Point> result;
+	result.reserve(points.size());
+	for (const Point &p : points) {
+		Point r = Apply(p);
+		r += offset;
+		result.push_back(r);
+	}
 	return result;
 }
 

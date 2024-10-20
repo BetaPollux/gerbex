@@ -60,7 +60,7 @@ void Circle::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box Circle::GetBox() const {
-	return Box(m_diameter, m_diameter, -0.5 * m_diameter, -0.5 * m_diameter);
+	return Box(m_diameter, Point());
 }
 
 } /* namespace gerbex */

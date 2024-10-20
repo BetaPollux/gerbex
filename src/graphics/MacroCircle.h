@@ -44,6 +44,7 @@ public:
 	Box GetBox() const override;
 
 private:
+	Point getRotatedCenter() const;
 	Point m_center;
 	double m_diameter;
 };

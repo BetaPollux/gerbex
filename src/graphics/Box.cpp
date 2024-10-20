@@ -50,6 +50,11 @@ Box::Box(const std::vector<Point> &points) {
 	*this = Box(right - left, top - bottom, left, bottom);
 }
 
+Box::Box(double diameter, const Point& center) {
+	double r = 0.5 * diameter;
+	*this = Box(diameter, diameter, center.GetX() - r, center.GetY() - r);
+}
+
 double Box::GetHeight() const {
 	return m_height;
 }
