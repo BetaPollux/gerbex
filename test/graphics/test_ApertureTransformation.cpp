@@ -117,11 +117,9 @@ TEST(ApertureTransformationTest, MirroringFromCommand) {
 TEST_GROUP(ApertureTransformation_Apply) {
 	ApertureTransformation transform;
 	Point point;
-	Point ref;
 
 	void setup() {
 		point = Point(1.0, 1.0);
-		ref = Point(0.5, 0.5);
 	}
 };
 
@@ -193,30 +191,6 @@ TEST(ApertureTransformation_Apply, MirrorYThenRotate) {
 	transform.SetRotationDegrees(45.0);
 	Point expected(sqrt(2.0), 0.0);
 	Point result = transform.Apply(point);
-
-	CHECK_EQUAL(expected, result);
-}
-
-TEST(ApertureTransformation_Apply, MirrorXY_Ref) {
-	transform.SetMirroring(Mirroring::XY);
-	Point expected(0.0, 0.0);
-	Point result = transform.Apply(point, ref);
-
-	CHECK_EQUAL(expected, result);
-}
-
-TEST(ApertureTransformation_Apply, Scaling_Ref) {
-	transform.SetScalingFactor(0.6);
-	Point expected(0.8, 0.8);
-	Point result = transform.Apply(point, ref);
-
-	CHECK_EQUAL(expected, result);
-}
-
-TEST(ApertureTransformation_Apply, RotateCCW_Ref) {
-	transform.SetRotationDegrees(45.0);
-	Point expected(0.5, 0.5 + sqrt(0.5));
-	Point result = transform.Apply(point, ref);
 
 	CHECK_EQUAL(expected, result);
 }

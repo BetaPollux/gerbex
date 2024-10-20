@@ -43,10 +43,6 @@ MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
 	}
 }
 
-MacroPolygon::~MacroPolygon() {
-	// Empty
-}
-
 double MacroPolygon::GetDiameter() const {
 	return m_diameter;
 }
@@ -88,6 +84,13 @@ void MacroPolygon::Serialize(Serializer &serializer, const Point &origin,
 
 const Point& MacroPolygon::GetCenter() const {
 	return m_center;
+}
+
+Box MacroPolygon::GetBox() const {
+	//TODO consider rotation, actual shape
+	Box box(m_diameter, m_diameter, m_center.GetX() - 0.5 * m_diameter,
+			m_center.GetY() - 0.5 * m_diameter);
+	return box;
 }
 
 } /* namespace gerbex */

@@ -49,7 +49,6 @@ void BlockAperture::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box BlockAperture::GetBox() const {
-	//TODO consider transforms
 	if (m_objects.empty()) {
 		throw std::invalid_argument("cannot get box for empty block aperture");
 	}

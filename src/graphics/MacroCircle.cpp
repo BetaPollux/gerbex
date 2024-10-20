@@ -72,4 +72,10 @@ const Point& MacroCircle::GetCenter() const {
 	return m_center;
 }
 
+Box MacroCircle::GetBox() const {
+	Box box(m_diameter, m_diameter, m_center.GetX() - 0.5 * m_diameter,
+			m_center.GetY() - 0.5 * m_diameter);
+	return box;
+}
+
 } /* namespace gerbex */

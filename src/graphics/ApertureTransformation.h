@@ -63,7 +63,7 @@ public:
 	void SetRotationDegrees(double rotationDegrees);
 	double GetScalingFactor() const;
 	void SetScalingFactor(double scalingFactor);
-	Point Apply(const Point &point, const Point &reference = Point()) const;
+	Point Apply(const Point &point) const;
 	double ApplyScaling(double value) const;
 	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);

@@ -80,4 +80,11 @@ const Point& MacroCenterLine::GetCenter() const {
 	return m_center;
 }
 
+Box MacroCenterLine::GetBox() const {
+	//TODO consider rotation
+	Box box(m_width, m_height, m_center.GetX() - 0.5 * m_width,
+			m_center.GetY() - 0.5 * m_height);
+	return box;
+}
+
 } /* namespace gerbex */

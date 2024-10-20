@@ -21,10 +21,11 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
-#include "Box.h"
 #include "Serializable.h"
 
 namespace gerbex {
+
+//TODO make apertures own transforms
 
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
@@ -33,7 +34,6 @@ namespace gerbex {
 class Aperture: public Serializable {
 public:
 	virtual ~Aperture() = default;
-	virtual Box GetBox() const = 0;
 };
 
 } /* namespace gerbex */

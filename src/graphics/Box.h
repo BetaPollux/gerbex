@@ -22,6 +22,7 @@
 
 #include "Point.h"
 #include <ostream>
+#include <vector>
 
 namespace gerbex {
 
@@ -29,6 +30,7 @@ class Box {
 public:
 	Box();
 	Box(double width, double height, double left, double bottom);
+	Box(const std::vector<Point> &points);
 	virtual ~Box() = default;
 	bool operator==	(const Box& rhs) const;
 	bool operator!=	(const Box& rhs) const;

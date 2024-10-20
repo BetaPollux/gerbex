@@ -38,10 +38,11 @@ Arc::Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture,
 
 void Arc::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
-	ApertureTransformation t = transform.Stack(m_transform);
-	double width = t.ApplyScaling(m_aperture->GetDiameter());
+	//m_transform only applies to aperture size, not the segment
+	double width = m_transform.ApplyScaling(m_aperture->GetDiameter());
+	width = transform.ApplyScaling(width);
 	ArcSegment segment = m_segment;
-	segment.Transform(t);
+	segment.Transform(transform);
 	segment.Translate(origin);
 	serializer.AddArc(width, segment);
 }
@@ -59,8 +60,8 @@ const ApertureTransformation& Arc::GetTransform() const {
 }
 
 Box Arc::GetBox() const {
-	//TODO need to consider transform
-	Box box = m_segment.GetBox().Pad(0.5 * m_aperture->GetDiameter());
+	double radius = 0.5 * m_transform.ApplyScaling(m_aperture->GetDiameter());
+	Box box = m_segment.GetBox().Pad(radius);
 	return box;
 }
 

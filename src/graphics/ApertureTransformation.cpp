@@ -140,9 +140,8 @@ Mirroring ApertureTransformation::MirroringFromCommand(const std::string &str) {
 	}
 }
 
-Point ApertureTransformation::Apply(const Point &point,
-		const Point &reference) const {
-	Point result = point - reference;
+Point ApertureTransformation::Apply(const Point &point) const {
+	Point result = point;
 	if (m_mirrorX) {
 		result.SetX(-result.GetX());
 	}
@@ -151,7 +150,7 @@ Point ApertureTransformation::Apply(const Point &point,
 	}
 	result *= m_scaling_factor;
 	result.Rotate(m_rotation_degrees);
-	return result + reference;
+	return result;
 }
 
 } /* namespace gerbex */

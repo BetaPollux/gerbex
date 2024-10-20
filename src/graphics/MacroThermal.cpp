@@ -73,7 +73,7 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 }
 
 void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
-		const ApertureTransformation &transform) const  {
+		const ApertureTransformation &transform) const {
 	//TODO need to draw thermal
 	// Exposure is always ON
 	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
@@ -84,6 +84,13 @@ void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
 
 const Point& MacroThermal::GetCenter() const {
 	return m_center;
+}
+
+Box MacroThermal::GetBox() const {
+	Box box(m_outerDiameter, m_outerDiameter,
+			m_center.GetX() - 0.5 * m_outerDiameter,
+			m_center.GetY() - 0.5 * m_outerDiameter);
+	return box;
 }
 
 } /* namespace gerbex */

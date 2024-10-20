@@ -28,10 +28,6 @@ Macro::Macro() {
 
 }
 
-Macro::~Macro() {
-	// Empty
-}
-
 void Macro::AddPrimitive(std::shared_ptr<MacroPrimitive> primitive) {
 	m_primitives.push_back(primitive);
 }
@@ -48,8 +44,14 @@ void Macro::Serialize(Serializer &serializer, const Point &origin,
 }
 
 Box Macro::GetBox() const {
-	//TODO macro getbox
-	return Box();
+	if (m_primitives.empty()) {
+		throw std::invalid_argument("cannot get box for empty macro");
+	}
+	Box box = m_primitives.front()->GetBox();
+	for (std::shared_ptr<MacroPrimitive> obj : m_primitives) {
+		box = box.Extend(obj->GetBox());
+	}
+	return box;
 }
 
 } /* namespace gerbex */

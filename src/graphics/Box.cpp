@@ -19,6 +19,7 @@
  */
 #include "Box.h"
 #include <algorithm>
+#include <cmath>
 
 namespace gerbex {
 
@@ -30,6 +31,23 @@ Box::Box() :
 Box::Box(double width, double height, double left, double bottom) :
 		m_width { width }, m_height { height }, m_left { left }, m_bottom {
 				bottom } {
+}
+
+Box::Box(const std::vector<Point> &points) {
+	if (points.empty()) {
+		throw std::invalid_argument("cannot create box for zero points");
+	}
+	double left = points.front().GetX();
+	double right = left;
+	double bottom = points.front().GetY();
+	double top = bottom;
+	for (const Point &v : points) {
+		left = std::min(left, v.GetX());
+		right = std::max(right, v.GetX());
+		bottom = std::min(bottom, v.GetY());
+		top = std::max(top, v.GetY());
+	}
+	*this = Box(right - left, top - bottom, left, bottom);
 }
 
 double Box::GetHeight() const {
@@ -92,10 +110,10 @@ Box Box::Translate(const Point &offset) const {
 	return Box(m_width, m_height, left, bottom);
 }
 
-std::ostream& operator<<(std::ostream& os, const Box& box)
-{
-    os << box.m_width << " x " << box.m_height << " at (" << box.m_left << "," << box.m_bottom << ")";
-    return os;
+std::ostream& operator<<(std::ostream &os, const Box &box) {
+	os << box.m_width << " x " << box.m_height << " at (" << box.m_left << ","
+			<< box.m_bottom << ")";
+	return os;
 }
 
 } /* namespace gerbex */

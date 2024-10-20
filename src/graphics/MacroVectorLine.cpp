@@ -20,6 +20,7 @@
 
 #include "MacroVectorLine.h"
 #include "Serializer.h"
+#include <algorithm>
 #include <stdexcept>
 
 namespace gerbex {
@@ -64,13 +65,7 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
 		const ApertureTransformation &transform) const {
 	// Vector line is defined by end points
-	double length = m_end.Distance(m_start);
-	Point unit_vec = (m_end - m_start) / length;
-	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
-	Point delta = normal_vec * 0.5 * transform.ApplyScaling(m_width);
-
-	std::vector<Point> corners = { m_start + delta, m_start - delta, m_end
-			- delta, m_end + delta };
+	std::vector<Point> corners = getCorners();
 	ApertureTransformation t = transform.Stack(makeTransform());
 	for (Point &c : corners) {
 		c = t.Apply(c);
@@ -81,6 +76,21 @@ void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
 
 const Point& MacroVectorLine::GetStart() const {
 	return m_start;
+}
+
+Box MacroVectorLine::GetBox() const {
+	//TODO consider rotation
+	return Box(getCorners());
+}
+
+std::vector<Point> MacroVectorLine::getCorners() const {
+	double length = m_end.Distance(m_start);
+	Point unit_vec = (m_end - m_start) / length;
+	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
+	Point delta = normal_vec * 0.5;
+
+	return { m_start + delta, m_start - delta, m_end
+			- delta, m_end + delta };
 }
 
 } /* namespace gerbex */

@@ -24,6 +24,7 @@
 #include "DataTypeParser.h"
 #include "MacroPrimitive.h"
 #include <memory>
+#include <vector>
 
 namespace gerbex {
 
@@ -42,8 +43,10 @@ public:
 	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) const override;
+	Box GetBox() const override;
 
 private:
+	std::vector<Point> getCorners() const;
 	Point m_start, m_end;
 	double m_width;
 };

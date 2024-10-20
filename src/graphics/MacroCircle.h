@@ -41,6 +41,7 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin,
 			const ApertureTransformation &transform) const override;
 	const Point& GetCenter() const;
+	Box GetBox() const override;
 
 private:
 	Point m_center;

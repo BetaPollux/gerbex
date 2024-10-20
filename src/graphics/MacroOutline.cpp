@@ -76,5 +76,10 @@ void MacroOutline::Serialize(Serializer &serializer, const Point &origin,
 	serializer.AddPolygon(vertices, t.GetPolarity() == Polarity::Dark);
 }
 
+Box MacroOutline::GetBox() const {
+	//TODO consider rotation
+	return Box(m_vertices);
+}
+
 } /* namespace gerbex */
 

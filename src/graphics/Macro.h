@@ -34,7 +34,7 @@ namespace gerbex {
 class Macro: public Aperture {
 public:
 	Macro();
-	virtual ~Macro();
+	virtual ~Macro() = default;
 	void AddPrimitive(std::shared_ptr<MacroPrimitive> primitive);
 	const std::vector<std::shared_ptr<MacroPrimitive>>& GetPrimitives() const;
 	void Serialize(Serializer &serializer, const Point &origin,

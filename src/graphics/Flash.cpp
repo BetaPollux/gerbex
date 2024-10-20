@@ -56,8 +56,17 @@ const ApertureTransformation& Flash::GetTransform() const {
 }
 
 Box Flash::GetBox() const {
-	//TODO need to consider transform
-	Box box = m_aperture->GetBox().Translate(m_origin);
+	//TODO needs test
+	//TODO this exaggerates size of apertures
+	Box apbox = m_aperture->GetBox();
+	std::vector<Point> corners = { { apbox.GetLeft(), apbox.GetBottom() }, {
+			apbox.GetRight(), apbox.GetBottom() }, { apbox.GetRight(), apbox.GetTop() },
+			{ apbox.GetLeft(), apbox.GetTop() } };
+	for (Point &c : corners) {
+		c = m_transform.Apply(c);
+	}
+	Box box(corners);
+	box = box.Translate(m_origin);
 	return box;
 }
 

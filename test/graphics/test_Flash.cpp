@@ -35,7 +35,8 @@ TEST_GROUP(FlashTest) {
 	void setup() {
 		origin = Point(2.5, -1.5);
 		aperture = std::make_shared<Circle>(2.0);
-		transform.SetRotationDegrees(45.0);
+		transform.SetRotationDegrees(0.0);
+		transform.SetPolarity(Polarity::Clear);
 
 		flash = Flash(origin, aperture, transform);
 	}
@@ -55,6 +56,7 @@ TEST(FlashTest, Transform) {
 }
 
 TEST(FlashTest, Box) {
+	//TODO add test with rotation
 	Box expected(2.0, 2.0, 1.5, -2.5);
 	CHECK_EQUAL(expected, flash.GetBox());
 }
