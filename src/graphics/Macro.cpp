@@ -54,4 +54,8 @@ Box Macro::GetBox() const {
 	return box;
 }
 
+std::unique_ptr<Aperture> Macro::Clone() const {
+	return std::make_unique<Macro>();
+}
+
 } /* namespace gerbex */

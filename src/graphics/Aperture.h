@@ -23,6 +23,7 @@
 
 #include "Serializable.h"
 #include "Transform.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -36,6 +37,7 @@ public:
 			m_transform { } {
 	}
 	virtual ~Aperture() = default;
+	virtual std::unique_ptr<Aperture> Clone() const = 0;
 	const Transform& GetTransform() const {
 		return m_transform;
 	}

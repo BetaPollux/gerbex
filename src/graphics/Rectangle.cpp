@@ -40,37 +40,46 @@ Rectangle::Rectangle(double xSize, double ySize, double holeDiameter) :
 	}
 }
 
-Rectangle::~Rectangle() {
-	// Empty
-}
-
 double Rectangle::GetHoleDiameter() const {
-	return m_holeDiameter;
+	return m_transform.ApplyScaling(m_holeDiameter);
 }
 
 double Rectangle::GetXSize() const {
-	return m_xSize;
+	return m_transform.ApplyScaling(m_xSize);
 }
 
 double Rectangle::GetYSize() const {
-	return m_ySize;
+	return m_transform.ApplyScaling(m_ySize);
 }
 
 void Rectangle::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
+	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
+			origin);
+	serializer.AddPolygon(vertices);
+}
+
+std::vector<Point> Rectangle::getVertices() const {
 	// Rectangle is centered on origin
-	double dx = 0.5 * transform.ApplyScaling(m_xSize);
-	double dy = 0.5 * transform.ApplyScaling(m_ySize);
-	std::vector<Point> corners = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
+	double dx = 0.5 * m_xSize;
+	double dy = 0.5 * m_ySize;
+	std::vector<Point> vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
 			-dy } };
-	for (Point &c : corners) {
-		c += origin;
+	for (Point &p : vertices) {
+		p = m_transform.Apply(p);
 	}
-	serializer.AddPolygon(corners);
+	return vertices;
 }
 
 Box Rectangle::GetBox() const {
-	return Box(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
+	return Box(getVertices());
+}
+
+std::unique_ptr<Aperture> Rectangle::Clone() const {
+	std::unique_ptr<Rectangle> clone = std::make_unique<Rectangle>(m_xSize,
+			m_ySize, m_holeDiameter);
+	clone->SetTransform(m_transform);
+	return clone;
 }
 
 } /* namespace gerbex */

@@ -23,8 +23,9 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
-using namespace gerbex;
+#define DBL_TOL	1e-9
 
+using namespace gerbex;
 
 TEST_GROUP(RectangleTest) {
 };
@@ -43,17 +44,17 @@ TEST(RectangleTest, NegativeHoleSize) {
 
 TEST(RectangleTest, XSize) {
 	Rectangle rect(1.0, 0.5);
-	CHECK(1.0 == rect.GetXSize());
+	DOUBLES_EQUAL(1.0, rect.GetXSize(), DBL_TOL);
 }
 
 TEST(RectangleTest, YSize) {
 	Rectangle rect(1.0, 0.5);
-	CHECK(0.5 == rect.GetYSize());
+	DOUBLES_EQUAL(0.5, rect.GetYSize(), DBL_TOL);
 }
 
 TEST(RectangleTest, DefaultHole) {
 	Rectangle rect(1.0, 0.5);
-	CHECK(0.0 == rect.GetHoleDiameter());
+	DOUBLES_EQUAL(0.0, rect.GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(RectangleTest, Box) {
@@ -65,3 +66,50 @@ TEST(RectangleTest, Box) {
 	CHECK_EQUAL(expected, rect.GetBox());
 }
 
+TEST_GROUP(Rectangle_Transformed) {
+	Transform transform;
+	Rectangle rect;
+
+	void setup() {
+		transform = Transform();
+		transform.SetScaling(2.0);
+		transform.SetRotation(45.0);
+
+		rect = Rectangle(1.5, 0.5, 0.25);
+		rect.SetTransform(transform);
+	}
+};
+
+TEST(Rectangle_Transformed, XSize) {
+	DOUBLES_EQUAL(3.0, rect.GetXSize(), DBL_TOL);
+}
+
+TEST(Rectangle_Transformed, YSize) {
+	DOUBLES_EQUAL(1.0, rect.GetYSize(), DBL_TOL);
+}
+
+TEST(Rectangle_Transformed, HoleDiameter) {
+	DOUBLES_EQUAL(0.5, rect.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(Rectangle_Transformed, Box) {
+	Box expected(2.0 * sqrt(2.0), 2.0 * sqrt(2.0), -sqrt(2.0), -sqrt(2.0));
+	Box box = rect.GetBox();
+	DOUBLES_EQUAL(expected.GetWidth(), box.GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetHeight(), box.GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetLeft(), box.GetLeft(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetBottom(), box.GetBottom(), DBL_TOL);
+}
+
+TEST(Rectangle_Transformed, Clone) {
+	std::unique_ptr<Aperture> aperture = rect.Clone();
+	Rectangle *clone = (Rectangle*) aperture.get();
+
+	CHECK(clone != &rect);
+	DOUBLES_EQUAL(clone->GetXSize(), rect.GetXSize(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetYSize(), rect.GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetHoleDiameter(), rect.GetHoleDiameter(), DBL_TOL);
+	CHECK(clone->GetTransform() == rect.GetTransform());
+}
+
+// TODO test rect serialize

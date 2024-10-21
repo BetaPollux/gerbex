@@ -53,11 +53,54 @@ TEST(CircleTest, DefaultHole) {
 	DOUBLES_EQUAL(0.0, circle.GetHoleDiameter(), DBL_TOL);
 }
 
+TEST(CircleTest, DefaultTransform) {
+	Circle circle(1.5);
+	CHECK(Transform() == circle.GetTransform());
+}
+
 TEST(CircleTest, Box) {
 	double d = 10.0;
+	Box expected(d, Point());
+
 	Circle circle(d);
 
-	Box expected(d, d, -0.5 * d, -0.5 * d);
 	CHECK_EQUAL(expected, circle.GetBox());
 }
 
+TEST_GROUP(Circle_Transformed) {
+	Transform transform;
+	Circle circle;
+
+	void setup() {
+		transform = Transform();
+		transform.SetScaling(3.0);
+
+		circle = Circle(1.5, 0.5);
+		circle.SetTransform(transform);
+	}
+};
+
+TEST(Circle_Transformed, Diameter) {
+	DOUBLES_EQUAL(4.5, circle.GetDiameter(), DBL_TOL);
+}
+
+TEST(Circle_Transformed, HoleDiameter) {
+	DOUBLES_EQUAL(1.5, circle.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(Circle_Transformed, Box) {
+	Box expected(4.5, Point());
+	CHECK_EQUAL(expected, circle.GetBox());
+}
+
+TEST(Circle_Transformed, Clone) {
+	std::unique_ptr<Aperture> aperture = circle.Clone();
+	Circle *clone = (Circle*)aperture.get();
+
+	CHECK(clone != &circle);
+	DOUBLES_EQUAL(clone->GetDiameter(), circle.GetDiameter(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetHoleDiameter(), circle.GetHoleDiameter(), DBL_TOL);
+	CHECK(clone->GetTransform() == circle.GetTransform());
+}
+
+// TODO test circle serialize

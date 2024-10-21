@@ -33,7 +33,7 @@ class Polygon: public Aperture {
 public:
 	Polygon();
 	Polygon(double outerDiameter, int numVertices, double rotation = 0.0, double holeDiameter = 0.0);
-	virtual ~Polygon();
+	virtual ~Polygon() = default;
 	double GetHoleDiameter() const;
 	int GetNumVertices() const;
 	double GetOuterDiameter() const;
@@ -41,6 +41,7 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
+	std::unique_ptr<Aperture> Clone() const override;
 
 private:
 	double m_outerDiameter;

@@ -40,6 +40,7 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
+	std::unique_ptr<Aperture> Clone() const override;
 
 private:
 	double m_xSize;

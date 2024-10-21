@@ -31,10 +31,11 @@ namespace gerbex {
 class MockAperture : public Aperture {
 public:
 	MockAperture();
-	virtual ~MockAperture();
+	virtual ~MockAperture() = default;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
+	std::unique_ptr<Aperture> Clone() const override;
 };
 
 } /* namespace gerbex */

@@ -40,27 +40,29 @@ Circle::Circle(double diameter, double holeDiameter) :
 	}
 }
 
-Circle::~Circle() {
-	// Empty
-}
-
 double Circle::GetDiameter() const {
-	return m_diameter;
+	return m_transform.ApplyScaling(m_diameter);
 }
 
 double Circle::GetHoleDiameter() const {
-	return m_holeDiameter;
+	return m_transform.ApplyScaling(m_holeDiameter);
 }
 
 void Circle::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
-	double radius = 0.5 * transform.ApplyScaling(m_diameter);
+	double radius = 0.5 * transform.ApplyScaling(GetDiameter());
 	serializer.AddCircle(radius, origin,
 			transform.GetPolarity() == Polarity::Dark);
 }
 
 Box Circle::GetBox() const {
-	return Box(m_diameter, Point());
+	return Box(GetDiameter(), Point());
+}
+
+std::unique_ptr<Aperture> Circle::Clone() const {
+	std::unique_ptr<Circle> clone = std::make_unique<Circle>(m_diameter, m_holeDiameter);
+	clone->SetTransform(m_transform);
+	return clone;
 }
 
 } /* namespace gerbex */

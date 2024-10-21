@@ -28,10 +28,6 @@ MockAperture::MockAperture() {
 
 }
 
-MockAperture::~MockAperture() {
-	// Empty
-}
-
 void MockAperture::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
 	(void)serializer;
@@ -41,6 +37,10 @@ void MockAperture::Serialize(Serializer &serializer, const Point &origin,
 
 Box MockAperture::GetBox() const {
 	return Box();
+}
+
+std::unique_ptr<Aperture> MockAperture::Clone() const {
+	return std::make_unique<MockAperture>();
 }
 
 } /* namespace gerbex */

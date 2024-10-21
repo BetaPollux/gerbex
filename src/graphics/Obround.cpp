@@ -64,4 +64,8 @@ Box Obround::GetBox() const {
 	return Box(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
 }
 
+std::unique_ptr<Aperture> Obround::Clone() const {
+	return std::make_unique<Obround>();
+}
+
 } /* namespace gerbex */

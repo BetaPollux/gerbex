@@ -29,10 +29,6 @@ BlockAperture::BlockAperture() {
 
 }
 
-BlockAperture::~BlockAperture() {
-	// Empty
-}
-
 void BlockAperture::AddObject(std::shared_ptr<GraphicalObject> object) {
 	m_objects.push_back(object);
 }
@@ -57,6 +53,10 @@ Box BlockAperture::GetBox() const {
 		box = box.Extend(obj->GetBox());
 	}
 	return box;
+}
+
+std::unique_ptr<Aperture> BlockAperture::Clone() const {
+	return std::make_unique<BlockAperture>();
 }
 
 } /* namespace gerbex */

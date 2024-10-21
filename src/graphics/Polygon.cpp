@@ -47,10 +47,6 @@ Polygon::Polygon(double outerDiameter, int numVertices, double rotation,
 	}
 }
 
-Polygon::~Polygon() {
-	// Empty
-}
-
 double Polygon::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
@@ -85,6 +81,10 @@ void Polygon::Serialize(Serializer &serializer, const Point &origin,
 Box Polygon::GetBox() const {
 	return Box(m_outerDiameter, m_outerDiameter, -0.5 * m_outerDiameter,
 			-0.5 * m_outerDiameter);
+}
+
+std::unique_ptr<Aperture> Polygon::Clone() const {
+	return std::make_unique<Polygon>();
 }
 
 } /* namespace gerbex */

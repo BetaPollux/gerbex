@@ -22,6 +22,7 @@
 #define RECTANGLE_H_
 
 #include "Aperture.h"
+#include <vector>
 
 namespace gerbex {
 
@@ -32,15 +33,17 @@ class Rectangle: public Aperture {
 public:
 	Rectangle();
 	Rectangle(double xSize, double ySize, double holeDiameter = 0.0);
-	virtual ~Rectangle();
+	virtual ~Rectangle() = default;
 	double GetHoleDiameter() const;
 	double GetXSize() const;
 	double GetYSize() const;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
+	std::unique_ptr<Aperture> Clone() const override;
 
 private:
+	std::vector<Point> getVertices() const;
 	double m_xSize;
 	double m_ySize;
 	double m_holeDiameter;

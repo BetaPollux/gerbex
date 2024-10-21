@@ -34,12 +34,13 @@ namespace gerbex {
 class BlockAperture: public Aperture {
 public:
 	BlockAperture();
-	virtual ~BlockAperture();
+	virtual ~BlockAperture() = default;
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
+	std::unique_ptr<Aperture> Clone() const override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
