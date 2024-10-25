@@ -22,6 +22,7 @@
 #define OBROUND_H_
 
 #include "Aperture.h"
+#include "Segment.h"
 
 namespace gerbex {
 
@@ -43,8 +44,8 @@ public:
 	std::unique_ptr<Aperture> Clone() const override;
 
 private:
-	double m_xSize;
-	double m_ySize;
+	Segment m_segment;
+	double m_radius;
 	double m_holeDiameter;
 };
 

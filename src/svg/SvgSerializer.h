@@ -49,8 +49,6 @@ public:
 			override;
 	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
 			override;
-	void AddObround(double width, double height, const Point &center,
-			bool isDark = true) override;
 	void AddContour(const std::vector<std::shared_ptr<Segment>> &segments,
 			bool isDark = true) override;
 

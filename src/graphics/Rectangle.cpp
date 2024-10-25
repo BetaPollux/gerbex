@@ -32,11 +32,11 @@ Rectangle::Rectangle() :
 Rectangle::Rectangle(double xSize, double ySize, double holeDiameter) :
 		m_xSize { xSize }, m_ySize { ySize }, m_holeDiameter { holeDiameter } {
 	if (xSize <= 0.0 || ySize <= 0.0) {
-		throw std::invalid_argument("Size must be > 0");
+		throw std::invalid_argument("size must be > 0");
 	}
 
 	if (holeDiameter < 0.0) {
-		throw std::invalid_argument("Hole diameter must be >= 0");
+		throw std::invalid_argument("hole diameter must be >= 0");
 	}
 }
 
@@ -76,10 +76,7 @@ Box Rectangle::GetBox() const {
 }
 
 std::unique_ptr<Aperture> Rectangle::Clone() const {
-	std::unique_ptr<Rectangle> clone = std::make_unique<Rectangle>(m_xSize,
-			m_ySize, m_holeDiameter);
-	clone->SetTransform(m_transform);
-	return clone;
+	return std::make_unique<Rectangle>(*this);
 }
 
 } /* namespace gerbex */

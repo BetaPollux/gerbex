@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+#define DBL_TOL	1e-9
+
 using namespace gerbex;
 
 
@@ -47,28 +49,79 @@ TEST(PolygonTest, NegativeHoleSize) {
 
 TEST(PolygonTest, DefaultRotation) {
 	Polygon poly(1.0, 3);
-	CHECK(0.0 == poly.GetRotation());
+	DOUBLES_EQUAL(0.0, poly.GetRotation(), DBL_TOL);
 }
 
 TEST(PolygonTest, Diameter) {
 	Polygon poly(2.5, 3);
-	CHECK(2.5 == poly.GetOuterDiameter());
+	DOUBLES_EQUAL(2.5, poly.GetOuterDiameter(), DBL_TOL);
 }
 
 TEST(PolygonTest, Rotation) {
 	Polygon poly(1.0, 3, 45.0);
-	CHECK(45.0 == poly.GetRotation());
+	DOUBLES_EQUAL(45.0, poly.GetRotation(), DBL_TOL);
 }
 
 TEST(PolygonTest, DefaultHole) {
 	Polygon poly(1.0, 3);
-	CHECK(0.0 == poly.GetHoleDiameter());
+	DOUBLES_EQUAL(0.0, poly.GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(PolygonTest, Box) {
 	double d = 5.0;
-	Polygon poly(d, 7, 0.0);
+	Polygon poly(d, 4, 0.0);
 
-	Box expected(d, d, -0.5 * d, -0.5 * d);
+	Box expected(d, Point());
 	CHECK_EQUAL(expected, poly.GetBox());
 }
+
+TEST_GROUP(Polygon_Transformed) {
+	Transform transform;
+	Polygon poly;
+
+	void setup() {
+		transform = Transform();
+		transform.SetScaling(2.0);
+		transform.SetRotation(45.0);
+
+		poly = Polygon(2.0, 4, 45.0, 0.5);
+		poly.SetTransform(transform);
+	}
+};
+
+TEST(Polygon_Transformed, OuterDiameter) {
+	DOUBLES_EQUAL(4.0, poly.GetOuterDiameter(), DBL_TOL);
+}
+
+TEST(Polygon_Transformed, Rotation) {
+	DOUBLES_EQUAL(90.0, poly.GetRotation(), DBL_TOL);
+}
+
+TEST(Polygon_Transformed, HoleDiameter) {
+	DOUBLES_EQUAL(1.0, poly.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(Polygon_Transformed, Box) {
+	// 90-deg rotation has corners at (0, +/- d) and (+/- d, 0)
+	Box expected(poly.GetOuterDiameter(), Point());
+	Box box = poly.GetBox();
+	DOUBLES_EQUAL(expected.GetWidth(), box.GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetHeight(), box.GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetLeft(), box.GetLeft(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetBottom(), box.GetBottom(), DBL_TOL);
+}
+
+TEST(Polygon_Transformed, Clone) {
+	std::unique_ptr<Aperture> aperture = poly.Clone();
+	Polygon *clone = (Polygon*) aperture.get();
+
+	CHECK(clone != &poly);
+	DOUBLES_EQUAL(clone->GetOuterDiameter(), poly.GetOuterDiameter(), DBL_TOL);
+	LONGS_EQUAL(clone->GetNumVertices(), poly.GetNumVertices());
+	DOUBLES_EQUAL(clone->GetRotation(), poly.GetRotation(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetHoleDiameter(), poly.GetHoleDiameter(), DBL_TOL);
+	CHECK(clone->GetTransform() == poly.GetTransform());
+}
+
+// TODO test poly serialize
+

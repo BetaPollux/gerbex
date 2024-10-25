@@ -39,7 +39,7 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 void Macro::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
 	for (auto prim : m_primitives) {
-		prim->Serialize(serializer, origin, transform);
+		prim->Serialize(serializer, origin, m_transform.Stack(transform));
 	}
 }
 
@@ -55,7 +55,7 @@ Box Macro::GetBox() const {
 }
 
 std::unique_ptr<Aperture> Macro::Clone() const {
-	return std::make_unique<Macro>();
+	return std::make_unique<Macro>(*this);
 }
 
 } /* namespace gerbex */

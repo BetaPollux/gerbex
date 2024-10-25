@@ -116,20 +116,6 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
 	poly.append_attribute("fill") = getFillColor(isDark);
 }
 
-void SvgSerializer::AddObround(double width, double height, const Point &center,
-		bool isDark) {
-	Point c = center;
-	if (width < height) {
-		double w = width;
-		double y = 0.5 * (height - width);
-		AddDraw(w, Segment(c + Point(0.0, -y), c + Point(0.0, y)), isDark);
-	} else {
-		double w = height;
-		double x = 0.5 * (width - height);
-		AddDraw(w, Segment(c + Point(-x, 0.0), c + Point(x, 0.0)), isDark);
-	}
-}
-
 const char* SvgSerializer::getFillColor(bool isDark) const {
 	if (isDark) {
 		return m_fgColor.c_str();

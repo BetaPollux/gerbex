@@ -26,7 +26,6 @@ namespace gerbex {
 
 BlockAperture::BlockAperture() {
 	// Empty
-
 }
 
 void BlockAperture::AddObject(std::shared_ptr<GraphicalObject> object) {
@@ -56,7 +55,7 @@ Box BlockAperture::GetBox() const {
 }
 
 std::unique_ptr<Aperture> BlockAperture::Clone() const {
-	return std::make_unique<BlockAperture>();
+	return std::make_unique<BlockAperture>(*this);
 }
 
 } /* namespace gerbex */

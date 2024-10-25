@@ -32,11 +32,11 @@ Circle::Circle() :
 Circle::Circle(double diameter, double holeDiameter) :
 		m_diameter { diameter }, m_holeDiameter { holeDiameter } {
 	if (diameter < 0.0) {
-		throw std::invalid_argument("Diameter must be >= 0");
+		throw std::invalid_argument("diameter must be >= 0");
 	}
 
 	if (holeDiameter < 0.0) {
-		throw std::invalid_argument("Hole diameter must be >= 0");
+		throw std::invalid_argument("hole diameter must be >= 0");
 	}
 }
 
@@ -60,9 +60,7 @@ Box Circle::GetBox() const {
 }
 
 std::unique_ptr<Aperture> Circle::Clone() const {
-	std::unique_ptr<Circle> clone = std::make_unique<Circle>(m_diameter, m_holeDiameter);
-	clone->SetTransform(m_transform);
-	return clone;
+	return std::make_unique<Circle>(*this);
 }
 
 } /* namespace gerbex */

@@ -21,11 +21,11 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
-#include <Transform.h>
 #include "Arc.h"
 #include "MacroPrimitive.h"
 #include "Point.h"
 #include "Segment.h"
+#include "Transform.h"
 #include <string>
 #include <vector>
 
@@ -40,8 +40,6 @@ public:
 	virtual ~Serializer() = default;
 	virtual void AddCircle(double radius, const Point &center, bool isDark =
 			true) = 0;
-	virtual void AddObround(double width, double height, const Point &center,
-			bool isDark = true) = 0;
 	virtual void AddPolygon(const std::vector<Point> &points,
 			bool isDark = true) = 0;
 	virtual void AddDraw(double width, const Segment &segment, bool isDark =

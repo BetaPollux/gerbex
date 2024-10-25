@@ -21,9 +21,9 @@
 #ifndef REGION_H_
 #define REGION_H_
 
-#include <Transform.h>
 #include "GraphicalObject.h"
 #include "RegionContour.h"
+#include "Transform.h"
 #include <memory>
 #include <vector>
 

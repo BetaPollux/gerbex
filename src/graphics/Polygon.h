@@ -44,6 +44,7 @@ public:
 	std::unique_ptr<Aperture> Clone() const override;
 
 private:
+	std::vector<Point> getVertices() const;
 	double m_outerDiameter;
 	int m_numVertices;
 	double m_rotation;

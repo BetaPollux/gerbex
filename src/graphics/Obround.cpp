@@ -29,8 +29,7 @@ Obround::Obround() :
 	// Empty
 }
 
-Obround::Obround(double xSize, double ySize, double holeDiameter) :
-		m_xSize { xSize }, m_ySize { ySize }, m_holeDiameter { holeDiameter } {
+Obround::Obround(double xSize, double ySize, double holeDiameter) {
 	if (xSize <= 0.0 || ySize <= 0.0) {
 		throw std::invalid_argument("Size must be > 0");
 	}
@@ -38,34 +37,51 @@ Obround::Obround(double xSize, double ySize, double holeDiameter) :
 	if (holeDiameter < 0.0) {
 		throw std::invalid_argument("Hole diameter must be >= 0");
 	}
+	if (xSize > ySize) {
+		m_radius = 0.5 * ySize;
+		double dx = 0.5 * xSize - m_radius;
+		m_segment = Segment(Point(-dx, 0.0), Point(dx, 0.0));
+	} else {
+		m_radius = 0.5 * xSize;
+		double dy = 0.5 * ySize - m_radius;
+		m_segment = Segment(Point(0.0, -dy), Point(0.0, dy));
+	}
+
+	m_holeDiameter = holeDiameter;
 }
 
 double Obround::GetHoleDiameter() const {
-	return m_holeDiameter;
+	return m_transform.ApplyScaling(m_holeDiameter);
 }
 
 double Obround::GetXSize() const {
-	return m_xSize;
+	Point delta = m_segment.GetEnd() - m_segment.GetStart();
+	return m_transform.ApplyScaling(2.0 * m_radius + fabs(delta.GetX()));
 }
 
 double Obround::GetYSize() const {
-	return m_ySize;
+	Point delta = m_segment.GetEnd() - m_segment.GetStart();
+	return m_transform.ApplyScaling(2.0 * m_radius + fabs(delta.GetY()));
 }
 
 void Obround::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
-	//TODO obround needs transform
-	double width = transform.ApplyScaling(m_xSize);
-	double height = transform.ApplyScaling(m_ySize);
-	serializer.AddObround(width, height, origin);
+	double width = transform.ApplyScaling(2.0 * m_radius);
+	Segment segment = m_segment;
+	segment.Transform(transform);
+	segment.Translate(origin);
+	serializer.AddDraw(width, segment);
 }
 
 Box Obround::GetBox() const {
-	return Box(m_xSize, m_ySize, -0.5 * m_xSize, -0.5 * m_ySize);
+	double radius = m_transform.ApplyScaling(m_radius);
+	Segment segment = m_segment;
+	segment.Transform(m_transform);
+	return segment.GetBox().Pad(radius);
 }
 
 std::unique_ptr<Aperture> Obround::Clone() const {
-	return std::make_unique<Obround>();
+	return std::make_unique<Obround>(*this);
 }
 
 } /* namespace gerbex */

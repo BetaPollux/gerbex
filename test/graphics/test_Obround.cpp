@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
+#define DBL_TOL	1e-9
+
 using namespace gerbex;
 
 
@@ -43,17 +45,17 @@ TEST(ObroundTest, NegativeHoleSize) {
 
 TEST(ObroundTest, XSize) {
 	Obround obround(1.0, 0.5);
-	CHECK(1.0 == obround.GetXSize());
+	DOUBLES_EQUAL(1.0, obround.GetXSize(), DBL_TOL);
 }
 
 TEST(ObroundTest, YSize) {
 	Obround obround(1.0, 0.5);
-	CHECK(0.5 == obround.GetYSize());
+	DOUBLES_EQUAL(0.5, obround.GetYSize(), DBL_TOL);
 }
 
 TEST(ObroundTest, DefaultHole) {
 	Obround obround(1.0, 0.5);
-	CHECK(0.0 == obround.GetHoleDiameter());
+	DOUBLES_EQUAL(0.0, obround.GetHoleDiameter(), DBL_TOL);
 }
 
 TEST(ObroundTest, Box) {
@@ -65,3 +67,50 @@ TEST(ObroundTest, Box) {
 	CHECK_EQUAL(expected, obround.GetBox());
 }
 
+TEST_GROUP(Obround_Transformed) {
+	Transform transform;
+	Obround obround;
+
+	void setup() {
+		transform = Transform();
+		transform.SetScaling(2.0);
+		transform.SetRotation(90.0);
+
+		obround = Obround(1.0, 0.5, 0.25);
+		obround.SetTransform(transform);
+	}
+};
+
+TEST(Obround_Transformed, XSize) {
+	DOUBLES_EQUAL(2.0, obround.GetXSize(), DBL_TOL);
+}
+
+TEST(Obround_Transformed, YSize) {
+	DOUBLES_EQUAL(1.0, obround.GetYSize(), DBL_TOL);
+}
+
+TEST(Obround_Transformed, HoleDiameter) {
+	DOUBLES_EQUAL(0.5, obround.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(Obround_Transformed, Box) {
+	Box expected(1.0, 2.0, -0.5, -1.0);
+	Box box = obround.GetBox();
+	DOUBLES_EQUAL(expected.GetWidth(), box.GetWidth(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetHeight(), box.GetHeight(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetLeft(), box.GetLeft(), DBL_TOL);
+	DOUBLES_EQUAL(expected.GetBottom(), box.GetBottom(), DBL_TOL);
+}
+
+TEST(Obround_Transformed, Clone) {
+	std::unique_ptr<Aperture> aperture = obround.Clone();
+	Obround *clone = (Obround*) aperture.get();
+
+	CHECK(clone != &obround);
+	DOUBLES_EQUAL(clone->GetXSize(), obround.GetXSize(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetYSize(), obround.GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetHoleDiameter(), obround.GetHoleDiameter(), DBL_TOL);
+	CHECK(clone->GetTransform() == obround.GetTransform());
+}
+
+// TODO test obround serialize
