@@ -32,10 +32,9 @@ std::vector<std::shared_ptr<Transformable>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
-void BlockAperture::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
+void BlockAperture::Serialize(Serializer &serializer, const Point &origin) const {
 	for (auto obj : m_objects) {
-		obj->Serialize(serializer, origin, transform);
+		obj->Serialize(serializer, origin);
 	}
 }
 

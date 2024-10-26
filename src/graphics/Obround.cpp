@@ -31,11 +31,11 @@ Obround::Obround() :
 
 Obround::Obround(double xSize, double ySize, double holeDiameter) {
 	if (xSize <= 0.0 || ySize <= 0.0) {
-		throw std::invalid_argument("Size must be > 0");
+		throw std::invalid_argument("size must be > 0");
 	}
 
 	if (holeDiameter < 0.0) {
-		throw std::invalid_argument("Hole diameter must be >= 0");
+		throw std::invalid_argument("hole diameter must be >= 0");
 	}
 	if (xSize > ySize) {
 		m_radius = 0.5 * ySize;
@@ -64,13 +64,11 @@ double Obround::GetYSize() const {
 	return m_transform.ApplyScaling(2.0 * m_radius + fabs(delta.GetY()));
 }
 
-void Obround::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	double width = transform.ApplyScaling(2.0 * m_radius);
+void Obround::Serialize(Serializer &serializer, const Point &origin) const {
+	double width = 2.0 * m_radius;
 	Segment segment = m_segment;
-	segment.Transform(transform);
 	segment.Translate(origin);
-	serializer.AddDraw(width, segment, isDark(transform));
+	serializer.AddDraw(width, segment, isDark());
 }
 
 Box Obround::GetBox() const {

@@ -63,13 +63,12 @@ int StepAndRepeat::GetNy() const {
 	return m_ny;
 }
 
-void StepAndRepeat::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
+void StepAndRepeat::Serialize(Serializer &serializer, const Point &origin) const {
 	for (int ix = 0; ix < m_nx; ix++) {
 		for (int iy = 0; iy < m_ny; iy++) {
 			for (auto obj : m_objects) {
 				Point offset(m_dx * ix, m_dy * iy);
-				obj->Serialize(serializer, origin + offset, transform);
+				obj->Serialize(serializer, origin + offset);
 			}
 		}
 	}

@@ -36,8 +36,7 @@ public:
 	Flash();
 	Flash(const Point &origin, std::shared_ptr<Aperture> aperture);
 	virtual ~Flash() = default;
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	std::shared_ptr<Aperture> GetAperture() const;
 	const Point& GetOrigin() const;
 	Box GetBox() const override;

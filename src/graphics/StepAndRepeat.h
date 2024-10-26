@@ -25,7 +25,7 @@
 #include <memory>
 #include <vector>
 
-//TODO eliminate StepAndRepeat and class and just create the objects?
+//TODO StepAndRepeat should not be a graphical object, just used to create objects
 
 namespace gerbex {
 
@@ -45,8 +45,7 @@ public:
 	double GetDy() const;
 	int GetNx() const;
 	int GetNy() const;
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 
 private:

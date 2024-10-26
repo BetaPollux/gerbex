@@ -21,22 +21,23 @@
 #ifndef MACROPRIMITIVE_H_
 #define MACROPRIMITIVE_H_
 
+#include "Box.h"
 #include "Point.h"
-#include "Serializable.h"
 #include "Transform.h"
 
 namespace gerbex {
 
+class Serializer;
+
 enum class MacroExposure {
-	OFF,
-	ON
+	OFF, ON
 };
 
 /*
  * A simple shape used to build a Macro aperture.
  * Primitives always rotate around the parent Macro origin.
  */
-class MacroPrimitive : public Serializable {
+class MacroPrimitive {
 public:
 	MacroPrimitive();
 	MacroPrimitive(MacroExposure exposure, double rotation);
@@ -44,6 +45,10 @@ public:
 	MacroExposure GetExposure() const;
 	double GetRotation() const;
 	static MacroExposure ExposureFromNum(int num);
+	//TODO temporarily excluded from serializable
+	virtual void Serialize(Serializer &serializer, const Point &origin,
+			const Transform &transform) const = 0;
+	virtual Box GetBox() const = 0;
 
 protected:
 	bool isDark(const Transform &transform) const;

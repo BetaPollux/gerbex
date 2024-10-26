@@ -48,10 +48,9 @@ double Circle::GetHoleDiameter() const {
 	return m_transform.ApplyScaling(m_holeDiameter);
 }
 
-void Circle::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	double radius = 0.5 * transform.ApplyScaling(GetDiameter());
-	serializer.AddCircle(radius, origin, isDark(transform));
+void Circle::Serialize(Serializer &serializer, const Point &origin) const {
+	double radius = 0.5 * GetDiameter();
+	serializer.AddCircle(radius, origin, isDark());
 }
 
 Box Circle::GetBox() const {

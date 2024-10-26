@@ -34,12 +34,9 @@ Arc::Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture) :
 	// Empty
 }
 
-void Arc::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
+void Arc::Serialize(Serializer &serializer, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
-	width = transform.ApplyScaling(width);
 	ArcSegment segment = m_segment;
-	segment.Transform(transform);
 	segment.Translate(origin);
 	serializer.AddArc(width, segment);
 }

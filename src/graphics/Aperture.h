@@ -46,12 +46,8 @@ public:
 	}
 
 protected:
-	bool isDark(const Transform &transform) const {
-		bool isDark = m_transform.GetPolarity() == Polarity::Dark;
-		if (transform.GetPolarity() == Polarity::Clear) {
-			isDark = !isDark;
-		}
-		return isDark;
+	bool isDark() const {
+		return m_transform.GetPolarity() == Polarity::Dark;
 	}
 	Transform m_transform;
 };

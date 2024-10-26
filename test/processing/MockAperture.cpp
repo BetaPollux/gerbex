@@ -28,11 +28,9 @@ MockAperture::MockAperture() {
 
 }
 
-void MockAperture::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
+void MockAperture::Serialize(Serializer &serializer, const Point &origin) const {
 	(void)serializer;
 	(void)origin;
-	(void)transform;
 }
 
 Box MockAperture::GetBox() const {

@@ -37,13 +37,12 @@ public:
 	double GetHoleDiameter() const;
 	double GetXSize() const;
 	double GetYSize() const;
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
 
 private:
-	std::vector<Point> getVertices() const;
+	std::vector<Point> getVertices(const Point &origin = Point()) const;
 	double m_xSize;
 	double m_ySize;
 	double m_holeDiameter;

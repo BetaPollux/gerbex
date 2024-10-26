@@ -40,8 +40,7 @@ public:
 	void AddObject(std::shared_ptr<Transformable> object);
 	std::vector<std::shared_ptr<Transformable>> *GetObjectList();
 	size_t GetObjectCount() const;
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
 	void SetTransform(const Transform &transform) override;

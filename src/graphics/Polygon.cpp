@@ -63,14 +63,12 @@ double Polygon::GetRotation() const {
 	return m_rotation + m_transform.GetRotation();
 }
 
-void Polygon::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
-			origin);
-	serializer.AddPolygon(vertices, isDark(transform));
+void Polygon::Serialize(Serializer &serializer, const Point &origin) const {
+	std::vector<Point> vertices = getVertices(origin);
+	serializer.AddPolygon(vertices, isDark());
 }
 
-std::vector<Point> Polygon::getVertices() const {
+std::vector<Point> Polygon::getVertices(const Point &origin) const {
 	// Regular polygon
 	std::vector<Point> vertices;
 	vertices.reserve(m_numVertices);
@@ -81,7 +79,7 @@ std::vector<Point> Polygon::getVertices() const {
 		double angle = angle_step * i + angle0;
 		double x = radius * cos(angle);
 		double y = radius * sin(angle);
-		vertices.push_back(Point(x, y));
+		vertices.push_back(Point(x, y) + origin);
 	}
 	return vertices;
 }

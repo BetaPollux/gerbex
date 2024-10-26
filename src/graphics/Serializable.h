@@ -23,7 +23,6 @@
 
 namespace gerbex {
 
-class Transform;
 class Box;
 class Point;
 class Serializer;
@@ -33,8 +32,7 @@ public:
 	Serializable() {
 	}
 	virtual ~Serializable() = default;
-	virtual void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const = 0;
+	virtual void Serialize(Serializer &serializer, const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 };
 

@@ -52,21 +52,19 @@ double Rectangle::GetYSize() const {
 	return m_transform.ApplyScaling(m_ySize);
 }
 
-void Rectangle::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
-			origin);
-	serializer.AddPolygon(vertices, isDark(transform));
+void Rectangle::Serialize(Serializer &serializer, const Point &origin) const {
+	std::vector<Point> vertices = getVertices(origin);
+	serializer.AddPolygon(vertices, isDark());
 }
 
-std::vector<Point> Rectangle::getVertices() const {
+std::vector<Point> Rectangle::getVertices(const Point &origin) const {
 	// Rectangle is centered on origin
 	double dx = 0.5 * m_xSize;
 	double dy = 0.5 * m_ySize;
 	std::vector<Point> vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
 			-dy } };
 	for (Point &p : vertices) {
-		p = m_transform.Apply(p);
+		p = m_transform.Apply(p) + origin;
 	}
 	return vertices;
 }

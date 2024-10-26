@@ -38,13 +38,12 @@ public:
 	int GetNumVertices() const;
 	double GetOuterDiameter() const;
 	double GetRotation() const;
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
 
 private:
-	std::vector<Point> getVertices() const;
+	std::vector<Point> getVertices(const Point &origin = Point()) const;
 	double m_outerDiameter;
 	int m_numVertices;
 	double m_rotation;
