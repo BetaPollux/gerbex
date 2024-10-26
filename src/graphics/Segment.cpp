@@ -34,10 +34,6 @@ Segment::Segment(const Point &start, const Point &end) {
 	m_end = end;
 }
 
-Segment::~Segment() {
-	// Empty
-}
-
 const Point& Segment::GetStart() const {
 	return m_start;
 }

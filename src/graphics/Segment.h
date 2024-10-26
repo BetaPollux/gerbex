@@ -34,7 +34,7 @@ class Segment {
 public:
 	Segment();
 	Segment(const Point &start, const Point &end);
-	virtual ~Segment();
+	virtual ~Segment() = default;
 	const Point& GetStart() const;
 	const Point& GetEnd() const;
 	virtual Box GetBox() const;

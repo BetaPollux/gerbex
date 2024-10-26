@@ -34,7 +34,7 @@ using Variables = std::unordered_map<int, double>;
 class Operator {
 public:
 	Operator(char op);
-	virtual ~Operator();
+	virtual ~Operator() = default;
 	void Apply(std::vector<double> &output);
 	char OpChar();
 	int Precedence();
@@ -50,7 +50,7 @@ class Expression {
 public:
 	Expression();
 	Expression(std::string body);
-	virtual ~Expression();
+	virtual ~Expression() = default;
 	double Evaluate(const Variables &vars = { }) const;
 	const std::string& GetBody() const;
 

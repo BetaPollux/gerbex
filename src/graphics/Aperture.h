@@ -41,11 +41,18 @@ public:
 	const Transform& GetTransform() const {
 		return m_transform;
 	}
-	void SetTransform(const Transform &transform) {
+	virtual void SetTransform(const Transform &transform) {
 		m_transform = transform;
 	}
 
 protected:
+	bool isDark(const Transform &transform) const {
+		bool isDark = m_transform.GetPolarity() == Polarity::Dark;
+		if (transform.GetPolarity() == Polarity::Clear) {
+			isDark = !isDark;
+		}
+		return isDark;
+	}
 	Transform m_transform;
 };
 

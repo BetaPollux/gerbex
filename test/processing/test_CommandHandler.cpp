@@ -191,7 +191,7 @@ TEST(CommandHandlerTest, Polarity) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LPC" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetPolarity() == Polarity::Clear);
+	CHECK(state.GetTransform().GetPolarity() == Polarity::Clear);
 }
 
 TEST(CommandHandlerTest, Mirroring) {
@@ -199,7 +199,7 @@ TEST(CommandHandlerTest, Mirroring) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LMXY" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetMirroring() == Mirroring::XY);
+	CHECK(state.GetTransform().GetMirroring() == Mirroring::XY);
 }
 
 TEST(CommandHandlerTest, Rotation) {
@@ -207,7 +207,7 @@ TEST(CommandHandlerTest, Rotation) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LR-22.5" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetRotation() == -22.5);
+	CHECK(state.GetTransform().GetRotation() == -22.5);
 }
 
 TEST(CommandHandlerTest, Scaling) {
@@ -215,7 +215,7 @@ TEST(CommandHandlerTest, Scaling) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LS0.4" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransformation().GetScaling() == 0.4);
+	CHECK(state.GetTransform().GetScaling() == 0.4);
 }
 
 TEST(CommandHandlerTest, BlockAperture_open) {

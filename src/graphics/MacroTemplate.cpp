@@ -43,10 +43,6 @@ MacroTemplate::MacroTemplate(Fields body) :
 	// Empty
 }
 
-MacroTemplate::~MacroTemplate() {
-	// Empty
-}
-
 std::unique_ptr<Aperture> MacroTemplate::Call(const Parameters &parameters) {
 	Variables variables = MacroTemplate::GetVariables(parameters);
 	std::unique_ptr<Macro> macro = std::make_unique<Macro>();

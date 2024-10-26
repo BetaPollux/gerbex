@@ -28,10 +28,6 @@ RectangleTemplate::RectangleTemplate() {
 
 }
 
-RectangleTemplate::~RectangleTemplate() {
-	// Empty
-}
-
 std::unique_ptr<Aperture> RectangleTemplate::Call(
 		const Parameters &parameters) {
 	if (parameters.size() == 2) {

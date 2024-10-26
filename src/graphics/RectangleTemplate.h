@@ -32,7 +32,7 @@ namespace gerbex {
 class RectangleTemplate: public ApertureTemplate {
 public:
 	RectangleTemplate();
-	virtual ~RectangleTemplate();
+	virtual ~RectangleTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 };
 

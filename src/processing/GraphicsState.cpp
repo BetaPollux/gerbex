@@ -25,13 +25,9 @@
 namespace gerbex {
 
 GraphicsState::GraphicsState() :
-		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transformation { } {
+		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transform { } {
 	// Empty
 
-}
-
-GraphicsState::~GraphicsState() {
-	// Empty
 }
 
 const std::shared_ptr<Aperture> GraphicsState::GetCurrentAperture() const {
@@ -66,13 +62,13 @@ void GraphicsState::SetPlotState(std::optional<PlotState> plotState) {
 	m_plotState = plotState;
 }
 
-Transform& GraphicsState::GetTransformation() {
-	return m_transformation;
+Transform& GraphicsState::GetTransform() {
+	return m_transform;
 }
 
-void GraphicsState::SetTransformation(
-		const Transform &transformation) {
-	m_transformation = transformation;
+void GraphicsState::SetTransform(
+		const Transform &transform) {
+	m_transform = transform;
 }
 
 std::optional<Unit> GraphicsState::GetUnit() const {

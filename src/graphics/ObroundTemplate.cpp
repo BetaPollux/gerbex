@@ -28,10 +28,6 @@ ObroundTemplate::ObroundTemplate() {
 
 }
 
-ObroundTemplate::~ObroundTemplate() {
-	// Empty
-}
-
 std::unique_ptr<Aperture> ObroundTemplate::Call(const Parameters &parameters) {
 	if (parameters.size() == 2) {
 		return std::make_unique<Obround>(parameters[0], parameters[1]);

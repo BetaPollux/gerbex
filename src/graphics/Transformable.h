@@ -1,7 +1,7 @@
 /*
- * ApertureTemplate.cpp
+ * Transformable.h
  *
- *  Created on: Mar. 29, 2024
+ *  Created on: Oct. 25, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#ifndef TRANSFORMABLE_H_
+#define TRANSFORMABLE_H_
 
-#include "ApertureTemplate.h"
 namespace gerbex {
 
-ApertureTemplate::~ApertureTemplate() {
-	// Empty
-}
+class Transform;
+
+class Transformable {
+public:
+	Transformable() = default;
+	virtual ~Transformable() = default;
+	virtual void ApplyTransform(const Transform &transform) = 0;
+};
 
 } /* namespace gerbex */
+
+#endif /* TRANSFORMABLE_H_ */

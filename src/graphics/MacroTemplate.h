@@ -46,7 +46,7 @@ class MacroTemplate: public ApertureTemplate {
 public:
 	MacroTemplate();
 	MacroTemplate(Fields body);
-	virtual ~MacroTemplate();
+	virtual ~MacroTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 	const Fields &GetBody() const;
 

@@ -32,7 +32,7 @@ namespace gerbex {
 class CircleTemplate: public ApertureTemplate {
 public:
 	CircleTemplate();
-	virtual ~CircleTemplate();
+	virtual ~CircleTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 };
 

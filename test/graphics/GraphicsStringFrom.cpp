@@ -20,11 +20,28 @@
 
 #include "GraphicsStringFrom.h"
 
-SimpleString StringFrom(const gerbex::Point &point) {
-	return StringFromFormat("%f, %f", point.GetX(), point.GetY());
+SimpleString StringFrom(const gerbex::BlockAperture &block) {
+	return StringFromFormat("%d objects", block.GetObjectCount())
+			+ StringFrom(", Box: ") + StringFrom(block.GetBox()) + ", T: "
+			+ StringFrom(block.GetTransform());
 }
 
 SimpleString StringFrom(const gerbex::Box &box) {
-	return StringFromFormat("%f, %f, %f, %f", box.GetWidth(), box.GetHeight(),
+	return StringFromFormat("%f, %f, (%f, %f)", box.GetWidth(), box.GetHeight(),
 			box.GetLeft(), box.GetBottom());
+}
+
+SimpleString StringFrom(const gerbex::Circle &circle) {
+	return StringFromFormat("%f, %f, T: ", circle.GetDiameter(),
+			circle.GetHoleDiameter()) + StringFrom(circle.GetTransform());
+}
+
+SimpleString StringFrom(const gerbex::Point &point) {
+	return StringFromFormat("(%f, %f)", point.GetX(), point.GetY());
+}
+
+SimpleString StringFrom(const gerbex::Transform &transform) {
+	return StringFromFormat("%d, %d, %f, %f", (int) transform.GetPolarity(),
+			(int) transform.GetMirroring(), transform.GetRotation(),
+			transform.GetScaling());
 }

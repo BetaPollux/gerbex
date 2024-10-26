@@ -36,7 +36,7 @@ namespace gerbex {
 class RegionContour {
 public:
 	RegionContour();
-	virtual ~RegionContour();
+	virtual ~RegionContour() = default;
 	bool IsClosed() const;
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;

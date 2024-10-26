@@ -93,13 +93,14 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 			*m_graphicsState.GetCurrentPoint(), coord);
 
 	if (m_commandState != CommandState::InsideRegion) {
-		//TODO make copy, set aperture transform
 		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 				m_graphicsState.GetCurrentAperture());
 		if (circle == nullptr) {
 			throw std::logic_error("draw requires valid circle aperture");
 		}
-		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, circle);
+		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
+		clone->SetTransform(m_graphicsState.GetTransform());
+		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, clone);
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -129,11 +130,12 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 	if (m_commandState != CommandState::InsideRegion) {
 		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
 				m_graphicsState.GetCurrentAperture());
-		//TODO make copy, set aperture transform
 		if (circle == nullptr) {
 			throw std::logic_error("arc requires valid circle aperture");
 		}
-		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, circle);
+		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
+		clone->SetTransform(m_graphicsState.GetTransform());
+		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, clone);
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -154,9 +156,11 @@ void CommandsProcessor::Flash(const Point &coord) {
 		throw std::logic_error("flash requires defined current aperture");
 	}
 
-	//TODO make copy, set aperture transform
+	std::unique_ptr<Aperture> clone =
+			m_graphicsState.GetCurrentAperture()->Clone();
+	clone->SetTransform(m_graphicsState.GetTransform());
 	std::unique_ptr<gerbex::Flash> obj = std::make_unique<gerbex::Flash>(coord,
-			m_graphicsState.GetCurrentAperture());
+			std::move(clone));
 	m_objectDest.top()->push_back(std::move(obj));
 	m_graphicsState.SetCurrentPoint(coord);
 }
@@ -201,7 +205,7 @@ void CommandsProcessor::StartRegion() {
 		throw std::logic_error("cannot start a region inside a region");
 	}
 	m_activeRegion = std::make_unique<Region>(
-			m_graphicsState.GetTransformation().GetPolarity());
+			m_graphicsState.GetTransform().GetPolarity());
 	m_commandState = CommandState::InsideRegion;
 }
 

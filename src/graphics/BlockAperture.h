@@ -35,14 +35,19 @@ class BlockAperture: public Aperture {
 public:
 	BlockAperture();
 	virtual ~BlockAperture() = default;
+	bool operator==(const BlockAperture &rhs) const;
+	bool operator!=(const BlockAperture &rhs) const;
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
+	int GetObjectCount() const;
 	void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	void SetTransform(const Transform &transform) override;
 
 private:
+	//TODO this needs to be vec of Transformable
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 };
 

@@ -36,7 +36,7 @@ class StepAndRepeat: public GraphicalObject {
 public:
 	StepAndRepeat();
 	StepAndRepeat(int nx, int ny, double dx, double dy);
-	virtual ~StepAndRepeat();
+	virtual ~StepAndRepeat() = default;
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	double GetDx() const;

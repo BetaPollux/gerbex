@@ -35,7 +35,7 @@ namespace gerbex {
  */
 class ApertureTemplate {
 public:
-	virtual ~ApertureTemplate();
+	virtual ~ApertureTemplate() = default;
 	virtual std::unique_ptr<Aperture> Call(const Parameters &parameters) = 0;
 };
 

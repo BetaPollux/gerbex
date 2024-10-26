@@ -51,12 +51,21 @@ double Circle::GetHoleDiameter() const {
 void Circle::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
 	double radius = 0.5 * transform.ApplyScaling(GetDiameter());
-	serializer.AddCircle(radius, origin,
-			transform.GetPolarity() == Polarity::Dark);
+	serializer.AddCircle(radius, origin, isDark(transform));
 }
 
 Box Circle::GetBox() const {
 	return Box(GetDiameter(), Point());
+}
+
+bool Circle::operator ==(const Circle &rhs) {
+	return m_diameter == rhs.m_diameter && m_holeDiameter == rhs.m_holeDiameter
+			&& m_transform == rhs.m_transform;
+}
+
+bool Circle::operator !=(const Circle &rhs) {
+	return m_diameter != rhs.m_diameter || m_holeDiameter != rhs.m_holeDiameter
+			|| m_transform != rhs.m_transform;
 }
 
 std::unique_ptr<Aperture> Circle::Clone() const {

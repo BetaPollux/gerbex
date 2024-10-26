@@ -39,10 +39,6 @@ StepAndRepeat::StepAndRepeat(int nx, int ny, double dx, double dy) :
 	}
 }
 
-StepAndRepeat::~StepAndRepeat() {
-	// Empty
-}
-
 void StepAndRepeat::AddObject(std::shared_ptr<GraphicalObject> object) {
 	m_objects.push_back(object);
 }

@@ -33,11 +33,13 @@ namespace gerbex {
  * Helper functions
  */
 
-template <typename T> void MakeAndSetAperture(CommandsProcessor &processor, int id) {
-	std::shared_ptr<T> ap = std::make_unique<T>();
+template <typename T> std::shared_ptr<T> MakeAndSetAperture(CommandsProcessor &processor, int id) {
+	std::shared_ptr<T> ap = std::make_shared<T>();
 
 	processor.ApertureDefine(id, ap);
 	processor.SetCurrentAperture(id);
+
+	return ap;
 }
 
 template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<std::shared_ptr<GraphicalObject>> &objs, size_t idx = 0) {
@@ -46,7 +48,7 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<st
 	std::shared_ptr<GraphicalObject> obj = objs[idx];
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
 
-	CHECK(result != nullptr);
+	CHECK_TEXT(result != nullptr, "graphical object was wrong type");
 
 	return result;
 }
@@ -54,7 +56,7 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<st
 template <typename T> std::shared_ptr<T> CheckAperture(const Flash &flash) {
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(flash.GetAperture());
 
-	CHECK(result != nullptr);
+	CHECK_TEXT(result != nullptr, "flash aperture was wrong type");
 
 	return result;
 }
@@ -63,7 +65,7 @@ template <typename T> std::shared_ptr<T> GetAperture(CommandsProcessor &processo
 	std::shared_ptr<Aperture> obj = processor.GetAperture(ident);
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
 
-	CHECK(result != nullptr);
+	CHECK_TEXT(result != nullptr, "aperture dictionary entry was wrong type");
 
 	return result;
 }
@@ -74,7 +76,7 @@ template <typename T> std::shared_ptr<T> GetMacroPrimitive(Macro &macro, size_t 
 	std::shared_ptr<MacroPrimitive> obj = macro.GetPrimitives()[idx];
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
 
-	CHECK(result != nullptr);
+	CHECK_TEXT(result != nullptr, "macro primitive was wrong type");
 
 	return result;
 }

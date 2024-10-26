@@ -21,11 +21,17 @@
 #ifndef GRAPHICSSTRINGFROM_H_
 #define GRAPHICSSTRINGFROM_H_
 
+#include "BlockAperture.h"
 #include "Box.h"
+#include "Circle.h"
 #include "Point.h"
+#include "Transform.h"
 #include "CppUTest/SimpleString.h"
 
-SimpleString StringFrom(const gerbex::Point &point);
+SimpleString StringFrom(const gerbex::BlockAperture &block);
 SimpleString StringFrom(const gerbex::Box &box);
+SimpleString StringFrom(const gerbex::Circle &circle);
+SimpleString StringFrom(const gerbex::Point &point);
+SimpleString StringFrom(const gerbex::Transform &transform);
 
 #endif /* GRAPHICSSTRINGFROM_H_ */

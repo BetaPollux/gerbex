@@ -58,3 +58,5 @@ TEST(BlockApertureTest, GetBox) {
 TEST(BlockApertureTest, GetBox_Empty) {
 	CHECK_THROWS(std::invalid_argument, block.GetBox());
 }
+
+//TODO test block aperture set transform, clone, serialize, transform

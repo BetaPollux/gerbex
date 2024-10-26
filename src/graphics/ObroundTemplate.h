@@ -32,7 +32,7 @@ namespace gerbex {
 class ObroundTemplate: public ApertureTemplate {
 public:
 	ObroundTemplate();
-	virtual ~ObroundTemplate();
+	virtual ~ObroundTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 };
 

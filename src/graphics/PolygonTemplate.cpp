@@ -28,10 +28,6 @@ PolygonTemplate::PolygonTemplate() {
 
 }
 
-PolygonTemplate::~PolygonTemplate() {
-	// Empty
-}
-
 std::unique_ptr<Aperture> PolygonTemplate::Call(const Parameters &parameters) {
 	if (parameters.size() == 2) {
 			return std::make_unique<Polygon>(parameters[0], (int)parameters[1]);

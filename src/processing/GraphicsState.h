@@ -54,7 +54,7 @@ enum class ArcMode {
 class GraphicsState {
 public:
 	GraphicsState();
-	virtual ~GraphicsState();
+	virtual ~GraphicsState() = default;
 	const std::shared_ptr<Aperture> GetCurrentAperture() const;
 	void SetCurrentAperture(std::shared_ptr<Aperture> aperture);
 	void SetCurrentPoint(std::optional<Point> point);
@@ -63,8 +63,8 @@ public:
 	void SetFormat(std::optional<CoordinateFormat> format);
 	std::optional<PlotState> GetPlotState() const;
 	void SetPlotState(std::optional<PlotState> plotState);
-	Transform& GetTransformation();
-	void SetTransformation(const Transform &transformation);
+	Transform& GetTransform();
+	void SetTransform(const Transform &transform);
 	std::optional<Unit> GetUnit() const;
 	void SetUnit(std::optional<Unit> unit);
 	static Unit UnitFromCommand(const std::string &str);
@@ -83,7 +83,7 @@ private:
 	std::shared_ptr<Aperture> m_currentAperture;
 	std::optional<PlotState> m_plotState;
 	std::optional<ArcMode> m_arcMode;
-	Transform m_transformation;
+	Transform m_transform;
 };
 
 } /* namespace gerbex */

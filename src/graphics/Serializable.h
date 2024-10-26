@@ -32,8 +32,7 @@ class Serializable {
 public:
 	Serializable() {
 	}
-	virtual ~Serializable() {
-	}
+	virtual ~Serializable() = default;
 	virtual void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const = 0;
 	virtual Box GetBox() const = 0;

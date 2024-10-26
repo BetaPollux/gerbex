@@ -70,7 +70,7 @@ void Obround::Serialize(Serializer &serializer, const Point &origin,
 	Segment segment = m_segment;
 	segment.Transform(transform);
 	segment.Translate(origin);
-	serializer.AddDraw(width, segment);
+	serializer.AddDraw(width, segment, isDark(transform));
 }
 
 Box Obround::GetBox() const {

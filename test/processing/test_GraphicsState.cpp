@@ -83,7 +83,7 @@ TEST(GraphicsStateTest, SetArcMode_RejectsSingleQuadrant) {
 }
 
 TEST(GraphicsStateTest, Transform) {
-	CHECK(Transform() == state.GetTransformation());
+	CHECK_EQUAL(Transform(), state.GetTransform());
 }
 
 TEST_GROUP (GraphicsStateGetPoint) {

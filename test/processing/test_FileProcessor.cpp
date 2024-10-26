@@ -92,7 +92,7 @@ TEST(GerberTwoSquareBoxes, SetUnits) {
 }
 
 TEST(GerberTwoSquareBoxes, SetPolarity) {
-	CHECK(Polarity::Dark == graphicsState->GetTransformation().GetPolarity());
+	CHECK(Polarity::Dark == graphicsState->GetTransform().GetPolarity());
 }
 
 TEST(GerberTwoSquareBoxes, DefinedAperture) {
@@ -187,8 +187,8 @@ TEST(GerberNestedBlocks, MadeAllBlocks) {
 	auto flash2 = GetGraphicalObject<Flash>(*b102->GetObjectList());
 	auto nb100 = CheckAperture<BlockAperture>(*flash1);
 	auto nb101 = CheckAperture<BlockAperture>(*flash2);
-	POINTERS_EQUAL(b100.get(), nb100.get());
-	POINTERS_EQUAL(b101.get(), nb101.get());
+	CHECK_EQUAL(*b100, *nb100);
+	CHECK_EQUAL(*b101, *nb101);
 }
 
 /**
@@ -241,28 +241,15 @@ TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
 	std::shared_ptr<Flash> b4 = GetGraphicalObject<Flash>(
 			processor->GetObjects(), 3);
 
-	DOUBLES_EQUAL(0.0, b1->GetAperture()->GetTransform().GetRotation(),
-			DBL_TOL);
-	DOUBLES_EQUAL(0.0, b2->GetAperture()->GetTransform().GetRotation(),
-			DBL_TOL);
-	DOUBLES_EQUAL(30.0, b3->GetAperture()->GetTransform().GetRotation(),
-			DBL_TOL);
-	DOUBLES_EQUAL(45.0, b4->GetAperture()->GetTransform().GetRotation(),
-			DBL_TOL);
+	Transform expected1(Polarity::Dark, Mirroring::None, 0.0, 1.0);
+	Transform expected2(Polarity::Dark, Mirroring::X, 0.0, 1.0);
+	Transform expected3(Polarity::Dark, Mirroring::Y, 30.0, 1.0);
+	Transform expected4(Polarity::Dark, Mirroring::XY, 45.0, 0.8);
 
-	CHECK(Mirroring::None == b1->GetAperture()->GetTransform().GetMirroring());
-	CHECK(Mirroring::X == b2->GetAperture()->GetTransform().GetMirroring());
-	CHECK(Mirroring::Y == b3->GetAperture()->GetTransform().GetMirroring());
-	CHECK(Mirroring::XY == b4->GetAperture()->GetTransform().GetMirroring());
-
-	DOUBLES_EQUAL(1.0, b1->GetAperture()->GetTransform().GetScaling(),
-			DBL_TOL);
-	DOUBLES_EQUAL(1.0, b2->GetAperture()->GetTransform().GetScaling(),
-			DBL_TOL);
-	DOUBLES_EQUAL(1.0, b3->GetAperture()->GetTransform().GetScaling(),
-			DBL_TOL);
-	DOUBLES_EQUAL(0.8, b4->GetAperture()->GetTransform().GetScaling(),
-			DBL_TOL);
+	CHECK_EQUAL(expected1, b1->GetAperture()->GetTransform());
+	CHECK_EQUAL(expected2, b2->GetAperture()->GetTransform());
+	CHECK_EQUAL(expected3, b3->GetAperture()->GetTransform());
+	CHECK_EQUAL(expected4, b4->GetAperture()->GetTransform());
 }
 
 /**

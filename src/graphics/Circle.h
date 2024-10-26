@@ -34,6 +34,8 @@ public:
 	Circle();
 	Circle(double diameter, double holeDiameter = 0.0);
 	virtual ~Circle() = default;
+	bool operator==(const Circle &rhs);
+	bool operator!=(const Circle &rhs);
 	double GetDiameter() const;
 	double GetHoleDiameter() const;
 	void Serialize(Serializer &serializer, const Point &origin,

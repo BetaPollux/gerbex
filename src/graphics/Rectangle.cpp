@@ -56,7 +56,7 @@ void Rectangle::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
 	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
 			origin);
-	serializer.AddPolygon(vertices);
+	serializer.AddPolygon(vertices, isDark(transform));
 }
 
 std::vector<Point> Rectangle::getVertices() const {

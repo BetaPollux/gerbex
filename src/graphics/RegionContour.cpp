@@ -30,10 +30,6 @@ RegionContour::RegionContour() {
 
 }
 
-RegionContour::~RegionContour() {
-	// Empty
-}
-
 bool RegionContour::IsClosed() const {
 	//Checks that all segments are connected.
 	//Does NOT check for more complex conditions which are invalid.

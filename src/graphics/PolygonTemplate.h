@@ -32,7 +32,7 @@ namespace gerbex {
 class PolygonTemplate: public ApertureTemplate {
 public:
 	PolygonTemplate();
-	virtual ~PolygonTemplate();
+	virtual ~PolygonTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 };
 

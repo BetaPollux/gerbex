@@ -28,10 +28,6 @@ CircleTemplate::CircleTemplate() {
 
 }
 
-CircleTemplate::~CircleTemplate() {
-	// Empty
-}
-
 std::unique_ptr<Aperture> CircleTemplate::Call(
 		const Parameters &parameters) {
 	if (parameters.size() == 1) {

@@ -54,8 +54,31 @@ Box BlockAperture::GetBox() const {
 	return box;
 }
 
+bool BlockAperture::operator ==(const BlockAperture &rhs) const {
+	//TODO operator== is not practical for block
+	return m_objects == rhs.m_objects && m_transform == rhs.m_transform;
+}
+
+bool BlockAperture::operator !=(const BlockAperture &rhs) const {
+	//TODO operator!= is not practical for block
+	return m_objects != rhs.m_objects || m_transform != rhs.m_transform;
+}
+
+int BlockAperture::GetObjectCount() const {
+	return m_objects.size();
+}
+
 std::unique_ptr<Aperture> BlockAperture::Clone() const {
+	//TODO make deep copy
 	return std::make_unique<BlockAperture>(*this);
+}
+
+void BlockAperture::SetTransform(const Transform &transform) {
+	m_transform = transform;
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
+		Transform base;
+		Transform stacked = base.Stack(transform);
+	}
 }
 
 } /* namespace gerbex */

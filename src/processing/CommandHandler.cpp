@@ -188,7 +188,7 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 		std::string param = match[1].str();
 		std::string option = match[2].str();
 		Transform &transformation =
-				processor.GetGraphicsState().GetTransformation();
+				processor.GetGraphicsState().GetTransform();
 		if (param == "P") {
 			Polarity polarity = Transform::PolarityFromCommand(
 					option);

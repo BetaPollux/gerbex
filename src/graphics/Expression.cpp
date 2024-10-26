@@ -31,9 +31,6 @@ Operator::Operator(char op) :
 		m_op { op } {
 }
 
-Operator::~Operator() {
-}
-
 void Operator::Apply(std::vector<double> &output) {
 	double right = output.back();
 	output.pop_back();
@@ -90,10 +87,6 @@ Expression::Expression() :
 
 Expression::Expression(std::string body) :
 		m_body { body } {
-	// Empty
-}
-
-Expression::~Expression() {
 	// Empty
 }
 

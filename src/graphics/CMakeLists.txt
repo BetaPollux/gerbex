@@ -1,5 +1,4 @@
 add_library(gerbex_graphics OBJECT
-	ApertureTemplate.cpp
 	Arc.cpp
 	ArcSegment.cpp
 	BlockAperture.cpp
