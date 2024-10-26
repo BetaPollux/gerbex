@@ -28,6 +28,7 @@
 #include "GraphicsState.h"
 #include "Region.h"
 #include "StepAndRepeat.h"
+#include "Transformable.h"
 #include <unordered_map>
 #include <memory>
 #include <stack>
@@ -37,9 +38,7 @@
 namespace gerbex {
 
 enum class CommandState {
-	Normal,
-	InsideRegion,
-	EndOfFile
+	Normal, InsideRegion, EndOfFile
 };
 
 /*
@@ -61,8 +60,10 @@ public:
 	virtual void Flash(const Point &coord);
 	virtual void StartRegion();
 	virtual void EndRegion();
-	virtual void AddTemplate(std::string name, std::shared_ptr<ApertureTemplate> new_tmpl);
-	virtual std::shared_ptr<ApertureTemplate> GetTemplate(const std::string &name);
+	virtual void AddTemplate(std::string name,
+			std::shared_ptr<ApertureTemplate> new_tmpl);
+	virtual std::shared_ptr<ApertureTemplate> GetTemplate(
+			const std::string &name);
 	virtual GraphicsState& GetGraphicsState();
 	virtual const std::vector<std::shared_ptr<GraphicalObject>>& GetObjects() const;
 	virtual CommandState GetCommandState() const;
@@ -80,7 +81,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
 	std::unique_ptr<Region> m_activeRegion;
 	std::unique_ptr<StepAndRepeat> m_activeStepAndRepeat;
-	int m_openBlocks;
+	std::stack<std::vector<std::shared_ptr<Transformable>>*> m_activeBlocks;
 };
 
 } /* namespace gerbex */

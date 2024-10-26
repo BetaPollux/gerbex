@@ -183,8 +183,8 @@ TEST(GerberNestedBlocks, MadeAllBlocks) {
 	LONGS_EQUAL(4, b101->GetObjectList()->size());
 	LONGS_EQUAL(7, b102->GetObjectList()->size());
 
-	auto flash1 = GetGraphicalObject<Flash>(*b101->GetObjectList());
-	auto flash2 = GetGraphicalObject<Flash>(*b102->GetObjectList());
+	auto flash1 = GetBlockObject<Flash>(b101);
+	auto flash2 = GetBlockObject<Flash>(b102);
 	auto nb100 = CheckAperture<BlockAperture>(*flash1);
 	auto nb101 = CheckAperture<BlockAperture>(*flash2);
 	CHECK_EQUAL(*b100, *nb100);
@@ -210,16 +210,11 @@ TEST_GROUP(GerberBlocksDiffOrientation) {
 TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(
 			*processor, 12);
-	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(
-			*block->GetObjectList(), 0);
-	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(
-			*block->GetObjectList(), 1);
-	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(
-			*block->GetObjectList(), 2);
-	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(),
-			3);
-	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(),
-			4);
+	std::shared_ptr<Flash> c1 = GetBlockObject<Flash>(block, 0);
+	std::shared_ptr<Flash> c2 = GetBlockObject<Flash>(block, 1);
+	std::shared_ptr<Flash> c3 = GetBlockObject<Flash>(block, 2);
+	std::shared_ptr<Draw> d1 = GetBlockObject<Draw>(block, 3);
+	std::shared_ptr<Arc> a1 = GetBlockObject<Arc>(block, 4);
 
 	CHECK(Polarity::Dark == c1->GetAperture()->GetTransform().GetPolarity());
 	CHECK(Polarity::Dark == c2->GetAperture()->GetTransform().GetPolarity());

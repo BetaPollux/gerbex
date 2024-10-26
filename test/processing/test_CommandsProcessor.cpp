@@ -579,8 +579,7 @@ TEST(CommandsProcessor_ApertureBlock, DoesNotFlash) {
 TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(processor,
 			blockId);
-	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
-			*block->GetObjectList());
+	std::shared_ptr<Draw> draw = GetBlockObject<Draw>(block);
 
 	LONGS_EQUAL(2, block->GetObjectList()->size());
 	CHECK_EQUAL(origin, draw->GetSegment().GetStart());
@@ -641,8 +640,7 @@ TEST(CommandsProcessor_NestedApertureBlock, OuterContainsInner) {
 	std::shared_ptr<BlockAperture> innerBlock = GetAperture<BlockAperture>(
 			processor, innerBlockId);
 
-	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
-			*outerBlock->GetObjectList());
+	std::shared_ptr<Flash> flash = GetBlockObject<Flash>(outerBlock);
 	std::shared_ptr<BlockAperture> aperture = CheckAperture<BlockAperture>(
 			*flash);
 	CHECK_EQUAL(*innerBlock, *aperture);

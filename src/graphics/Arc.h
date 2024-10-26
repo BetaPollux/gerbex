@@ -24,7 +24,7 @@
 #include "Aperture.h"
 #include "ArcSegment.h"
 #include "Circle.h"
-#include "GraphicalObject.h"
+#include "Transformable.h"
 #include <memory>
 
 namespace gerbex {
@@ -32,7 +32,7 @@ namespace gerbex {
 /*
  * Circular segments drawn with a circle.
  */
-class Arc: public GraphicalObject {
+class Arc: public Transformable {
 public:
 	Arc();
 	Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture);
@@ -42,6 +42,8 @@ public:
 	std::shared_ptr<Circle> GetAperture() const;
 	const ArcSegment& GetSegment() const;
 	Box GetBox() const override;
+	void ApplyTransform(const Transform &transform) override;
+	std::unique_ptr<Transformable> Clone() override;
 
 private:
 	ArcSegment m_segment;

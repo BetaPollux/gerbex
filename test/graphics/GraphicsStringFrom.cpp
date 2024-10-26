@@ -21,7 +21,7 @@
 #include "GraphicsStringFrom.h"
 
 SimpleString StringFrom(const gerbex::BlockAperture &block) {
-	return StringFromFormat("%d objects", block.GetObjectCount())
+	return StringFromFormat("%ld objects", block.GetObjectCount())
 			+ StringFrom(", Box: ") + StringFrom(block.GetBox()) + ", T: "
 			+ StringFrom(block.GetTransform());
 }

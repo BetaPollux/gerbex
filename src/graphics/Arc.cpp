@@ -58,4 +58,15 @@ Box Arc::GetBox() const {
 	return box;
 }
 
+void Arc::ApplyTransform(const Transform &transform) {
+	Transform base = m_aperture->GetTransform();
+	Transform stacked = base.Stack(transform);
+	m_aperture->SetTransform(stacked);
+	m_segment.Transform(transform);
+}
+
+std::unique_ptr<Transformable> Arc::Clone() {
+	return std::make_unique<Arc>(*this);
+}
+
 } /* namespace gerbex */

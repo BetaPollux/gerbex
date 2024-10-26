@@ -22,8 +22,8 @@
 #define DRAW_H_
 
 #include "Circle.h"
-#include "GraphicalObject.h"
 #include "Segment.h"
+#include "Transformable.h"
 #include <memory>
 
 namespace gerbex {
@@ -31,7 +31,7 @@ namespace gerbex {
 /*
  * Straight line segments drawn with a circle.
  */
-class Draw: public GraphicalObject {
+class Draw: public Transformable {
 public:
 	Draw();
 	Draw(const Segment &segment, std::shared_ptr<Circle> aperture);
@@ -41,6 +41,8 @@ public:
 	std::shared_ptr<Circle> GetAperture() const;
 	const Segment& GetSegment() const;
 	Box GetBox() const override;
+	void ApplyTransform(const Transform &transform) override;
+	std::unique_ptr<Transformable> Clone() override;
 
 private:
 	Segment m_segment;

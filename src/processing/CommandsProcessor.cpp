@@ -35,7 +35,7 @@ namespace gerbex {
 
 CommandsProcessor::CommandsProcessor() :
 		m_commandState { CommandState::Normal }, m_graphicsState { }, m_objects { }, m_apertures { }, m_templates { }, m_activeRegion {
-				nullptr }, m_openBlocks { 0 } {
+				nullptr }, m_activeBlocks { } {
 	m_templates["C"] = std::make_unique<CircleTemplate>();
 	m_templates["R"] = std::make_unique<RectangleTemplate>();
 	m_templates["O"] = std::make_unique<ObroundTemplate>();
@@ -101,7 +101,11 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
 		clone->SetTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, clone);
-		m_objectDest.top()->push_back(obj);
+		if (m_activeBlocks.empty()) {
+			m_objectDest.top()->push_back(obj);
+		} else {
+			m_activeBlocks.top()->push_back(obj);
+		}
 	} else {
 		m_activeRegion->AddSegment(segment);
 	}
@@ -136,7 +140,11 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
 		clone->SetTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, clone);
-		m_objectDest.top()->push_back(obj);
+		if (m_activeBlocks.empty()) {
+			m_objectDest.top()->push_back(obj);
+		} else {
+			m_activeBlocks.top()->push_back(obj);
+		}
 	} else {
 		m_activeRegion->AddSegment(segment);
 	}
@@ -159,9 +167,13 @@ void CommandsProcessor::Flash(const Point &coord) {
 	std::unique_ptr<Aperture> clone =
 			m_graphicsState.GetCurrentAperture()->Clone();
 	clone->SetTransform(m_graphicsState.GetTransform());
-	std::unique_ptr<gerbex::Flash> obj = std::make_unique<gerbex::Flash>(coord,
+	std::shared_ptr<gerbex::Flash> obj = std::make_shared<gerbex::Flash>(coord,
 			std::move(clone));
-	m_objectDest.top()->push_back(std::move(obj));
+	if (m_activeBlocks.empty()) {
+		m_objectDest.top()->push_back(obj);
+	} else {
+		m_activeBlocks.top()->push_back(obj);
+	}
 	m_graphicsState.SetCurrentPoint(coord);
 }
 
@@ -220,15 +232,13 @@ void CommandsProcessor::EndRegion() {
 void CommandsProcessor::OpenApertureBlock(int ident) {
 	std::shared_ptr<BlockAperture> block = std::make_shared<BlockAperture>();
 	ApertureDefine(ident, block);
-	m_objectDest.push(block->GetObjectList());
-	m_openBlocks++;
+	m_activeBlocks.push(block->GetObjectList());
 }
 
 void CommandsProcessor::CloseApertureBlock() {
-	if (m_openBlocks > 0) {
-		m_objectDest.pop();
+	if (m_activeBlocks.size() > 0) {
+		m_activeBlocks.pop();
 		m_graphicsState.SetCurrentPoint(std::nullopt);
-		m_openBlocks--;
 	} else {
 		throw std::logic_error("cannot close aperture block; none open");
 	}

@@ -53,4 +53,5 @@ TEST(FlashTest, Box) {
 	CHECK_EQUAL(expected, flash.GetBox());
 }
 
+//TODO test apply transform
 

@@ -59,4 +59,15 @@ Box Draw::GetBox() const {
 	return box;
 }
 
+void Draw::ApplyTransform(const Transform &transform) {
+	Transform base = m_aperture->GetTransform();
+	Transform stacked = base.Stack(transform);
+	m_aperture->SetTransform(stacked);
+	m_segment.Transform(transform);
+}
+
+std::unique_ptr<Transformable> Draw::Clone() {
+	return std::make_unique<Draw>(*this);
+}
+
 } /* namespace gerbex */

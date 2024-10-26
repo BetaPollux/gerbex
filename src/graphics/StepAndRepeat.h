@@ -25,6 +25,8 @@
 #include <memory>
 #include <vector>
 
+//TODO eliminate StepAndRepeat and class and just create the objects?
+
 namespace gerbex {
 
 /*

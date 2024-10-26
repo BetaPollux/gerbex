@@ -26,7 +26,7 @@
 namespace gerbex {
 
 /*
- * Represents a plane figure, with shape, size, position and polarity (dark/clear).
+ * Represents a plane figure that can be serialized.
  */
 class GraphicalObject: public Serializable {
 public:

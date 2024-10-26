@@ -24,15 +24,11 @@
 
 namespace gerbex {
 
-BlockAperture::BlockAperture() {
-	// Empty
-}
-
-void BlockAperture::AddObject(std::shared_ptr<GraphicalObject> object) {
+void BlockAperture::AddObject(std::shared_ptr<Transformable> object) {
 	m_objects.push_back(object);
 }
 
-std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
+std::vector<std::shared_ptr<Transformable>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
@@ -48,7 +44,7 @@ Box BlockAperture::GetBox() const {
 		throw std::invalid_argument("cannot get box for empty block aperture");
 	}
 	Box box = m_objects.front()->GetBox();
-	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
+	for (std::shared_ptr<Transformable> obj : m_objects) {
 		box = box.Extend(obj->GetBox());
 	}
 	return box;
@@ -56,28 +52,34 @@ Box BlockAperture::GetBox() const {
 
 bool BlockAperture::operator ==(const BlockAperture &rhs) const {
 	//TODO operator== is not practical for block
-	return m_objects == rhs.m_objects && m_transform == rhs.m_transform;
+	return GetObjectCount() == rhs.GetObjectCount() && GetBox() == rhs.GetBox()
+			&& m_transform == rhs.m_transform;
 }
 
 bool BlockAperture::operator !=(const BlockAperture &rhs) const {
 	//TODO operator!= is not practical for block
-	return m_objects != rhs.m_objects || m_transform != rhs.m_transform;
+	return GetObjectCount() != rhs.GetObjectCount() || GetBox() != rhs.GetBox()
+			|| m_transform != rhs.m_transform;
 }
 
-int BlockAperture::GetObjectCount() const {
+size_t BlockAperture::GetObjectCount() const {
 	return m_objects.size();
 }
 
 std::unique_ptr<Aperture> BlockAperture::Clone() const {
-	//TODO make deep copy
-	return std::make_unique<BlockAperture>(*this);
+	std::unique_ptr<BlockAperture> block = std::make_unique<BlockAperture>();
+	block->m_transform = m_transform;
+	block->m_objects.reserve(m_objects.size());
+	for (std::shared_ptr<Transformable> obj : m_objects) {
+		block->m_objects.push_back(obj->Clone());
+	}
+	return block;
 }
 
 void BlockAperture::SetTransform(const Transform &transform) {
 	m_transform = transform;
-	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
-		Transform base;
-		Transform stacked = base.Stack(transform);
+	for (std::shared_ptr<Transformable> obj : m_objects) {
+		obj->ApplyTransform(transform);
 	}
 }
 

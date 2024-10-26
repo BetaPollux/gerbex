@@ -20,15 +20,19 @@
 #ifndef TRANSFORMABLE_H_
 #define TRANSFORMABLE_H_
 
+#include "GraphicalObject.h"
+//TODO flatten back with graphical object if StepAndRepeat is removed
+
 namespace gerbex {
 
 class Transform;
 
-class Transformable {
+class Transformable : public GraphicalObject {
 public:
 	Transformable() = default;
 	virtual ~Transformable() = default;
 	virtual void ApplyTransform(const Transform &transform) = 0;
+	virtual std::unique_ptr<Transformable> Clone() = 0;
 };
 
 } /* namespace gerbex */
