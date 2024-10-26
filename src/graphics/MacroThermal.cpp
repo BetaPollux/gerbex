@@ -18,8 +18,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Contour.h"
 #include "MacroThermal.h"
 #include "Serializer.h"
+#include <cmath>
 #include <stdexcept>
 
 namespace gerbex {
@@ -35,15 +37,15 @@ MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 				outerDiameter }, m_innerDiameter { innerDiameter }, m_gapThickness {
 				gapThickness } {
 	if (outerDiameter < 0.0 || innerDiameter < 0.0 || gapThickness < 0.0) {
-		throw std::invalid_argument("Diameters and gap must be >= 0.0");
+		throw std::invalid_argument("diameters and gap must be >= 0.0");
 	}
 	if (outerDiameter <= innerDiameter) {
 		throw std::invalid_argument(
-				"Outer diameter must be larger than inner diameter");
+				"outer diameter must be larger than inner diameter");
 	}
-	if (gapThickness > outerDiameter / 1.4142) {
+	if (gapThickness > outerDiameter / sqrt(2.0)) {
 		throw std::invalid_argument(
-				"Gap thickness must be less than (outer diameter)/sqrt(2)");
+				"gap thickness must be less than (outer diameter)/sqrt(2)");
 	}
 }
 
@@ -74,12 +76,37 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 
 void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
 		const Transform &transform) const {
-	//TODO need to draw thermal
 	// Exposure is always ON
-	double radius = 0.5 * transform.ApplyScaling(m_outerDiameter);
-	Point center = transform.Apply(getRotatedCenter());
-	center += origin;
-	serializer.AddCircle(radius, center, isDark(transform));
+	double rOuter = 0.5 * transform.ApplyScaling(m_outerDiameter);
+	double rInner = 0.5 * transform.ApplyScaling(m_innerDiameter);
+	double dGap = 0.5 * transform.ApplyScaling(m_gapThickness);
+	//TODO handle disappearing inner radius for large gap
+	//r^2 = x^2 + y^2
+	double dGapInner = sqrt(rInner * rInner - dGap * dGap);
+	double dGapOuter = sqrt(rOuter * rOuter - dGap * dGap);
+
+	Point innerBot(dGapInner, dGap);
+	Point outerBot(dGapOuter, dGap);
+	Point outerTop(dGap, dGapOuter);
+	Point innerTop(dGap, dGapInner);
+
+	for (int i = 0; i < 4; i++) {
+		Contour contour;
+		contour.AddSegment(std::make_shared<Segment>(innerBot, outerBot));
+		contour.AddSegment(
+				std::make_shared<ArcSegment>(outerBot, outerTop, outerBot * -1.0,
+						ArcDirection::CounterClockwise));
+		contour.AddSegment(std::make_shared<Segment>(outerTop, innerTop));
+		contour.AddSegment(
+				std::make_shared<ArcSegment>(innerTop, innerBot, innerTop * -1.0,
+						ArcDirection::Clockwise));
+
+		Transform rot;
+		rot.SetRotation(m_rotation + 90.0 * i);
+		contour.Transform(rot);
+		contour.Translate(origin);
+		serializer.AddContour(contour, isDark(transform));
+	}
 }
 
 const Point& MacroThermal::GetCenter() const {

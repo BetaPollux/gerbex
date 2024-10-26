@@ -5,6 +5,7 @@ add_library(gerbex_graphics OBJECT
 	Box.cpp
 	Circle.cpp
 	CircleTemplate.cpp
+	Contour.cpp
 	DataTypeParser.cpp
 	Draw.cpp
 	Expression.cpp
@@ -26,7 +27,6 @@ add_library(gerbex_graphics OBJECT
 	Rectangle.cpp
 	RectangleTemplate.cpp
 	Region.cpp
-	RegionContour.cpp
 	Segment.cpp
 	StepAndRepeat.cpp
 	Transform.cpp

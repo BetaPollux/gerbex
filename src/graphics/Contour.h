@@ -1,5 +1,5 @@
 /*
- * RegionContour.h
+ * Contour.h
  *
  *  Created on: Mar. 29, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef REGIONCONTOUR_H_
-#define REGIONCONTOUR_H_
+#ifndef CONTOUR_H_
+#define CONTOUR_H_
 
 #include "Segment.h"
 #include <memory>
@@ -33,19 +33,23 @@ namespace gerbex {
  * Valid contours are closed, where the end point of the last segment coincides
  * with the start point of the first segment.
  */
-class RegionContour {
+class Contour {
 public:
-	RegionContour();
-	virtual ~RegionContour() = default;
+	Contour();
+	virtual ~Contour() = default;
 	bool IsClosed() const;
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
+	void Translate(const Point &offset);
+	void Transform(const gerbex::Transform &transform);
 
 private:
 	std::vector<std::shared_ptr<Segment>> m_segments;
 
 };
 
+//TODO needs deep copy
+
 } /* namespace gerbex */
 
-#endif /* REGIONCONTOUR_H_ */
+#endif /* CONTOUR_H_ */

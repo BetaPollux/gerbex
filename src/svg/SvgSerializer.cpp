@@ -56,7 +56,7 @@ void SvgSerializer::SetViewBox(const Box &box) {
 }
 
 void SvgSerializer::SaveFile(const std::string &path) {
-	m_svg.append_attribute("style") = ("background-color:"+ m_bgColor).c_str();
+	m_svg.append_attribute("style") = ("background-color:" + m_bgColor).c_str();
 	m_doc.save_file(path.c_str());
 }
 
@@ -124,8 +124,8 @@ const char* SvgSerializer::getFillColor(bool isDark) const {
 	}
 }
 
-void SvgSerializer::AddContour(
-		const std::vector<std::shared_ptr<Segment>> &segments, bool isDark) {
+void SvgSerializer::AddContour(const Contour &contour, bool isDark) {
+	const std::vector<std::shared_ptr<Segment>> segments = contour.GetSegments();
 	Point s = segments[0]->GetStart();
 	std::stringstream d;
 	d << "M " << s.GetX() << " " << -s.GetY() << " ";

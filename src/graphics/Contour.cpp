@@ -18,19 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Contour.h>
 #include "Point.h"
-#include "RegionContour.h"
 #include "Serializer.h"
 #include <stdexcept>
 
 namespace gerbex {
 
-RegionContour::RegionContour() {
+Contour::Contour() {
 	// Empty
 
 }
 
-bool RegionContour::IsClosed() const {
+bool Contour::IsClosed() const {
 	//Checks that all segments are connected.
 	//Does NOT check for more complex conditions which are invalid.
 	if (m_segments.size() > 2) {
@@ -47,15 +47,28 @@ bool RegionContour::IsClosed() const {
 	}
 }
 
-void RegionContour::AddSegment(const std::shared_ptr<Segment> &segment) {
+void Contour::AddSegment(const std::shared_ptr<Segment> &segment) {
+	//TODO what about a full circle arc?
 	if (segment->GetStart() == segment->GetEnd()) {
 		throw std::invalid_argument("contour cannot have zero-length segment");
 	}
 	m_segments.push_back(segment);
 }
 
-const std::vector<std::shared_ptr<Segment>>& RegionContour::GetSegments() const {
+const std::vector<std::shared_ptr<Segment>>& Contour::GetSegments() const {
 	return m_segments;
+}
+
+void Contour::Translate(const Point &offset) {
+	for (std::shared_ptr<Segment> s : m_segments) {
+		s->Translate(offset);
+	}
+}
+
+void Contour::Transform(const gerbex::Transform &transform) {
+	for (std::shared_ptr<Segment> s : m_segments) {
+		s->Transform(transform);
+	}
 }
 
 } /* namespace gerbex */

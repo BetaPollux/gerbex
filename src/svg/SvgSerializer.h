@@ -49,8 +49,7 @@ public:
 			override;
 	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
 			override;
-	void AddContour(const std::vector<std::shared_ptr<Segment>> &segments,
-			bool isDark = true) override;
+	void AddContour(const Contour &contour, bool isDark = true) override;
 
 private:
 	std::string makePathArc(const ArcSegment &segment);

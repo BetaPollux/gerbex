@@ -22,6 +22,7 @@
 #define SERIALIZER_H_
 
 #include "Arc.h"
+#include "Contour.h"
 #include "MacroPrimitive.h"
 #include "Point.h"
 #include "Segment.h"
@@ -46,9 +47,7 @@ public:
 			true) = 0;
 	virtual void AddArc(double width, const ArcSegment &segment, bool isDark =
 			true) = 0;
-	virtual void AddContour(
-			const std::vector<std::shared_ptr<Segment>> &segments, bool isDark =
-					true) = 0;
+	virtual void AddContour(const Contour &contour, bool isDark = true) = 0;
 };
 
 } /* namespace gerbex */

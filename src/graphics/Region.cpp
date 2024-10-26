@@ -38,7 +38,7 @@ void Region::StartContour() {
 	if (!m_contours.empty() && !m_contours.back().IsClosed()) {
 		throw std::logic_error("need to close contour before starting next");
 	}
-	m_contours.push_back(RegionContour());
+	m_contours.push_back(Contour());
 }
 
 void Region::AddSegment(const std::shared_ptr<Segment> &segment) {
@@ -48,12 +48,12 @@ void Region::AddSegment(const std::shared_ptr<Segment> &segment) {
 	m_contours.back().AddSegment(segment);
 }
 
-const std::vector<RegionContour>& Region::GetContours() const {
+const std::vector<Contour>& Region::GetContours() const {
 	return m_contours;
 }
 
 bool Region::AreContoursClosed() const {
-	for (const RegionContour &c : m_contours) {
+	for (const Contour &c : m_contours) {
 		if (!c.IsClosed()) {
 			return false;
 		}
@@ -62,9 +62,9 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer, const Point &origin) const {
-	(void)origin;
-	for (const RegionContour &c : m_contours) {
-		serializer.AddContour(c.GetSegments(), m_polarity == Polarity::Dark);
+	(void) origin;
+	for (const Contour &c : m_contours) {
+		serializer.AddContour(c, m_polarity == Polarity::Dark);
 	}
 }
 
@@ -77,7 +77,7 @@ Box Region::GetBox() const {
 		throw std::invalid_argument("cannot get box for open contours");
 	}
 	Box box;
-	for (const RegionContour &c : m_contours) {
+	for (const Contour &c : m_contours) {
 		for (std::shared_ptr<Segment> s : c.GetSegments()) {
 			box = box.Extend(s->GetBox());
 		}

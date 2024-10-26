@@ -467,7 +467,7 @@ TEST(CommandsProcessor_InsideRegion, AddsSegment_Draw) {
 	std::shared_ptr<Region> region = GetGraphicalObject<Region>(
 			processor.GetObjects());
 	LONGS_EQUAL(1, region->GetContours().size());
-	const RegionContour &contour = region->GetContours().back();
+	const Contour &contour = region->GetContours().back();
 
 	LONGS_EQUAL(1, contour.GetSegments().size());
 }
@@ -481,7 +481,7 @@ TEST(CommandsProcessor_InsideRegion, AddsSegment_Arc) {
 	std::shared_ptr<Region> region = GetGraphicalObject<Region>(
 			processor.GetObjects());
 	LONGS_EQUAL(1, region->GetContours().size());
-	const RegionContour &contour = region->GetContours().back();
+	const Contour &contour = region->GetContours().back();
 
 	LONGS_EQUAL(1, contour.GetSegments().size());
 }

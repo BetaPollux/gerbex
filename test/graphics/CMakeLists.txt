@@ -7,6 +7,7 @@ add_library(test_graphics OBJECT
 	test_Box.cpp
 	test_Circle.cpp
 	test_CircleTemplate.cpp
+	test_Contour.cpp
 	test_DataTypeParser.cpp
 	test_Draw.cpp
 	test_Expression.cpp
@@ -28,7 +29,6 @@ add_library(test_graphics OBJECT
 	test_Rectangle.cpp
 	test_RectangleTemplate.cpp
 	test_Region.cpp
-	test_RegionContour.cpp
 	test_Segment.cpp
 	test_StepAndRepeat.cpp
 	test_Transform.cpp

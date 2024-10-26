@@ -19,7 +19,7 @@
  */
 
 #include "Circle.h"
-#include "RegionContour.h"
+#include "Contour.h"
 #include <memory>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -27,16 +27,16 @@
 using namespace gerbex;
 
 
-TEST_GROUP(RegionContourTest) {
+TEST_GROUP(ContourTest) {
 };
 
-TEST(RegionContourTest, Initial) {
-	RegionContour contour;
+TEST(ContourTest, Initial) {
+	Contour contour;
 	LONGS_EQUAL(0, contour.GetSegments().size());
 }
 
-TEST(RegionContourTest, AddSegment) {
-	RegionContour contour;
+TEST(ContourTest, AddSegment) {
+	Contour contour;
 	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0),
 			Point(0, 100));
 
@@ -46,8 +46,8 @@ TEST(RegionContourTest, AddSegment) {
 	POINTERS_EQUAL(segment.get(), contour.GetSegments().back().get());
 }
 
-TEST(RegionContourTest, AddSegment_ZeroLength) {
-	RegionContour contour;
+TEST(ContourTest, AddSegment_ZeroLength) {
+	Contour contour;
 
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(0, 0);
@@ -56,13 +56,13 @@ TEST(RegionContourTest, AddSegment_ZeroLength) {
 			contour.AddSegment(std::make_shared<Segment>(pt1, pt2)));
 }
 
-TEST(RegionContourTest, IsClosed_Empty) {
-	RegionContour contour;
+TEST(ContourTest, IsClosed_Empty) {
+	Contour contour;
 	CHECK(!contour.IsClosed());
 }
 
-TEST(RegionContourTest, IsClosed_TwoSegments) {
-	RegionContour contour;
+TEST(ContourTest, IsClosed_TwoSegments) {
+	Contour contour;
 
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
@@ -74,8 +74,8 @@ TEST(RegionContourTest, IsClosed_TwoSegments) {
 	CHECK(!contour.IsClosed());
 }
 
-TEST(RegionContourTest, IsClosed_Triangle) {
-	RegionContour contour;
+TEST(ContourTest, IsClosed_Triangle) {
+	Contour contour;
 
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
@@ -89,8 +89,8 @@ TEST(RegionContourTest, IsClosed_Triangle) {
 	CHECK(contour.IsClosed());
 }
 
-TEST(RegionContourTest, IsClosed_Triangle_OpenEnd) {
-	RegionContour contour;
+TEST(ContourTest, IsClosed_Triangle_OpenEnd) {
+	Contour contour;
 
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
@@ -105,8 +105,8 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenEnd) {
 	CHECK(!contour.IsClosed());
 }
 
-TEST(RegionContourTest, IsClosed_Triangle_OpenTop) {
-	RegionContour contour;
+TEST(ContourTest, IsClosed_Triangle_OpenTop) {
+	Contour contour;
 
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
@@ -120,4 +120,6 @@ TEST(RegionContourTest, IsClosed_Triangle_OpenTop) {
 	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
 }
+
+//TODO test translate, transform
 

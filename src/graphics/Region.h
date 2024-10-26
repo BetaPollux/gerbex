@@ -21,8 +21,8 @@
 #ifndef REGION_H_
 #define REGION_H_
 
+#include <Contour.h>
 #include "GraphicalObject.h"
-#include "RegionContour.h"
 #include "Transform.h"
 #include <memory>
 #include <vector>
@@ -41,14 +41,14 @@ public:
 	virtual ~Region() = default;
 	void StartContour();
 	void AddSegment(const std::shared_ptr<Segment> &segment);
-	const std::vector<RegionContour>& GetContours() const;
+	const std::vector<Contour>& GetContours() const;
 	bool AreContoursClosed() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Polarity GetPolarity() const;
 	Box GetBox() const override;
 
 private:
-	std::vector<RegionContour> m_contours;
+	std::vector<Contour> m_contours;
 	Polarity m_polarity;
 
 };
