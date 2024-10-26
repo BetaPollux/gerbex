@@ -47,3 +47,4 @@ TEST(MacroTest, AddPrimitives) {
 	POINTERS_EQUAL(prims.back().get(), poly.get());
 }
 
+//TODO test serialize, get box, clone

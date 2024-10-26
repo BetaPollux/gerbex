@@ -115,6 +115,9 @@ public:
 		m_y *= factor;
 		return *this;
 	}
+	Point operator-() const {
+		return Point(-m_x, -m_y);
+	}
 	double GetX() const {
 		return m_x;
 	}

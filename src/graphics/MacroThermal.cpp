@@ -94,11 +94,11 @@ void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
 		Contour contour;
 		contour.AddSegment(std::make_shared<Segment>(innerBot, outerBot));
 		contour.AddSegment(
-				std::make_shared<ArcSegment>(outerBot, outerTop, outerBot * -1.0,
+				std::make_shared<ArcSegment>(outerBot, outerTop, -outerBot,
 						ArcDirection::CounterClockwise));
 		contour.AddSegment(std::make_shared<Segment>(outerTop, innerTop));
 		contour.AddSegment(
-				std::make_shared<ArcSegment>(innerTop, innerBot, innerTop * -1.0,
+				std::make_shared<ArcSegment>(innerTop, innerBot, -innerTop,
 						ArcDirection::Clockwise));
 
 		Transform rot;

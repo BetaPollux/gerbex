@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "Point.h"
 #include "CppUTest/TestHarness.h"
 
@@ -57,43 +58,29 @@ TEST(PointTest, Add) {
 	Point pt1(100, -300);
 	Point pt2(100, -300);
 
-	CHECK((pt1 + pt2) == Point(200, -600));
+	CHECK_EQUAL(Point(200, -600), pt1 + pt2);
 }
 
 TEST(PointTest, Subtract) {
 	Point pt1(100, -300);
 	Point pt2(100, -300);
 
-	CHECK((pt1 - pt2) == Point(0, 0));
+	CHECK_EQUAL(Point(0, 0), pt1 - pt2);
 }
 
-TEST(PointTest, Scale) {
+TEST(PointTest, Multiply) {
 	Point pt1(100, -300);
 
-	CHECK((pt1 * 3) == Point(300, -900));
+	CHECK_EQUAL(Point(300, -900), pt1 * 3);
 }
 
+TEST(PointTest, Divide) {
+	Point pt1(100, -300);
 
-TEST_GROUP(RealPointTest) {
-};
-
-TEST(RealPointTest, Add) {
-	Point pt1(1.00, -3.00);
-	Point pt2(1.00, -3.00);
-
-	CHECK((pt1 + pt2) == Point(2.00, -6.00));
+	CHECK_EQUAL(Point(50, -150), pt1 / 2.0);
 }
+TEST(PointTest, UnaryMinus) {
+	Point pt(2.5, -1.25);
 
-TEST(RealPointTest, Subtract) {
-	Point pt1(1.00, -3.00);
-	Point pt2(1.00, -3.00);
-
-	CHECK((pt1 - pt2) == Point(0.0, 0.0));
+	CHECK_EQUAL(Point(-2.5, 1.25), -pt);
 }
-
-TEST(RealPointTest, Scale) {
-	Point pt1(1.00, -3.00);
-
-	CHECK((pt1 * 2.5) == Point(2.50, -7.50));
-}
-
