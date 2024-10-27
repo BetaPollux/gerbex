@@ -24,6 +24,7 @@
 #include "DataTypeParser.h"
 #include "Point.h"
 #include "MacroTemplate.h"
+#include "Transform.h"
 #include <memory>
 #include "GraphicsStringFrom.h"
 #include "CppUTestExt/MockSupport.h"
@@ -66,7 +67,6 @@ public:
     }
 };
 
-
 class MacroTemplateComparator : public MockNamedValueComparator
 {
 public:
@@ -87,5 +87,20 @@ public:
     }
 };
 
+class TransformComparator : public MockNamedValueComparator
+{
+public:
+    virtual bool isEqual(const void* object1, const void* object2)
+    {
+    	Transform transform1 = *(Transform*)object1;
+    	Transform transform2 = *(Transform*)object2;
+        return transform1 == transform2;
+    }
+    virtual SimpleString valueToString(const void* object)
+    {
+    	Transform pt = *(Transform*)object;
+        return StringFrom(pt);
+    }
+};
 
 #endif /* COMPARATORS_H_ */

@@ -21,14 +21,14 @@
 #ifndef MOCKAPERTURE_H_
 #define MOCKAPERTURE_H_
 
-#include "Aperture.h"
+#include "Circle.h"
 
 namespace gerbex {
 
 /*
  *
  */
-class MockAperture : public Aperture {
+class MockAperture : public Circle {
 public:
 	MockAperture();
 	virtual ~MockAperture() = default;

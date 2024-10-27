@@ -31,12 +31,39 @@ SimpleString StringFrom(const gerbex::Box &box) {
 }
 
 SimpleString StringFrom(const gerbex::Circle &circle) {
-	return StringFromFormat("%f, %f", circle.GetDiameter(),
-			circle.GetHoleDiameter());
+	return StringFromFormat("CIRC D: %f, H: %f, P: %d", circle.GetDiameter(),
+			circle.GetHoleDiameter(), (int)circle.GetPolarity());
 }
 
 SimpleString StringFrom(const gerbex::Point &point) {
 	return StringFromFormat("(%f, %f)", point.GetX(), point.GetY());
+}
+
+SimpleString StringFrom(const gerbex::Obround &obround) {
+	SimpleString result = StringFromFormat("OBR  W: %f, H: %f, P: %d",
+			obround.GetDrawWidth(), obround.GetHoleDiameter(),
+			(int) obround.GetPolarity());
+	result += StringFrom(", ") + StringFrom(obround.GetSegment().GetStart());
+	result += StringFrom(", ") + StringFrom(obround.GetSegment().GetEnd());
+	return result;
+}
+
+SimpleString StringFrom(const gerbex::Polygon &polygon) {
+	SimpleString result = StringFromFormat("POLY H: %f, P: %d",
+			polygon.GetHoleDiameter(), (int) polygon.GetPolarity());
+	for (const gerbex::Point &pt : polygon.GetVertices()) {
+		result += StringFrom(", ") + StringFrom(pt);
+	}
+	return result;
+}
+
+SimpleString StringFrom(const gerbex::Rectangle &rectangle) {
+	SimpleString result = StringFromFormat("RECT H: %f, P: %d",
+			rectangle.GetHoleDiameter(), (int) rectangle.GetPolarity());
+	for (const gerbex::Point &pt : rectangle.GetVertices()) {
+		result += StringFrom(", ") + StringFrom(pt);
+	}
+	return result;
 }
 
 SimpleString StringFrom(const gerbex::Transform &transform) {

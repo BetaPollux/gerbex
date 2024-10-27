@@ -19,6 +19,7 @@
  */
 
 #include "Arc.h"
+#include "Rectangle.h"
 #include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 
@@ -60,6 +61,12 @@ TEST(ArcTest, Direction) {
 
 TEST(ArcTest, Aperture) {
 	CHECK(aperture == arc.GetAperture());
+}
+
+TEST(ArcTest, RejectsNotCircle) {
+	std::shared_ptr<Aperture> rect = std::make_shared<Rectangle>();
+	CHECK_THROWS(std::invalid_argument,
+			Arc(ArcSegment(start, end, offset, direction), rect));
 }
 
 TEST(ArcTest, Box) {

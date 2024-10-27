@@ -61,10 +61,6 @@ double Polygon::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
 
-int Polygon::GetNumVertices() const {
-	return m_vertices.size();
-}
-
 void Polygon::Serialize(Serializer &serializer, const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
@@ -82,10 +78,21 @@ std::unique_ptr<Aperture> Polygon::Clone() const {
 }
 
 void Polygon::ApplyTransform(const Transform &transform) {
+	m_polarity = transform.ApplyPolarity(m_polarity);
 	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
 	for (Point &p : m_vertices) {
 		p = transform.Apply(p);
 	}
+}
+
+bool Polygon::operator ==(const Polygon &rhs) const {
+	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter
+			&& m_polarity == rhs.m_polarity;
+}
+
+bool Polygon::operator !=(const Polygon &rhs) const {
+	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter
+			|| m_polarity != rhs.m_polarity;
 }
 
 const std::vector<Point>& Polygon::GetVertices() const {

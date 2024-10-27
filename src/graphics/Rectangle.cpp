@@ -65,10 +65,21 @@ std::unique_ptr<Aperture> Rectangle::Clone() const {
 }
 
 void Rectangle::ApplyTransform(const Transform &transform) {
+	m_polarity = transform.ApplyPolarity(m_polarity);
 	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
 	for (Point &p : m_vertices) {
 		p = transform.Apply(p);
 	}
+}
+
+bool Rectangle::operator ==(const Rectangle &rhs) const {
+	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter
+			&& m_polarity == rhs.m_polarity;
+}
+
+bool Rectangle::operator !=(const Rectangle &rhs) const {
+	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter
+			|| m_polarity != rhs.m_polarity;
 }
 
 const std::vector<Point>& Rectangle::GetVertices() const {

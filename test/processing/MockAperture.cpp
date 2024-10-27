@@ -20,29 +20,35 @@
 
 #include "Box.h"
 #include "MockAperture.h"
+#include "CppUTestExt/MockSupport.h"
 
 namespace gerbex {
 
-MockAperture::MockAperture() {
+MockAperture::MockAperture() :
+		Circle() {
 	// Empty
-
 }
 
-void MockAperture::Serialize(Serializer &serializer, const Point &origin) const {
-	(void)serializer;
-	(void)origin;
+void MockAperture::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	(void) serializer;
+	(void) origin;
+	mock().actualCall("ApertureSerialize");
 }
 
 Box MockAperture::GetBox() const {
+	mock().actualCall("ApertureGetBox");
 	return Box();
 }
 
 std::unique_ptr<Aperture> MockAperture::Clone() const {
+	mock().actualCall("ApertureClone");
 	return std::make_unique<MockAperture>();
 }
 
 void MockAperture::ApplyTransform(const gerbex::Transform &transform) {
-	(void)transform;
+	mock().actualCall("ApertureApplyTransform").withParameterOfType("Transform",
+			"transform", &transform);
 }
 
 } /* namespace gerbex */

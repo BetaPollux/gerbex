@@ -29,9 +29,14 @@ Arc::Arc() :
 	// Empty
 }
 
-Arc::Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture) :
-		m_segment { segment }, m_aperture { aperture } {
-	// Empty
+Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture) :
+		m_segment { segment } {
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
+			aperture);
+	if (!circle) {
+		throw std::invalid_argument("arc only supports circle apertures");
+	}
+	m_aperture = circle;
 }
 
 void Arc::Serialize(Serializer &serializer, const Point &origin) const {

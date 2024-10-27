@@ -82,7 +82,20 @@ const Segment& Obround::GetSegment() const {
 	return m_segment;
 }
 
+bool Obround::operator ==(const Obround &rhs) const {
+	return m_segment == rhs.m_segment && m_drawWidth == rhs.m_drawWidth
+			&& m_holeDiameter == rhs.m_holeDiameter
+			&& m_polarity == rhs.m_polarity;
+}
+
+bool Obround::operator !=(const Obround &rhs) const {
+	return m_segment != rhs.m_segment || m_drawWidth != rhs.m_drawWidth
+				|| m_holeDiameter != rhs.m_holeDiameter
+				|| m_polarity != rhs.m_polarity;
+}
+
 void Obround::ApplyTransform(const Transform &transform) {
+	m_polarity = transform.ApplyPolarity(m_polarity);
 	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
 	m_segment.Transform(transform);
 	m_drawWidth = transform.ApplyScaling(m_drawWidth);

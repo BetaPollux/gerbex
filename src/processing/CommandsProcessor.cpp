@@ -93,12 +93,11 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 			*m_graphicsState.GetCurrentPoint(), coord);
 
 	if (m_commandState != CommandState::InsideRegion) {
-		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
-				m_graphicsState.GetCurrentAperture());
-		if (circle == nullptr) {
-			throw std::logic_error("draw requires valid circle aperture");
+		if (m_graphicsState.GetCurrentAperture() == nullptr) {
+			throw std::logic_error("draw requires valid aperture");
 		}
-		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
+		std::shared_ptr<Aperture> clone =
+				m_graphicsState.GetCurrentAperture()->Clone();
 		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, clone);
 		m_objectDest.top()->push_back(obj);
@@ -128,12 +127,11 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 			*m_graphicsState.GetCurrentPoint(), coord, offset, direction);
 
 	if (m_commandState != CommandState::InsideRegion) {
-		std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
-				m_graphicsState.GetCurrentAperture());
-		if (circle == nullptr) {
-			throw std::logic_error("arc requires valid circle aperture");
+		if (m_graphicsState.GetCurrentAperture() == nullptr) {
+			throw std::logic_error("arc requires valid aperture");
 		}
-		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
+		std::shared_ptr<Aperture> clone =
+				m_graphicsState.GetCurrentAperture()->Clone();
 		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, clone);
 		m_objectDest.top()->push_back(obj);

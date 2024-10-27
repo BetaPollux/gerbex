@@ -35,7 +35,7 @@ namespace gerbex {
 class Arc: public GraphicalObject {
 public:
 	Arc();
-	Arc(const ArcSegment &segment, std::shared_ptr<Circle> aperture);
+	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture);
 	virtual ~Arc() = default;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	std::shared_ptr<Circle> GetAperture() const;

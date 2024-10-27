@@ -30,9 +30,13 @@ Draw::Draw() :
 	// Empty
 }
 
-Draw::Draw(const Segment &segment, std::shared_ptr<Circle> aperture) :
-		m_segment { segment }, m_aperture { aperture } {
-	// Empty
+Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture) :
+		m_segment { segment } {
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
+	if (!circle) {
+		throw std::invalid_argument("draw only supports circle apertures");
+	}
+	m_aperture = circle;
 }
 
 void Draw::Serialize(Serializer &serializer, const Point &origin) const {

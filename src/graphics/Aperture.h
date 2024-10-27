@@ -47,6 +47,9 @@ public:
 	Polarity GetPolarity() const {
 		return m_polarity;
 	}
+	void SetPolarity(Polarity polarity) {
+		m_polarity = polarity;
+	}
 
 protected:
 	Polarity m_polarity;

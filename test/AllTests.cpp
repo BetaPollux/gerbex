@@ -28,11 +28,13 @@ int main(int ac, char** av)
 	PointComparator pointComparator;
 	ParamsComparator paramsComparator;
 	MacroTemplateComparator macroComparator;
+	TransformComparator transformComparator;
 	MockSupportPlugin mockPlugin;
 
 	mockPlugin.installComparator("Point", pointComparator);
 	mockPlugin.installComparator("Parameters", paramsComparator);
 	mockPlugin.installComparator("MacroTemplate", macroComparator);
+	mockPlugin.installComparator("Transform", transformComparator);
 	TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);
 
     return CommandLineTestRunner::RunAllTests(ac, av);

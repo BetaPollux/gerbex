@@ -67,6 +67,37 @@ TEST(CircleTest, Box) {
 	CHECK_EQUAL(expected, circle.GetBox());
 }
 
+TEST_GROUP(CircleEquality) {
+	Circle base = Circle(1.0, 0.0);
+	Circle diameter = Circle(2.5, 0.0);
+	Circle hole = Circle(1.0, 0.5);
+	Circle polarity = Circle(1.0, 0.0);
+
+	void setup() {
+		polarity.SetPolarity(Polarity::Clear);
+	}
+};
+
+TEST(CircleEquality, Same) {
+	CHECK(base == base);
+	CHECK(!(base != base));
+}
+
+TEST(CircleEquality, Diameter) {
+	CHECK(base != diameter);
+	CHECK(!(base == diameter));
+}
+
+TEST(CircleEquality, Hole) {
+	CHECK(base != hole);
+	CHECK(!(base == hole));
+}
+
+TEST(CircleEquality, Polarity) {
+	CHECK(base != polarity);
+	CHECK(!(base == polarity));
+}
+
 TEST_GROUP(Circle_Transformed) {
 	Transform transform;
 	Circle circle;

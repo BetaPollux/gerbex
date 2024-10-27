@@ -57,12 +57,12 @@ Box Circle::GetBox() const {
 	return Box(GetDiameter(), Point());
 }
 
-bool Circle::operator ==(const Circle &rhs) {
+bool Circle::operator ==(const Circle &rhs) const {
 	return m_diameter == rhs.m_diameter && m_holeDiameter == rhs.m_holeDiameter
 			&& m_polarity == rhs.m_polarity;
 }
 
-bool Circle::operator !=(const Circle &rhs) {
+bool Circle::operator !=(const Circle &rhs) const {
 	return m_diameter != rhs.m_diameter || m_holeDiameter != rhs.m_holeDiameter
 			|| m_polarity != rhs.m_polarity;
 }

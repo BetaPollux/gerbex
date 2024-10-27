@@ -94,6 +94,10 @@ TEST(Obround_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(0.5, obround.GetHoleDiameter(), DBL_TOL);
 }
 
+TEST(Obround_Transformed, Polarity) {
+	CHECK_EQUAL((int)Polarity::Clear, (int)obround.GetPolarity());
+}
+
 TEST(Obround_Transformed, Box) {
 	Box expected(1.0, 2.0, -0.5, -1.0);
 	CHECK_EQUAL(expected, obround.GetBox());
@@ -104,10 +108,7 @@ TEST(Obround_Transformed, Clone) {
 	Obround *clone = (Obround*) aperture.get();
 
 	CHECK(clone != &obround);
-	//TODO add equality op
-	DOUBLES_EQUAL(clone->GetLength(), obround.GetLength(), DBL_TOL);
-	DOUBLES_EQUAL(clone->GetDrawWidth(), obround.GetDrawWidth(), DBL_TOL);
-	DOUBLES_EQUAL(clone->GetHoleDiameter(), obround.GetHoleDiameter(), DBL_TOL);
+	CHECK_EQUAL(obround, *clone);
 }
 
 // TODO test obround serialize

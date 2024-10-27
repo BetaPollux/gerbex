@@ -34,6 +34,8 @@ public:
 	Rectangle();
 	Rectangle(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Rectangle() = default;
+	bool operator==(const Rectangle &rhs) const;
+	bool operator!=(const Rectangle &rhs) const;
 	double GetHoleDiameter() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;

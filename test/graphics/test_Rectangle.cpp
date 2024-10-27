@@ -76,7 +76,7 @@ TEST_GROUP(Rectangle_Transformed) {
 		transform.SetRotation(45.0);
 		transform.SetPolarity(Polarity::Clear);
 
-		rect = Rectangle(1.5, 0.5, 0.25);
+		rect = Rectangle(1.0, 1.0, 0.25);
 		rect.ApplyTransform(transform);
 	}
 };
@@ -85,9 +85,17 @@ TEST(Rectangle_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(0.5, rect.GetHoleDiameter(), DBL_TOL);
 }
 
-TEST(Rectangle_Transformed, Box) {
-	Box expected(2.0 * sqrt(2.0), 2.0 * sqrt(2.0), -sqrt(2.0), -sqrt(2.0));
-	CHECK_EQUAL(expected, rect.GetBox());
+TEST(Rectangle_Transformed, Polarity) {
+	CHECK_EQUAL((int)Polarity::Clear, (int)rect.GetPolarity());
+}
+
+TEST(Rectangle_Transformed, Vertices) {
+	// 45-deg rotation with 2x scaling has corners at (0, +/- w) and (+/- w, 0)
+	CHECK_EQUAL(4, rect.GetVertices().size());
+	CHECK_EQUAL(Point(0.0, sqrt(2.0)), rect.GetVertices()[0]);
+	CHECK_EQUAL(Point(-sqrt(2.0), 0.0), rect.GetVertices()[1]);
+	CHECK_EQUAL(Point(0.0, -sqrt(2.0)), rect.GetVertices()[2]);
+	CHECK_EQUAL(Point(sqrt(2.0), 0.0), rect.GetVertices()[3]);
 }
 
 TEST(Rectangle_Transformed, Clone) {
@@ -95,9 +103,7 @@ TEST(Rectangle_Transformed, Clone) {
 	Rectangle *clone = (Rectangle*) aperture.get();
 
 	CHECK(clone != &rect);
-	//TODO add equality op
-	CHECK_EQUAL(clone->GetVertices(), rect.GetVertices());
-	DOUBLES_EQUAL(clone->GetHoleDiameter(), rect.GetHoleDiameter(), DBL_TOL);
+	CHECK_EQUAL(rect, *clone);
 }
 
 // TODO test rect serialize

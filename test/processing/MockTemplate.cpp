@@ -27,9 +27,6 @@ namespace gerbex {
 MockTemplate::MockTemplate() {
 }
 
-MockTemplate::~MockTemplate() {
-}
-
 std::unique_ptr<Aperture> MockTemplate::Call(
 		const Parameters &parameters) {
 	void *aperture = mock().actualCall("CallTemplate").withParameterOfType(

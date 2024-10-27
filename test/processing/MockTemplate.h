@@ -32,7 +32,7 @@ namespace gerbex {
 class MockTemplate: public ApertureTemplate {
 public:
 	MockTemplate();
-	virtual ~MockTemplate();
+	virtual ~MockTemplate() = default;
 	std::unique_ptr<Aperture> Call(const Parameters &parameters) override;
 
 };

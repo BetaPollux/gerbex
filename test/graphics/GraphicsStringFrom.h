@@ -24,14 +24,20 @@
 #include "BlockAperture.h"
 #include "Box.h"
 #include "Circle.h"
+#include "Obround.h"
 #include "Point.h"
+#include "Polygon.h"
+#include "Rectangle.h"
 #include "Transform.h"
 #include "CppUTest/SimpleString.h"
 
 SimpleString StringFrom(const gerbex::BlockAperture &block);
 SimpleString StringFrom(const gerbex::Box &box);
 SimpleString StringFrom(const gerbex::Circle &circle);
+SimpleString StringFrom(const gerbex::Obround &obround);
 SimpleString StringFrom(const gerbex::Point &point);
+SimpleString StringFrom(const gerbex::Polygon &polygon);
+SimpleString StringFrom(const gerbex::Rectangle &rectangle);
 SimpleString StringFrom(const gerbex::Transform &transform);
 
 #endif /* GRAPHICSSTRINGFROM_H_ */

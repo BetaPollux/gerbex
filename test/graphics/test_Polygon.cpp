@@ -89,10 +89,17 @@ TEST(Polygon_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(1.0, poly.GetHoleDiameter(), DBL_TOL);
 }
 
-TEST(Polygon_Transformed, Box) {
-	// 90-deg rotation has corners at (0, +/- d) and (+/- d, 0)
-	Box expected(4.0, Point());
-	CHECK_EQUAL(expected, poly.GetBox());
+TEST(Polygon_Transformed, Polarity) {
+	CHECK_EQUAL((int)Polarity::Clear, (int)poly.GetPolarity());
+}
+
+TEST(Polygon_Transformed, Vertices) {
+	// 45+45-deg rotation with 2x scaling has corners at (0, +/- d) and (+/- d, 0)
+	CHECK_EQUAL(4, poly.GetVertices().size());
+	CHECK_EQUAL(Point(0.0, 2.0), poly.GetVertices()[0]);
+	CHECK_EQUAL(Point(-2.0, 0.0), poly.GetVertices()[1]);
+	CHECK_EQUAL(Point(0.0, -2.0), poly.GetVertices()[2]);
+	CHECK_EQUAL(Point(2.0, 0.0), poly.GetVertices()[3]);
 }
 
 TEST(Polygon_Transformed, Clone) {
@@ -100,9 +107,7 @@ TEST(Polygon_Transformed, Clone) {
 	Polygon *clone = (Polygon*) aperture.get();
 
 	CHECK(clone != &poly);
-	//TODO add equality op
-	CHECK_EQUAL(clone->GetVertices(), poly.GetVertices());
-	DOUBLES_EQUAL(clone->GetHoleDiameter(), poly.GetHoleDiameter(), DBL_TOL);
+	CHECK_EQUAL(poly, *clone);
 }
 
 // TODO test poly serialize

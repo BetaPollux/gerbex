@@ -19,42 +19,43 @@
  */
 
 #include "CircleTemplate.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
-
-#define DBL_TOL	1e-5
 
 TEST_GROUP(CircleTemplateTest) {
 	CircleTemplate tmp;
 };
 
 TEST(CircleTemplateTest, TooFewParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call({}));
+	CHECK_THROWS(std::invalid_argument, tmp.Call( { }));
 }
 
 TEST(CircleTemplateTest, TooManyParams) {
-	CHECK_THROWS(std::invalid_argument, tmp.Call({ 1.0, 2.0, 3.0 }));
+	CHECK_THROWS(std::invalid_argument, tmp.Call( { 1.0, 2.0, 3.0 }));
 }
 
 TEST(CircleTemplateTest, AllParams) {
 	Parameters params = { 1.0, 0.25 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
-	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
+			aperture);
 
+	Circle expected(1.0, 0.25);
 	CHECK(nullptr != circle);
-	DOUBLES_EQUAL(1.0, circle->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.25, circle->GetHoleDiameter(), DBL_TOL);
+	CHECK_EQUAL(expected, *circle);
 }
 
 TEST(CircleTemplateTest, DefaultHole) {
 	Parameters params = { 1.0 };
 	std::shared_ptr<Aperture> aperture = tmp.Call(params);
-	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(aperture);
+	std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(
+			aperture);
 
+	Circle expected(1.0);
 	CHECK(nullptr != circle);
-	DOUBLES_EQUAL(1.0, circle->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, circle->GetHoleDiameter(), DBL_TOL);
+	CHECK_EQUAL(expected, *circle);
 }
 

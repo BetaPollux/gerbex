@@ -59,4 +59,12 @@ void Segment::Transform(const gerbex::Transform &transform) {
 	m_end = transform.Apply(m_end);
 }
 
+bool Segment::operator ==(const Segment &rhs) const {
+	return m_start == rhs.m_start && m_end == rhs.m_end;
+}
+
+bool Segment::operator !=(const Segment &rhs) const {
+	return m_start != rhs.m_start || m_end != rhs.m_end;
+}
+
 } /* namespace gerbex */

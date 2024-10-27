@@ -35,6 +35,8 @@ public:
 	Segment();
 	Segment(const Point &start, const Point &end);
 	virtual ~Segment() = default;
+	bool operator==(const Segment &rhs) const;
+	bool operator!=(const Segment &rhs) const;
 	const Point& GetStart() const;
 	const Point& GetEnd() const;
 	virtual Box GetBox() const;

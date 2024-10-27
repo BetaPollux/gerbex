@@ -22,16 +22,17 @@
 #include "BlockAperture.h"
 #include "CastHelpers.h"
 #include "CommandsProcessor.h"
-#include "Circle.h"
-#include "CircleTemplate.h"
 #include "Draw.h"
 #include "Flash.h"
 #include "Region.h"
 #include "StepAndRepeat.h"
 #include "GraphicsStringFrom.h"
+#include "MockAperture.h"
+#include "MockTemplate.h"
 #include <array>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
 
 using namespace gerbex;
 
@@ -64,12 +65,12 @@ TEST(CommandsProcessor_Init, GetTemplate_DoesNotExist) {
 }
 
 TEST(CommandsProcessor_Init, AddTemplate_AlreadyExists) {
-	std::shared_ptr<CircleTemplate> tmpl = std::make_shared<CircleTemplate>();
+	std::shared_ptr<MockTemplate> tmpl = std::make_shared<MockTemplate>();
 	CHECK_THROWS(std::invalid_argument, processor.AddTemplate("C", tmpl));
 }
 
 TEST(CommandsProcessor_Init, AddTemplate) {
-	std::shared_ptr<CircleTemplate> tmpl = std::make_shared<CircleTemplate>();
+	std::shared_ptr<MockTemplate> tmpl = std::make_shared<MockTemplate>();
 	processor.AddTemplate("Triangle_30", tmpl);
 	CHECK(processor.GetTemplate("Triangle_30") == tmpl);
 }
@@ -79,31 +80,32 @@ TEST(CommandsProcessor_Init, SetCurrentAperture_DoesNotExist) {
 }
 
 TEST(CommandsProcessor_Init, ApertureDefine) {
-	std::shared_ptr<Circle> circle = std::make_unique<Circle>();
+	std::shared_ptr<MockAperture> aperture = std::make_unique<MockAperture>();
 
-	processor.ApertureDefine(10, circle);
+	processor.ApertureDefine(10, aperture);
 	processor.SetCurrentAperture(10);
 
-	POINTERS_EQUAL(circle.get(),
+	POINTERS_EQUAL(aperture.get(),
 			processor.GetGraphicsState().GetCurrentAperture().get());
 }
 
 TEST(CommandsProcessor_Init, ApertureDefine_BadNumber) {
 	//0 through 9 are illegal
-	std::unique_ptr<Circle> circle = std::make_unique<Circle>();
+	std::unique_ptr<MockAperture> aperture = std::make_unique<MockAperture>();
 
 	CHECK_THROWS(std::invalid_argument,
-			processor.ApertureDefine(9, std::move(circle)));
+			processor.ApertureDefine(9, std::move(aperture)));
 }
 
 TEST(CommandsProcessor_Init, ApertureDefine_CannotReassign) {
 	int ident = 11;
-	std::unique_ptr<Circle> circle = std::make_unique<Circle>();
-	std::unique_ptr<Circle> other_circle = std::make_unique<Circle>();
+	std::unique_ptr<MockAperture> aperture = std::make_unique<MockAperture>();
+	std::unique_ptr<MockAperture> other_aperture =
+			std::make_unique<MockAperture>();
 
-	processor.ApertureDefine(ident, std::move(circle));
+	processor.ApertureDefine(ident, std::move(aperture));
 	CHECK_THROWS(std::invalid_argument,
-			processor.ApertureDefine(ident, std::move(other_circle)));
+			processor.ApertureDefine(ident, std::move(other_aperture)));
 }
 
 TEST(CommandsProcessor_Init, ApertureDefine_Null) {
@@ -140,7 +142,7 @@ TEST(CommandsProcessor_Init, Arc_NeedsCurrentAperture) {
 TEST(CommandsProcessor_Init, Move) {
 	Point pt(1000, 3000);
 
-	MakeAndSetAperture<Circle>(processor, 10);
+	MakeAndSetAperture<MockAperture>(processor, 10);
 	processor.Move(pt);
 
 	LONGS_EQUAL(0, processor.GetObjects().size());
@@ -150,7 +152,7 @@ TEST(CommandsProcessor_Init, Move) {
 TEST(CommandsProcessor_Init, Draw_RequiresCurrentPoint) {
 	Point end(-250, 0);
 
-	MakeAndSetAperture<Circle>(processor, 10);
+	MakeAndSetAperture<MockAperture>(processor, 10);
 	processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 	//Current point is invalid on initialization
 
@@ -161,7 +163,7 @@ TEST(CommandsProcessor_Init, Arc_RequiresCurrentPoint) {
 	Point end(-3000, 4000);
 	Point offset(-3000, -2000);
 
-	MakeAndSetAperture<Circle>(processor, 10);
+	MakeAndSetAperture<MockAperture>(processor, 10);
 	processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 	//Current point is invalid on initialization
 
@@ -175,25 +177,29 @@ TEST(CommandsProcessor_Init, Arc_RequiresCurrentPoint) {
 TEST_GROUP(CommandsProcessor_Flash) {
 	Point origin;
 	CommandsProcessor processor;
-	std::shared_ptr<Circle> circle;
+	std::shared_ptr<MockAperture> aperture;
 
 	void setup() {
 		origin = Point(3.0, -2.0);
 
 		int id = 12;
-		circle = std::make_shared<Circle>(5.0, 0.75);
-		processor.ApertureDefine(id, circle);
+		aperture = std::make_shared<MockAperture>();
+		processor.ApertureDefine(id, aperture);
 		processor.SetCurrentAperture(id);
 	}
 };
 
 TEST(CommandsProcessor_Flash, MakesOne) {
+	mock().ignoreOtherCalls();
+
 	processor.Flash(origin);
 
 	LONGS_EQUAL(1, processor.GetObjects().size());
 }
 
 TEST(CommandsProcessor_Flash, Origin) {
+	mock().ignoreOtherCalls();
+
 	processor.Flash(origin);
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
@@ -203,27 +209,31 @@ TEST(CommandsProcessor_Flash, Origin) {
 }
 
 TEST(CommandsProcessor_Flash, Aperture) {
+	mock().expectOneCall("ApertureClone");
+	mock().ignoreOtherCalls();
+
 	processor.Flash(origin);
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
 			processor.GetObjects());
-
-	CHECK_EQUAL(*circle, *(Circle* )(flash->GetAperture().get()));
 }
 
 TEST(CommandsProcessor_Flash, Transform) {
 	Transform transform(Polarity::Clear, Mirroring::X, 30.0, 1.5);
+	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
+			"Transform", "transform", &transform);
+	mock().ignoreOtherCalls();
+
 	processor.GetGraphicsState().SetTransform(transform);
 	processor.Flash(origin);
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
 			processor.GetObjects());
-
-	//TODO use mock aperture
-	FAIL("test for flash transform");
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
+	mock().ignoreOtherCalls();
+
 	processor.Flash(origin);
 
 	CHECK_EQUAL(origin, *processor.GetGraphicsState().GetCurrentPoint());
@@ -236,15 +246,15 @@ TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
 TEST_GROUP(CommandsProcessor_PlotDraw) {
 	Point origin, end;
 	CommandsProcessor processor;
-	std::shared_ptr<Circle> circle;
+	std::shared_ptr<MockAperture> aperture;
 
 	void setup() {
 		origin = Point(3.0, -2.0);
 		end = Point(0.75, -0.5);
 
 		int id = 12;
-		circle = std::make_shared<Circle>(5.0, 0.75);
-		processor.ApertureDefine(id, circle);
+		aperture = std::make_shared<MockAperture>();
+		processor.ApertureDefine(id, aperture);
 		processor.SetCurrentAperture(id);
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.Move(origin);
@@ -263,12 +273,16 @@ TEST(CommandsProcessor_PlotDraw, BadState) {
 }
 
 TEST(CommandsProcessor_PlotDraw, MakesOne) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotDraw(end);
 
 	LONGS_EQUAL(1, processor.GetObjects().size());
 }
 
 TEST(CommandsProcessor_PlotDraw, Origin) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
@@ -278,6 +292,8 @@ TEST(CommandsProcessor_PlotDraw, Origin) {
 }
 
 TEST(CommandsProcessor_PlotDraw, End) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
@@ -287,27 +303,31 @@ TEST(CommandsProcessor_PlotDraw, End) {
 }
 
 TEST(CommandsProcessor_PlotDraw, Aperture) {
+	mock().expectOneCall("ApertureClone");
+	mock().ignoreOtherCalls();
+
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
 			processor.GetObjects());
-
-	CHECK_EQUAL(*circle, *(Circle* )(draw->GetAperture().get()));
 }
 
 TEST(CommandsProcessor_PlotDraw, Transform) {
 	Transform transform(Polarity::Clear, Mirroring::Y, 15.0, 0.5);
+	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
+			"Transform", "transform", &transform);
+	mock().ignoreOtherCalls();
+
 	processor.GetGraphicsState().SetTransform(transform);
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
 			processor.GetObjects());
-
-	//TODO use mock aperture
-	FAIL("test for draw transform");
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotDraw(end);
 
 	CHECK_EQUAL(end, *processor.GetGraphicsState().GetCurrentPoint());
@@ -320,7 +340,7 @@ TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
 TEST_GROUP(CommandsProcessor_PlotArc) {
 	Point origin, end, offset;
 	CommandsProcessor processor;
-	std::shared_ptr<Circle> circle;
+	std::shared_ptr<MockAperture> aperture;
 
 	void setup() {
 		origin = Point(3.0, -2.0);
@@ -328,8 +348,8 @@ TEST_GROUP(CommandsProcessor_PlotArc) {
 		offset = Point(-3.0, -2.0);
 
 		int id = 12;
-		circle = std::make_shared<Circle>(5.0, 0.75);
-		processor.ApertureDefine(id, circle);
+		aperture = std::make_shared<MockAperture>();
+		processor.ApertureDefine(id, aperture);
 		processor.SetCurrentAperture(id);
 		processor.GetGraphicsState().SetPlotState(PlotState::Clockwise);
 		processor.Move(origin);
@@ -348,18 +368,24 @@ TEST(CommandsProcessor_PlotArc, BadState) {
 }
 
 TEST(CommandsProcessor_PlotArc, MakesOne) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	LONGS_EQUAL(1, processor.GetObjects().size());
 }
 
 TEST(CommandsProcessor_PlotArc, SetsCurrentPoint) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	CHECK_EQUAL(end, *processor.GetGraphicsState().GetCurrentPoint());
 }
 
 TEST(CommandsProcessor_PlotArc, Origin) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
@@ -368,6 +394,8 @@ TEST(CommandsProcessor_PlotArc, Origin) {
 }
 
 TEST(CommandsProcessor_PlotArc, End) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
@@ -376,6 +404,8 @@ TEST(CommandsProcessor_PlotArc, End) {
 }
 
 TEST(CommandsProcessor_PlotArc, Offset) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
@@ -384,6 +414,8 @@ TEST(CommandsProcessor_PlotArc, Offset) {
 }
 
 TEST(CommandsProcessor_PlotArc, Direction_CW) {
+	mock().ignoreOtherCalls();
+
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
@@ -392,6 +424,8 @@ TEST(CommandsProcessor_PlotArc, Direction_CW) {
 }
 
 TEST(CommandsProcessor_PlotArc, Direction_CCW) {
+	mock().ignoreOtherCalls();
+
 	processor.GetGraphicsState().SetPlotState(PlotState::CounterClockwise);
 	processor.PlotArc(end, offset);
 
@@ -401,22 +435,23 @@ TEST(CommandsProcessor_PlotArc, Direction_CCW) {
 }
 
 TEST(CommandsProcessor_PlotArc, Aperture) {
+	mock().expectOneCall("ApertureClone");
+	mock().ignoreOtherCalls();
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
-
-	CHECK_EQUAL(*circle, *(Circle* )(arc->GetAperture().get()));
 }
 
 TEST(CommandsProcessor_PlotArc, Transform) {
 	Transform transform(Polarity::Clear, Mirroring::Y, 10.0, 1.25);
+	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
+			"Transform", "transform", &transform);
+	mock().ignoreOtherCalls();
+
 	processor.GetGraphicsState().SetTransform(transform);
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
-
-	//TODO use mock aperture
-	FAIL("test for arc transform");
 }
 
 /***
@@ -502,6 +537,8 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 		mid = Point(1500, 1000);
 		end = Point(750, -500);
 
+		mock().ignoreOtherCalls();
+
 		Transform transformation;
 		transformation.SetPolarity(Polarity::Clear);
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
@@ -516,7 +553,7 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 };
 
 TEST(CommandsProcessor_AfterRegion, AddsDrawsAgain) {
-	MakeAndSetAperture<Circle>(processor, 10);
+	MakeAndSetAperture<MockAperture>(processor, 10);
 	processor.Move(origin);
 	processor.PlotDraw(end);
 
@@ -552,16 +589,18 @@ TEST(CommandsProcessor_AfterRegion, TakesPolarity) {
 TEST_GROUP(CommandsProcessor_ApertureBlock) {
 	Point origin, end;
 	CommandsProcessor processor;
-	int blockId, circleId;
+	int blockId, apertureId;
 
 	void setup() {
 		origin = Point(3000, -2000);
 		end = Point(750, -500);
-		circleId = 10;
+		apertureId = 10;
 		blockId = 12;
 
+		mock().ignoreOtherCalls();
+
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
-		MakeAndSetAperture<Circle>(processor, circleId);
+		MakeAndSetAperture<MockAperture>(processor, apertureId);
 		processor.OpenApertureBlock(blockId);
 		processor.Move(origin);
 		processor.PlotDraw(end);
@@ -582,7 +621,8 @@ TEST(CommandsProcessor_ApertureBlock, DoesNotFlash) {
 TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(processor,
 			blockId);
-	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(*block->GetObjectList());
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
+			*block->GetObjectList());
 
 	LONGS_EQUAL(2, block->GetObjectList()->size());
 	CHECK_EQUAL(origin, draw->GetSegment().GetStart());
@@ -610,17 +650,19 @@ TEST(CommandsProcessor_ApertureBlock, FlashBlock) {
 TEST_GROUP(CommandsProcessor_NestedApertureBlock) {
 	Point origin, end;
 	CommandsProcessor processor;
-	int outerBlockId, innerBlockId, circleId;
+	int outerBlockId, innerBlockId, apertureId;
 
 	void setup() {
 		origin = Point(3000, -2000);
 		end = Point(750, -500);
-		circleId = 10;
+		apertureId = 10;
 		outerBlockId = 100;
 		innerBlockId = 101;
 
+		mock().ignoreOtherCalls();
+
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
-		MakeAndSetAperture<Circle>(processor, circleId);
+		MakeAndSetAperture<MockAperture>(processor, apertureId);
 		processor.OpenApertureBlock(outerBlockId);
 		processor.OpenApertureBlock(innerBlockId);
 		processor.Move(origin);
@@ -643,7 +685,8 @@ TEST(CommandsProcessor_NestedApertureBlock, OuterContainsInner) {
 	std::shared_ptr<BlockAperture> innerBlock = GetAperture<BlockAperture>(
 			processor, innerBlockId);
 
-	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(*outerBlock->GetObjectList());
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
+			*outerBlock->GetObjectList());
 	std::shared_ptr<BlockAperture> aperture = CheckAperture<BlockAperture>(
 			*flash);
 	CHECK_EQUAL(*innerBlock, *aperture);
@@ -676,7 +719,9 @@ TEST_GROUP(CommandsProcessor_StepAndRepeat) {
 		nx = 2;
 		ny = 3;
 
-		MakeAndSetAperture<Circle>(processor, 10);
+		mock().ignoreOtherCalls();
+
+		MakeAndSetAperture<MockAperture>(processor, 10);
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
 		processor.OpenStepAndRepeat(nx, ny, 0.5, 1.5);
 		processor.Flash(origin);

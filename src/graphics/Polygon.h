@@ -34,7 +34,8 @@ public:
 	Polygon();
 	Polygon(double outerDiameter, int numVertices, double rotation = 0.0, double holeDiameter = 0.0);
 	virtual ~Polygon() = default;
-	int GetNumVertices() const;
+	bool operator==(const Polygon &rhs) const;
+	bool operator!=(const Polygon &rhs) const;
 	double GetHoleDiameter() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;

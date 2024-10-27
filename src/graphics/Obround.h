@@ -35,6 +35,8 @@ public:
 	Obround();
 	Obround(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Obround() = default;
+	bool operator==(const Obround &rhs) const;
+	bool operator!=(const Obround &rhs) const;
 	double GetHoleDiameter() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;

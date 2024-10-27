@@ -52,6 +52,11 @@ TEST(DrawTest, Aperture) {
 	CHECK(aperture == draw.GetAperture());
 }
 
+TEST(DrawTest, RejectsNotCircle) {
+	std::shared_ptr<Aperture> rect = std::make_shared<Rectangle>();
+	CHECK_THROWS(std::invalid_argument, Draw(Segment(start, end), rect));
+}
+
 TEST(DrawTest, Box) {
 	Box expected(2.5, 2.5, 2.0, -2.0);
 	CHECK_EQUAL(expected, draw.GetBox());
