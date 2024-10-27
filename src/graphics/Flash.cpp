@@ -36,6 +36,7 @@ Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture) :
 }
 
 void Flash::Serialize(Serializer &serializer, const Point &origin) const {
+	serializer.SetPolarity(m_polarity);
 	m_aperture->Serialize(serializer, m_origin + origin);
 }
 
@@ -53,7 +54,7 @@ Box Flash::GetBox() const {
 
 void Flash::ApplyTransform(const Transform &transform) {
 	m_aperture->ApplyTransform(transform);
-	m_origin = transform.Apply(m_origin);
+	m_origin.ApplyTransform(transform);
 }
 
 std::unique_ptr<GraphicalObject> Flash::Clone() {

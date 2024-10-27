@@ -74,12 +74,11 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
 }
 
-void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
+void MacroThermal::Serialize(Serializer &serializer, const Point &origin) const {
 	// Exposure is always ON
-	double rOuter = 0.5 * transform.ApplyScaling(m_outerDiameter);
-	double rInner = 0.5 * transform.ApplyScaling(m_innerDiameter);
-	double dGap = 0.5 * transform.ApplyScaling(m_gapThickness);
+	double rOuter = 0.5 * m_outerDiameter;
+	double rInner = 0.5 * m_innerDiameter;
+	double dGap = 0.5 * m_gapThickness;
 	//TODO handle disappearing inner radius for large gap
 	//r^2 = x^2 + y^2
 	double dGapInner = sqrt(rInner * rInner - dGap * dGap);
@@ -105,7 +104,7 @@ void MacroThermal::Serialize(Serializer &serializer, const Point &origin,
 		rot.SetRotation(m_rotation + 90.0 * i);
 		contour.Transform(rot);
 		contour.Translate(origin);
-		serializer.AddContour(contour, isDark(transform));
+		serializer.AddContour(contour);
 	}
 }
 
@@ -121,6 +120,10 @@ Point MacroThermal::getRotatedCenter() const {
 	Point c = m_center;
 	c.Rotate(m_rotation);
 	return c;
+}
+
+void MacroThermal::ApplyTransform(const gerbex::Transform &transform) {
+	//TODO apply transform
 }
 
 } /* namespace gerbex */

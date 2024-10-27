@@ -187,22 +187,19 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 	if (std::regex_search(words.front(), match, regex)) {
 		std::string param = match[1].str();
 		std::string option = match[2].str();
-		Transform &transformation =
-				processor.GetGraphicsState().GetTransform();
+		GraphicsState &state = processor.GetGraphicsState();
 		if (param == "P") {
-			Polarity polarity = Transform::PolarityFromCommand(
-					option);
-			transformation.SetPolarity(polarity);
+			Polarity polarity = Polarity::FromCommand(option);
+			state.SetPolarity(polarity);
 		} else if (param == "M") {
-			Mirroring mirroring = Transform::MirroringFromCommand(
-					option);
-			transformation.SetMirroring(mirroring);
+			Mirroring mirroring = Transform::MirroringFromCommand(option);
+			state.GetTransform().SetMirroring(mirroring);
 		} else if (param == "R") {
 			double rotation = std::stod(option);
-			transformation.SetRotation(rotation);
+			state.GetTransform().SetRotation(rotation);
 		} else if (param == "S") {
 			double scale = std::stod(option);
-			transformation.SetScaling(scale);
+			state.GetTransform().SetScaling(scale);
 		}
 	} else {
 		throw std::invalid_argument("invalid aperture transformation");

@@ -38,12 +38,11 @@ public:
 	virtual ~MacroOutline() = default;
 	const std::vector<Point>& GetVertices() const;
 	static std::unique_ptr<MacroOutline> FromParameters(const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
+	void ApplyTransform(const Transform &transform) override;
 
 private:
-	std::vector<Point> getRotatedVertices() const;
 	std::vector<Point> m_vertices;
 };
 

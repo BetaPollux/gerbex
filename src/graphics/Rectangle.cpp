@@ -53,7 +53,7 @@ void Rectangle::Serialize(Serializer &serializer, const Point &origin) const {
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(vertices, m_polarity);
+	serializer.AddPolygon(vertices);
 }
 
 Box Rectangle::GetBox() const {
@@ -65,21 +65,18 @@ std::unique_ptr<Aperture> Rectangle::Clone() const {
 }
 
 void Rectangle::ApplyTransform(const Transform &transform) {
-	m_polarity = transform.ApplyPolarity(m_polarity);
-	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	m_holeDiameter *= transform.GetScaling();
 	for (Point &p : m_vertices) {
-		p = transform.Apply(p);
+		p.ApplyTransform(transform);
 	}
 }
 
 bool Rectangle::operator ==(const Rectangle &rhs) const {
-	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter
-			&& m_polarity == rhs.m_polarity;
+	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter;
 }
 
 bool Rectangle::operator !=(const Rectangle &rhs) const {
-	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter
-			|| m_polarity != rhs.m_polarity;
+	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter;
 }
 
 const std::vector<Point>& Rectangle::GetVertices() const {

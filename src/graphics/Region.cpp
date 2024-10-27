@@ -24,14 +24,12 @@
 
 namespace gerbex {
 
-Region::Region() :
-		m_polarity { Polarity::Dark } {
+Region::Region() {
 	// Empty
-
 }
 
-Region::Region(Polarity polarity) :
-		m_polarity { polarity } {
+Region::Region(Polarity polarity) {
+	m_polarity = polarity;
 }
 
 void Region::StartContour() {
@@ -63,13 +61,10 @@ bool Region::AreContoursClosed() const {
 
 void Region::Serialize(Serializer &serializer, const Point &origin) const {
 	(void) origin;
+	serializer.SetPolarity(m_polarity);
 	for (const Contour &c : m_contours) {
-		serializer.AddContour(c, m_polarity);
+		serializer.AddContour(c);
 	}
-}
-
-Polarity Region::GetPolarity() const {
-	return m_polarity;
 }
 
 Box Region::GetBox() const {

@@ -24,6 +24,7 @@
 #include "Aperture.h"
 #include "CoordinateData.h"
 #include "CoordinateFormat.h"
+#include "GraphicalObject.h"
 #include "Point.h"
 #include "Transform.h"
 #include <memory>
@@ -75,6 +76,8 @@ public:
 	Point GetPoint(const CoordinateData &data) const;
 	void AssertPlotState();
 	void AssertArcMode();
+	Polarity GetPolarity() const;
+	void SetPolarity(Polarity polarity);
 
 private:
 	std::optional<CoordinateFormat> m_format;
@@ -84,6 +87,7 @@ private:
 	std::optional<PlotState> m_plotState;
 	std::optional<ArcMode> m_arcMode;
 	Transform m_transform;
+	Polarity m_polarity;
 };
 
 } /* namespace gerbex */

@@ -54,8 +54,8 @@ double ArcSegment::GetRadius() const {
 }
 
 void ArcSegment::Transform(const gerbex::Transform &transform) {
-	m_start = transform.Apply(m_start);
-	m_end = transform.Apply(m_end);
+	m_start.ApplyTransform(transform);
+	m_end.ApplyTransform(transform);
 	if (transform.GetMirroring() == Mirroring::X
 			|| transform.GetMirroring() == Mirroring::Y) {
 		if (m_direction == ArcDirection::CounterClockwise) {

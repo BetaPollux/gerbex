@@ -78,7 +78,6 @@ TEST_GROUP(Polygon_Transformed) {
 		transform = Transform();
 		transform.SetScaling(2.0);
 		transform.SetRotation(45.0);
-		transform.SetPolarity(Polarity::Clear);
 
 		poly = Polygon(2.0, 4, 45.0, 0.5);
 		poly.ApplyTransform(transform);
@@ -87,10 +86,6 @@ TEST_GROUP(Polygon_Transformed) {
 
 TEST(Polygon_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(1.0, poly.GetHoleDiameter(), DBL_TOL);
-}
-
-TEST(Polygon_Transformed, Polarity) {
-	CHECK_EQUAL((int)Polarity::Clear, (int)poly.GetPolarity());
 }
 
 TEST(Polygon_Transformed, Vertices) {

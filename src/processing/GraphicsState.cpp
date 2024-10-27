@@ -25,9 +25,9 @@
 namespace gerbex {
 
 GraphicsState::GraphicsState() :
-		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transform { } {
+		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transform { }, m_polarity {
+				Polarity::Dark } {
 	// Empty
-
 }
 
 const std::shared_ptr<Aperture> GraphicsState::GetCurrentAperture() const {
@@ -66,8 +66,7 @@ Transform& GraphicsState::GetTransform() {
 	return m_transform;
 }
 
-void GraphicsState::SetTransform(
-		const Transform &transform) {
+void GraphicsState::SetTransform(const Transform &transform) {
 	m_transform = transform;
 }
 
@@ -153,6 +152,14 @@ void GraphicsState::AssertArcMode() {
 		std::cerr << "WARNING arc mode was not defined, assuming multi-quadrant"
 				<< std::endl;
 	}
+}
+
+Polarity GraphicsState::GetPolarity() const {
+	return m_polarity;
+}
+
+void GraphicsState::SetPolarity(Polarity polarity) {
+	m_polarity = polarity;
 }
 
 } /* namespace gerbex */

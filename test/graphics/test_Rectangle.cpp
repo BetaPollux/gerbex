@@ -74,7 +74,6 @@ TEST_GROUP(Rectangle_Transformed) {
 		transform = Transform();
 		transform.SetScaling(2.0);
 		transform.SetRotation(45.0);
-		transform.SetPolarity(Polarity::Clear);
 
 		rect = Rectangle(1.0, 1.0, 0.25);
 		rect.ApplyTransform(transform);
@@ -83,10 +82,6 @@ TEST_GROUP(Rectangle_Transformed) {
 
 TEST(Rectangle_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(0.5, rect.GetHoleDiameter(), DBL_TOL);
-}
-
-TEST(Rectangle_Transformed, Polarity) {
-	CHECK_EQUAL((int)Polarity::Clear, (int)rect.GetPolarity());
 }
 
 TEST(Rectangle_Transformed, Vertices) {

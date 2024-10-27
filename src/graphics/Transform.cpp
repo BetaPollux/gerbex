@@ -24,53 +24,31 @@
 namespace gerbex {
 
 Transform::Transform() :
-		m_isDark { true }, m_mirrorX { false }, m_mirrorY { false }, m_rotation {
-				0.0 }, m_scaling { 1.0 } {
+		Transform(Mirroring::None, 0.0, 1.0) {
 	// Empty
 }
 
-Transform::Transform(Polarity polarity, Mirroring mirroring, double rotation,
-		double scaling) :
-		m_rotation { rotation }, m_scaling { scaling } {
-	SetPolarity(polarity);
-	SetMirroring(mirroring);
+Transform::Transform(Mirroring mirroring, double rotation, double scaling) :
+		m_mirroring { mirroring }, m_rotation { rotation }, m_scaling { scaling } {
+	// Empty
 }
 
 bool Transform::operator ==(const Transform &rhs) const {
-	return (m_isDark == rhs.m_isDark) && (m_mirrorX == rhs.m_mirrorX)
-			&& (m_mirrorY == rhs.m_mirrorY) && (m_rotation == rhs.m_rotation)
+	return (m_mirroring == rhs.m_mirroring) && (m_rotation == rhs.m_rotation)
 			&& (m_scaling == rhs.m_scaling);
 }
 
 bool Transform::operator !=(const Transform &rhs) const {
-	return (m_isDark != rhs.m_isDark) || (m_mirrorX != rhs.m_mirrorX)
-			|| (m_mirrorY != rhs.m_mirrorY) || (m_rotation != rhs.m_rotation)
+	return (m_mirroring != rhs.m_mirroring) || (m_rotation != rhs.m_rotation)
 			|| (m_scaling != rhs.m_scaling);
 }
 
 Mirroring Transform::GetMirroring() const {
-	if (m_mirrorX && m_mirrorY) {
-		return Mirroring::XY;
-	} else if (m_mirrorX) {
-		return Mirroring::X;
-	} else if (m_mirrorY) {
-		return Mirroring::Y;
-	} else {
-		return Mirroring::None;
-	}
+	return m_mirroring;
 }
 
 void Transform::SetMirroring(Mirroring mirroring) {
-	m_mirrorX = mirroring == Mirroring::X || mirroring == Mirroring::XY;
-	m_mirrorY = mirroring == Mirroring::Y || mirroring == Mirroring::XY;
-}
-
-Polarity Transform::GetPolarity() const {
-	return m_isDark ? Polarity::Dark : Polarity::Clear;
-}
-
-void Transform::SetPolarity(Polarity polarity) {
-	m_isDark = polarity == Polarity::Dark;
+	m_mirroring = mirroring;
 }
 
 double Transform::GetRotation() const {
@@ -92,36 +70,6 @@ void Transform::SetScaling(double factor) {
 	m_scaling = factor;
 }
 
-Polarity Transform::PolarityFromCommand(const std::string &str) {
-	if (str == "C") {
-		return Polarity::Clear;
-	} else if (str == "D") {
-		return Polarity::Dark;
-	} else {
-		throw std::invalid_argument("invalid polarity");
-	}
-}
-
-double Transform::ApplyScaling(double value) const {
-	return value * m_scaling;
-}
-
-Transform Transform::Stack(const Transform &transform) const {
-	Transform result = *this;
-	result.m_scaling = this->m_scaling * transform.m_scaling;
-	result.m_rotation = this->m_rotation + transform.m_rotation;
-	if (!transform.m_isDark) {
-		result.m_isDark = !this->m_isDark;
-	}
-	if (transform.m_mirrorX) {
-		result.m_mirrorX = !this->m_mirrorX;
-	}
-	if (transform.m_mirrorY) {
-		result.m_mirrorY = !this->m_mirrorY;
-	}
-	return result;
-}
-
 Mirroring Transform::MirroringFromCommand(const std::string &str) {
 	if (str == "N") {
 		return Mirroring::None;
@@ -133,43 +81,6 @@ Mirroring Transform::MirroringFromCommand(const std::string &str) {
 		return Mirroring::XY;
 	} else {
 		throw std::invalid_argument("invalid mirroring");
-	}
-}
-
-Point Transform::Apply(const Point &point) const {
-	Point result = point;
-	if (m_mirrorX) {
-		result.SetX(-result.GetX());
-	}
-	if (m_mirrorY) {
-		result.SetY(-result.GetY());
-	}
-	result *= m_scaling;
-	result.Rotate(m_rotation);
-	return result;
-}
-
-std::vector<Point> Transform::ApplyThenTranslate(
-		const std::vector<Point> &points, const Point &offset) const {
-	std::vector<Point> result;
-	result.reserve(points.size());
-	for (const Point &p : points) {
-		Point r = Apply(p);
-		r += offset;
-		result.push_back(r);
-	}
-	return result;
-}
-
-Polarity Transform::ApplyPolarity(Polarity polarity) const {
-	bool otherIsDark = polarity == Polarity::Dark;
-	if (!m_isDark) {
-		otherIsDark = !otherIsDark;
-	}
-	if (otherIsDark) {
-		return Polarity::Dark;
-	} else {
-		return Polarity::Clear;
 	}
 }
 

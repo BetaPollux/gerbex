@@ -55,8 +55,8 @@ void Segment::Translate(const Point &offset) {
 }
 
 void Segment::Transform(const gerbex::Transform &transform) {
-	m_start = transform.Apply(m_start);
-	m_end = transform.Apply(m_end);
+	m_start.ApplyTransform(transform);
+	m_end.ApplyTransform(transform);
 }
 
 bool Segment::operator ==(const Segment &rhs) const {

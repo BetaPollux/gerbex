@@ -65,11 +65,12 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 			rotation);
 }
 
-void MacroPolygon::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
-			origin);
-	serializer.AddPolygon(vertices, isDark(transform));
+void MacroPolygon::Serialize(Serializer &serializer, const Point &origin) const {
+	std::vector<Point> vertices = getVertices();
+	for (Point &p : vertices) {
+		p += origin;
+	}
+	serializer.AddPolygon(vertices);
 }
 
 const Point& MacroPolygon::GetCenter() const {
@@ -94,6 +95,10 @@ std::vector<Point> MacroPolygon::getVertices() const {
 		vertices.push_back(vertex);
 	}
 	return vertices;
+}
+
+void MacroPolygon::ApplyTransform(const gerbex::Transform &transform) {
+	//TODO apply transform
 }
 
 } /* namespace gerbex */

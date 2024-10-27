@@ -21,15 +21,10 @@
 #ifndef TRANSFORM_H_
 #define TRANSFORM_H_
 
-#include "Point.h"
 #include <string>
 #include <vector>
 
 namespace gerbex {
-
-enum class Polarity {
-	Dark, Clear
-};
 
 enum class Mirroring {
 	None,	// None
@@ -48,32 +43,20 @@ enum class Mirroring {
 class Transform {
 public:
 	Transform();
-	Transform(Polarity polarity, Mirroring mirroring, double rotation,
-			double scaling);
+	Transform(Mirroring mirroring, double rotation, double scaling);
 	virtual ~Transform() = default;
-	//TODO clean this up and tests, most objects have an ApplyTransform
-	Transform Stack(const Transform &transform) const;
 	bool operator==(const Transform &rhs) const;
 	bool operator!=(const Transform &rhs) const;
 	Mirroring GetMirroring() const;
 	void SetMirroring(Mirroring mirroring);
-	Polarity GetPolarity() const;
-	void SetPolarity(Polarity polarity);
 	double GetRotation() const;
 	void SetRotation(double degrees);
 	double GetScaling() const;
 	void SetScaling(double factor);
-	Point Apply(const Point &point) const;
-	std::vector<Point> ApplyThenTranslate(const std::vector<Point> &points,
-			const Point &offset) const;
-	double ApplyScaling(double value) const;
-	Polarity ApplyPolarity(Polarity polarity) const;
-	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);
 
 private:
-	bool m_isDark;
-	bool m_mirrorX, m_mirrorY;
+	Mirroring m_mirroring;
 	double m_rotation;
 	double m_scaling;
 };

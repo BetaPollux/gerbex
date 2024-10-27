@@ -62,11 +62,12 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 			rotation);
 }
 
-void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	std::vector<Point> vertices = transform.ApplyThenTranslate(getVertices(),
-			origin);
-	serializer.AddPolygon(vertices, isDark(transform));
+void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin) const {
+	std::vector<Point> vertices = getVertices();
+	for (Point &p : vertices) {
+		p += origin;
+	}
+	serializer.AddPolygon(vertices);
 }
 
 const Point& MacroVectorLine::GetStart() const {
@@ -89,6 +90,10 @@ std::vector<Point> MacroVectorLine::getVertices() const {
 		v.Rotate(m_rotation);
 	}
 	return vertices;
+}
+
+void MacroVectorLine::ApplyTransform(const gerbex::Transform &transform) {
+	//TODO apply transform
 }
 
 } /* namespace gerbex */

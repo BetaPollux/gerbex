@@ -23,10 +23,9 @@
 
 #include "Arc.h"
 #include "Contour.h"
-#include "MacroPrimitive.h"
 #include "Point.h"
+#include "Polarity.h"
 #include "Segment.h"
-#include "Transform.h"
 #include <string>
 #include <vector>
 
@@ -39,15 +38,21 @@ class Serializer {
 public:
 	Serializer() = default;
 	virtual ~Serializer() = default;
-	virtual void AddCircle(double radius, const Point &center,
-			Polarity polarity) = 0;
-	virtual void AddPolygon(const std::vector<Point> &points,
-			Polarity polarity) = 0;
-	virtual void AddDraw(double width, const Segment &segment,
-			Polarity polarity) = 0;
-	virtual void AddArc(double width, const ArcSegment &segment,
-			Polarity polarity) = 0;
-	virtual void AddContour(const Contour &contour, Polarity polarity) = 0;
+	virtual void AddCircle(double radius, const Point &center) = 0;
+	virtual void AddPolygon(const std::vector<Point> &points) = 0;
+	virtual void AddDraw(double width, const Segment &segment) = 0;
+	virtual void AddArc(double width, const ArcSegment &segment) = 0;
+	virtual void AddContour(const Contour &contour) = 0;
+	const Polarity& GetPolarity() const {
+		return m_polarity;
+	}
+	void SetPolarity(const Polarity &polarity) {
+		m_polarity = polarity;
+	}
+
+protected:
+	Polarity m_polarity;
+
 };
 
 } /* namespace gerbex */

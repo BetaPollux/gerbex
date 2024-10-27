@@ -65,23 +65,22 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
 }
 
-void MacroOutline::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	std::vector<Point> vertices = transform.ApplyThenTranslate(
-			getRotatedVertices(), origin);
-	serializer.AddPolygon(vertices, isDark(transform));
+void MacroOutline::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	std::vector<Point> vertices = m_vertices;
+	for (Point &p : vertices) {
+		p.Rotate(m_rotation);
+		p += origin;
+	}
+	serializer.AddPolygon(vertices);
 }
 
 Box MacroOutline::GetBox() const {
-	return Box(getRotatedVertices());
+	return Box(m_vertices);
 }
 
-std::vector<Point> MacroOutline::getRotatedVertices() const {
-	std::vector<Point> vertices = m_vertices;
-	for (Point &v : vertices) {
-		v.Rotate(m_rotation);
-	}
-	return vertices;
+void MacroOutline::ApplyTransform(const gerbex::Transform &transform) {
+	//TODO apply transform
 }
 
 } /* namespace gerbex */

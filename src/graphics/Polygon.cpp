@@ -66,7 +66,7 @@ void Polygon::Serialize(Serializer &serializer, const Point &origin) const {
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(vertices, m_polarity);
+	serializer.AddPolygon(vertices);
 }
 
 Box Polygon::GetBox() const {
@@ -78,21 +78,18 @@ std::unique_ptr<Aperture> Polygon::Clone() const {
 }
 
 void Polygon::ApplyTransform(const Transform &transform) {
-	m_polarity = transform.ApplyPolarity(m_polarity);
-	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	m_holeDiameter *= transform.GetScaling();
 	for (Point &p : m_vertices) {
-		p = transform.Apply(p);
+		p.ApplyTransform(transform);
 	}
 }
 
 bool Polygon::operator ==(const Polygon &rhs) const {
-	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter
-			&& m_polarity == rhs.m_polarity;
+	return m_vertices == rhs.m_vertices && m_holeDiameter == rhs.m_holeDiameter;
 }
 
 bool Polygon::operator !=(const Polygon &rhs) const {
-	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter
-			|| m_polarity != rhs.m_polarity;
+	return m_vertices != rhs.m_vertices || m_holeDiameter != rhs.m_holeDiameter;
 }
 
 const std::vector<Point>& Polygon::GetVertices() const {

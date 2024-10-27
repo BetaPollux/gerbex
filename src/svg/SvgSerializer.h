@@ -22,6 +22,7 @@
 #define SVGSERIALIZER_H_
 
 #include "Box.h"
+#include "GraphicalObject.h"
 #include "Serializer.h"
 #include <string>
 #include <vector>
@@ -41,15 +42,11 @@ public:
 	void SaveFile(const std::string &path);
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
-	void AddDraw(double width, const Segment &segment, Polarity polarity)
-			override;
-	void AddArc(double width, const ArcSegment &segment, Polarity polarity)
-			override;
-	void AddCircle(double radius, const Point &center, Polarity polarity)
-			override;
-	void AddPolygon(const std::vector<Point> &points, Polarity polarity)
-			override;
-	void AddContour(const Contour &contour, Polarity polarity) override;
+	void AddDraw(double width, const Segment &segment) override;
+	void AddArc(double width, const ArcSegment &segment) override;
+	void AddCircle(double radius, const Point &center) override;
+	void AddPolygon(const std::vector<Point> &points) override;
+	void AddContour(const Contour &contour) override;
 //TODO these should all return an element that can be modified with more calls
 //TODO CreateMask, create <mask> and add shape to <mask> vs image
 //TODO ApplyMask, adds mask= attribute
@@ -57,7 +54,7 @@ public:
 private:
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	const char* getFillColor(Polarity polarity) const;
+	const char* getFillColor() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 	std::string m_fgColor;

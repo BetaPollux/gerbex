@@ -75,7 +75,6 @@ TEST_GROUP(Obround_Transformed) {
 		transform = Transform();
 		transform.SetScaling(2.0);
 		transform.SetRotation(90.0);
-		transform.SetPolarity(Polarity::Clear);
 
 		obround = Obround(1.0, 0.5, 0.25);
 		obround.ApplyTransform(transform);
@@ -92,10 +91,6 @@ TEST(Obround_Transformed, DrawWidth) {
 
 TEST(Obround_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(0.5, obround.GetHoleDiameter(), DBL_TOL);
-}
-
-TEST(Obround_Transformed, Polarity) {
-	CHECK_EQUAL((int)Polarity::Clear, (int)obround.GetPolarity());
 }
 
 TEST(Obround_Transformed, Box) {

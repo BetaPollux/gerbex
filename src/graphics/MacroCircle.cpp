@@ -60,12 +60,8 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
 }
 
-void MacroCircle::Serialize(Serializer &serializer, const Point &origin,
-		const Transform &transform) const {
-	double radius = 0.5 * transform.ApplyScaling(m_diameter);
-	Point center = transform.Apply(getRotatedCenter());
-	center += origin;
-	serializer.AddCircle(radius, center, isDark(transform));
+void MacroCircle::Serialize(Serializer &serializer, const Point &origin) const {
+	serializer.AddCircle(0.5 * m_diameter, getRotatedCenter() + origin);
 }
 
 const Point& MacroCircle::GetCenter() const {
@@ -80,6 +76,10 @@ Point MacroCircle::getRotatedCenter() const {
 	Point c = m_center;
 	c.Rotate(m_rotation);
 	return c;
+}
+
+void MacroCircle::ApplyTransform(const gerbex::Transform &transform) {
+	//TODO apply transform
 }
 
 } /* namespace gerbex */

@@ -52,17 +52,4 @@ MacroExposure MacroPrimitive::ExposureFromNum(int num) {
 	}
 }
 
-Polarity MacroPrimitive::isDark(const Transform &transform) const {
-	//TODO this is wrong, Macro OFF makes it a mask
-	bool isExposureOn = m_exposure == MacroExposure::ON;
-	if (transform.GetPolarity() == Polarity::Clear) {
-		isExposureOn = !isExposureOn;
-	}
-	if (isExposureOn) {
-		return Polarity::Dark;
-	} else {
-		return Polarity::Clear;
-	}
-}
-
 } /* namespace gerbex */

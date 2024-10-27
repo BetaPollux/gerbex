@@ -23,6 +23,7 @@
 
 #include "Box.h"
 #include "Point.h"
+#include "Polarity.h"
 #include <memory>
 
 namespace gerbex {
@@ -34,6 +35,9 @@ class Serializer;
  */
 class GraphicalObject {
 public:
+	GraphicalObject() :
+			m_polarity { Polarity::Dark() } {
+	}
 	virtual ~GraphicalObject() = default;
 	virtual void Translate(const Point &offset) = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
@@ -41,6 +45,16 @@ public:
 	virtual void Serialize(Serializer &serializer,
 			const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
+	Polarity GetPolarity() const {
+		return m_polarity;
+	}
+	void SetPolarity(Polarity polarity) {
+		m_polarity = polarity;
+	}
+
+protected:
+	Polarity m_polarity;
+
 };
 
 } /* namespace gerbex */

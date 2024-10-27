@@ -100,6 +100,7 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 				m_graphicsState.GetCurrentAperture()->Clone();
 		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, clone);
+		obj->SetPolarity(m_graphicsState.GetPolarity());
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -134,6 +135,7 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 				m_graphicsState.GetCurrentAperture()->Clone();
 		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, clone);
+		obj->SetPolarity(m_graphicsState.GetPolarity());
 		m_objectDest.top()->push_back(obj);
 	} else {
 		m_activeRegion->AddSegment(segment);
@@ -159,6 +161,7 @@ void CommandsProcessor::Flash(const Point &coord) {
 	clone->ApplyTransform(m_graphicsState.GetTransform());
 	std::shared_ptr<gerbex::Flash> obj = std::make_shared<gerbex::Flash>(coord,
 			std::move(clone));
+	obj->SetPolarity(m_graphicsState.GetPolarity());
 	m_objectDest.top()->push_back(obj);
 	m_graphicsState.SetCurrentPoint(coord);
 }
@@ -203,7 +206,7 @@ void CommandsProcessor::StartRegion() {
 		throw std::logic_error("cannot start a region inside a region");
 	}
 	m_activeRegion = std::make_unique<Region>(
-			m_graphicsState.GetTransform().GetPolarity());
+			m_graphicsState.GetPolarity());
 	m_commandState = CommandState::InsideRegion;
 }
 

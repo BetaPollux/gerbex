@@ -43,8 +43,8 @@ void Arc::Serialize(Serializer &serializer, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	ArcSegment segment = m_segment;
 	segment.Translate(origin);
-	//TODO arc should have its own polarity?
-	serializer.AddArc(width, segment, Polarity::Dark);
+	serializer.SetPolarity(m_polarity);
+	serializer.AddArc(width, segment);
 }
 
 std::shared_ptr<Circle> Arc::GetAperture() const {

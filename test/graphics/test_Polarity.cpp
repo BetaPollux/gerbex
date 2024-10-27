@@ -1,7 +1,7 @@
 /*
- * Aperture.h
+ * test_Polarity.cpp
  *
- *  Created on: Mar. 24, 2024
+ *  Created on: Oct. 27, 2024
  *	Copyright (C) 2024 BetaPollux
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,34 +17,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#ifndef APERTURE_H_
-#define APERTURE_H_
-
-#include "Box.h"
-#include "Transform.h"
-#include <memory>
+#include "Polarity.h"
+#include "CppUTest/TestHarness.h"
 
 namespace gerbex {
 
-class Serializer;
-
-/*
- * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
- * They can be rotated, mirrored or scaled.
- */
-class Aperture {
-public:
-	Aperture() = default;
-	virtual ~Aperture() = default;
-	virtual void Serialize(Serializer &serializer,
-			const Point &origin) const = 0;
-	virtual Box GetBox() const = 0;
-	virtual std::unique_ptr<Aperture> Clone() const = 0;
-	virtual void ApplyTransform(const Transform &transform) = 0;
+TEST_GROUP(Polarity) {
 
 };
 
-} /* namespace gerbex */
+TEST(Polarity, PolarityFromCommand) {
+	CHECK(Polarity::Clear == Polarity::FromCommand("C"));
+	CHECK(Polarity::Dark == Polarity::FromCommand("D"));
+	CHECK_THROWS(std::invalid_argument, Polarity::FromCommand("Q"));
+}
 
-#endif /* APERTURE_H_ */
+} /* namespace gerbex */

@@ -53,11 +53,6 @@ TEST(CircleTest, DefaultHole) {
 	DOUBLES_EQUAL(0.0, circle.GetHoleDiameter(), DBL_TOL);
 }
 
-TEST(CircleTest, Polarity) {
-	Circle circle;
-	CHECK_EQUAL((int)Polarity::Dark, (int)circle.GetPolarity());
-}
-
 TEST(CircleTest, Box) {
 	double d = 10.0;
 	Box expected(d, Point());
@@ -71,11 +66,6 @@ TEST_GROUP(CircleEquality) {
 	Circle base = Circle(1.0, 0.0);
 	Circle diameter = Circle(2.5, 0.0);
 	Circle hole = Circle(1.0, 0.5);
-	Circle polarity = Circle(1.0, 0.0);
-
-	void setup() {
-		polarity.SetPolarity(Polarity::Clear);
-	}
 };
 
 TEST(CircleEquality, Same) {
@@ -93,11 +83,6 @@ TEST(CircleEquality, Hole) {
 	CHECK(!(base == hole));
 }
 
-TEST(CircleEquality, Polarity) {
-	CHECK(base != polarity);
-	CHECK(!(base == polarity));
-}
-
 TEST_GROUP(Circle_Transformed) {
 	Transform transform;
 	Circle circle;
@@ -105,7 +90,6 @@ TEST_GROUP(Circle_Transformed) {
 	void setup() {
 		transform = Transform();
 		transform.SetScaling(3.0);
-		transform.SetPolarity(Polarity::Clear);
 
 		circle = Circle(1.5, 0.5);
 		circle.ApplyTransform(transform);
@@ -118,10 +102,6 @@ TEST(Circle_Transformed, Diameter) {
 
 TEST(Circle_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(1.5, circle.GetHoleDiameter(), DBL_TOL);
-}
-
-TEST(Circle_Transformed, Polarity) {
-	CHECK_EQUAL((int)Polarity::Clear, (int)circle.GetPolarity());
 }
 
 TEST(Circle_Transformed, Box) {

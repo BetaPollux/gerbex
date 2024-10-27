@@ -44,7 +44,6 @@ public:
 
 private:
 	std::vector<std::shared_ptr<MacroPrimitive>> m_primitives;
-	Transform m_transform;
 
 };
 

@@ -191,7 +191,7 @@ TEST(CommandHandlerTest, Polarity) {
 	mock().expectOneCall("GetGraphicsState").andReturnValue(&state);
 	Fields words = { "LPC" };
 	CommandHandler::ApertureTransformations(processor, words);
-	CHECK(state.GetTransform().GetPolarity() == Polarity::Clear);
+	CHECK(state.GetPolarity() == Polarity::Clear());
 }
 
 TEST(CommandHandlerTest, Mirroring) {

@@ -41,10 +41,10 @@ public:
 	double GetDiameter() const;
 	int GetNumVertices() const;
 	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	const Point& GetCenter() const;
 	Box GetBox() const override;
+	void ApplyTransform(const Transform &transform) override;
 
 private:
 	std::vector<Point> getVertices() const;

@@ -42,7 +42,6 @@ public:
 	const std::vector<Contour>& GetContours() const;
 	bool AreContoursClosed() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
-	Polarity GetPolarity() const;
 	Box GetBox() const override;
 	void Translate(const Point &offset) override;
 	void ApplyTransform(const Transform &transform) override;
@@ -50,7 +49,6 @@ public:
 
 private:
 	std::vector<Contour> m_contours;
-	Polarity m_polarity;
 
 };
 

@@ -57,7 +57,7 @@ double Obround::GetHoleDiameter() const {
 void Obround::Serialize(Serializer &serializer, const Point &origin) const {
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	serializer.AddDraw(m_drawWidth, segment, m_polarity);
+	serializer.AddDraw(m_drawWidth, segment);
 }
 
 Box Obround::GetBox() const {
@@ -84,21 +84,18 @@ const Segment& Obround::GetSegment() const {
 
 bool Obround::operator ==(const Obround &rhs) const {
 	return m_segment == rhs.m_segment && m_drawWidth == rhs.m_drawWidth
-			&& m_holeDiameter == rhs.m_holeDiameter
-			&& m_polarity == rhs.m_polarity;
+			&& m_holeDiameter == rhs.m_holeDiameter;
 }
 
 bool Obround::operator !=(const Obround &rhs) const {
 	return m_segment != rhs.m_segment || m_drawWidth != rhs.m_drawWidth
-				|| m_holeDiameter != rhs.m_holeDiameter
-				|| m_polarity != rhs.m_polarity;
+			|| m_holeDiameter != rhs.m_holeDiameter;
 }
 
 void Obround::ApplyTransform(const Transform &transform) {
-	m_polarity = transform.ApplyPolarity(m_polarity);
-	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	m_holeDiameter *= transform.GetScaling();
+	m_drawWidth *= transform.GetScaling();
 	m_segment.Transform(transform);
-	m_drawWidth = transform.ApplyScaling(m_drawWidth);
 }
 
 } /* namespace gerbex */

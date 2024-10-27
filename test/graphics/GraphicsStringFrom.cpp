@@ -31,8 +31,8 @@ SimpleString StringFrom(const gerbex::Box &box) {
 }
 
 SimpleString StringFrom(const gerbex::Circle &circle) {
-	return StringFromFormat("CIRC D: %f, H: %f, P: %d", circle.GetDiameter(),
-			circle.GetHoleDiameter(), (int)circle.GetPolarity());
+	return StringFromFormat("CIRC D: %f, H: %f", circle.GetDiameter(),
+			circle.GetHoleDiameter());
 }
 
 SimpleString StringFrom(const gerbex::Point &point) {
@@ -40,17 +40,16 @@ SimpleString StringFrom(const gerbex::Point &point) {
 }
 
 SimpleString StringFrom(const gerbex::Obround &obround) {
-	SimpleString result = StringFromFormat("OBR  W: %f, H: %f, P: %d",
-			obround.GetDrawWidth(), obround.GetHoleDiameter(),
-			(int) obround.GetPolarity());
+	SimpleString result = StringFromFormat("OBR  W: %f, H: %f",
+			obround.GetDrawWidth(), obround.GetHoleDiameter());
 	result += StringFrom(", ") + StringFrom(obround.GetSegment().GetStart());
 	result += StringFrom(", ") + StringFrom(obround.GetSegment().GetEnd());
 	return result;
 }
 
 SimpleString StringFrom(const gerbex::Polygon &polygon) {
-	SimpleString result = StringFromFormat("POLY H: %f, P: %d",
-			polygon.GetHoleDiameter(), (int) polygon.GetPolarity());
+	SimpleString result = StringFromFormat("POLY H: %f",
+			polygon.GetHoleDiameter());
 	for (const gerbex::Point &pt : polygon.GetVertices()) {
 		result += StringFrom(", ") + StringFrom(pt);
 	}
@@ -58,8 +57,8 @@ SimpleString StringFrom(const gerbex::Polygon &polygon) {
 }
 
 SimpleString StringFrom(const gerbex::Rectangle &rectangle) {
-	SimpleString result = StringFromFormat("RECT H: %f, P: %d",
-			rectangle.GetHoleDiameter(), (int) rectangle.GetPolarity());
+	SimpleString result = StringFromFormat("RECT H: %f",
+			rectangle.GetHoleDiameter());
 	for (const gerbex::Point &pt : rectangle.GetVertices()) {
 		result += StringFrom(", ") + StringFrom(pt);
 	}
@@ -67,7 +66,6 @@ SimpleString StringFrom(const gerbex::Rectangle &rectangle) {
 }
 
 SimpleString StringFrom(const gerbex::Transform &transform) {
-	return StringFromFormat("%d, %d, %f, %f", (int) transform.GetPolarity(),
-			(int) transform.GetMirroring(), transform.GetRotation(),
-			transform.GetScaling());
+	return StringFromFormat("%d, %f, %f", (int) transform.GetMirroring(),
+			transform.GetRotation(), transform.GetScaling());
 }

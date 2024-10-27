@@ -218,8 +218,19 @@ TEST(CommandsProcessor_Flash, Aperture) {
 			processor.GetObjects());
 }
 
+TEST(CommandsProcessor_Flash, Polarity) {
+	mock().ignoreOtherCalls();
+
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.Flash(origin);
+
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
+			processor.GetObjects());
+	CHECK(flash->GetPolarity() == Polarity::Clear());
+}
+
 TEST(CommandsProcessor_Flash, Transform) {
-	Transform transform(Polarity::Clear, Mirroring::X, 30.0, 1.5);
+	Transform transform(Mirroring::X, 30.0, 1.5);
 	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
 			"Transform", "transform", &transform);
 	mock().ignoreOtherCalls();
@@ -312,8 +323,19 @@ TEST(CommandsProcessor_PlotDraw, Aperture) {
 			processor.GetObjects());
 }
 
+TEST(CommandsProcessor_PlotDraw, Polarity) {
+	mock().ignoreOtherCalls();
+
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.PlotDraw(end);
+
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
+			processor.GetObjects());
+	CHECK(draw->GetPolarity() == Polarity::Clear());
+}
+
 TEST(CommandsProcessor_PlotDraw, Transform) {
-	Transform transform(Polarity::Clear, Mirroring::Y, 15.0, 0.5);
+	Transform transform(Mirroring::Y, 15.0, 0.5);
 	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
 			"Transform", "transform", &transform);
 	mock().ignoreOtherCalls();
@@ -442,8 +464,18 @@ TEST(CommandsProcessor_PlotArc, Aperture) {
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 }
 
+TEST(CommandsProcessor_PlotArc, Polarity) {
+	mock().ignoreOtherCalls();
+
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.PlotArc(end, offset);
+
+	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
+	CHECK(arc->GetPolarity() == Polarity::Clear());
+}
+
 TEST(CommandsProcessor_PlotArc, Transform) {
-	Transform transform(Polarity::Clear, Mirroring::Y, 10.0, 1.25);
+	Transform transform(Mirroring::Y, 10.0, 1.25);
 	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
 			"Transform", "transform", &transform);
 	mock().ignoreOtherCalls();
@@ -539,10 +571,8 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 
 		mock().ignoreOtherCalls();
 
-		Transform transformation;
-		transformation.SetPolarity(Polarity::Clear);
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
-		processor.GetGraphicsState().SetTransform(transformation);
+		processor.GetGraphicsState().SetPolarity(Polarity::Clear());
 		processor.StartRegion();
 		processor.Move(origin);
 		processor.PlotDraw(mid);
@@ -579,7 +609,7 @@ TEST(CommandsProcessor_AfterRegion, TakesPolarity) {
 	std::shared_ptr<Region> region = GetGraphicalObject<Region>(
 			processor.GetObjects());
 
-	CHECK(Polarity::Clear == region->GetPolarity());
+	CHECK(Polarity::Clear() == region->GetPolarity());
 }
 
 /***

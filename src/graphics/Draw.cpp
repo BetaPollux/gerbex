@@ -43,8 +43,8 @@ void Draw::Serialize(Serializer &serializer, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	//TODO draw should have its own polarity?
-	serializer.AddDraw(width, segment, Polarity::Dark);
+	serializer.SetPolarity(m_polarity);
+	serializer.AddDraw(width, segment);
 }
 
 std::shared_ptr<Circle> Draw::GetAperture() const {

@@ -46,12 +46,11 @@ public:
 	double GetRotation() const;
 	static MacroExposure ExposureFromNum(int num);
 	//TODO needs new Serialize signature, macro does not use regular polarity
-	virtual void Serialize(Serializer &serializer, const Point &origin,
-			const Transform &transform) const = 0;
+	virtual void Serialize(Serializer &serializer, const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
+	virtual void ApplyTransform(const Transform &transform) = 0;
 
 protected:
-	Polarity isDark(const Transform &transform) const;
 	MacroExposure m_exposure;
 	double m_rotation;
 };

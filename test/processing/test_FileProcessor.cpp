@@ -92,7 +92,7 @@ TEST(GerberTwoSquareBoxes, SetUnits) {
 }
 
 TEST(GerberTwoSquareBoxes, SetPolarity) {
-	CHECK(Polarity::Dark == graphicsState->GetTransform().GetPolarity());
+	CHECK(Polarity::Dark() == graphicsState->GetPolarity());
 }
 
 TEST(GerberTwoSquareBoxes, DefinedAperture) {
@@ -150,9 +150,9 @@ TEST(GerberPolaritiesAndApertures, TwoRegionsWithPolarity) {
 			processor->GetObjects(), 18);
 
 	LONGS_EQUAL(4, outer_region->GetContours().front().GetSegments().size());
-	CHECK(outer_region->GetPolarity() == Polarity::Dark);
+	CHECK(outer_region->GetPolarity() == Polarity::Dark());
 	LONGS_EQUAL(5, inner_region->GetContours().front().GetSegments().size());
-	CHECK(inner_region->GetPolarity() == Polarity::Clear);
+	CHECK(inner_region->GetPolarity() == Polarity::Clear());
 }
 
 /**

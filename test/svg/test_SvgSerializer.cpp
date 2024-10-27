@@ -30,14 +30,13 @@ TEST(SvgSerializerTest, MakeFile) {
 	SvgSerializer serializer;
 	serializer.SetViewPort(400, 400);
 	serializer.SetViewBox(Box(20.0, 20.0, -10.0, -10.0));
-	serializer.AddCircle(0.1, Point(-10.0, -10.0), Polarity::Dark);
-	serializer.AddCircle(0.1, Point(10.0, -10.0), Polarity::Dark);
-	serializer.AddCircle(0.1, Point(10.0, 10.0), Polarity::Dark);
-	serializer.AddCircle(0.1, Point(-10.0, 10.0), Polarity::Dark);
-	serializer.AddCircle(5.0, Point(0.0, 0.0), Polarity::Dark);
+	serializer.AddCircle(0.1, Point(-10.0, -10.0));
+	serializer.AddCircle(0.1, Point(10.0, -10.0));
+	serializer.AddCircle(0.1, Point(10.0, 10.0));
+	serializer.AddCircle(0.1, Point(-10.0, 10.0));
+	serializer.AddCircle(5.0, Point(0.0, 0.0));
 	serializer.AddPolygon(
-			{ Point(-10.0, -10.0), Point(10.0, -10.0), Point(0.0, -5.0) },
-			Polarity::Dark);
+			{ Point(-10.0, -10.0), Point(10.0, -10.0), Point(0.0, -5.0) });
 	serializer.SaveFile("output.svg");
 }
 

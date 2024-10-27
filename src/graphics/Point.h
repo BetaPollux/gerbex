@@ -21,6 +21,7 @@
 #ifndef POINT_H_
 #define POINT_H_
 
+#include "Transform.h"
 #include <cmath>
 #include <cstdint>
 #include <ostream>
@@ -124,6 +125,11 @@ public:
 	double GetY() const {
 		return m_y;
 	}
+	void ApplyTransform(const Transform &transform) {
+		Mirror(transform.GetMirroring());
+		Rotate(transform.GetRotation());
+		*this *= transform.GetScaling();
+	}
 	void Rotate(double degrees) {
 		if (degrees != 0.0) {
 			double rad = M_PI * degrees / 180.0;
@@ -131,6 +137,14 @@ public:
 			double newY = sin(rad) * m_x + cos(rad) * m_y;
 			m_x = newX;
 			m_y = newY;
+		}
+	}
+	void Mirror(Mirroring mirror) {
+		if (mirror == Mirroring::X || mirror == Mirroring::XY) {
+			m_x = -m_x;
+		}
+		if (mirror == Mirroring::Y || mirror == Mirroring::XY) {
+			m_y = -m_y;
 		}
 	}
 	double Distance(const Point &rhs) const {
@@ -144,7 +158,7 @@ public:
 	void SetY(double y) {
 		m_y = y;
 	}
-	friend std::ostream& operator<<(std::ostream& os, const Point& point);
+	friend std::ostream& operator<<(std::ostream &os, const Point &point);
 
 private:
 	static constexpr double kEqualityThreshold = 1e-9;
