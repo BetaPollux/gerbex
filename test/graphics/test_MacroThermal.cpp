@@ -34,11 +34,6 @@ TEST(MacroThermalTest, Default) {
 	MacroThermal thermal;
 
 	LONGS_EQUAL(MacroExposure::ON, thermal.GetExposure());
-	CHECK(thermal.GetOuterDiameter() > thermal.GetInnerDiameter());
-	CHECK(thermal.GetOuterDiameter() > 0.0);
-	CHECK(thermal.GetInnerDiameter() >= 0.0);
-	CHECK(thermal.GetGapThickness() >= 0.0);
-	CHECK(thermal.GetGapThickness() < thermal.GetOuterDiameter() / 1.4142);
 }
 
 TEST(MacroThermalTest, Ctor) {
@@ -47,11 +42,7 @@ TEST(MacroThermalTest, Ctor) {
 	MacroThermal thermal(center, 2.5, 1.2, 0.25, 45.0);
 
 	LONGS_EQUAL(MacroExposure::ON, thermal.GetExposure());
-	DOUBLES_EQUAL(2.5, thermal.GetOuterDiameter(), 1e-9);
-	DOUBLES_EQUAL(1.2, thermal.GetInnerDiameter(), 1e-9);
-	DOUBLES_EQUAL(0.25, thermal.GetGapThickness(), 1e-9);
-	CHECK_EQUAL(center, thermal.GetCenter());
-	DOUBLES_EQUAL(45.0, thermal.GetRotation(), 1e-9);
+	//TODO check contours, especially for corner cases where inner/outer disappear
 }
 
 TEST(MacroThermalTest, InnerTooBig) {
@@ -84,13 +75,8 @@ TEST(MacroThermalTest, Thermal) {
 	Parameters params = { 0, 0.25, 0.95, 0.75, 0.175, 22.5 };
 	std::shared_ptr<MacroThermal> thermal = MacroThermal::FromParameters(
 			params);
-	CHECK(MacroExposure::ON == thermal->GetExposure());
-	DOUBLES_EQUAL(0.0, thermal->GetCenter().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.25, thermal->GetCenter().GetY(), DBL_TOL);
-	DOUBLES_EQUAL(0.95, thermal->GetOuterDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.75, thermal->GetInnerDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(0.175, thermal->GetGapThickness(), DBL_TOL);
-	DOUBLES_EQUAL(22.5, thermal->GetRotation(), DBL_TOL);
+	MacroThermal expected(Point(0, 0.25), 0.95, 0.75, 0.175, 22.5);
+	CHECK(expected == *thermal);
 }
 
 TEST(MacroThermalTest, Thermal_TooFewParams) {

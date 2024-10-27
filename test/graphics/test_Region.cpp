@@ -166,4 +166,4 @@ TEST(Region_Box, Multi) {
 	CHECK_EQUAL(expected, region.GetBox());
 }
 
-//TODO test region transform, translate, clone
+//TODO test region serialize, transform, translate, clone

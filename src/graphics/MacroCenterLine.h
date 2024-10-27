@@ -37,18 +37,17 @@ public:
 	MacroCenterLine(MacroExposure exposure, double width, double height,
 			const Point &center, double rotation);
 	virtual ~MacroCenterLine() = default;
-	double GetHeight() const;
-	double GetWidth() const;
+	bool operator==(const MacroCenterLine &rhs) const;
+	bool operator!=(const MacroCenterLine &rhs) const;
 	static std::unique_ptr<MacroCenterLine> FromParameters(const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin) const override;
-	const Point& GetCenter() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
+	const std::vector<Point>& GetVertices() const;
 
 private:
-	std::vector<Point> getVertices() const;
-	Point m_center;
-	double m_width, m_height;
+	std::vector<Point> m_vertices;
+
 };
 
 } /* namespace gerbex */

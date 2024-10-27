@@ -85,7 +85,9 @@ TEST(MacroTemplateTest, VectorLine) {
 			{ "20,1,0.9,0,0.45,12,0.75,22.5" }, { });
 	std::shared_ptr<MacroVectorLine> line = GetPrimitive<MacroVectorLine>(macro,
 			0);
-	DOUBLES_EQUAL(0.9, line->GetWidth(), DBL_TOL);
+	MacroVectorLine expected(MacroExposure::ON, 0.9, Point(0.0, 0.45),
+			Point(12.0, 0.75), 22.5);
+	CHECK(expected == *line);
 }
 
 TEST(MacroTemplateTest, CenterLine) {
@@ -93,7 +95,8 @@ TEST(MacroTemplateTest, CenterLine) {
 			{ });
 	std::shared_ptr<MacroCenterLine> line = GetPrimitive<MacroCenterLine>(macro,
 			0);
-	DOUBLES_EQUAL(6.8, line->GetWidth(), DBL_TOL);
+	MacroCenterLine expected(MacroExposure::ON, 6.8, 1.2, Point(3.4, 0.6), 30);
+	CHECK(expected == *line);
 }
 
 TEST(MacroTemplateTest, Outline) {
@@ -109,7 +112,8 @@ TEST(MacroTemplateTest, Outline) {
 TEST(MacroTemplateTest, Polygon) {
 	std::shared_ptr<Macro> macro = make_macro( { "5,1,8,3,4,6,12" }, { });
 	std::shared_ptr<MacroPolygon> poly = GetPrimitive<MacroPolygon>(macro, 0);
-	LONGS_EQUAL(8, poly->GetNumVertices());
+	MacroPolygon expected(MacroExposure::ON, 8, Point(3, 4), 6, 12);
+	CHECK(expected == *poly);
 }
 
 TEST(MacroTemplateTest, Thermal) {
@@ -117,8 +121,8 @@ TEST(MacroTemplateTest, Thermal) {
 			{ "7,0,0.25,0.95,0.75,0.175,22.5" }, { });
 	std::shared_ptr<MacroThermal> thermal = GetPrimitive<MacroThermal>(macro,
 			0);
-	DOUBLES_EQUAL(0.95, thermal->GetOuterDiameter(), DBL_TOL);
-
+	MacroThermal expected(Point(0, 0.25), 0.95, 0.75, 0.175, 22.5);
+	CHECK(expected == *thermal);
 }
 
 TEST(MacroTemplateTest, FixedDonut) {

@@ -30,41 +30,50 @@ using namespace gerbex;
 TEST_GROUP(MacroVectorLineTest) {
 };
 
-TEST(MacroVectorLineTest, Default) {
-	MacroVectorLine line;
-	CHECK(line.GetWidth() > 0.0);
+TEST(MacroVectorLineTest, Ctor) {
+	Point start(0.0, 0.0);
+	Point end(5.0, 0.0);
+
+	MacroVectorLine line(MacroExposure::OFF, 2.0, start, end, 0.0);
+
+	std::vector<Point> expected = { Point(0.0, -1.0), Point(0.0, 1.0), Point(
+			5.0, 1.0), Point(5.0, -1.0) };
+	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
+	CHECK_EQUAL(4, line.GetVertices().size());
+	CHECK_EQUAL(expected[0], line.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], line.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], line.GetVertices()[2]);
+	CHECK_EQUAL(expected[3], line.GetVertices()[3]);
 }
 
-TEST(MacroVectorLineTest, Ctor) {
-	Point start(0.5, -0.25);
-	Point end(2.5, -0.5);
+TEST(MacroVectorLineTest, Ctor_Rotated) {
+	Point start(0.0, 0.0);
+	Point end(5.0, 0.0);
 
-	MacroVectorLine line(MacroExposure::OFF, 1.25, start, end, 45.0);
+	MacroVectorLine line(MacroExposure::OFF, 2.0, start, end, 90.0);
 
+	std::vector<Point> expected = { Point(1.0, 0.0), Point(-1.0, 0.0), Point(
+			-1.0, 5.0), Point(1.0, 5.0) };
 	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
-	DOUBLES_EQUAL(1.25, line.GetWidth(), 1e-9);
-	CHECK_EQUAL(start, line.GetStart());
-	CHECK_EQUAL(end, line.GetEnd());
-	DOUBLES_EQUAL(45.0, line.GetRotation(), 1e-9);
+	CHECK_EQUAL(4, line.GetVertices().size());
+	CHECK_EQUAL(expected[0], line.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], line.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], line.GetVertices()[2]);
+	CHECK_EQUAL(expected[3], line.GetVertices()[3]);
 }
 
 TEST(MacroVectorLineTest, NegativeWidth) {
 	CHECK_THROWS(std::invalid_argument,
-			MacroVectorLine(MacroExposure::ON, -1.0, Point(), Point(),
-					0.0));
+			MacroVectorLine(MacroExposure::ON, -1.0, Point(), Point(), 0.0));
 }
 
 TEST(MacroVectorLineTest, FromParameters) {
 	Parameters params = { 1, 0.9, 0, 0.45, 12, 0.75, 22.5 };
 	std::shared_ptr<MacroVectorLine> line = MacroVectorLine::FromParameters(
 			params);
-	CHECK(MacroExposure::ON == line->GetExposure());
-	DOUBLES_EQUAL(0.9, line->GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, line->GetStart().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.45, line->GetStart().GetY(), DBL_TOL);
-	DOUBLES_EQUAL(12.0, line->GetEnd().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.75, line->GetEnd().GetY(), DBL_TOL);
-	DOUBLES_EQUAL(22.5, line->GetRotation(), DBL_TOL);
+	MacroVectorLine expected(MacroExposure::ON, 0.9, Point(0.0, 0.45),
+			Point(12.0, 0.75), 22.5);
+	CHECK(expected == *line);
 }
 
 TEST(MacroVectorLineTest, FromParameters_TooFew) {

@@ -35,22 +35,20 @@ namespace gerbex {
 class MacroPolygon: public MacroPrimitive {
 public:
 	MacroPolygon();
-	MacroPolygon(MacroExposure exposure, int numVertices,
-			const Point &center, double diameter, double rotation);
+	MacroPolygon(MacroExposure exposure, int numVertices, const Point &center,
+			double diameter, double rotation);
 	virtual ~MacroPolygon() = default;
-	double GetDiameter() const;
-	int GetNumVertices() const;
-	static std::unique_ptr<MacroPolygon> FromParameters(const Parameters &params);
+	bool operator==(const MacroPolygon &rhs) const;
+	bool operator!=(const MacroPolygon &rhs) const;
+	static std::unique_ptr<MacroPolygon> FromParameters(
+			const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin) const override;
-	const Point& GetCenter() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
+	const std::vector<Point>& GetVertices() const;
 
 private:
-	std::vector<Point> getVertices() const;
-	Point m_center;
-	int m_numVertices;
-	double m_diameter;
+	std::vector<Point> m_vertices;
 };
 
 } /* namespace gerbex */

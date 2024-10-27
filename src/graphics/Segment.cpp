@@ -54,7 +54,7 @@ void Segment::Translate(const Point &offset) {
 	m_end += offset;
 }
 
-void Segment::Transform(const gerbex::Transform &transform) {
+void Segment::ApplyTransform(const gerbex::Transform &transform) {
 	m_start.ApplyTransform(transform);
 	m_end.ApplyTransform(transform);
 }
@@ -65,6 +65,10 @@ bool Segment::operator ==(const Segment &rhs) const {
 
 bool Segment::operator !=(const Segment &rhs) const {
 	return m_start != rhs.m_start || m_end != rhs.m_end;
+}
+
+std::unique_ptr<Segment> Segment::Clone() {
+	return std::make_unique<Segment>(*this);
 }
 
 } /* namespace gerbex */

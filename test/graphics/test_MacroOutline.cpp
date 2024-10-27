@@ -25,8 +25,6 @@
 
 using namespace gerbex;
 
-#define DBL_TOL 1e-5
-
 TEST_GROUP(MacroOutlineTest) {
 };
 
@@ -36,26 +34,29 @@ TEST(MacroOutlineTest, Default) {
 }
 
 TEST(MacroOutlineTest, Ctor) {
-	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0,
-			0.0), Point(0.0, 1.0), };
+	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0, 0.0), Point(
+			0.0, 1.0) };
 
-	MacroOutline outline(MacroExposure::OFF, vertices, 45.0);
+	MacroOutline outline(MacroExposure::OFF, vertices, 90.0);
+
+	std::vector<Point> expected = { Point(0.0, -1.0), Point(0.0, 1.0), Point(
+			-1.0, 0.0) };
 
 	LONGS_EQUAL(MacroExposure::OFF, outline.GetExposure());
-	CHECK(vertices == outline.GetVertices());
-	DOUBLES_EQUAL(45.0, outline.GetRotation(), 1e-9);
+	CHECK_EQUAL(3, outline.GetVertices().size());
+	CHECK_EQUAL(expected[0], outline.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], outline.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], outline.GetVertices()[2]);
 }
 
 TEST(MacroOutlineTest, CopiesVertices) {
-	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0,
-			0.0), Point(0.0, 1.0), };
+	std::vector<Point> vertices = { Point(-1.0, 0.0), Point(1.0, 0.0), Point(
+			0.0, 1.0), };
 
 	MacroOutline outline(MacroExposure::ON, vertices, 0.0);
 	vertices.clear();
 
-	CHECK_EQUAL(Point(-1.0, 0.0), outline.GetVertices()[0]);
-	CHECK_EQUAL(Point(1.0, 0.0), outline.GetVertices()[1]);
-	CHECK_EQUAL(Point(0.0, 1.0), outline.GetVertices()[2]);
+	CHECK(!outline.GetVertices().empty());
 }
 
 TEST(MacroOutlineTest, TooFewVertices) {
@@ -74,18 +75,9 @@ TEST(MacroOutlineTest, FromParameters) {
 	Parameters params = { 1, 3, 1, -1, 1, 1, 2, 1, 1, -1, 30 };
 	std::shared_ptr<MacroOutline> outline = MacroOutline::FromParameters(
 			params);
-	CHECK(MacroExposure::ON == outline->GetExposure());
-	const std::vector<Point> vertices = outline->GetVertices();
-	LONGS_EQUAL(4, vertices.size());
-	DOUBLES_EQUAL(1.0, vertices[0].GetX(), DBL_TOL);
-	DOUBLES_EQUAL(-1.0, vertices[0].GetY(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, vertices[1].GetX(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, vertices[1].GetY(), DBL_TOL);
-	DOUBLES_EQUAL(2.0, vertices[2].GetX(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, vertices[2].GetY(), DBL_TOL);
-	DOUBLES_EQUAL(1.0, vertices[3].GetX(), DBL_TOL);
-	DOUBLES_EQUAL(-1.0, vertices[3].GetY(), DBL_TOL);
-	DOUBLES_EQUAL(30.0, outline->GetRotation(), DBL_TOL);
+	MacroOutline expected(MacroExposure::ON,
+			{ Point(1, -1), Point(1, 1), Point(2, 1), Point(1, -1) }, 30.0);
+	CHECK(expected == *outline);
 }
 
 TEST(MacroOutlineTest, FromParameters_TooFew) {

@@ -35,13 +35,16 @@ public:
 	ArcSegment(const Point &start, const Point &end, const Point &centerOffset,
 			ArcDirection direction);
 	virtual ~ArcSegment() = default;
+	bool operator==(const ArcSegment &rhs) const;
+	bool operator!=(const ArcSegment &rhs) const;
 	const Point& GetCenterOffset() const;
 	Point GetCenter() const;
 	ArcDirection GetDirection() const;
 	bool IsCircle() const;
 	double GetRadius() const;
-	void Transform(const gerbex::Transform &transform) override;
+	void ApplyTransform(const gerbex::Transform &transform) override;
 	Box GetBox() const override;
+	std::unique_ptr<Segment> Clone() override;
 
 protected:
 	Point m_centerOffset;

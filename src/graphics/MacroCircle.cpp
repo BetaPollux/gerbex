@@ -31,11 +31,11 @@ MacroCircle::MacroCircle() :
 
 MacroCircle::MacroCircle(MacroExposure exposure, double diameter,
 		const Point &center, double rotation) :
-		MacroPrimitive(exposure, rotation), m_center { center }, m_diameter {
-				diameter } {
+		MacroPrimitive(exposure), m_center { center }, m_diameter { diameter } {
 	if (diameter < 0.0) {
 		throw std::invalid_argument("Diameter must be >= 0.0");
 	}
+	m_center.Rotate(rotation);
 }
 
 double MacroCircle::GetDiameter() const {
@@ -61,7 +61,7 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 }
 
 void MacroCircle::Serialize(Serializer &serializer, const Point &origin) const {
-	serializer.AddCircle(0.5 * m_diameter, getRotatedCenter() + origin);
+	serializer.AddCircle(0.5 * m_diameter, m_center + origin);
 }
 
 const Point& MacroCircle::GetCenter() const {
@@ -69,17 +69,22 @@ const Point& MacroCircle::GetCenter() const {
 }
 
 Box MacroCircle::GetBox() const {
-	return Box(m_diameter, getRotatedCenter());
+	return Box(m_diameter, m_center);
 }
 
-Point MacroCircle::getRotatedCenter() const {
-	Point c = m_center;
-	c.Rotate(m_rotation);
-	return c;
+bool MacroCircle::operator ==(const MacroCircle &rhs) const {
+	return m_exposure == rhs.m_exposure && m_diameter == rhs.m_diameter
+			&& m_center == rhs.m_center;
+}
+
+bool MacroCircle::operator !=(const MacroCircle &rhs) const {
+	return m_exposure != rhs.m_exposure || m_diameter != rhs.m_diameter
+			|| m_center != rhs.m_center;
 }
 
 void MacroCircle::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	m_diameter *= transform.GetScaling();
+	m_center.ApplyTransform(transform);
 }
 
 } /* namespace gerbex */

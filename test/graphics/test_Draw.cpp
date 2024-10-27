@@ -62,4 +62,28 @@ TEST(DrawTest, Box) {
 	CHECK_EQUAL(expected, draw.GetBox());
 }
 
-//TODO test apply transform
+TEST(DrawTest, ApplyTransform) {
+	Transform transform(Mirroring::X, 30.0, 0.5);
+	Circle expectedCircle(*aperture);
+	expectedCircle.ApplyTransform(transform);
+	Segment expectedSegment(start, end);
+	expectedSegment.ApplyTransform(transform);
+
+	draw.ApplyTransform(transform);
+
+	CHECK_EQUAL(expectedCircle, *draw.GetAperture());
+	CHECK(expectedSegment == draw.GetSegment());
+}
+
+TEST(DrawTest, Translate) {
+	Point offset(10.0, -15.0);
+
+	Segment expectedSegment(start, end);
+	expectedSegment.Translate(offset);
+
+	draw.Translate(offset);
+
+	CHECK(expectedSegment == draw.GetSegment());
+}
+
+//TODO test draw serialize

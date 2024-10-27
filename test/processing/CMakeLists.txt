@@ -1,7 +1,5 @@
 add_library(test_processing OBJECT
-	MockAperture.cpp
 	MockCommandsProcessor.cpp
-	MockTemplate.cpp
 	test_CommandHandler.cpp
 	test_CommandsProcessor.cpp
 	test_CoordinateData.cpp

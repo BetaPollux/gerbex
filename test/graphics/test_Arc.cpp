@@ -26,7 +26,7 @@
 using namespace gerbex;
 
 TEST_GROUP(ArcTest) {
-	Point start, end, offset;
+	Point start, end, cOffset;
 	std::shared_ptr<Circle> aperture;
 	ArcDirection direction;
 	Arc arc;
@@ -34,11 +34,11 @@ TEST_GROUP(ArcTest) {
 	void setup() {
 		start = Point(2.5, -1.5);
 		end = Point(3.75, 0.0);
-		offset = Point(0.5, 0.5);
+		cOffset = Point(0.5, 0.5);
 		aperture = std::make_shared<Circle>(1.5);
 		direction = ArcDirection::CounterClockwise;
 
-		arc = Arc(ArcSegment(start, end, offset, direction), aperture);
+		arc = Arc(ArcSegment(start, end, cOffset, direction), aperture);
 	}
 
 };
@@ -52,7 +52,7 @@ TEST(ArcTest, End) {
 }
 
 TEST(ArcTest, Offset) {
-	CHECK_EQUAL(offset, arc.GetSegment().GetCenterOffset());
+	CHECK_EQUAL(cOffset, arc.GetSegment().GetCenterOffset());
 }
 
 TEST(ArcTest, Direction) {
@@ -66,7 +66,7 @@ TEST(ArcTest, Aperture) {
 TEST(ArcTest, RejectsNotCircle) {
 	std::shared_ptr<Aperture> rect = std::make_shared<Rectangle>();
 	CHECK_THROWS(std::invalid_argument,
-			Arc(ArcSegment(start, end, offset, direction), rect));
+			Arc(ArcSegment(start, end, cOffset, direction), rect));
 }
 
 TEST(ArcTest, Box) {
@@ -74,4 +74,28 @@ TEST(ArcTest, Box) {
 	CHECK_EQUAL(expected, arc.GetBox());
 }
 
-//TODO test apply transform
+TEST(ArcTest, ApplyTransform) {
+	Transform transform(Mirroring::X, 30.0, 0.5);
+	Circle expectedCircle(*aperture);
+	expectedCircle.ApplyTransform(transform);
+	ArcSegment expectedSegment(start, end, cOffset, direction);
+	expectedSegment.ApplyTransform(transform);
+
+	arc.ApplyTransform(transform);
+
+	CHECK_EQUAL(expectedCircle, *arc.GetAperture());
+	CHECK(expectedSegment == arc.GetSegment());
+}
+
+TEST(ArcTest, Translate) {
+	Point offset(10.0, -15.0);
+
+	ArcSegment expectedSegment(start, end, cOffset, direction);
+	expectedSegment.Translate(offset);
+
+	arc.Translate(offset);
+
+	CHECK(expectedSegment == arc.GetSegment());
+}
+
+//TODO test arc serialize

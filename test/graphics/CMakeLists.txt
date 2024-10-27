@@ -1,5 +1,7 @@
 add_library(test_graphics OBJECT
 	GraphicsStringFrom.cpp
+	MockAperture.cpp
+	MockTemplate.cpp
 	test_Arc.cpp
 	test_Arc.cpp
 	test_ArcSegment.cpp

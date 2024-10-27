@@ -140,7 +140,9 @@ TEST(GerberPolaritiesAndApertures, ReadAndUsedMacro) {
 	std::shared_ptr<Macro> macro = GetAperture<Macro>(*processor, 19);
 	std::shared_ptr<MacroThermal> thermal = GetMacroPrimitive<MacroThermal>(
 			*macro);
-	DOUBLES_EQUAL(0.8, thermal->GetOuterDiameter(), DBL_TOL);
+
+	MacroThermal expected(Point(0.0, 0.0), 0.800, 0.550, 0.125, 45.0);
+	CHECK(expected == *thermal);
 }
 
 TEST(GerberPolaritiesAndApertures, TwoRegionsWithPolarity) {
@@ -210,11 +212,16 @@ TEST_GROUP(GerberBlocksDiffOrientation) {
 TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(
 			*processor, 12);
-	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(*block->GetObjectList(), 0);
-	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(*block->GetObjectList(), 1);
-	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(*block->GetObjectList(), 2);
-	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(), 3);
-	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(), 4);
+	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 0);
+	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 1);
+	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(
+			*block->GetObjectList(), 2);
+	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(),
+			3);
+	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(),
+			4);
 
 	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetSegment().GetStart());
 	CHECK_EQUAL(Point(2.5, -1.0), d1->GetSegment().GetEnd());
@@ -265,12 +272,10 @@ TEST(GerberSampleMacro, BOXR_D12) {
 	std::shared_ptr<MacroCircle> c4 = GetMacroPrimitive<MacroCircle>(*boxr_d12,
 			5);
 
-	DOUBLES_EQUAL(0.2550, s1->GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(0.1 - 2 * 0.02, s1->GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(30.0, s1->GetRotation(), DBL_TOL);
-	CHECK_EQUAL(Point(0.0, 0.0), s1->GetCenter());
-
-	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
-	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)),
-			c4->GetCenter());
+	MacroCenterLine expectedLine(MacroExposure::ON, 0.2550, 0.1 - 2 * 0.02,
+			Point(0.0, 0.0), 30.0);
+	MacroCircle expectedCircle(MacroExposure::ON, 2 * 0.02,
+			Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)), 30.0);
+	CHECK(expectedLine == *s1);
+	CHECK(expectedCircle == *c4);
 }

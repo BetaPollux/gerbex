@@ -33,19 +33,19 @@ MacroVectorLine::MacroVectorLine() :
 
 MacroVectorLine::MacroVectorLine(MacroExposure exposure, double width,
 		const Point &start, const Point &end, double rotation) :
-		MacroPrimitive(exposure, rotation), m_start { start }, m_end { end }, m_width {
-				width } {
+		MacroPrimitive(exposure), m_vertices { } {
 	if (width < 0.0) {
-		throw std::invalid_argument("Width must be >= 0.0");
+		throw std::invalid_argument("width must be >= 0.0");
 	}
-}
 
-const Point& MacroVectorLine::GetEnd() const {
-	return m_end;
-}
-
-double MacroVectorLine::GetWidth() const {
-	return m_width;
+	double length = end.Distance(start);
+	Point unit_vec = (end - start) / length;
+	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
+	Point delta = normal_vec * 0.5 * width;
+	m_vertices = { start + delta, start - delta, end - delta, end + delta };
+	for (Point &v : m_vertices) {
+		v.Rotate(rotation);
+	}
 }
 
 std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
@@ -62,38 +62,35 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 			rotation);
 }
 
-void MacroVectorLine::Serialize(Serializer &serializer, const Point &origin) const {
-	std::vector<Point> vertices = getVertices();
+void MacroVectorLine::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
 	serializer.AddPolygon(vertices);
 }
 
-const Point& MacroVectorLine::GetStart() const {
-	return m_start;
-}
-
 Box MacroVectorLine::GetBox() const {
-	return Box(getVertices());
+	return Box(m_vertices);
 }
 
-std::vector<Point> MacroVectorLine::getVertices() const {
-	// Vector line is defined by end points
-	double length = m_end.Distance(m_start);
-	Point unit_vec = (m_end - m_start) / length;
-	Point normal_vec = Point(unit_vec.GetY(), -unit_vec.GetX());
-	Point delta = normal_vec * 0.5;
-	std::vector<Point> vertices = { m_start + delta, m_start - delta, m_end
-			- delta, m_end + delta };
-	for (Point &v : vertices) {
-		v.Rotate(m_rotation);
-	}
-	return vertices;
+bool MacroVectorLine::operator ==(const MacroVectorLine &rhs) const {
+	return m_exposure == rhs.m_exposure && m_vertices == rhs.m_vertices;
+}
+
+bool MacroVectorLine::operator !=(const MacroVectorLine &rhs) const {
+	return m_exposure != rhs.m_exposure || m_vertices != rhs.m_vertices;
 }
 
 void MacroVectorLine::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	for (Point &p : m_vertices) {
+		p.ApplyTransform(transform);
+	}
+}
+
+const std::vector<Point>& MacroVectorLine::GetVertices() const {
+	return m_vertices;
 }
 
 } /* namespace gerbex */

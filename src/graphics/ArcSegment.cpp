@@ -53,7 +53,7 @@ double ArcSegment::GetRadius() const {
 	return m_start.Distance(GetCenter());;
 }
 
-void ArcSegment::Transform(const gerbex::Transform &transform) {
+void ArcSegment::ApplyTransform(const gerbex::Transform &transform) {
 	m_start.ApplyTransform(transform);
 	m_end.ApplyTransform(transform);
 	if (transform.GetMirroring() == Mirroring::X
@@ -71,6 +71,22 @@ Box ArcSegment::GetBox() const {
 	Point c = GetCenter();
 	double r = GetRadius();
 	return Box(2.0 * r, 2.0 * r, c.GetX() - r, c.GetY() - r);
+}
+
+bool ArcSegment::operator ==(const ArcSegment &rhs) const {
+	return m_start == rhs.m_start && m_end == rhs.m_end
+			&& m_centerOffset == rhs.m_centerOffset
+			&& m_direction == rhs.m_direction;
+}
+
+bool ArcSegment::operator !=(const ArcSegment &rhs) const {
+	return m_start != rhs.m_start || m_end != rhs.m_end
+			|| m_centerOffset != rhs.m_centerOffset
+			|| m_direction != rhs.m_direction;
+}
+
+std::unique_ptr<Segment> ArcSegment::Clone() {
+	return std::make_unique<ArcSegment>(*this);
 }
 
 } /* namespace gerbex */

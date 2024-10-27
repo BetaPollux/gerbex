@@ -32,23 +32,26 @@ MacroPolygon::MacroPolygon() :
 
 MacroPolygon::MacroPolygon(MacroExposure exposure, int numVertices,
 		const Point &center, double diameter, double rotation) :
-		MacroPrimitive(exposure, rotation), m_center { center }, m_numVertices {
-				numVertices }, m_diameter { diameter } {
+		MacroPrimitive(exposure), m_vertices { } {
 	if (numVertices < 3 || numVertices > 12) {
-		throw std::invalid_argument("Number of vertices must be from 3 to 12");
+		throw std::invalid_argument("number of vertices must be from 3 to 12");
 	}
 
 	if (diameter < 0.0) {
-		throw std::invalid_argument("Diameter must be >= 0.0");
+		throw std::invalid_argument("diameter must be >= 0.0");
 	}
-}
 
-double MacroPolygon::GetDiameter() const {
-	return m_diameter;
-}
-
-int MacroPolygon::GetNumVertices() const {
-	return m_numVertices;
+	m_vertices.reserve(numVertices);
+	double angle_step = 2.0 * M_PI / numVertices;
+	double radius = 0.5 * diameter;
+	for (int i = 0; i < numVertices; i++) {
+		double angle = angle_step * i;
+		double x = radius * cos(angle);
+		double y = radius * sin(angle);
+		Point vertex = Point(x, y) + center;
+		vertex.Rotate(rotation);
+		m_vertices.push_back(vertex);
+	}
 }
 
 std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
@@ -65,40 +68,35 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 			rotation);
 }
 
-void MacroPolygon::Serialize(Serializer &serializer, const Point &origin) const {
-	std::vector<Point> vertices = getVertices();
+void MacroPolygon::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
 	serializer.AddPolygon(vertices);
 }
 
-const Point& MacroPolygon::GetCenter() const {
-	return m_center;
-}
-
 Box MacroPolygon::GetBox() const {
-	return Box(getVertices());
-}
-
-std::vector<Point> MacroPolygon::getVertices() const {
-	std::vector<Point> vertices;
-	vertices.reserve(m_numVertices);
-	double angle_step = 2.0 * M_PI / m_numVertices;
-	double radius = 0.5 * m_diameter;
-	for (int i = 0; i < m_numVertices; i++) {
-		double angle = angle_step * i;
-		double x = radius * cos(angle);
-		double y = radius * sin(angle);
-		Point vertex = Point(x, y) + m_center;
-		vertex.Rotate(m_rotation);
-		vertices.push_back(vertex);
-	}
-	return vertices;
+	return Box(m_vertices);
 }
 
 void MacroPolygon::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	for (Point &p : m_vertices) {
+		p.ApplyTransform(transform);
+	}
+}
+
+bool MacroPolygon::operator ==(const MacroPolygon &rhs) const {
+	return m_exposure == rhs.m_exposure && m_vertices == rhs.m_vertices;
+}
+
+bool MacroPolygon::operator !=(const MacroPolygon &rhs) const {
+	return m_exposure != rhs.m_exposure || m_vertices != rhs.m_vertices;
+}
+
+const std::vector<Point>& MacroPolygon::GetVertices() const {
+	return m_vertices;
 }
 
 } /* namespace gerbex */

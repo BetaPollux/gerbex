@@ -63,7 +63,7 @@ Box Arc::GetBox() const {
 
 void Arc::ApplyTransform(const Transform &transform) {
 	m_aperture->ApplyTransform(transform);
-	m_segment.Transform(transform);
+	m_segment.ApplyTransform(transform);
 }
 
 std::unique_ptr<GraphicalObject> Arc::Clone() {

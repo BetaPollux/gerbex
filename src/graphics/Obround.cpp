@@ -95,7 +95,7 @@ bool Obround::operator !=(const Obround &rhs) const {
 void Obround::ApplyTransform(const Transform &transform) {
 	m_holeDiameter *= transform.GetScaling();
 	m_drawWidth *= transform.GetScaling();
-	m_segment.Transform(transform);
+	m_segment.ApplyTransform(transform);
 }
 
 } /* namespace gerbex */

@@ -18,26 +18,25 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Circle.h"
+#include "MockAperture.h"
 #include "Flash.h"
 #include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
 
 using namespace gerbex;
 
-
 TEST_GROUP(FlashTest) {
 	Point origin;
-	std::shared_ptr<Circle> aperture;
+	std::shared_ptr<MockAperture> aperture;
 	Flash flash;
 
 	void setup() {
 		origin = Point(2.5, -1.5);
-		aperture = std::make_shared<Circle>(2.0);
+		aperture = std::make_shared<MockAperture>();
 
 		flash = Flash(origin, aperture);
 	}
-
 };
 
 TEST(FlashTest, Origin) {
@@ -49,9 +48,34 @@ TEST(FlashTest, Aperture) {
 }
 
 TEST(FlashTest, Box) {
-	Box expected(2.0, 2.0, 1.5, -2.5);
-	CHECK_EQUAL(expected, flash.GetBox());
+	Box box;
+	Box expected = box.Translate(origin);
+	mock().expectOneCall("ApertureGetBox").andReturnValue(&box);
+
+	Box actual = flash.GetBox();
+
+	CHECK_EQUAL(expected, actual);
 }
 
-//TODO test apply transform
+TEST(FlashTest, Transform) {
+	Transform transform(Mirroring::X, 30.0, 0.5);
+	Point expectedOrigin = origin;
+	expectedOrigin.ApplyTransform(transform);
+	mock().expectOneCall("ApertureApplyTransform").withParameterOfType(
+			"Transform", "transform", &transform);
 
+	flash.ApplyTransform(transform);
+
+	CHECK_EQUAL(expectedOrigin, flash.GetOrigin());
+}
+
+TEST(FlashTest, Translate) {
+	Point offset(50.0, 25.0);
+	Point expectedOrigin = origin + offset;
+
+	flash.Translate(offset);
+
+	CHECK_EQUAL(expectedOrigin, flash.GetOrigin());
+}
+
+//TODO test flash serialize

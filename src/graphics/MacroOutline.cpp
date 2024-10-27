@@ -32,9 +32,12 @@ MacroOutline::MacroOutline() :
 
 MacroOutline::MacroOutline(MacroExposure exposure,
 		const std::vector<Point> &vertices, double rotation) :
-		MacroPrimitive(exposure, rotation), m_vertices { vertices } {
+		MacroPrimitive(exposure), m_vertices { vertices } {
 	if (vertices.size() < 3) {
 		throw std::invalid_argument("There must at least 3 vertices");
+	}
+	for (Point &p : m_vertices) {
+		p.Rotate(rotation);
 	}
 }
 
@@ -69,7 +72,6 @@ void MacroOutline::Serialize(Serializer &serializer,
 		const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
-		p.Rotate(m_rotation);
 		p += origin;
 	}
 	serializer.AddPolygon(vertices);
@@ -79,8 +81,18 @@ Box MacroOutline::GetBox() const {
 	return Box(m_vertices);
 }
 
+bool MacroOutline::operator ==(const MacroOutline &rhs) const {
+	return m_exposure == rhs.m_exposure && m_vertices == rhs.m_vertices;
+}
+
+bool MacroOutline::operator !=(const MacroOutline &rhs) const {
+	return m_exposure != rhs.m_exposure || m_vertices != rhs.m_vertices;
+}
+
 void MacroOutline::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	for (Point &p : m_vertices) {
+		p.ApplyTransform(transform);
+	}
 }
 
 } /* namespace gerbex */

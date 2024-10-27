@@ -34,21 +34,20 @@ namespace gerbex {
 class MacroVectorLine: public MacroPrimitive {
 public:
 	MacroVectorLine();
-	MacroVectorLine(MacroExposure exposure, double width,
-			const Point &start, const Point &end, double rotation);
+	MacroVectorLine(MacroExposure exposure, double width, const Point &start,
+			const Point &end, double rotation);
 	virtual ~MacroVectorLine() = default;
-	const Point& GetStart() const;
-	const Point& GetEnd() const;
-	double GetWidth() const;
-	static std::unique_ptr<MacroVectorLine> FromParameters(const Parameters &params);
+	bool operator==(const MacroVectorLine &rhs) const;
+	bool operator!=(const MacroVectorLine &rhs) const;
+	static std::unique_ptr<MacroVectorLine> FromParameters(
+			const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
+	const std::vector<Point>& GetVertices() const;
 
 private:
-	std::vector<Point> getVertices() const;
-	Point m_start, m_end;
-	double m_width;
+	std::vector<Point> m_vertices;
 };
 
 } /* namespace gerbex */

@@ -63,7 +63,9 @@ void Region::Serialize(Serializer &serializer, const Point &origin) const {
 	(void) origin;
 	serializer.SetPolarity(m_polarity);
 	for (const Contour &c : m_contours) {
-		serializer.AddContour(c);
+		Contour clone = c;
+		clone.Translate(origin);
+		serializer.AddContour(clone);
 	}
 }
 

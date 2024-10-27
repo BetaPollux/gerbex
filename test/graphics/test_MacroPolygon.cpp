@@ -25,30 +25,44 @@
 
 using namespace gerbex;
 
-#define DBL_TOL 1e-5
-
 TEST_GROUP(MacroPolygonTest) {
 };
 
 TEST(MacroPolygonTest, Default) {
 	MacroPolygon poly;
-	CHECK(poly.GetNumVertices() >= 3);
-	CHECK(poly.GetNumVertices() <= 12);
-	CHECK(poly.GetDiameter() >= 0.0);
+	CHECK(poly.GetVertices().size() >= 3);
+	CHECK(poly.GetVertices().size() <= 12);
 }
 
 TEST(MacroPolygonTest, Ctor) {
-	Point center(0.5, -0.25);
+	Point center(2.0, 5.0);
 
-	MacroPolygon poly(MacroExposure::OFF, 5, center, 1.25, 45.0);
+	MacroPolygon poly(MacroExposure::OFF, 3, center, 2.0, 0.0);
+
+	std::vector<Point> expected = { Point(3.0, 5.0), Point(1.5,
+			5.0 + sqrt(3.0 / 4.0)), Point(1.5, 5.0 - sqrt(3.0 / 4.0)) };
 
 	LONGS_EQUAL(MacroExposure::OFF, poly.GetExposure());
-	LONGS_EQUAL(5, poly.GetNumVertices());
-	DOUBLES_EQUAL(1.25, poly.GetDiameter(), 1e-9);
-	CHECK_EQUAL(center, poly.GetCenter());
-	DOUBLES_EQUAL(45.0, poly.GetRotation(), 1e-9);
+	CHECK_EQUAL(3, poly.GetVertices().size());
+	CHECK_EQUAL(expected[0], poly.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], poly.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], poly.GetVertices()[2]);
 }
 
+TEST(MacroPolygonTest, Ctor_Rotated) {
+	Point center(2.0, 5.0);
+
+	MacroPolygon poly(MacroExposure::OFF, 3, center, 2.0, 90.0);
+
+	std::vector<Point> expected = { Point(-5.0, 3.0), Point(
+			-5.0 - sqrt(3.0 / 4.0), 1.5), Point(-5.0 + sqrt(3.0 / 4.0), 1.5) };
+
+	LONGS_EQUAL(MacroExposure::OFF, poly.GetExposure());
+	CHECK_EQUAL(3, poly.GetVertices().size());
+	CHECK_EQUAL(expected[0], poly.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], poly.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], poly.GetVertices()[2]);
+}
 TEST(MacroPolygonTest, TooFewVertices) {
 	CHECK_THROWS(std::invalid_argument,
 			MacroPolygon(MacroExposure::ON, 2, Point(), 1.0, 0.0));
@@ -63,11 +77,8 @@ TEST(MacroPolygonTest, FromParameters) {
 	Parameters params = { 1, 8, 3, 4, 6, 12 };
 	std::shared_ptr<MacroPolygon> poly = MacroPolygon::FromParameters(params);
 	CHECK(MacroExposure::ON == poly->GetExposure());
-	LONGS_EQUAL(8, poly->GetNumVertices());
-	DOUBLES_EQUAL(3.0, poly->GetCenter().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(4.0, poly->GetCenter().GetY(), DBL_TOL);
-	DOUBLES_EQUAL(6.0, poly->GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(12.0, poly->GetRotation(), DBL_TOL);
+	MacroPolygon expected(MacroExposure::ON, 8, Point(3, 4), 6, 12);
+	CHECK(expected == *poly);
 }
 
 TEST(MacroPolygonTest, FromParameters_TooFew) {

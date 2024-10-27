@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Contour.h"
 #include "MacroThermal.h"
 #include "Serializer.h"
 #include <cmath>
@@ -33,9 +32,7 @@ MacroThermal::MacroThermal() :
 
 MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 		double innerDiameter, double gapThickness, double rotation) :
-		MacroPrimitive(MacroExposure::ON, rotation), m_center { center }, m_outerDiameter {
-				outerDiameter }, m_innerDiameter { innerDiameter }, m_gapThickness {
-				gapThickness } {
+		MacroPrimitive(MacroExposure::ON), m_contours { } {
 	if (outerDiameter < 0.0 || innerDiameter < 0.0 || gapThickness < 0.0) {
 		throw std::invalid_argument("diameters and gap must be >= 0.0");
 	}
@@ -47,38 +44,11 @@ MacroThermal::MacroThermal(const Point &center, double outerDiameter,
 		throw std::invalid_argument(
 				"gap thickness must be less than (outer diameter)/sqrt(2)");
 	}
-}
 
-double MacroThermal::GetGapThickness() const {
-	return m_gapThickness;
-}
-
-double MacroThermal::GetInnerDiameter() const {
-	return m_innerDiameter;
-}
-
-double MacroThermal::GetOuterDiameter() const {
-	return m_outerDiameter;
-}
-
-std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
-		const Parameters &params) {
-	if (params.size() != 6) {
-		throw std::invalid_argument("macro thermal expects 6 parameters");
-	}
-	Point center(params[0], params[1]);
-	double outer = params[2];
-	double inner = params[3];
-	double gap = params[4];
-	double rotation = params[5];
-	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
-}
-
-void MacroThermal::Serialize(Serializer &serializer, const Point &origin) const {
 	// Exposure is always ON
-	double rOuter = 0.5 * m_outerDiameter;
-	double rInner = 0.5 * m_innerDiameter;
-	double dGap = 0.5 * m_gapThickness;
+	double rOuter = 0.5 * outerDiameter;
+	double rInner = 0.5 * innerDiameter;
+	double dGap = 0.5 * gapThickness;
 	//TODO handle disappearing inner radius for large gap
 	//r^2 = x^2 + y^2
 	double dGapInner = sqrt(rInner * rInner - dGap * dGap);
@@ -101,29 +71,61 @@ void MacroThermal::Serialize(Serializer &serializer, const Point &origin) const 
 						ArcDirection::Clockwise));
 
 		Transform rot;
-		rot.SetRotation(m_rotation + 90.0 * i);
+		rot.SetRotation(rotation + 90.0 * i);
 		contour.Transform(rot);
-		contour.Translate(origin);
-		serializer.AddContour(contour);
+		contour.Translate(center);
+		m_contours[i] = contour;
 	}
 }
 
-const Point& MacroThermal::GetCenter() const {
-	return m_center;
+std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
+		const Parameters &params) {
+	if (params.size() != 6) {
+		throw std::invalid_argument("macro thermal expects 6 parameters");
+	}
+	Point center(params[0], params[1]);
+	double outer = params[2];
+	double inner = params[3];
+	double gap = params[4];
+	double rotation = params[5];
+	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
+}
+
+void MacroThermal::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	for (const Contour &c : m_contours) {
+		Contour clone = c;
+		clone.Translate(origin);
+		serializer.AddContour(clone);
+	}
 }
 
 Box MacroThermal::GetBox() const {
-	return Box(m_outerDiameter, getRotatedCenter());
+	Box box;
+	for (const Contour &c : m_contours) {
+		for (std::shared_ptr<Segment> s : c.GetSegments()) {
+			box = box.Extend(s->GetBox());
+		}
+	}
+	return box;
 }
 
-Point MacroThermal::getRotatedCenter() const {
-	Point c = m_center;
-	c.Rotate(m_rotation);
-	return c;
+bool MacroThermal::operator ==(const MacroThermal &rhs) const {
+	return m_contours == rhs.m_contours;
+}
+
+bool MacroThermal::operator !=(const MacroThermal &rhs) const {
+	return m_contours != rhs.m_contours;
 }
 
 void MacroThermal::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	for (Contour &c : m_contours) {
+		c.Transform(transform);
+	}
+}
+
+const std::array<Contour, 4>& MacroThermal::GetContours() const {
+	return m_contours;
 }
 
 } /* namespace gerbex */

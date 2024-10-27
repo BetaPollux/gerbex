@@ -15,7 +15,6 @@ add_library(gerbex_graphics OBJECT
 	MacroCircle.cpp
 	MacroOutline.cpp
 	MacroPolygon.cpp
-	MacroPrimitive.cpp
 	MacroTemplate.cpp
 	MacroThermal.cpp
 	MacroVectorLine.cpp

@@ -31,19 +31,18 @@ MacroCenterLine::MacroCenterLine() :
 
 MacroCenterLine::MacroCenterLine(MacroExposure exposure, double width,
 		double height, const Point &center, double rotation) :
-		MacroPrimitive(exposure, rotation), m_center { center }, m_width { width }, m_height {
-				height } {
+		MacroPrimitive(exposure), m_vertices { } {
 	if (width < 0.0 || height < 0.0) {
-		throw std::invalid_argument("Width and height must be >= 0.0");
+		throw std::invalid_argument("width and height must be >= 0.0");
 	}
-}
 
-double MacroCenterLine::GetHeight() const {
-	return m_height;
-}
-
-double MacroCenterLine::GetWidth() const {
-	return m_width;
+	double dx = 0.5 * width;
+	double dy = 0.5 * height;
+	m_vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx, -dy } };
+	for (Point &v : m_vertices) {
+		v += center;
+		v.Rotate(rotation);
+	}
 }
 
 std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
@@ -60,37 +59,35 @@ std::unique_ptr<MacroCenterLine> MacroCenterLine::FromParameters(
 			rotation);
 }
 
-void MacroCenterLine::Serialize(Serializer &serializer, const Point &origin) const {
-	std::vector<Point> vertices = getVertices();
+void MacroCenterLine::Serialize(Serializer &serializer,
+		const Point &origin) const {
+	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
 	serializer.AddPolygon(vertices);
 }
 
-const Point& MacroCenterLine::GetCenter() const {
-	return m_center;
-}
-
 Box MacroCenterLine::GetBox() const {
-	return Box(getVertices());
-}
-
-std::vector<Point> MacroCenterLine::getVertices() const {
-	// Center line is centered on origin
-	double dx = 0.5 * m_width;
-	double dy = 0.5 * m_height;
-	std::vector<Point> vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
-			-dy } };
-	for (Point &v : vertices) {
-		v += m_center;
-		v.Rotate(m_rotation);
-	}
-	return vertices;
+	return Box(m_vertices);
 }
 
 void MacroCenterLine::ApplyTransform(const gerbex::Transform &transform) {
-	//TODO apply transform
+	for (Point &p : m_vertices) {
+		p.ApplyTransform(transform);
+	}
+}
+
+bool MacroCenterLine::operator ==(const MacroCenterLine &rhs) const {
+	return m_exposure == rhs.m_exposure && m_vertices == rhs.m_vertices;
+}
+
+bool MacroCenterLine::operator !=(const MacroCenterLine &rhs) const {
+	return m_exposure != rhs.m_exposure || m_vertices != rhs.m_vertices;
+}
+
+const std::vector<Point>& MacroCenterLine::GetVertices() const {
+	return m_vertices;
 }
 
 } /* namespace gerbex */

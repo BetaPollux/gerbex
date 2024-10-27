@@ -24,6 +24,7 @@
 #include "Box.h"
 #include "Point.h"
 #include "Transform.h"
+#include <memory>
 
 namespace gerbex {
 
@@ -40,8 +41,9 @@ public:
 	const Point& GetStart() const;
 	const Point& GetEnd() const;
 	virtual Box GetBox() const;
+	virtual std::unique_ptr<Segment> Clone();
 	virtual void Translate(const Point &offset);
-	virtual void Transform(const gerbex::Transform &transform);
+	virtual void ApplyTransform(const gerbex::Transform &transform);
 
 protected:
 	Point m_start, m_end;

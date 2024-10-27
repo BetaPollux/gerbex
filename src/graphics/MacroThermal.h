@@ -22,7 +22,9 @@
 #define MACROTHERMAL_H_
 
 #include "DataTypeParser.h"
+#include "Contour.h"
 #include "MacroPrimitive.h"
+#include <array>
 #include <memory>
 
 namespace gerbex {
@@ -33,22 +35,21 @@ namespace gerbex {
 class MacroThermal: public MacroPrimitive {
 public:
 	MacroThermal();
-	MacroThermal(const Point &center, double outerDiameter, double innerDiameter,
-			double gapThickness, double rotation);
+	MacroThermal(const Point &center, double outerDiameter,
+			double innerDiameter, double gapThickness, double rotation);
 	virtual ~MacroThermal() = default;
-	double GetGapThickness() const;
-	double GetInnerDiameter() const;
-	double GetOuterDiameter() const;
-	static std::unique_ptr<MacroThermal> FromParameters(const Parameters &params);
+	bool operator==(const MacroThermal &rhs) const;
+	bool operator!=(const MacroThermal &rhs) const;
+	static std::unique_ptr<MacroThermal> FromParameters(
+			const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin) const override;
-	const Point& GetCenter() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
+	const std::array<Contour, 4>& GetContours() const;
 
 private:
-	Point getRotatedCenter() const;
-	Point m_center;
-	double m_outerDiameter, m_innerDiameter, m_gapThickness;
+	std::array<Contour, 4> m_contours;
+
 };
 
 } /* namespace gerbex */

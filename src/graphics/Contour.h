@@ -36,7 +36,11 @@ namespace gerbex {
 class Contour {
 public:
 	Contour();
+	Contour(const Contour &rhs);
 	virtual ~Contour() = default;
+	bool operator==(const Contour &rhs) const;
+	bool operator!=(const Contour &rhs) const;
+	Contour& operator=(const Contour &rhs);
 	bool IsClosed() const;
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
@@ -47,8 +51,6 @@ private:
 	std::vector<std::shared_ptr<Segment>> m_segments;
 
 };
-
-//TODO needs deep copy
 
 } /* namespace gerbex */
 

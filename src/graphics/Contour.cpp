@@ -25,7 +25,8 @@
 
 namespace gerbex {
 
-Contour::Contour() {
+Contour::Contour() :
+		m_segments { } {
 	// Empty
 
 }
@@ -65,10 +66,47 @@ void Contour::Translate(const Point &offset) {
 	}
 }
 
+bool Contour::operator ==(const Contour &rhs) const {
+	if (m_segments.size() != rhs.m_segments.size()) {
+		return false;
+	}
+	for (size_t i = 0; i < m_segments.size(); i++) {
+		if (*m_segments[i] != *rhs.m_segments[i]) {
+			return false;
+		}
+		//TODO this doesn't compare ArcSegments properly
+	}
+	return true;
+}
+
+bool Contour::operator !=(const Contour &rhs) const {
+	return !(*this == rhs);
+}
+
 void Contour::Transform(const gerbex::Transform &transform) {
 	for (std::shared_ptr<Segment> s : m_segments) {
-		s->Transform(transform);
+		s->ApplyTransform(transform);
 	}
+}
+
+Contour::Contour(const Contour &rhs) :
+		Contour() {
+	m_segments.reserve(rhs.m_segments.size());
+	for (std::shared_ptr<Segment> s : rhs.m_segments) {
+		m_segments.push_back(s->Clone());
+	}
+}
+
+Contour& Contour::operator =(const Contour &rhs) {
+	if (this == &rhs) {
+		return *this;
+	}
+	m_segments.clear();
+	m_segments.reserve(rhs.m_segments.size());
+	for (std::shared_ptr<Segment> s : rhs.m_segments) {
+		m_segments.push_back(s->Clone());
+	}
+	return *this;
 }
 
 } /* namespace gerbex */

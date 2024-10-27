@@ -19,32 +19,43 @@
  */
 
 #include "MacroCenterLine.h"
+#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
 
-#define DBL_TOL 1e-5
-
 TEST_GROUP(MacroCenterLineTest) {
 };
 
-TEST(MacroCenterLineTest, Default) {
-	MacroCenterLine line;
-	CHECK(line.GetWidth() > 0.0);
-	CHECK(line.GetHeight() > 0.0);
+TEST(MacroCenterLineTest, Ctor) {
+	Point center(10.0, 5.0);
+
+	MacroCenterLine line(MacroExposure::OFF, 4.0, 2.0, center, 0.0);
+
+	std::vector<Point> expected = { Point(12.0, 6.0), Point(8.0, 6.0), Point(
+			8.0, 4.0), Point(12.0, 4.0) };
+	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
+	CHECK_EQUAL(4, line.GetVertices().size());
+	CHECK_EQUAL(expected[0], line.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], line.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], line.GetVertices()[2]);
+	CHECK_EQUAL(expected[3], line.GetVertices()[3]);
 }
 
-TEST(MacroCenterLineTest, Ctor) {
-	Point start(0.5, -0.25);
+TEST(MacroCenterLineTest, Ctor_Rotated) {
+	Point center(10.0, 5.0);
 
-	MacroCenterLine line(MacroExposure::OFF, 1.25, 0.75, start, 45.0);
+	MacroCenterLine line(MacroExposure::OFF, 4.0, 2.0, center, 90.0);
 
+	std::vector<Point> expected = { Point(-6.0, 12.0), Point(-6.0, 8.0), Point(
+			-4.0, 8.0), Point(-4.0, 12.0) };
 	LONGS_EQUAL(MacroExposure::OFF, line.GetExposure());
-	DOUBLES_EQUAL(1.25, line.GetWidth(), 1e-9);
-	DOUBLES_EQUAL(0.75, line.GetHeight(), 1e-9);
-	CHECK(start == line.GetCenter());
-	DOUBLES_EQUAL(45.0, line.GetRotation(), 1e-9);
+	CHECK_EQUAL(4, line.GetVertices().size());
+	CHECK_EQUAL(expected[0], line.GetVertices()[0]);
+	CHECK_EQUAL(expected[1], line.GetVertices()[1]);
+	CHECK_EQUAL(expected[2], line.GetVertices()[2]);
+	CHECK_EQUAL(expected[3], line.GetVertices()[3]);
 }
 
 TEST(MacroCenterLineTest, NegativeWidth) {
@@ -61,12 +72,10 @@ TEST(MacroCenterLineTest, FromParameters) {
 	Parameters params = { 1, 6.8, 1.2, 3.4, 0.6, 30 };
 	std::shared_ptr<MacroCenterLine> line = MacroCenterLine::FromParameters(
 			params);
+
+	MacroCenterLine expected(MacroExposure::ON, 6.8, 1.2, Point(3.4, 0.6), 30);
 	CHECK(MacroExposure::ON == line->GetExposure());
-	DOUBLES_EQUAL(6.8, line->GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(1.2, line->GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(3.4, line->GetCenter().GetX(), DBL_TOL);
-	DOUBLES_EQUAL(0.6, line->GetCenter().GetY(), DBL_TOL);
-	DOUBLES_EQUAL(30.0, line->GetRotation(), DBL_TOL);
+	CHECK(expected == *line);
 }
 
 TEST(MacroCenterLineTest, FromParameters_TooFew) {

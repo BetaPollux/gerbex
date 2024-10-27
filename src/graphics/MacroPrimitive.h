@@ -39,20 +39,34 @@ enum class MacroExposure {
  */
 class MacroPrimitive {
 public:
-	MacroPrimitive();
-	MacroPrimitive(MacroExposure exposure, double rotation);
+	MacroPrimitive() :
+			MacroPrimitive(MacroExposure::ON) {
+	}
+	MacroPrimitive(MacroExposure exposure) :
+			m_exposure { exposure } {
+	}
 	virtual ~MacroPrimitive() = default;
-	MacroExposure GetExposure() const;
-	double GetRotation() const;
-	static MacroExposure ExposureFromNum(int num);
+	MacroExposure GetExposure() const {
+		return m_exposure;
+	}
+	static MacroExposure ExposureFromNum(int num) {
+		switch (num) {
+		case 1:
+			return MacroExposure::ON;
+		case 0:
+			return MacroExposure::OFF;
+		default:
+			throw std::invalid_argument("macro exposure must be 0 or 1");
+		}
+	}
 	//TODO needs new Serialize signature, macro does not use regular polarity
-	virtual void Serialize(Serializer &serializer, const Point &origin) const = 0;
+	virtual void Serialize(Serializer &serializer,
+			const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
 
 protected:
 	MacroExposure m_exposure;
-	double m_rotation;
 };
 
 } /* namespace gerbex */

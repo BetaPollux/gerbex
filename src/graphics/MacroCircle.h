@@ -36,6 +36,8 @@ public:
 	MacroCircle(MacroExposure exposure, double diameter,
 			const Point &center, double rotation = 0.0);
 	virtual ~MacroCircle() = default;
+	bool operator==(const MacroCircle &rhs) const;
+	bool operator!=(const MacroCircle &rhs) const;
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
 	void Serialize(Serializer &serializer, const Point &origin) const override;
@@ -44,7 +46,6 @@ public:
 	void ApplyTransform(const Transform &transform) override;
 
 private:
-	Point getRotatedCenter() const;
 	Point m_center;
 	double m_diameter;
 };
