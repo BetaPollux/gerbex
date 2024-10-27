@@ -41,15 +41,15 @@ public:
 	void SaveFile(const std::string &path);
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
-	void AddDraw(double width, const Segment &segment, bool isDark = true)
+	void AddDraw(double width, const Segment &segment, Polarity polarity)
 			override;
-	void AddArc(double width, const ArcSegment &segment, bool isDark = true)
+	void AddArc(double width, const ArcSegment &segment, Polarity polarity)
 			override;
-	void AddCircle(double radius, const Point &center, bool isDark = true)
+	void AddCircle(double radius, const Point &center, Polarity polarity)
 			override;
-	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
+	void AddPolygon(const std::vector<Point> &points, Polarity polarity)
 			override;
-	void AddContour(const Contour &contour, bool isDark = true) override;
+	void AddContour(const Contour &contour, Polarity polarity) override;
 //TODO these should all return an element that can be modified with more calls
 //TODO CreateMask, create <mask> and add shape to <mask> vs image
 //TODO ApplyMask, adds mask= attribute
@@ -57,7 +57,7 @@ public:
 private:
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	const char* getFillColor(bool isDark) const;
+	const char* getFillColor(Polarity polarity) const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 	std::string m_fgColor;

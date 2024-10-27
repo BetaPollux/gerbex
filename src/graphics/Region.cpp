@@ -64,7 +64,7 @@ bool Region::AreContoursClosed() const {
 void Region::Serialize(Serializer &serializer, const Point &origin) const {
 	(void) origin;
 	for (const Contour &c : m_contours) {
-		serializer.AddContour(c, m_polarity == Polarity::Dark);
+		serializer.AddContour(c, m_polarity);
 	}
 }
 

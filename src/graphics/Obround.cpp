@@ -38,12 +38,12 @@ Obround::Obround(double xSize, double ySize, double holeDiameter) {
 		throw std::invalid_argument("hole diameter must be >= 0");
 	}
 	if (xSize > ySize) {
-		m_radius = 0.5 * ySize;
-		double dx = 0.5 * xSize - m_radius;
+		m_drawWidth = ySize;
+		double dx = 0.5 * (xSize - m_drawWidth);
 		m_segment = Segment(Point(-dx, 0.0), Point(dx, 0.0));
 	} else {
-		m_radius = 0.5 * xSize;
-		double dy = 0.5 * ySize - m_radius;
+		m_drawWidth = xSize;
+		double dy = 0.5 * (ySize - m_drawWidth);
 		m_segment = Segment(Point(0.0, -dy), Point(0.0, dy));
 	}
 
@@ -51,35 +51,41 @@ Obround::Obround(double xSize, double ySize, double holeDiameter) {
 }
 
 double Obround::GetHoleDiameter() const {
-	return m_transform.ApplyScaling(m_holeDiameter);
-}
-
-double Obround::GetXSize() const {
-	Point delta = m_segment.GetEnd() - m_segment.GetStart();
-	return m_transform.ApplyScaling(2.0 * m_radius + fabs(delta.GetX()));
-}
-
-double Obround::GetYSize() const {
-	Point delta = m_segment.GetEnd() - m_segment.GetStart();
-	return m_transform.ApplyScaling(2.0 * m_radius + fabs(delta.GetY()));
+	return m_holeDiameter;
 }
 
 void Obround::Serialize(Serializer &serializer, const Point &origin) const {
-	double width = 2.0 * m_radius;
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	serializer.AddDraw(width, segment, isDark());
+	serializer.AddDraw(m_drawWidth, segment, m_polarity);
 }
 
 Box Obround::GetBox() const {
-	double radius = m_transform.ApplyScaling(m_radius);
-	Segment segment = m_segment;
-	segment.Transform(m_transform);
-	return segment.GetBox().Pad(radius);
+	double radius = 0.5 * m_drawWidth;
+	return m_segment.GetBox().Pad(radius);
 }
 
 std::unique_ptr<Aperture> Obround::Clone() const {
 	return std::make_unique<Obround>(*this);
+}
+
+double Obround::GetLength() const {
+	double distance = m_segment.GetEnd().Distance(m_segment.GetStart());
+	return distance + m_drawWidth;
+}
+
+double Obround::GetDrawWidth() const {
+	return m_drawWidth;
+}
+
+const Segment& Obround::GetSegment() const {
+	return m_segment;
+}
+
+void Obround::ApplyTransform(const Transform &transform) {
+	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	m_segment.Transform(transform);
+	m_drawWidth = transform.ApplyScaling(m_drawWidth);
 }
 
 } /* namespace gerbex */

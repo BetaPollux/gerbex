@@ -53,9 +53,9 @@ TEST(CircleTest, DefaultHole) {
 	DOUBLES_EQUAL(0.0, circle.GetHoleDiameter(), DBL_TOL);
 }
 
-TEST(CircleTest, DefaultTransform) {
-	Circle circle(1.5);
-	CHECK(Transform() == circle.GetTransform());
+TEST(CircleTest, Polarity) {
+	Circle circle;
+	CHECK_EQUAL((int)Polarity::Dark, (int)circle.GetPolarity());
 }
 
 TEST(CircleTest, Box) {
@@ -74,9 +74,10 @@ TEST_GROUP(Circle_Transformed) {
 	void setup() {
 		transform = Transform();
 		transform.SetScaling(3.0);
+		transform.SetPolarity(Polarity::Clear);
 
 		circle = Circle(1.5, 0.5);
-		circle.SetTransform(transform);
+		circle.ApplyTransform(transform);
 	}
 };
 
@@ -86,6 +87,10 @@ TEST(Circle_Transformed, Diameter) {
 
 TEST(Circle_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(1.5, circle.GetHoleDiameter(), DBL_TOL);
+}
+
+TEST(Circle_Transformed, Polarity) {
+	CHECK_EQUAL((int)Polarity::Clear, (int)circle.GetPolarity());
 }
 
 TEST(Circle_Transformed, Box) {
@@ -98,9 +103,7 @@ TEST(Circle_Transformed, Clone) {
 	Circle *clone = (Circle*)aperture.get();
 
 	CHECK(clone != &circle);
-	DOUBLES_EQUAL(clone->GetDiameter(), circle.GetDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(clone->GetHoleDiameter(), circle.GetHoleDiameter(), DBL_TOL);
-	CHECK(clone->GetTransform() == circle.GetTransform());
+	CHECK_EQUAL(circle, *clone);
 }
 
 // TODO test circle serialize

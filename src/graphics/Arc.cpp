@@ -38,7 +38,8 @@ void Arc::Serialize(Serializer &serializer, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	ArcSegment segment = m_segment;
 	segment.Translate(origin);
-	serializer.AddArc(width, segment);
+	//TODO arc should have its own polarity?
+	serializer.AddArc(width, segment, Polarity::Dark);
 }
 
 std::shared_ptr<Circle> Arc::GetAperture() const {
@@ -56,9 +57,7 @@ Box Arc::GetBox() const {
 }
 
 void Arc::ApplyTransform(const Transform &transform) {
-	Transform base = m_aperture->GetTransform();
-	Transform stacked = base.Stack(transform);
-	m_aperture->SetTransform(stacked);
+	m_aperture->ApplyTransform(transform);
 	m_segment.Transform(transform);
 }
 

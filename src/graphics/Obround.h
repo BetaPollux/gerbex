@@ -36,16 +36,17 @@ public:
 	Obround(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Obround() = default;
 	double GetHoleDiameter() const;
-	//TODO remove these calculated Get methods
-	double GetXSize() const;
-	double GetYSize() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	double GetLength() const;
+	double GetDrawWidth() const;
+	const Segment& GetSegment() const;
+	void ApplyTransform(const Transform &transform) override;
 
 private:
 	Segment m_segment;
-	double m_radius;
+	double m_drawWidth;
 	double m_holeDiameter;
 };
 

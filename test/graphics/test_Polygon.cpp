@@ -27,7 +27,6 @@
 
 using namespace gerbex;
 
-
 TEST_GROUP(PolygonTest) {
 };
 
@@ -47,19 +46,15 @@ TEST(PolygonTest, NegativeHoleSize) {
 	CHECK_THROWS(std::invalid_argument, Polygon(1.0, 3, 0.0, -0.25));
 }
 
-TEST(PolygonTest, DefaultRotation) {
+TEST(PolygonTest, Vertices) {
 	Polygon poly(1.0, 3);
-	DOUBLES_EQUAL(0.0, poly.GetRotation(), DBL_TOL);
-}
+	double r = 0.5;
+	double hr = r / 2.0;
 
-TEST(PolygonTest, Diameter) {
-	Polygon poly(2.5, 3);
-	DOUBLES_EQUAL(2.5, poly.GetOuterDiameter(), DBL_TOL);
-}
-
-TEST(PolygonTest, Rotation) {
-	Polygon poly(1.0, 3, 45.0);
-	DOUBLES_EQUAL(45.0, poly.GetRotation(), DBL_TOL);
+	CHECK_EQUAL(3, poly.GetVertices().size());
+	CHECK_EQUAL(Point(r, 0.0), poly.GetVertices()[0]);
+	CHECK_EQUAL(Point(-hr, sqrt(r * r - hr * hr)), poly.GetVertices()[1]);
+	CHECK_EQUAL(Point(-hr, -sqrt(r * r - hr * hr)), poly.GetVertices()[2]);
 }
 
 TEST(PolygonTest, DefaultHole) {
@@ -83,19 +78,12 @@ TEST_GROUP(Polygon_Transformed) {
 		transform = Transform();
 		transform.SetScaling(2.0);
 		transform.SetRotation(45.0);
+		transform.SetPolarity(Polarity::Clear);
 
 		poly = Polygon(2.0, 4, 45.0, 0.5);
-		poly.SetTransform(transform);
+		poly.ApplyTransform(transform);
 	}
 };
-
-TEST(Polygon_Transformed, OuterDiameter) {
-	DOUBLES_EQUAL(4.0, poly.GetOuterDiameter(), DBL_TOL);
-}
-
-TEST(Polygon_Transformed, Rotation) {
-	DOUBLES_EQUAL(90.0, poly.GetRotation(), DBL_TOL);
-}
 
 TEST(Polygon_Transformed, HoleDiameter) {
 	DOUBLES_EQUAL(1.0, poly.GetHoleDiameter(), DBL_TOL);
@@ -103,12 +91,8 @@ TEST(Polygon_Transformed, HoleDiameter) {
 
 TEST(Polygon_Transformed, Box) {
 	// 90-deg rotation has corners at (0, +/- d) and (+/- d, 0)
-	Box expected(poly.GetOuterDiameter(), Point());
-	Box box = poly.GetBox();
-	DOUBLES_EQUAL(expected.GetWidth(), box.GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetHeight(), box.GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetLeft(), box.GetLeft(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetBottom(), box.GetBottom(), DBL_TOL);
+	Box expected(4.0, Point());
+	CHECK_EQUAL(expected, poly.GetBox());
 }
 
 TEST(Polygon_Transformed, Clone) {
@@ -116,11 +100,9 @@ TEST(Polygon_Transformed, Clone) {
 	Polygon *clone = (Polygon*) aperture.get();
 
 	CHECK(clone != &poly);
-	DOUBLES_EQUAL(clone->GetOuterDiameter(), poly.GetOuterDiameter(), DBL_TOL);
-	LONGS_EQUAL(clone->GetNumVertices(), poly.GetNumVertices());
-	DOUBLES_EQUAL(clone->GetRotation(), poly.GetRotation(), DBL_TOL);
+	//TODO add equality op
+	CHECK_EQUAL(clone->GetVertices(), poly.GetVertices());
 	DOUBLES_EQUAL(clone->GetHoleDiameter(), poly.GetHoleDiameter(), DBL_TOL);
-	CHECK(clone->GetTransform() == poly.GetTransform());
 }
 
 // TODO test poly serialize

@@ -21,35 +21,36 @@
 #ifndef APERTURE_H_
 #define APERTURE_H_
 
-#include "Serializable.h"
+#include "Box.h"
 #include "Transform.h"
 #include <memory>
 
 namespace gerbex {
 
+class Serializer;
+
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
  * They can be rotated, mirrored or scaled.
  */
-class Aperture: public Serializable {
+class Aperture {
 public:
 	Aperture() :
-			m_transform { } {
+			m_polarity { Polarity::Dark } {
 	}
 	virtual ~Aperture() = default;
+	virtual void Serialize(Serializer &serializer,
+			const Point &origin) const = 0;
+	virtual Box GetBox() const = 0;
 	virtual std::unique_ptr<Aperture> Clone() const = 0;
-	const Transform& GetTransform() const {
-		return m_transform;
+	virtual void ApplyTransform(const Transform &transform) = 0;
+	Polarity GetPolarity() const {
+		return m_polarity;
 	}
-	virtual void SetTransform(const Transform &transform) {
-		m_transform = transform;
-	}
-//TODO change this to just ApplyTransform rather than storing transform
+
 protected:
-	bool isDark() const {
-		return m_transform.GetPolarity() == Polarity::Dark;
-	}
-	Transform m_transform;
+	Polarity m_polarity;
+	//TODO block doesn't get polarity
 };
 
 } /* namespace gerbex */

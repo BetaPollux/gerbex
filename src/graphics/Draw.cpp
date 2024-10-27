@@ -39,7 +39,8 @@ void Draw::Serialize(Serializer &serializer, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	serializer.AddDraw(width, segment);
+	//TODO draw should have its own polarity?
+	serializer.AddDraw(width, segment, Polarity::Dark);
 }
 
 std::shared_ptr<Circle> Draw::GetAperture() const {
@@ -57,9 +58,7 @@ Box Draw::GetBox() const {
 }
 
 void Draw::ApplyTransform(const Transform &transform) {
-	Transform base = m_aperture->GetTransform();
-	Transform stacked = base.Stack(transform);
-	m_aperture->SetTransform(stacked);
+	m_aperture->ApplyTransform(transform);
 	m_segment.Transform(transform);
 }
 

@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "RectangleTemplate.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -44,8 +45,7 @@ TEST(RectangleTemplateTest, AllParams) {
 	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
 	DOUBLES_EQUAL(1, 1, 0.1);
 	CHECK(nullptr != rect);
-	DOUBLES_EQUAL(1.0, rect->GetXSize(), DBL_TOL);
-	DOUBLES_EQUAL(0.5, rect->GetYSize(), DBL_TOL);
+	CHECK_EQUAL(Rectangle(1.0, 0.5, 0.25).GetVertices(), rect->GetVertices());
 	DOUBLES_EQUAL(0.25, rect->GetHoleDiameter(), DBL_TOL);
 }
 
@@ -55,7 +55,5 @@ TEST(RectangleTemplateTest, DefaultHole) {
 	std::shared_ptr<Rectangle> rect = std::dynamic_pointer_cast<Rectangle>(aperture);
 
 	CHECK(nullptr != rect);
-	DOUBLES_EQUAL(1.0, rect->GetXSize(), DBL_TOL);
-	DOUBLES_EQUAL(0.5, rect->GetYSize(), DBL_TOL);
 	DOUBLES_EQUAL(0.0, rect->GetHoleDiameter(), DBL_TOL);
 }

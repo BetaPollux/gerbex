@@ -51,7 +51,7 @@ public:
 	virtual Box GetBox() const = 0;
 
 protected:
-	bool isDark(const Transform &transform) const;
+	Polarity isDark(const Transform &transform) const;
 	MacroExposure m_exposure;
 	double m_rotation;
 };

@@ -34,20 +34,16 @@ public:
 	Polygon();
 	Polygon(double outerDiameter, int numVertices, double rotation = 0.0, double holeDiameter = 0.0);
 	virtual ~Polygon() = default;
-	double GetHoleDiameter() const;
 	int GetNumVertices() const;
-	double GetOuterDiameter() const;
-	double GetRotation() const;
+	double GetHoleDiameter() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	void ApplyTransform(const Transform &transform) override;
+	const std::vector<Point>& GetVertices() const;
 
 private:
-	//TODO change this to store vertices
-	std::vector<Point> getVertices(const Point &origin = Point()) const;
-	double m_outerDiameter;
-	int m_numVertices;
-	double m_rotation;
+	std::vector<Point> m_vertices;
 	double m_holeDiameter;
 };
 

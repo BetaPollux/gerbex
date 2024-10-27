@@ -216,14 +216,13 @@ TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(), 3);
 	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(), 4);
 
-	CHECK(Polarity::Dark == c1->GetAperture()->GetTransform().GetPolarity());
-	CHECK(Polarity::Dark == c2->GetAperture()->GetTransform().GetPolarity());
-	CHECK(Polarity::Clear == c3->GetAperture()->GetTransform().GetPolarity());
-
 	CHECK_EQUAL(Point(-0.5, -1.0), d1->GetSegment().GetStart());
 	CHECK_EQUAL(Point(2.5, -1.0), d1->GetSegment().GetEnd());
 
 	CHECK(ArcDirection::CounterClockwise == a1->GetSegment().GetDirection());
+
+	//TODO figure out how to test this
+	FAIL("test for aperture transforms");
 }
 
 TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
@@ -241,10 +240,8 @@ TEST(GerberBlocksDiffOrientation, FlashedFourTimes) {
 	Transform expected3(Polarity::Dark, Mirroring::Y, 30.0, 1.0);
 	Transform expected4(Polarity::Dark, Mirroring::XY, 45.0, 0.8);
 
-	CHECK_EQUAL(expected1, b1->GetAperture()->GetTransform());
-	CHECK_EQUAL(expected2, b2->GetAperture()->GetTransform());
-	CHECK_EQUAL(expected3, b3->GetAperture()->GetTransform());
-	CHECK_EQUAL(expected4, b4->GetAperture()->GetTransform());
+	//TODO figure out how to test this now
+	FAIL("test for aperture transforms");
 }
 
 /**

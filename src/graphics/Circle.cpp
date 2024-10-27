@@ -41,16 +41,16 @@ Circle::Circle(double diameter, double holeDiameter) :
 }
 
 double Circle::GetDiameter() const {
-	return m_transform.ApplyScaling(m_diameter);
+	return m_diameter;
 }
 
 double Circle::GetHoleDiameter() const {
-	return m_transform.ApplyScaling(m_holeDiameter);
+	return m_holeDiameter;
 }
 
 void Circle::Serialize(Serializer &serializer, const Point &origin) const {
-	double radius = 0.5 * GetDiameter();
-	serializer.AddCircle(radius, origin, isDark());
+	double radius = 0.5 * m_diameter;
+	serializer.AddCircle(radius, origin, m_polarity);
 }
 
 Box Circle::GetBox() const {
@@ -59,16 +59,22 @@ Box Circle::GetBox() const {
 
 bool Circle::operator ==(const Circle &rhs) {
 	return m_diameter == rhs.m_diameter && m_holeDiameter == rhs.m_holeDiameter
-			&& m_transform == rhs.m_transform;
+			&& m_polarity == rhs.m_polarity;
 }
 
 bool Circle::operator !=(const Circle &rhs) {
 	return m_diameter != rhs.m_diameter || m_holeDiameter != rhs.m_holeDiameter
-			|| m_transform != rhs.m_transform;
+			|| m_polarity != rhs.m_polarity;
 }
 
 std::unique_ptr<Aperture> Circle::Clone() const {
 	return std::make_unique<Circle>(*this);
+}
+
+void Circle::ApplyTransform(const Transform &transform) {
+	m_polarity = transform.ApplyPolarity(m_polarity);
+	m_diameter = transform.ApplyScaling(m_diameter);
+	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
 }
 
 } /* namespace gerbex */

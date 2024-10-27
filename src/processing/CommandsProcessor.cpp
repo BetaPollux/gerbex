@@ -99,7 +99,7 @@ void CommandsProcessor::PlotDraw(const Point &coord) {
 			throw std::logic_error("draw requires valid circle aperture");
 		}
 		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
-		clone->SetTransform(m_graphicsState.GetTransform());
+		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Draw> obj = std::make_shared<Draw>(*segment, clone);
 		m_objectDest.top()->push_back(obj);
 	} else {
@@ -134,7 +134,7 @@ void CommandsProcessor::PlotArc(const Point &coord, const Point &offset) {
 			throw std::logic_error("arc requires valid circle aperture");
 		}
 		std::shared_ptr<Circle> clone = std::make_shared<Circle>(*circle);
-		clone->SetTransform(m_graphicsState.GetTransform());
+		clone->ApplyTransform(m_graphicsState.GetTransform());
 		std::shared_ptr<Arc> obj = std::make_shared<Arc>(*segment, clone);
 		m_objectDest.top()->push_back(obj);
 	} else {
@@ -158,7 +158,7 @@ void CommandsProcessor::Flash(const Point &coord) {
 
 	std::unique_ptr<Aperture> clone =
 			m_graphicsState.GetCurrentAperture()->Clone();
-	clone->SetTransform(m_graphicsState.GetTransform());
+	clone->ApplyTransform(m_graphicsState.GetTransform());
 	std::shared_ptr<gerbex::Flash> obj = std::make_shared<gerbex::Flash>(coord,
 			std::move(clone));
 	m_objectDest.top()->push_back(obj);

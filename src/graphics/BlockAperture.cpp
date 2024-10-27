@@ -51,14 +51,12 @@ Box BlockAperture::GetBox() const {
 
 bool BlockAperture::operator ==(const BlockAperture &rhs) const {
 	//TODO operator== is not practical for block
-	return GetObjectCount() == rhs.GetObjectCount() && GetBox() == rhs.GetBox()
-			&& m_transform == rhs.m_transform;
+	return GetObjectCount() == rhs.GetObjectCount() && GetBox() == rhs.GetBox();
 }
 
 bool BlockAperture::operator !=(const BlockAperture &rhs) const {
 	//TODO operator!= is not practical for block
-	return GetObjectCount() != rhs.GetObjectCount() || GetBox() != rhs.GetBox()
-			|| m_transform != rhs.m_transform;
+	return GetObjectCount() != rhs.GetObjectCount() || GetBox() != rhs.GetBox();
 }
 
 size_t BlockAperture::GetObjectCount() const {
@@ -67,7 +65,6 @@ size_t BlockAperture::GetObjectCount() const {
 
 std::unique_ptr<Aperture> BlockAperture::Clone() const {
 	std::unique_ptr<BlockAperture> block = std::make_unique<BlockAperture>();
-	block->m_transform = m_transform;
 	block->m_objects.reserve(m_objects.size());
 	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
 		block->m_objects.push_back(obj->Clone());
@@ -75,8 +72,7 @@ std::unique_ptr<Aperture> BlockAperture::Clone() const {
 	return block;
 }
 
-void BlockAperture::SetTransform(const Transform &transform) {
-	m_transform = transform;
+void BlockAperture::ApplyTransform(const Transform &transform) {
 	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
 		obj->ApplyTransform(transform);
 	}

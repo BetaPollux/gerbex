@@ -219,7 +219,8 @@ TEST(CommandsProcessor_Flash, Transform) {
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
 			processor.GetObjects());
 
-	CHECK_EQUAL(transform, flash->GetAperture()->GetTransform());
+	//TODO use mock aperture
+	FAIL("test for flash transform");
 }
 
 TEST(CommandsProcessor_Flash, SetsCurrentPoint) {
@@ -302,7 +303,8 @@ TEST(CommandsProcessor_PlotDraw, Transform) {
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
 			processor.GetObjects());
 
-	CHECK_EQUAL(transform, draw->GetAperture()->GetTransform());
+	//TODO use mock aperture
+	FAIL("test for draw transform");
 }
 
 TEST(CommandsProcessor_PlotDraw, SetsCurrentPoint) {
@@ -407,13 +409,14 @@ TEST(CommandsProcessor_PlotArc, Aperture) {
 }
 
 TEST(CommandsProcessor_PlotArc, Transform) {
-	Transform transform(Polarity::Dark, Mirroring::Y, 10.0, 1.25);
+	Transform transform(Polarity::Clear, Mirroring::Y, 10.0, 1.25);
 	processor.GetGraphicsState().SetTransform(transform);
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
 
-	CHECK_EQUAL(transform, arc->GetAperture()->GetTransform());
+	//TODO use mock aperture
+	FAIL("test for arc transform");
 }
 
 /***

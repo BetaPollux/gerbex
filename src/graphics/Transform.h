@@ -51,6 +51,7 @@ public:
 	Transform(Polarity polarity, Mirroring mirroring, double rotation,
 			double scaling);
 	virtual ~Transform() = default;
+	//TODO clean this up and tests, most objects have an ApplyTransform
 	Transform Stack(const Transform &transform) const;
 	bool operator==(const Transform &rhs) const;
 	bool operator!=(const Transform &rhs) const;
@@ -66,6 +67,7 @@ public:
 	std::vector<Point> ApplyThenTranslate(const std::vector<Point> &points,
 			const Point &offset) const;
 	double ApplyScaling(double value) const;
+	Polarity ApplyPolarity(Polarity polarity) const;
 	static Polarity PolarityFromCommand(const std::string &str);
 	static Mirroring MirroringFromCommand(const std::string &str);
 

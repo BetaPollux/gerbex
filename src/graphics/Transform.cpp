@@ -161,5 +161,17 @@ std::vector<Point> Transform::ApplyThenTranslate(
 	return result;
 }
 
+Polarity Transform::ApplyPolarity(Polarity polarity) const {
+	bool otherIsDark = polarity == Polarity::Dark;
+	if (!m_isDark) {
+		otherIsDark = !otherIsDark;
+	}
+	if (otherIsDark) {
+		return Polarity::Dark;
+	} else {
+		return Polarity::Clear;
+	}
+}
+
 } /* namespace gerbex */
 

@@ -32,64 +32,64 @@ Polygon::Polygon() :
 
 Polygon::Polygon(double outerDiameter, int numVertices, double rotation,
 		double holeDiameter) :
-		m_outerDiameter { outerDiameter }, m_numVertices { numVertices }, m_rotation {
-				rotation }, m_holeDiameter { holeDiameter } {
-	if (m_outerDiameter <= 0.0) {
-		throw std::invalid_argument("Diameter must be > 0");
+		m_holeDiameter { holeDiameter } {
+	if (outerDiameter <= 0.0) {
+		throw std::invalid_argument("diameter must be > 0");
 	}
 
-	if (m_numVertices < 3 || m_numVertices > 12) {
-		throw std::invalid_argument("Vertices must be from 3 to 12");
+	if (numVertices < 3 || numVertices > 12) {
+		throw std::invalid_argument("vertices must be from 3 to 12");
 	}
 
 	if (holeDiameter < 0.0) {
-		throw std::invalid_argument("Hole diameter must be >= 0");
+		throw std::invalid_argument("hole diameter must be >= 0");
+	}
+
+	m_vertices.reserve(numVertices);
+	double angle_step = 2.0 * M_PI / numVertices;
+	double angle0 = M_PI / 180.0 * rotation;
+	double radius = 0.5 * outerDiameter;
+	for (int i = 0; i < numVertices; i++) {
+		double angle = angle_step * i + angle0;
+		double x = radius * cos(angle);
+		double y = radius * sin(angle);
+		m_vertices.push_back(Point(x, y));
 	}
 }
 
 double Polygon::GetHoleDiameter() const {
-	return m_transform.ApplyScaling(m_holeDiameter);
+	return m_holeDiameter;
 }
 
 int Polygon::GetNumVertices() const {
-	return m_numVertices;
-}
-
-double Polygon::GetOuterDiameter() const {
-	return m_transform.ApplyScaling(m_outerDiameter);
-}
-
-double Polygon::GetRotation() const {
-	return m_rotation + m_transform.GetRotation();
+	return m_vertices.size();
 }
 
 void Polygon::Serialize(Serializer &serializer, const Point &origin) const {
-	std::vector<Point> vertices = getVertices(origin);
-	serializer.AddPolygon(vertices, isDark());
-}
-
-std::vector<Point> Polygon::getVertices(const Point &origin) const {
-	// Regular polygon
-	std::vector<Point> vertices;
-	vertices.reserve(m_numVertices);
-	double angle_step = 2.0 * M_PI / m_numVertices;
-	double angle0 = M_PI / 180.0 * GetRotation();
-	double radius = 0.5 * GetOuterDiameter();
-	for (int i = 0; i < m_numVertices; i++) {
-		double angle = angle_step * i + angle0;
-		double x = radius * cos(angle);
-		double y = radius * sin(angle);
-		vertices.push_back(Point(x, y) + origin);
+	std::vector<Point> vertices = m_vertices;
+	for (Point &p : vertices) {
+		p += origin;
 	}
-	return vertices;
+	serializer.AddPolygon(vertices, m_polarity);
 }
 
 Box Polygon::GetBox() const {
-	return Box(getVertices());
+	return Box(m_vertices);
 }
 
 std::unique_ptr<Aperture> Polygon::Clone() const {
 	return std::make_unique<Polygon>(*this);
+}
+
+void Polygon::ApplyTransform(const Transform &transform) {
+	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	for (Point &p : m_vertices) {
+		p = transform.Apply(p);
+	}
+}
+
+const std::vector<Point>& Polygon::GetVertices() const {
+	return m_vertices;
 }
 
 } /* namespace gerbex */

@@ -60,11 +60,11 @@ void SvgSerializer::SaveFile(const std::string &path) {
 	m_doc.save_file(path.c_str());
 }
 
-void SvgSerializer::AddDraw(double width, const Segment &segment, bool isDark) {
+void SvgSerializer::AddDraw(double width, const Segment &segment, Polarity polarity) {
 	Point s = segment.GetStart();
 	Point e = segment.GetEnd();
 	pugi::xml_node line = m_svg.append_child("line");
-	line.append_attribute("stroke") = getFillColor(isDark);
+	line.append_attribute("stroke") = getFillColor(polarity);
 	line.append_attribute("stroke-linecap") = "round";
 	line.append_attribute("stroke-width") = std::to_string(width).c_str();
 	line.append_attribute("x1") = s.GetX();
@@ -74,7 +74,7 @@ void SvgSerializer::AddDraw(double width, const Segment &segment, bool isDark) {
 }
 
 void SvgSerializer::AddArc(double width, const ArcSegment &segment,
-		bool isDark) {
+		Polarity polarity) {
 	if (segment.IsCircle()) {
 		Point c = segment.GetCenter();
 		pugi::xml_node circle = m_svg.append_child("circle");
@@ -82,7 +82,7 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		circle.append_attribute("cx") = c.GetX();
 		circle.append_attribute("cy") = -c.GetY();
 		circle.append_attribute("fill") = "none";
-		circle.append_attribute("stroke") = getFillColor(isDark);
+		circle.append_attribute("stroke") = getFillColor(polarity);
 		circle.append_attribute("stroke-width") = width;
 	} else {
 		Point s = segment.GetStart();
@@ -92,39 +92,39 @@ void SvgSerializer::AddArc(double width, const ArcSegment &segment,
 		pugi::xml_node path = m_svg.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
 		path.append_attribute("fill") = "none";
-		path.append_attribute("stroke") = getFillColor(isDark);
+		path.append_attribute("stroke") = getFillColor(polarity);
 		path.append_attribute("stroke-width") = width;
 		path.append_attribute("stroke-linecap") = "round";
 	}
 }
 
-void SvgSerializer::AddCircle(double radius, const Point &center, bool isDark) {
+void SvgSerializer::AddCircle(double radius, const Point &center, Polarity polarity) {
 	pugi::xml_node circle = m_svg.append_child("circle");
 	circle.append_attribute("r") = radius;
 	circle.append_attribute("cx") = center.GetX();
 	circle.append_attribute("cy") = -center.GetY();
-	circle.append_attribute("fill") = getFillColor(isDark);
+	circle.append_attribute("fill") = getFillColor(polarity);
 }
 
-void SvgSerializer::AddPolygon(const std::vector<Point> &points, bool isDark) {
+void SvgSerializer::AddPolygon(const std::vector<Point> &points, Polarity polarity) {
 	pugi::xml_node poly = m_svg.append_child("polygon");
 	std::stringstream pts_stream;
 	for (auto pt : points) {
 		pts_stream << pt.GetX() << "," << -pt.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
-	poly.append_attribute("fill") = getFillColor(isDark);
+	poly.append_attribute("fill") = getFillColor(polarity);
 }
 
-const char* SvgSerializer::getFillColor(bool isDark) const {
-	if (isDark) {
+const char* SvgSerializer::getFillColor(Polarity polarity) const {
+	if (polarity == Polarity::Dark) {
 		return m_fgColor.c_str();
 	} else {
 		return m_bgColor.c_str();
 	}
 }
 
-void SvgSerializer::AddContour(const Contour &contour, bool isDark) {
+void SvgSerializer::AddContour(const Contour &contour, Polarity polarity) {
 	const std::vector<std::shared_ptr<Segment>> segments = contour.GetSegments();
 	Point s = segments[0]->GetStart();
 	std::stringstream d;
@@ -140,7 +140,7 @@ void SvgSerializer::AddContour(const Contour &contour, bool isDark) {
 	}
 	pugi::xml_node path = m_svg.append_child("path");
 	path.append_attribute("d") = d.str().c_str();
-	path.append_attribute("fill") = getFillColor(isDark);
+	path.append_attribute("fill") = getFillColor(polarity);
 }
 
 std::string SvgSerializer::makePathArc(const ArcSegment &segment) {

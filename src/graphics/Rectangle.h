@@ -35,17 +35,14 @@ public:
 	Rectangle(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Rectangle() = default;
 	double GetHoleDiameter() const;
-	double GetXSize() const;
-	double GetYSize() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	void ApplyTransform(const Transform &transform) override;
+	const std::vector<Point>& GetVertices() const;
 
 private:
-	//TODO change this to store vertices
-	std::vector<Point> getVertices(const Point &origin = Point()) const;
-	double m_xSize;
-	double m_ySize;
+	std::vector<Point> m_vertices;
 	double m_holeDiameter;
 };
 

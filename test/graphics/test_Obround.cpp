@@ -43,14 +43,14 @@ TEST(ObroundTest, NegativeHoleSize) {
 	CHECK_THROWS(std::invalid_argument, Obround(1.0, 1.0, -0.25));
 }
 
-TEST(ObroundTest, XSize) {
+TEST(ObroundTest, Length) {
 	Obround obround(1.0, 0.5);
-	DOUBLES_EQUAL(1.0, obround.GetXSize(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, obround.GetLength(), DBL_TOL);
 }
 
-TEST(ObroundTest, YSize) {
+TEST(ObroundTest, DrawWidth) {
 	Obround obround(1.0, 0.5);
-	DOUBLES_EQUAL(0.5, obround.GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(0.5, obround.GetDrawWidth(), DBL_TOL);
 }
 
 TEST(ObroundTest, DefaultHole) {
@@ -75,18 +75,19 @@ TEST_GROUP(Obround_Transformed) {
 		transform = Transform();
 		transform.SetScaling(2.0);
 		transform.SetRotation(90.0);
+		transform.SetPolarity(Polarity::Clear);
 
 		obround = Obround(1.0, 0.5, 0.25);
-		obround.SetTransform(transform);
+		obround.ApplyTransform(transform);
 	}
 };
 
-TEST(Obround_Transformed, XSize) {
-	DOUBLES_EQUAL(2.0, obround.GetXSize(), DBL_TOL);
+TEST(Obround_Transformed, Length) {
+	DOUBLES_EQUAL(2.0, obround.GetLength(), DBL_TOL);
 }
 
-TEST(Obround_Transformed, YSize) {
-	DOUBLES_EQUAL(1.0, obround.GetYSize(), DBL_TOL);
+TEST(Obround_Transformed, DrawWidth) {
+	DOUBLES_EQUAL(1.0, obround.GetDrawWidth(), DBL_TOL);
 }
 
 TEST(Obround_Transformed, HoleDiameter) {
@@ -95,11 +96,7 @@ TEST(Obround_Transformed, HoleDiameter) {
 
 TEST(Obround_Transformed, Box) {
 	Box expected(1.0, 2.0, -0.5, -1.0);
-	Box box = obround.GetBox();
-	DOUBLES_EQUAL(expected.GetWidth(), box.GetWidth(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetHeight(), box.GetHeight(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetLeft(), box.GetLeft(), DBL_TOL);
-	DOUBLES_EQUAL(expected.GetBottom(), box.GetBottom(), DBL_TOL);
+	CHECK_EQUAL(expected, obround.GetBox());
 }
 
 TEST(Obround_Transformed, Clone) {
@@ -107,10 +104,10 @@ TEST(Obround_Transformed, Clone) {
 	Obround *clone = (Obround*) aperture.get();
 
 	CHECK(clone != &obround);
-	DOUBLES_EQUAL(clone->GetXSize(), obround.GetXSize(), DBL_TOL);
-	DOUBLES_EQUAL(clone->GetYSize(), obround.GetYSize(), DBL_TOL);
+	//TODO add equality op
+	DOUBLES_EQUAL(clone->GetLength(), obround.GetLength(), DBL_TOL);
+	DOUBLES_EQUAL(clone->GetDrawWidth(), obround.GetDrawWidth(), DBL_TOL);
 	DOUBLES_EQUAL(clone->GetHoleDiameter(), obround.GetHoleDiameter(), DBL_TOL);
-	CHECK(clone->GetTransform() == obround.GetTransform());
 }
 
 // TODO test obround serialize

@@ -21,20 +21,26 @@
 #ifndef GRAPHICALOBJECT_H_
 #define GRAPHICALOBJECT_H_
 
+#include "Box.h"
 #include "Point.h"
-#include "Serializable.h"
+#include <memory>
 
 namespace gerbex {
+
+class Serializer;
 
 /*
  * Represents a plane figure that can be serialized.
  */
-class GraphicalObject: public Serializable {
+class GraphicalObject {
 public:
 	virtual ~GraphicalObject() = default;
 	virtual void Translate(const Point &offset) = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
 	virtual std::unique_ptr<GraphicalObject> Clone() = 0;
+	virtual void Serialize(Serializer &serializer,
+			const Point &origin) const = 0;
+	virtual Box GetBox() const = 0;
 };
 
 } /* namespace gerbex */

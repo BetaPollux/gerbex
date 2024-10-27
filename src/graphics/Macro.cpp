@@ -23,7 +23,8 @@
 
 namespace gerbex {
 
-Macro::Macro() {
+Macro::Macro() :
+		m_transform { } {
 	// Empty
 
 }
@@ -62,6 +63,10 @@ Box Macro::GetBox() const {
 
 std::unique_ptr<Aperture> Macro::Clone() const {
 	return std::make_unique<Macro>(*this);
+}
+
+void Macro::ApplyTransform(const Transform &transform) {
+	m_transform = transform;
 }
 
 } /* namespace gerbex */

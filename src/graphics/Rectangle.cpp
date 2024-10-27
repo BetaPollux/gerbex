@@ -30,7 +30,7 @@ Rectangle::Rectangle() :
 }
 
 Rectangle::Rectangle(double xSize, double ySize, double holeDiameter) :
-		m_xSize { xSize }, m_ySize { ySize }, m_holeDiameter { holeDiameter } {
+		m_holeDiameter { holeDiameter } {
 	if (xSize <= 0.0 || ySize <= 0.0) {
 		throw std::invalid_argument("size must be > 0");
 	}
@@ -38,43 +38,41 @@ Rectangle::Rectangle(double xSize, double ySize, double holeDiameter) :
 	if (holeDiameter < 0.0) {
 		throw std::invalid_argument("hole diameter must be >= 0");
 	}
+
+	double dx = 0.5 * xSize;
+	double dy = 0.5 * ySize;
+	m_vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx, -dy } };
 }
 
 double Rectangle::GetHoleDiameter() const {
-	return m_transform.ApplyScaling(m_holeDiameter);
-}
-
-double Rectangle::GetXSize() const {
-	return m_transform.ApplyScaling(m_xSize);
-}
-
-double Rectangle::GetYSize() const {
-	return m_transform.ApplyScaling(m_ySize);
+	return m_holeDiameter;
 }
 
 void Rectangle::Serialize(Serializer &serializer, const Point &origin) const {
-	std::vector<Point> vertices = getVertices(origin);
-	serializer.AddPolygon(vertices, isDark());
-}
-
-std::vector<Point> Rectangle::getVertices(const Point &origin) const {
-	// Rectangle is centered on origin
-	double dx = 0.5 * m_xSize;
-	double dy = 0.5 * m_ySize;
-	std::vector<Point> vertices = { { dx, dy }, { -dx, dy }, { -dx, -dy }, { dx,
-			-dy } };
+	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
-		p = m_transform.Apply(p) + origin;
+		p += origin;
 	}
-	return vertices;
+	serializer.AddPolygon(vertices, m_polarity);
 }
 
 Box Rectangle::GetBox() const {
-	return Box(getVertices());
+	return Box(m_vertices);
 }
 
 std::unique_ptr<Aperture> Rectangle::Clone() const {
 	return std::make_unique<Rectangle>(*this);
+}
+
+void Rectangle::ApplyTransform(const Transform &transform) {
+	m_holeDiameter = transform.ApplyScaling(m_holeDiameter);
+	for (Point &p : m_vertices) {
+		p = transform.Apply(p);
+	}
+}
+
+const std::vector<Point>& Rectangle::GetVertices() const {
+	return m_vertices;
 }
 
 } /* namespace gerbex */

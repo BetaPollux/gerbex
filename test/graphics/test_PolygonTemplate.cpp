@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "GraphicsStringFrom.h"
 #include "PolygonTemplate.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
@@ -44,9 +45,7 @@ TEST(PolygonTemplateTest, AllParams) {
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
-	DOUBLES_EQUAL(45.0, poly->GetRotation(), DBL_TOL);
+	CHECK_EQUAL(Polygon(1.0, 3, 45.0, 0.25).GetVertices(), poly->GetVertices());
 	DOUBLES_EQUAL(0.25, poly->GetHoleDiameter(), DBL_TOL);
 }
 
@@ -56,9 +55,6 @@ TEST(PolygonTemplateTest, DefaultHole) {
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
-	DOUBLES_EQUAL(45.0, poly->GetRotation(), DBL_TOL);
 	DOUBLES_EQUAL(0.0, poly->GetHoleDiameter(), DBL_TOL);
 }
 
@@ -68,9 +64,7 @@ TEST(PolygonTemplateTest, NoRotation) {
 	std::shared_ptr<Polygon> poly = std::dynamic_pointer_cast<Polygon>(aperture);
 
 	CHECK(nullptr != poly);
-	DOUBLES_EQUAL(1.0, poly->GetOuterDiameter(), DBL_TOL);
-	DOUBLES_EQUAL(3, poly->GetNumVertices(), DBL_TOL);
-	DOUBLES_EQUAL(0.0, poly->GetRotation(), DBL_TOL);
+	CHECK_EQUAL(Polygon(1.0, 3).GetVertices(), poly->GetVertices());
 	DOUBLES_EQUAL(0.0, poly->GetHoleDiameter(), DBL_TOL);
 }
 

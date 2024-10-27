@@ -35,6 +35,7 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	void ApplyTransform(const gerbex::Transform &transform) override;
 };
 
 } /* namespace gerbex */

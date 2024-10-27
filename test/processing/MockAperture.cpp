@@ -41,4 +41,8 @@ std::unique_ptr<Aperture> MockAperture::Clone() const {
 	return std::make_unique<MockAperture>();
 }
 
+void MockAperture::ApplyTransform(const gerbex::Transform &transform) {
+	(void)transform;
+}
+
 } /* namespace gerbex */

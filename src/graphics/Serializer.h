@@ -39,15 +39,15 @@ class Serializer {
 public:
 	Serializer() = default;
 	virtual ~Serializer() = default;
-	virtual void AddCircle(double radius, const Point &center, bool isDark =
-			true) = 0;
+	virtual void AddCircle(double radius, const Point &center,
+			Polarity polarity) = 0;
 	virtual void AddPolygon(const std::vector<Point> &points,
-			bool isDark = true) = 0;
-	virtual void AddDraw(double width, const Segment &segment, bool isDark =
-			true) = 0;
-	virtual void AddArc(double width, const ArcSegment &segment, bool isDark =
-			true) = 0;
-	virtual void AddContour(const Contour &contour, bool isDark = true) = 0;
+			Polarity polarity) = 0;
+	virtual void AddDraw(double width, const Segment &segment,
+			Polarity polarity) = 0;
+	virtual void AddArc(double width, const ArcSegment &segment,
+			Polarity polarity) = 0;
+	virtual void AddContour(const Contour &contour, Polarity polarity) = 0;
 };
 
 } /* namespace gerbex */

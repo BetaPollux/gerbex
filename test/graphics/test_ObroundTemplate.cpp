@@ -44,8 +44,8 @@ TEST(ObroundTemplateTest, AllParams) {
 	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
 
 	CHECK(nullptr != obround);
-	DOUBLES_EQUAL(1.0, obround->GetXSize(), DBL_TOL);
-	DOUBLES_EQUAL(0.5, obround->GetYSize(), DBL_TOL);
+	DOUBLES_EQUAL(1.0, obround->GetLength(), DBL_TOL);
+	DOUBLES_EQUAL(0.5, obround->GetDrawWidth(), DBL_TOL);
 	DOUBLES_EQUAL(0.25, obround->GetHoleDiameter(), DBL_TOL);
 }
 
@@ -55,7 +55,5 @@ TEST(ObroundTemplateTest, DefaultHole) {
 	std::shared_ptr<Obround> obround = std::dynamic_pointer_cast<Obround>(aperture);
 
 	CHECK(nullptr != obround);
-	DOUBLES_EQUAL(1.0, obround->GetXSize(), DBL_TOL);
-	DOUBLES_EQUAL(0.5, obround->GetYSize(), DBL_TOL);
 	DOUBLES_EQUAL(0.0, obround->GetHoleDiameter(), DBL_TOL);
 }

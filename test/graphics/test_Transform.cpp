@@ -54,6 +54,20 @@ TEST(TransformTest, ApplyScaling) {
 	CHECK_EQUAL(4.0, result);
 }
 
+TEST(TransformTest, ApplyPolarity_ClearToDark) {
+	transform.SetPolarity(Polarity::Clear);
+	Polarity result = transform.ApplyPolarity(Polarity::Clear);
+
+	CHECK_EQUAL((int)Polarity::Dark, (int)result);
+}
+
+TEST(TransformTest, ApplyPolarity_Neutral) {
+	transform.SetPolarity(Polarity::Dark);
+	Polarity result = transform.ApplyPolarity(Polarity::Clear);
+
+	CHECK_EQUAL((int)Polarity::Clear, (int)result);
+}
+
 TEST(TransformTest, Equal) {
 	Transform other;
 

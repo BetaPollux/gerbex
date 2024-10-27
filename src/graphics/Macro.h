@@ -40,9 +40,11 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
+	void ApplyTransform(const Transform &transform) override;
 
 private:
 	std::vector<std::shared_ptr<MacroPrimitive>> m_primitives;
+	Transform m_transform;
 
 };
 

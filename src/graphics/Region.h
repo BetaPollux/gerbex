@@ -29,8 +29,6 @@
 
 namespace gerbex {
 
-//TODO region needs to be transformable to go into block aperture
-
 /*
  * Graphical object defined by a collection of contours.
  */

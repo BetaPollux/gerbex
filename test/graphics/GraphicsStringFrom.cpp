@@ -22,8 +22,7 @@
 
 SimpleString StringFrom(const gerbex::BlockAperture &block) {
 	return StringFromFormat("%ld objects", block.GetObjectCount())
-			+ StringFrom(", Box: ") + StringFrom(block.GetBox()) + ", T: "
-			+ StringFrom(block.GetTransform());
+			+ StringFrom(", Box: ") + StringFrom(block.GetBox());
 }
 
 SimpleString StringFrom(const gerbex::Box &box) {
@@ -32,8 +31,8 @@ SimpleString StringFrom(const gerbex::Box &box) {
 }
 
 SimpleString StringFrom(const gerbex::Circle &circle) {
-	return StringFromFormat("%f, %f, T: ", circle.GetDiameter(),
-			circle.GetHoleDiameter()) + StringFrom(circle.GetTransform());
+	return StringFromFormat("%f, %f", circle.GetDiameter(),
+			circle.GetHoleDiameter());
 }
 
 SimpleString StringFrom(const gerbex::Point &point) {

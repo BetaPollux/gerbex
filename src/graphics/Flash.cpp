@@ -52,9 +52,7 @@ Box Flash::GetBox() const {
 }
 
 void Flash::ApplyTransform(const Transform &transform) {
-	Transform base = m_aperture->GetTransform();
-	Transform stacked = base.Stack(transform);
-	m_aperture->SetTransform(stacked);
+	m_aperture->ApplyTransform(transform);
 	m_origin = transform.Apply(m_origin);
 }
 
