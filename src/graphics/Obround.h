@@ -36,6 +36,7 @@ public:
 	Obround(double xSize, double ySize, double holeDiameter = 0.0);
 	virtual ~Obround() = default;
 	double GetHoleDiameter() const;
+	//TODO remove these calculated Get methods
 	double GetXSize() const;
 	double GetYSize() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;

@@ -24,11 +24,11 @@
 
 namespace gerbex {
 
-void BlockAperture::AddObject(std::shared_ptr<Transformable> object) {
+void BlockAperture::AddObject(std::shared_ptr<GraphicalObject> object) {
 	m_objects.push_back(object);
 }
 
-std::vector<std::shared_ptr<Transformable>>* BlockAperture::GetObjectList() {
+std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
@@ -43,7 +43,7 @@ Box BlockAperture::GetBox() const {
 		throw std::invalid_argument("cannot get box for empty block aperture");
 	}
 	Box box = m_objects.front()->GetBox();
-	for (std::shared_ptr<Transformable> obj : m_objects) {
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
 		box = box.Extend(obj->GetBox());
 	}
 	return box;
@@ -69,7 +69,7 @@ std::unique_ptr<Aperture> BlockAperture::Clone() const {
 	std::unique_ptr<BlockAperture> block = std::make_unique<BlockAperture>();
 	block->m_transform = m_transform;
 	block->m_objects.reserve(m_objects.size());
-	for (std::shared_ptr<Transformable> obj : m_objects) {
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
 		block->m_objects.push_back(obj->Clone());
 	}
 	return block;
@@ -77,7 +77,7 @@ std::unique_ptr<Aperture> BlockAperture::Clone() const {
 
 void BlockAperture::SetTransform(const Transform &transform) {
 	m_transform = transform;
-	for (std::shared_ptr<Transformable> obj : m_objects) {
+	for (std::shared_ptr<GraphicalObject> obj : m_objects) {
 		obj->ApplyTransform(transform);
 	}
 }

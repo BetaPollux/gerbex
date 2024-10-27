@@ -69,26 +69,27 @@ TEST(StepAndRepeatTest, AddObject) {
 	LONGS_EQUAL(1, sr.GetObjectList()->size());
 }
 
-TEST(StepAndRepeatTest, GetBox) {
-	double radius = 1.0;
-	std::shared_ptr<Circle> circle = std::make_shared<Circle>(2 * radius);
+TEST(StepAndRepeatTest, Expand) {
+	std::shared_ptr<Circle> circle = std::make_shared<Circle>();
 	Point origin(5.0, 5.0);
 	std::shared_ptr<Flash> flash = std::make_shared<Flash>(origin, circle);
 
 	StepAndRepeat sr(3, 2, 5.0, 4.0);
 	sr.AddObject(flash);
 
-	double left = origin.GetX() - radius;
-	double right = origin.GetX() + (sr.GetNx() - 1) * sr.GetDx() + radius;
-	double bottom = origin.GetY() - radius;
-	double top = origin.GetY() + (sr.GetNy() - 1) * sr.GetDy() + radius;
-	Box expected(right - left, top - bottom, left, bottom);
+	std::vector<std::shared_ptr<GraphicalObject>> output;
+	sr.ExpandObjects(output);
 
-	CHECK_EQUAL(expected, sr.GetBox());
+	CHECK_EQUAL(sr.GetNx() * sr.GetNy(), output.size());
+	for (int ix = 0; ix < sr.GetNx(); ix++) {
+		for (int iy = 0; iy < sr.GetNy(); iy++) {
+			int idx = ix * sr.GetNy() + iy;
+			Point expected = origin + Point(ix * sr.GetDx(), iy * sr.GetDy());
+			std::shared_ptr<Flash> f = std::dynamic_pointer_cast<Flash>(
+					output[idx]);
+			CHECK_TEXT(f.get(), "object was not flash");
+			CHECK_EQUAL(expected, f->GetOrigin());
+		}
+	}
 }
 
-TEST(StepAndRepeatTest, GetBox_Empty) {
-	StepAndRepeat sr(3, 2, 5.0, 5.0);
-
-	CHECK_THROWS(std::invalid_argument, sr.GetBox());
-}

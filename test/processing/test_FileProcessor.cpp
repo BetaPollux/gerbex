@@ -183,8 +183,8 @@ TEST(GerberNestedBlocks, MadeAllBlocks) {
 	LONGS_EQUAL(4, b101->GetObjectList()->size());
 	LONGS_EQUAL(7, b102->GetObjectList()->size());
 
-	auto flash1 = GetBlockObject<Flash>(b101);
-	auto flash2 = GetBlockObject<Flash>(b102);
+	auto flash1 = GetGraphicalObject<Flash>(*b101->GetObjectList());
+	auto flash2 = GetGraphicalObject<Flash>(*b102->GetObjectList());
 	auto nb100 = CheckAperture<BlockAperture>(*flash1);
 	auto nb101 = CheckAperture<BlockAperture>(*flash2);
 	CHECK_EQUAL(*b100, *nb100);
@@ -210,11 +210,11 @@ TEST_GROUP(GerberBlocksDiffOrientation) {
 TEST(GerberBlocksDiffOrientation, MadeBlock) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(
 			*processor, 12);
-	std::shared_ptr<Flash> c1 = GetBlockObject<Flash>(block, 0);
-	std::shared_ptr<Flash> c2 = GetBlockObject<Flash>(block, 1);
-	std::shared_ptr<Flash> c3 = GetBlockObject<Flash>(block, 2);
-	std::shared_ptr<Draw> d1 = GetBlockObject<Draw>(block, 3);
-	std::shared_ptr<Arc> a1 = GetBlockObject<Arc>(block, 4);
+	std::shared_ptr<Flash> c1 = GetGraphicalObject<Flash>(*block->GetObjectList(), 0);
+	std::shared_ptr<Flash> c2 = GetGraphicalObject<Flash>(*block->GetObjectList(), 1);
+	std::shared_ptr<Flash> c3 = GetGraphicalObject<Flash>(*block->GetObjectList(), 2);
+	std::shared_ptr<Draw> d1 = GetGraphicalObject<Draw>(*block->GetObjectList(), 3);
+	std::shared_ptr<Arc> a1 = GetGraphicalObject<Arc>(*block->GetObjectList(), 4);
 
 	CHECK(Polarity::Dark == c1->GetAperture()->GetTransform().GetPolarity());
 	CHECK(Polarity::Dark == c2->GetAperture()->GetTransform().GetPolarity());
@@ -287,16 +287,4 @@ TEST(GerberSampleMacro, BOXR_D12) {
 	DOUBLES_EQUAL(2 * 0.02, c4->GetDiameter(), DBL_TOL);
 	CHECK_EQUAL(Point(0.2550 / 2.0 - 0.02, -(-0.02 + 0.1 / 2.0)),
 			c4->GetCenter());
-}
-
-TEST(GerberSampleMacro, MadeStepRepeats) {
-	std::shared_ptr<StepAndRepeat> sr1 = GetGraphicalObject<StepAndRepeat>(
-			processor->GetObjects(), 1);
-	std::shared_ptr<StepAndRepeat> sr2 = GetGraphicalObject<StepAndRepeat>(
-			processor->GetObjects(), 2);
-
-	LONGS_EQUAL(90, sr1->GetNy());
-	DOUBLES_EQUAL(0.03, sr1->GetDy(), DBL_TOL);
-	LONGS_EQUAL(54, sr2->GetNx());
-	DOUBLES_EQUAL(0.03, sr2->GetDx(), DBL_TOL);
 }

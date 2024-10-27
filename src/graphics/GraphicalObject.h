@@ -21,6 +21,7 @@
 #ifndef GRAPHICALOBJECT_H_
 #define GRAPHICALOBJECT_H_
 
+#include "Point.h"
 #include "Serializable.h"
 
 namespace gerbex {
@@ -31,6 +32,9 @@ namespace gerbex {
 class GraphicalObject: public Serializable {
 public:
 	virtual ~GraphicalObject() = default;
+	virtual void Translate(const Point &offset) = 0;
+	virtual void ApplyTransform(const Transform &transform) = 0;
+	virtual std::unique_ptr<GraphicalObject> Clone() = 0;
 };
 
 } /* namespace gerbex */

@@ -53,17 +53,6 @@ template <typename T> std::shared_ptr<T> GetGraphicalObject(const std::vector<st
 	return result;
 }
 
-template <typename T> std::shared_ptr<T> GetBlockObject(std::shared_ptr<BlockAperture> block, size_t idx = 0) {
-	CHECK(block->GetObjectCount() > idx);
-
-	std::shared_ptr<Transformable> obj = (*block->GetObjectList())[idx];
-	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(obj);
-
-	CHECK_TEXT(result != nullptr, "graphical object was wrong type");
-
-	return result;
-}
-
 template <typename T> std::shared_ptr<T> CheckAperture(const Flash &flash) {
 	std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(flash.GetAperture());
 

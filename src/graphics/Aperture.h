@@ -44,7 +44,7 @@ public:
 	virtual void SetTransform(const Transform &transform) {
 		m_transform = transform;
 	}
-
+//TODO change this to just ApplyTransform rather than storing transform
 protected:
 	bool isDark() const {
 		return m_transform.GetPolarity() == Polarity::Dark;

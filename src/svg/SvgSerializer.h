@@ -50,6 +50,9 @@ public:
 	void AddPolygon(const std::vector<Point> &points, bool isDark = true)
 			override;
 	void AddContour(const Contour &contour, bool isDark = true) override;
+//TODO these should all return an element that can be modified with more calls
+//TODO CreateMask, create <mask> and add shape to <mask> vs image
+//TODO ApplyMask, adds mask= attribute
 
 private:
 	std::string makePathArc(const ArcSegment &segment);

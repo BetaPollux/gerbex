@@ -63,32 +63,18 @@ int StepAndRepeat::GetNy() const {
 	return m_ny;
 }
 
-void StepAndRepeat::Serialize(Serializer &serializer, const Point &origin) const {
+void StepAndRepeat::ExpandObjects(
+		std::vector<std::shared_ptr<GraphicalObject> > &output) const {
 	for (int ix = 0; ix < m_nx; ix++) {
 		for (int iy = 0; iy < m_ny; iy++) {
 			for (auto obj : m_objects) {
 				Point offset(m_dx * ix, m_dy * iy);
-				obj->Serialize(serializer, origin + offset);
+				std::shared_ptr<GraphicalObject> clone = obj->Clone();
+				clone->Translate(offset);
+				output.push_back(clone);
 			}
 		}
 	}
-}
-
-Box StepAndRepeat::GetBox() const {
-	if (m_objects.empty()) {
-		throw std::invalid_argument("cannot get box for empty step and repeat");
-	}
-	Box box = m_objects.front()->GetBox();
-	for (int ix = 0; ix < m_nx; ix++) {
-		for (int iy = 0; iy < m_ny; iy++) {
-			for (auto obj : m_objects) {
-				Point offset(m_dx * ix, m_dy * iy);
-				Box next = obj->GetBox();
-				box = box.Extend(next.Translate(offset));
-			}
-		}
-	}
-	return box;
 }
 
 } /* namespace gerbex */

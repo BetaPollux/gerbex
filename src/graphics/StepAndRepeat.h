@@ -25,8 +25,6 @@
 #include <memory>
 #include <vector>
 
-//TODO StepAndRepeat should not be a graphical object, just used to create objects
-
 namespace gerbex {
 
 /*
@@ -34,19 +32,18 @@ namespace gerbex {
  * Each replication is at an dx, dy offset.
  * Copies are first in positive Y then positive X direction.
  */
-class StepAndRepeat: public GraphicalObject {
+class StepAndRepeat {
 public:
 	StepAndRepeat();
 	StepAndRepeat(int nx, int ny, double dx, double dy);
 	virtual ~StepAndRepeat() = default;
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	void AddObject(std::shared_ptr<GraphicalObject> object);
+	void ExpandObjects(std::vector<std::shared_ptr<GraphicalObject>> &output) const;
 	double GetDx() const;
 	double GetDy() const;
 	int GetNx() const;
 	int GetNy() const;
-	void Serialize(Serializer &serializer, const Point &origin) const override;
-	Box GetBox() const override;
 
 private:
 	std::vector<std::shared_ptr<GraphicalObject>> m_objects;

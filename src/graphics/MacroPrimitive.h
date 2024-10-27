@@ -45,7 +45,7 @@ public:
 	MacroExposure GetExposure() const;
 	double GetRotation() const;
 	static MacroExposure ExposureFromNum(int num);
-	//TODO temporarily excluded from serializable
+	//TODO needs new Serialize signature, macro does not use regular polarity
 	virtual void Serialize(Serializer &serializer, const Point &origin,
 			const Transform &transform) const = 0;
 	virtual Box GetBox() const = 0;

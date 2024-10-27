@@ -63,8 +63,12 @@ void Draw::ApplyTransform(const Transform &transform) {
 	m_segment.Transform(transform);
 }
 
-std::unique_ptr<Transformable> Draw::Clone() {
+std::unique_ptr<GraphicalObject> Draw::Clone() {
 	return std::make_unique<Draw>(*this);
+}
+
+void Draw::Translate(const Point &offset) {
+	m_segment.Translate(offset);
 }
 
 } /* namespace gerbex */

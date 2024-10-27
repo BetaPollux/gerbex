@@ -37,6 +37,12 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 }
 
 void Macro::Serialize(Serializer &serializer, const Point &origin) const {
+	//TODO need to overhaul serializer
+	// Macro ON -> add shape to SVG with a mask= attribute, color is specified dark fill
+	// Macro OFF -> add shape to <mask>, should be black
+	// <mask> applies to elements already created, one macro can have multiple masks
+	// Each <mask> needs a unique name
+	// the <mask> must have a white rect background, based on Macro box
 	for (auto prim : m_primitives) {
 		prim->Serialize(serializer, origin, m_transform);
 	}
@@ -46,6 +52,7 @@ Box Macro::GetBox() const {
 	if (m_primitives.empty()) {
 		throw std::invalid_argument("cannot get box for empty macro");
 	}
+	//TODO consider transform
 	Box box = m_primitives.front()->GetBox();
 	for (std::shared_ptr<MacroPrimitive> obj : m_primitives) {
 		box = box.Extend(obj->GetBox());

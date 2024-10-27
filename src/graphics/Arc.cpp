@@ -62,8 +62,12 @@ void Arc::ApplyTransform(const Transform &transform) {
 	m_segment.Transform(transform);
 }
 
-std::unique_ptr<Transformable> Arc::Clone() {
+std::unique_ptr<GraphicalObject> Arc::Clone() {
 	return std::make_unique<Arc>(*this);
+}
+
+void Arc::Translate(const Point &offset) {
+	m_segment.Translate(offset);
 }
 
 } /* namespace gerbex */

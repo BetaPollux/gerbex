@@ -85,4 +85,20 @@ Box Region::GetBox() const {
 	return box;
 }
 
+void Region::Translate(const Point &offset) {
+	for (Contour &c : m_contours) {
+		c.Translate(offset);
+	}
+}
+
+void Region::ApplyTransform(const gerbex::Transform &transform) {
+	for (Contour &c : m_contours) {
+		c.Transform(transform);
+	}
+}
+
+std::unique_ptr<GraphicalObject> Region::Clone() {
+	return std::make_unique<Region>(*this);
+}
+
 } /* namespace gerbex */

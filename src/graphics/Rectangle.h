@@ -42,6 +42,7 @@ public:
 	std::unique_ptr<Aperture> Clone() const override;
 
 private:
+	//TODO change this to store vertices
 	std::vector<Point> getVertices(const Point &origin = Point()) const;
 	double m_xSize;
 	double m_ySize;

@@ -579,7 +579,7 @@ TEST(CommandsProcessor_ApertureBlock, DoesNotFlash) {
 TEST(CommandsProcessor_ApertureBlock, AddedObjects) {
 	std::shared_ptr<BlockAperture> block = GetAperture<BlockAperture>(processor,
 			blockId);
-	std::shared_ptr<Draw> draw = GetBlockObject<Draw>(block);
+	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(*block->GetObjectList());
 
 	LONGS_EQUAL(2, block->GetObjectList()->size());
 	CHECK_EQUAL(origin, draw->GetSegment().GetStart());
@@ -640,7 +640,7 @@ TEST(CommandsProcessor_NestedApertureBlock, OuterContainsInner) {
 	std::shared_ptr<BlockAperture> innerBlock = GetAperture<BlockAperture>(
 			processor, innerBlockId);
 
-	std::shared_ptr<Flash> flash = GetBlockObject<Flash>(outerBlock);
+	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(*outerBlock->GetObjectList());
 	std::shared_ptr<BlockAperture> aperture = CheckAperture<BlockAperture>(
 			*flash);
 	CHECK_EQUAL(*innerBlock, *aperture);
@@ -694,8 +694,6 @@ TEST(CommandsProcessor_StepAndRepeat, ClearsCurrentPoint) {
 	CHECK(!processor.GetGraphicsState().GetCurrentPoint().has_value());
 }
 
-TEST(CommandsProcessor_StepAndRepeat, CreatesObject) {
-	std::shared_ptr<StepAndRepeat> sr = GetGraphicalObject<StepAndRepeat>(
-			processor.GetObjects());
-	LONGS_EQUAL(1, processor.GetObjects().size());
+TEST(CommandsProcessor_StepAndRepeat, ExpandsObjects) {
+	LONGS_EQUAL(nx * ny, processor.GetObjects().size());
 }

@@ -21,7 +21,7 @@
 #ifndef REGION_H_
 #define REGION_H_
 
-#include <Contour.h>
+#include "Contour.h"
 #include "GraphicalObject.h"
 #include "Transform.h"
 #include <memory>
@@ -46,6 +46,9 @@ public:
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Polarity GetPolarity() const;
 	Box GetBox() const override;
+	void Translate(const Point &offset) override;
+	void ApplyTransform(const Transform &transform) override;
+	std::unique_ptr<GraphicalObject> Clone() override;
 
 private:
 	std::vector<Contour> m_contours;

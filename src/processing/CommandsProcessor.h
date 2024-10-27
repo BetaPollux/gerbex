@@ -28,7 +28,6 @@
 #include "GraphicsState.h"
 #include "Region.h"
 #include "StepAndRepeat.h"
-#include "Transformable.h"
 #include <unordered_map>
 #include <memory>
 #include <stack>
@@ -81,7 +80,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<ApertureTemplate>> m_templates;
 	std::unique_ptr<Region> m_activeRegion;
 	std::unique_ptr<StepAndRepeat> m_activeStepAndRepeat;
-	std::stack<std::vector<std::shared_ptr<Transformable>>*> m_activeBlocks;
+	int m_openBlocks;
 };
 
 } /* namespace gerbex */

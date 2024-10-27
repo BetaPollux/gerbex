@@ -22,8 +22,8 @@
 #define FLASH_H_
 
 #include "Aperture.h"
+#include "GraphicalObject.h"
 #include "Point.h"
-#include "Transformable.h"
 #include <memory>
 
 namespace gerbex {
@@ -31,7 +31,7 @@ namespace gerbex {
 /*
  * Replication of an aperture in the image plane.
  */
-class Flash: public Transformable {
+class Flash: public GraphicalObject {
 public:
 	Flash();
 	Flash(const Point &origin, std::shared_ptr<Aperture> aperture);
@@ -41,7 +41,8 @@ public:
 	const Point& GetOrigin() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
-	std::unique_ptr<Transformable> Clone() override;
+	std::unique_ptr<GraphicalObject> Clone() override;
+	void Translate(const Point &offset) override;
 
 private:
 	Point m_origin;

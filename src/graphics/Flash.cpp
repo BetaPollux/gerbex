@@ -58,8 +58,12 @@ void Flash::ApplyTransform(const Transform &transform) {
 	m_origin = transform.Apply(m_origin);
 }
 
-std::unique_ptr<Transformable> Flash::Clone() {
+std::unique_ptr<GraphicalObject> Flash::Clone() {
 	return std::make_unique<Flash>(*this);
+}
+
+void Flash::Translate(const Point &offset) {
+	m_origin += offset;
 }
 
 } /* namespace gerbex */

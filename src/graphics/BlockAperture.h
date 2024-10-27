@@ -22,7 +22,7 @@
 #define BLOCKAPERTURE_H_
 
 #include "Aperture.h"
-#include "Transformable.h"
+#include "GraphicalObject.h"
 #include <memory>
 #include <vector>
 
@@ -37,8 +37,8 @@ public:
 	virtual ~BlockAperture() = default;
 	bool operator==(const BlockAperture &rhs) const;
 	bool operator!=(const BlockAperture &rhs) const;
-	void AddObject(std::shared_ptr<Transformable> object);
-	std::vector<std::shared_ptr<Transformable>> *GetObjectList();
+	void AddObject(std::shared_ptr<GraphicalObject> object);
+	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	size_t GetObjectCount() const;
 	void Serialize(Serializer &serializer, const Point &origin) const override;
 	Box GetBox() const override;
@@ -46,7 +46,7 @@ public:
 	void SetTransform(const Transform &transform) override;
 
 private:
-	std::vector<std::shared_ptr<Transformable>> m_objects;
+	std::vector<std::shared_ptr<GraphicalObject>> m_objects;
 };
 
 } /* namespace gerbex */
