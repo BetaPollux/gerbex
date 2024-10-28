@@ -39,7 +39,7 @@ SvgSerializer::SvgSerializer() {
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
 	m_fgColor = "black";
 	m_bgColor = "white";
-	m_polarity = Polarity::Dark;
+	m_polarity = Polarity::Dark();
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -117,7 +117,7 @@ void SvgSerializer::AddPolygon(const std::vector<Point> &points) {
 }
 
 const char* SvgSerializer::getFillColor() const {
-	if (m_polarity == Polarity::Dark) {
+	if (m_polarity == Polarity::Dark()) {
 		return m_fgColor.c_str();
 	} else {
 		return m_bgColor.c_str();

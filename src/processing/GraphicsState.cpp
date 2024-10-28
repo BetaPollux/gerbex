@@ -26,7 +26,7 @@ namespace gerbex {
 
 GraphicsState::GraphicsState() :
 		m_format { }, m_unit { }, m_currentPoint { }, m_currentAperture { }, m_plotState { }, m_transform { }, m_polarity {
-				Polarity::Dark } {
+				Polarity::Dark() } {
 	// Empty
 }
 
