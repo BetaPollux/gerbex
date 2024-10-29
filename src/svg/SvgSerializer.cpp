@@ -37,9 +37,11 @@ namespace gerbex {
 SvgSerializer::SvgSerializer() {
 	m_svg = m_doc.append_child("svg");
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
+	m_defs = m_svg.append_child("defs");
 	m_fgColor = "black";
 	m_bgColor = "white";
 	m_polarity = Polarity::Dark();
+	m_maskCounter = 0;
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -125,7 +127,8 @@ const char* SvgSerializer::getFillColor() const {
 }
 
 void SvgSerializer::AddContour(const Contour &contour) {
-	const std::vector<std::shared_ptr<Segment>> segments = contour.GetSegments();
+	const std::vector<std::shared_ptr<Segment>> segments =
+			contour.GetSegments();
 	Point s = segments[0]->GetStart();
 	std::stringstream d;
 	d << "M " << s.GetX() << " " << -s.GetY() << " ";
@@ -171,6 +174,42 @@ void SvgSerializer::SetForeground(const std::string &color) {
 
 void SvgSerializer::SetBackground(const std::string &color) {
 	m_bgColor = color;
+}
+
+pugi::xml_node SvgSerializer::MakeGroup() {
+	pugi::xml_node group = m_svg.append_child("g");
+	group.append_attribute("fill") = getFillColor();
+	return group;
+}
+
+pugi::xml_node SvgSerializer::MakeMask(const Box& box) {
+	pugi::xml_node mask = m_defs.append_child("mask");
+	std::string id = "mask" + std::to_string(m_maskCounter);
+	m_maskCounter++;
+	mask.append_attribute("id") = id.c_str();
+	mask.append_attribute("fill") = "black";
+	pugi::xml_node rect = mask.append_child("rect");
+	rect.append_attribute("width") = box.GetWidth();
+	rect.append_attribute("height") = box.GetHeight();
+	rect.append_attribute("x") = box.GetLeft();
+	rect.append_attribute("y") = -box.GetTop();
+	rect.append_attribute("fill") = "white";
+	return mask;
+}
+
+pugi::xml_node SvgSerializer::AddCircle(pugi::xml_node target, double radius,
+		const Point &center) {
+	pugi::xml_node circle = target.append_child("circle");
+	circle.append_attribute("r") = radius;
+	circle.append_attribute("cx") = center.GetX();
+	circle.append_attribute("cy") = -center.GetY();
+	return circle;
+}
+
+void SvgSerializer::ApplyMask(pugi::xml_node target, pugi::xml_node mask) {
+	std::string id = mask.attribute("id").as_string("missing_id");
+	std::string maskAttr = "url(#" + id + ")";
+	target.append_attribute("mask") = maskAttr.c_str();
 }
 
 } /* namespace gerbex */

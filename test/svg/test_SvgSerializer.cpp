@@ -40,4 +40,19 @@ TEST(SvgSerializerTest, MakeFile) {
 	serializer.SaveFile("output.svg");
 }
 
+TEST(SvgSerializerTest, Donut) {
+	SvgSerializer serializer;
+	Box area(1000.0, 1000.0, 0.0, 0.0);
+	Point center(500, 500);
+	serializer.SetForeground("yellow");
+	serializer.SetBackground("blue");
+	serializer.SetViewBox(area);
+	pugi::xml_node root = serializer.MakeGroup();
+	pugi::xml_node circle = serializer.AddCircle(root, 100, center);
+	pugi::xml_node mask = serializer.MakeMask(area);
+	serializer.AddCircle(mask, 40, center);
+	serializer.ApplyMask(circle, mask);
+	serializer.SaveFile("donut.svg");
+}
+
 } /* namespace gerbex */

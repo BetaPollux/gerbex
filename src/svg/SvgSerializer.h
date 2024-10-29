@@ -47,6 +47,10 @@ public:
 	void AddCircle(double radius, const Point &center) override;
 	void AddPolygon(const std::vector<Point> &points) override;
 	void AddContour(const Contour &contour) override;
+	pugi::xml_node MakeGroup();
+	pugi::xml_node MakeMask(const Box& box);
+	pugi::xml_node AddCircle(pugi::xml_node target, double radius, const Point &center);
+	void ApplyMask(pugi::xml_node target, pugi::xml_node mask);
 //TODO these should all return an element that can be modified with more calls
 //TODO CreateMask, create <mask> and add shape to <mask> vs image
 //TODO ApplyMask, adds mask= attribute
@@ -57,8 +61,10 @@ private:
 	const char* getFillColor() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
+	pugi::xml_node m_defs;
 	std::string m_fgColor;
 	std::string m_bgColor;
+	int m_maskCounter;
 };
 
 } /* namespace gerbex */
