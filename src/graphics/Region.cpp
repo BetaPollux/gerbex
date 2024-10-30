@@ -60,7 +60,6 @@ bool Region::AreContoursClosed() const {
 }
 
 void Region::Serialize(Serializer &serializer, const Point &origin) const {
-	(void) origin;
 	serializer.SetPolarity(m_polarity);
 	for (const Contour &c : m_contours) {
 		Contour clone = c;

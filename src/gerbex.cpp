@@ -51,8 +51,7 @@ int main(int argc, char *argv[]) {
 	Box box = fileProcessor.GetProcessor().GetBox();
 	std::cout << "Dimensions: " << box << std::endl;
 
-	SvgSerializer serializer;
-	serializer.SetViewBox(box.Pad(0.5));
+	SvgSerializer serializer(box.Pad(0.5));
 	serializer.SetForeground("red");
 	serializer.SetBackground("black");
 

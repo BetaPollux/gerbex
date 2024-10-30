@@ -34,14 +34,17 @@ namespace gerbex {
 //		bottom 	-> max y
 //		top 	-> -1 * min y
 
-SvgSerializer::SvgSerializer() {
+SvgSerializer::SvgSerializer(const Box &viewBox) {
 	m_svg = m_doc.append_child("svg");
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
 	m_defs = m_svg.append_child("defs");
 	m_fgColor = "black";
-	m_bgColor = "white";
+	m_bgColor = "";
 	m_polarity = Polarity::Dark();
 	m_maskCounter = 0;
+	m_lastGroup = pugi::xml_node();
+	m_lastMask = pugi::xml_node();
+	setViewBox(viewBox);
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -49,17 +52,20 @@ void SvgSerializer::SetViewPort(int width, int height) {
 	m_svg.append_attribute("height") = height;
 }
 
-void SvgSerializer::SetViewBox(const Box &box) {
+void SvgSerializer::setViewBox(const Box &box) {
 	std::stringstream box_stream;
 	box_stream << box.GetLeft() << " ";
 	box_stream << -box.GetTop() << " ";
 	box_stream << box.GetWidth() << " ";
 	box_stream << box.GetHeight();
+	m_svg.remove_attribute("viewBox");
 	m_svg.append_attribute("viewBox") = box_stream.str().c_str();
 }
 
 void SvgSerializer::SaveFile(const std::string &path) {
-	m_svg.append_attribute("style") = ("background-color:" + m_bgColor).c_str();
+	if (m_bgColor != "") {
+		m_svg.append_attribute("style") = ("background-color:" + m_bgColor).c_str();
+	}
 	m_doc.save_file(path.c_str());
 }
 
@@ -176,23 +182,35 @@ void SvgSerializer::SetBackground(const std::string &color) {
 	m_bgColor = color;
 }
 
-pugi::xml_node SvgSerializer::MakeGroup() {
+pugi::xml_node SvgSerializer::GetLastGroup() {
+	if (m_lastGroup.empty()) {
+		m_lastGroup = NewGroup();
+	}
+	return m_lastGroup;
+}
+
+pugi::xml_node SvgSerializer::GetLastMask(const Box &box) {
+	if (m_lastMask.empty()) {
+		m_lastMask = NewMask(box);
+	}
+	return m_lastMask;
+}
+
+pugi::xml_node SvgSerializer::NewGroup() {
 	pugi::xml_node group = m_svg.append_child("g");
-	group.append_attribute("fill") = getFillColor();
+	group.append_attribute("fill") = m_fgColor.c_str();
+	group.append_attribute("stroke") = m_fgColor.c_str();
+	group.append_attribute("stroke-width") = 0;
 	return group;
 }
 
-pugi::xml_node SvgSerializer::MakeMask(const Box& box) {
+pugi::xml_node SvgSerializer::NewMask(const Box &box) {
 	pugi::xml_node mask = m_defs.append_child("mask");
 	std::string id = "mask" + std::to_string(m_maskCounter);
 	m_maskCounter++;
 	mask.append_attribute("id") = id.c_str();
-	mask.append_attribute("fill") = "black";
 	pugi::xml_node rect = mask.append_child("rect");
-	rect.append_attribute("width") = box.GetWidth();
-	rect.append_attribute("height") = box.GetHeight();
-	rect.append_attribute("x") = box.GetLeft();
-	rect.append_attribute("y") = -box.GetTop();
+	setBox(rect, box);
 	rect.append_attribute("fill") = "white";
 	return mask;
 }
@@ -206,10 +224,23 @@ pugi::xml_node SvgSerializer::AddCircle(pugi::xml_node target, double radius,
 	return circle;
 }
 
-void SvgSerializer::ApplyMask(pugi::xml_node target, pugi::xml_node mask) {
+void SvgSerializer::SetMask(pugi::xml_node target, pugi::xml_node mask) {
 	std::string id = mask.attribute("id").as_string("missing_id");
 	std::string maskAttr = "url(#" + id + ")";
+	target.remove_attribute("mask");
 	target.append_attribute("mask") = maskAttr.c_str();
+}
+
+void SvgSerializer::setBox(pugi::xml_node node, const Box &box) {
+	node.remove_attribute("x");
+	node.remove_attribute("y");
+	node.remove_attribute("width");
+	node.remove_attribute("height");
+
+	node.append_attribute("x") = box.GetLeft();
+	node.append_attribute("y") = -box.GetTop();
+	node.append_attribute("width") = box.GetWidth();
+	node.append_attribute("height") = box.GetHeight();
 }
 
 } /* namespace gerbex */

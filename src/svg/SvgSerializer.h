@@ -30,15 +30,33 @@
 
 namespace gerbex {
 
+//TODO scale numbers to be reasonable integers?
+
+class SvgElement {
+public:
+	SvgElement() :
+			m_node { } {
+	}
+	SvgElement(pugi::xml_node node) :
+			m_node { node } {
+	}
+	virtual ~SvgElement() = default;
+	void* Get() {
+		return &m_node;
+	}
+
+private:
+	pugi::xml_node m_node;
+};
+
 /*
  *
  */
 class SvgSerializer: public Serializer {
 public:
-	SvgSerializer();
+	SvgSerializer(const Box &viewBox);
 	virtual ~SvgSerializer() = default;
 	void SetViewPort(int width, int height);
-	void SetViewBox(const Box &box);
 	void SaveFile(const std::string &path);
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
@@ -47,17 +65,19 @@ public:
 	void AddCircle(double radius, const Point &center) override;
 	void AddPolygon(const std::vector<Point> &points) override;
 	void AddContour(const Contour &contour) override;
-	pugi::xml_node MakeGroup();
-	pugi::xml_node MakeMask(const Box& box);
-	pugi::xml_node AddCircle(pugi::xml_node target, double radius, const Point &center);
-	void ApplyMask(pugi::xml_node target, pugi::xml_node mask);
-//TODO these should all return an element that can be modified with more calls
-//TODO CreateMask, create <mask> and add shape to <mask> vs image
-//TODO ApplyMask, adds mask= attribute
+	pugi::xml_node NewGroup();
+	pugi::xml_node NewMask(const Box &box);
+	void SetMask(pugi::xml_node target, pugi::xml_node mask);
+	pugi::xml_node GetLastGroup();
+	pugi::xml_node GetLastMask(const Box &box);
+	pugi::xml_node AddCircle(pugi::xml_node target, double radius,
+			const Point &center);
 
 private:
+	void setViewBox(const Box &box);
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
+	void setBox(pugi::xml_node node, const Box &box);
 	const char* getFillColor() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
@@ -65,6 +85,8 @@ private:
 	std::string m_fgColor;
 	std::string m_bgColor;
 	int m_maskCounter;
+	pugi::xml_node m_lastGroup;
+	pugi::xml_node m_lastMask;
 };
 
 } /* namespace gerbex */
