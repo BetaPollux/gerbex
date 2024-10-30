@@ -38,7 +38,7 @@ public:
 	bool operator!=(const Circle &rhs) const;
 	double GetDiameter() const;
 	double GetHoleDiameter() const;
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
 	void ApplyTransform(const Transform &transform) override;

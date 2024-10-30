@@ -40,7 +40,7 @@ public:
 	bool operator!=(const MacroCircle &rhs) const;
 	double GetDiameter() const;
 	static std::unique_ptr<MacroCircle> FromParameters(const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	const Point& GetCenter() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;

@@ -39,12 +39,12 @@ Draw::Draw(const Segment &segment, std::shared_ptr<Aperture> aperture) :
 	m_aperture = circle;
 }
 
-void Draw::Serialize(Serializer &serializer, const Point &origin) const {
+void Draw::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	serializer.SetPolarity(m_polarity);
-	serializer.AddDraw(width, segment);
+	pSerialItem dest = serializer.GetTarget(m_polarity);
+	serializer.AddDraw(dest, width, segment);
 }
 
 std::shared_ptr<Circle> Draw::GetAperture() const {

@@ -68,13 +68,13 @@ std::unique_ptr<MacroOutline> MacroOutline::FromParameters(
 	return std::make_unique<MacroOutline>(exposure, vertices, rotation);
 }
 
-void MacroOutline::Serialize(Serializer &serializer,
+void MacroOutline::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(vertices);
+	serializer.AddPolygon(target, vertices);
 }
 
 Box MacroOutline::GetBox() const {

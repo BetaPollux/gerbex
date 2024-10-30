@@ -23,11 +23,12 @@
 
 #include "Contour.h"
 #include "GraphicalObject.h"
-#include "Transform.h"
 #include <memory>
 #include <vector>
 
 namespace gerbex {
+
+class Transform;
 
 /*
  * Graphical object defined by a collection of contours.
@@ -41,7 +42,7 @@ public:
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<Contour>& GetContours() const;
 	bool AreContoursClosed() const;
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	void Translate(const Point &offset) override;
 	void ApplyTransform(const Transform &transform) override;

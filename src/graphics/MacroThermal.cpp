@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ArcSegment.h"
 #include "MacroThermal.h"
 #include "Serializer.h"
 #include <cmath>
@@ -91,12 +92,12 @@ std::unique_ptr<MacroThermal> MacroThermal::FromParameters(
 	return std::make_unique<MacroThermal>(center, outer, inner, gap, rotation);
 }
 
-void MacroThermal::Serialize(Serializer &serializer,
+void MacroThermal::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	for (const Contour &c : m_contours) {
 		Contour clone = c;
 		clone.Translate(origin);
-		serializer.AddContour(clone);
+		serializer.AddContour(target, clone);
 	}
 }
 

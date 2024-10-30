@@ -21,8 +21,11 @@
 #define POLARITY_H_
 
 #include <string>
+#include <stdexcept>
 
 namespace gerbex {
+
+//TODO this class is ridiculous?
 
 class Polarity {
 public:

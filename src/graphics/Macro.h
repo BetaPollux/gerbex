@@ -37,7 +37,7 @@ public:
 	virtual ~Macro() = default;
 	void AddPrimitive(std::shared_ptr<MacroPrimitive> primitive);
 	const std::vector<std::shared_ptr<MacroPrimitive>>& GetPrimitives() const;
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	std::unique_ptr<Aperture> Clone() const override;
 	void ApplyTransform(const Transform &transform) override;

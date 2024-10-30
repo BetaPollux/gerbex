@@ -58,8 +58,9 @@ int main(int argc, char *argv[]) {
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();
 
+	pSerialItem root = serializer.GetLastGroup();
 	for (std::shared_ptr<GraphicalObject> obj: objects) {
-		obj->Serialize(serializer, Point());
+		obj->Serialize(serializer, root, Point());
 	}
 
 	serializer.SaveFile(svg_file);

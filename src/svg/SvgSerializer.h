@@ -32,17 +32,24 @@ namespace gerbex {
 
 //TODO scale numbers to be reasonable integers?
 
-class SvgElement {
+class SvgItem: public SerialItem {
 public:
-	SvgElement() :
+	SvgItem() :
 			m_node { } {
 	}
-	SvgElement(pugi::xml_node node) :
+	SvgItem(pugi::xml_node node) :
 			m_node { node } {
 	}
-	virtual ~SvgElement() = default;
-	void* Get() {
-		return &m_node;
+	virtual ~SvgItem() = default;
+	pugi::xml_node GetNode() {
+		return m_node;
+	}
+	static pugi::xml_node GetNode(pSerialItem item) {
+		std::shared_ptr<SvgItem> svg = std::dynamic_pointer_cast<SvgItem>(item);
+		if (!svg) {
+			throw std::invalid_argument("Svg received non-Svg item");
+		}
+		return svg->m_node;
 	}
 
 private:
@@ -60,33 +67,36 @@ public:
 	void SaveFile(const std::string &path);
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
-	void AddDraw(double width, const Segment &segment) override;
-	void AddArc(double width, const ArcSegment &segment) override;
-	void AddCircle(double radius, const Point &center) override;
-	void AddPolygon(const std::vector<Point> &points) override;
-	void AddContour(const Contour &contour) override;
-	pugi::xml_node NewGroup();
-	pugi::xml_node NewMask(const Box &box);
-	void SetMask(pugi::xml_node target, pugi::xml_node mask);
-	pugi::xml_node GetLastGroup();
-	pugi::xml_node GetLastMask(const Box &box);
-	pugi::xml_node AddCircle(pugi::xml_node target, double radius,
-			const Point &center);
+	pSerialItem NewGroup() override;
+	pSerialItem NewMask(const Box &box) override;
+	void SetMask(pSerialItem target, pSerialItem mask) override;
+	pSerialItem GetLastGroup() override;
+	pSerialItem GetLastMask(const Box &box) override;
+	pSerialItem AddArc(pSerialItem target, double width,
+			const ArcSegment &segment) override;
+	pSerialItem AddCircle(pSerialItem target, double radius,
+			const Point &center) override;
+	pSerialItem AddContour(pSerialItem target, const Contour &contour) override;
+	pSerialItem AddDraw(pSerialItem target, double width,
+			const Segment &segment) override;
+	pSerialItem AddPolygon(pSerialItem target, const std::vector<Point> &points)
+			override;
+	pSerialItem GetTarget(Polarity polarity) override;
 
 private:
 	void setViewBox(const Box &box);
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
 	void setBox(pugi::xml_node node, const Box &box);
-	const char* getFillColor() const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 	pugi::xml_node m_defs;
 	std::string m_fgColor;
 	std::string m_bgColor;
 	int m_maskCounter;
-	pugi::xml_node m_lastGroup;
-	pugi::xml_node m_lastMask;
+	Box m_viewBox;
+	pSerialItem m_lastGroup;
+	pSerialItem m_lastMask;
 };
 
 } /* namespace gerbex */

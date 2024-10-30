@@ -68,13 +68,13 @@ std::unique_ptr<MacroPolygon> MacroPolygon::FromParameters(
 			rotation);
 }
 
-void MacroPolygon::Serialize(Serializer &serializer,
+void MacroPolygon::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(vertices);
+	serializer.AddPolygon(target, vertices);
 }
 
 Box MacroPolygon::GetBox() const {

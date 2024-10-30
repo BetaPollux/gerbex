@@ -59,12 +59,13 @@ bool Region::AreContoursClosed() const {
 	return true;
 }
 
-void Region::Serialize(Serializer &serializer, const Point &origin) const {
-	serializer.SetPolarity(m_polarity);
+void Region::Serialize(Serializer &serializer, pSerialItem target,
+		const Point &origin) const {
+	pSerialItem dest = serializer.GetTarget(m_polarity);
 	for (const Contour &c : m_contours) {
 		Contour clone = c;
 		clone.Translate(origin);
-		serializer.AddContour(clone);
+		serializer.AddContour(dest, clone);
 	}
 }
 

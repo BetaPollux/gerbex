@@ -35,7 +35,7 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 	return m_primitives;
 }
 
-void Macro::Serialize(Serializer &serializer, const Point &origin) const {
+void Macro::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	//TODO need to overhaul serializer
 	// Macro ON -> add shape to SVG with a mask= attribute, color is specified dark fill
 	// Macro OFF -> add shape to <mask>, should be black
@@ -43,7 +43,7 @@ void Macro::Serialize(Serializer &serializer, const Point &origin) const {
 	// Each <mask> needs a unique name
 	// the <mask> must have a white rect background, based on Macro box
 	for (std::shared_ptr<MacroPrimitive> prim : m_primitives) {
-		prim->Serialize(serializer, origin);
+		prim->Serialize(serializer, target, origin);
 	}
 }
 

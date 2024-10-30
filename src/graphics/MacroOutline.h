@@ -42,7 +42,7 @@ public:
 	const std::vector<Point>& GetVertices() const;
 	static std::unique_ptr<MacroOutline> FromParameters(
 			const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
 

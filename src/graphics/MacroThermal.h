@@ -42,7 +42,7 @@ public:
 	bool operator!=(const MacroThermal &rhs) const;
 	static std::unique_ptr<MacroThermal> FromParameters(
 			const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
 	const std::array<Contour, 4>& GetContours() const;

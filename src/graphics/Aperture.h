@@ -22,12 +22,10 @@
 #define APERTURE_H_
 
 #include "Box.h"
-#include "Transform.h"
+#include "Serializer.h"
 #include <memory>
 
 namespace gerbex {
-
-class Serializer;
 
 /*
  * An aperture is a 2D plane figure, and the basic tool to create graphic objects.
@@ -37,8 +35,7 @@ class Aperture {
 public:
 	Aperture() = default;
 	virtual ~Aperture() = default;
-	virtual void Serialize(Serializer &serializer,
-			const Point &origin) const = 0;
+	virtual void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 	virtual std::unique_ptr<Aperture> Clone() const = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;

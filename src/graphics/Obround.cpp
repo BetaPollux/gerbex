@@ -54,10 +54,10 @@ double Obround::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
 
-void Obround::Serialize(Serializer &serializer, const Point &origin) const {
+void Obround::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	serializer.AddDraw(m_drawWidth, segment);
+	serializer.AddDraw(target, m_drawWidth, segment);
 }
 
 Box Obround::GetBox() const {

@@ -35,13 +35,14 @@ TEST(SvgSerializerTest, Empty) {
 TEST(SvgSerializerTest, MakeFile) {
 	SvgSerializer serializer(Box(20.0, 20.0, -10.0, -10.0));
 	serializer.SetViewPort(400, 400);
-	serializer.AddCircle(0.1, Point(-10.0, -10.0));
-	serializer.AddCircle(0.1, Point(10.0, -10.0));
-	serializer.AddCircle(0.1, Point(10.0, 10.0));
-	serializer.AddCircle(0.1, Point(-10.0, 10.0));
-	serializer.AddCircle(5.0, Point(0.0, 0.0));
-	serializer.AddPolygon(
-			{ Point(-10.0, -10.0), Point(10.0, -10.0), Point(0.0, -5.0) });
+	pSerialItem root = serializer.GetLastGroup();
+	serializer.AddCircle(root, 0.1, Point(-10.0, -10.0));
+	serializer.AddCircle(root, 0.1, Point(10.0, -10.0));
+	serializer.AddCircle(root, 0.1, Point(10.0, 10.0));
+	serializer.AddCircle(root, 0.1, Point(-10.0, 10.0));
+	serializer.AddCircle(root, 5.0, Point(0.0, 0.0));
+	serializer.AddPolygon(root, { Point(-10.0, -10.0), Point(10.0, -10.0),
+			Point(0.0, -5.0) });
 	serializer.SaveFile("output.svg");
 }
 
@@ -51,9 +52,9 @@ TEST(SvgSerializerTest, Donut) {
 	SvgSerializer serializer(area);
 	serializer.SetForeground("yellow");
 	serializer.SetBackground("blue");
-	pugi::xml_node root = serializer.GetLastGroup();
-	pugi::xml_node circle = serializer.AddCircle(root, 100, center);
-	pugi::xml_node hole = serializer.GetLastMask(area);
+	pSerialItem root = serializer.GetLastGroup();
+	pSerialItem circle = serializer.AddCircle(root, 100, center);
+	pSerialItem hole = serializer.GetLastMask(area);
 	serializer.AddCircle(hole, 40, center);
 	serializer.SetMask(circle, hole);
 	serializer.SaveFile("donut.svg");

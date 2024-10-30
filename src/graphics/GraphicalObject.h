@@ -22,13 +22,13 @@
 #define GRAPHICALOBJECT_H_
 
 #include "Box.h"
-#include "Point.h"
 #include "Polarity.h"
+#include "Serializer.h"
 #include <memory>
 
 namespace gerbex {
 
-class Serializer;
+class Point;
 
 /*
  * Represents a plane figure that can be serialized.
@@ -42,7 +42,7 @@ public:
 	virtual void Translate(const Point &offset) = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
 	virtual std::unique_ptr<GraphicalObject> Clone() = 0;
-	virtual void Serialize(Serializer &serializer,
+	virtual void Serialize(Serializer &serializer, pSerialItem target,
 			const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 	Polarity GetPolarity() const {

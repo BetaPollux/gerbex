@@ -23,11 +23,10 @@
 
 #include "Box.h"
 #include "Point.h"
+#include "Serializer.h"
 #include "Transform.h"
 
 namespace gerbex {
-
-class Serializer;
 
 enum class MacroExposure {
 	OFF, ON
@@ -59,9 +58,7 @@ public:
 			throw std::invalid_argument("macro exposure must be 0 or 1");
 		}
 	}
-	//TODO needs new Serialize signature, macro does not use regular polarity
-	virtual void Serialize(Serializer &serializer,
-			const Point &origin) const = 0;
+	virtual void Serialize(Serializer &seriarlizer, pSerialItem target, const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
 

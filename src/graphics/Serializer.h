@@ -21,15 +21,25 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
-#include "Arc.h"
-#include "Contour.h"
-#include "Point.h"
 #include "Polarity.h"
-#include "Segment.h"
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace gerbex {
+
+class SerialItem {
+public:
+	virtual ~SerialItem() = default;
+};
+
+using pSerialItem = std::shared_ptr<SerialItem>;
+
+class ArcSegment;
+class Box;
+class Contour;
+class Point;
+class Segment;
 
 /*
  *
@@ -38,21 +48,22 @@ class Serializer {
 public:
 	Serializer() = default;
 	virtual ~Serializer() = default;
-	virtual void AddCircle(double radius, const Point &center) = 0;
-	virtual void AddPolygon(const std::vector<Point> &points) = 0;
-	virtual void AddDraw(double width, const Segment &segment) = 0;
-	virtual void AddArc(double width, const ArcSegment &segment) = 0;
-	virtual void AddContour(const Contour &contour) = 0;
-	const Polarity& GetPolarity() const {
-		return m_polarity;
-	}
-	void SetPolarity(const Polarity &polarity) {
-		m_polarity = polarity;
-	}
-
-protected:
-	Polarity m_polarity;
-
+	virtual pSerialItem NewGroup() = 0;
+	virtual pSerialItem NewMask(const Box &box) = 0;
+	virtual void SetMask(pSerialItem target, pSerialItem mask) = 0;
+	virtual pSerialItem GetLastGroup() = 0;
+	virtual pSerialItem GetLastMask(const Box &box) = 0;
+	virtual pSerialItem AddArc(pSerialItem target, double width,
+			const ArcSegment &segment) = 0;
+	virtual pSerialItem AddCircle(pSerialItem target, double radius,
+			const Point &center) = 0;
+	virtual pSerialItem AddContour(pSerialItem target,
+			const Contour &contour) = 0;
+	virtual pSerialItem AddDraw(pSerialItem target, double width,
+			const Segment &segment) = 0;
+	virtual pSerialItem AddPolygon(pSerialItem target,
+			const std::vector<Point> &points) = 0;
+	virtual pSerialItem GetTarget(Polarity polarity) = 0;
 };
 
 } /* namespace gerbex */

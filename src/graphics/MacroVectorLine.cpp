@@ -62,13 +62,13 @@ std::unique_ptr<MacroVectorLine> MacroVectorLine::FromParameters(
 			rotation);
 }
 
-void MacroVectorLine::Serialize(Serializer &serializer,
+void MacroVectorLine::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(vertices);
+	serializer.AddPolygon(target, vertices);
 }
 
 Box MacroVectorLine::GetBox() const {

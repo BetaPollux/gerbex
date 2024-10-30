@@ -39,12 +39,12 @@ Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture) :
 	m_aperture = circle;
 }
 
-void Arc::Serialize(Serializer &serializer, const Point &origin) const {
+void Arc::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	double width = m_aperture->GetDiameter();
 	ArcSegment segment = m_segment;
 	segment.Translate(origin);
-	serializer.SetPolarity(m_polarity);
-	serializer.AddArc(width, segment);
+	pSerialItem dest = serializer.GetTarget(m_polarity);
+	serializer.AddArc(dest, width, segment);
 }
 
 std::shared_ptr<Circle> Arc::GetAperture() const {

@@ -41,7 +41,7 @@ public:
 	bool operator!=(const MacroVectorLine &rhs) const;
 	static std::unique_ptr<MacroVectorLine> FromParameters(
 			const Parameters &params);
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
 	const std::vector<Point>& GetVertices() const;

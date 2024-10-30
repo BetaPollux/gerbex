@@ -60,8 +60,8 @@ std::unique_ptr<MacroCircle> MacroCircle::FromParameters(
 	return std::make_unique<MacroCircle>(exposure, diameter, center, rotation);
 }
 
-void MacroCircle::Serialize(Serializer &serializer, const Point &origin) const {
-	serializer.AddCircle(0.5 * m_diameter, m_center + origin);
+void MacroCircle::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
+	serializer.AddCircle(target, 0.5 * m_diameter, m_center + origin);
 }
 
 const Point& MacroCircle::GetCenter() const {

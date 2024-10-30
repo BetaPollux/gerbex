@@ -32,10 +32,10 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 	return &m_objects;
 }
 
-void BlockAperture::Serialize(Serializer &serializer, const Point &origin) const {
+void BlockAperture::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	//TODO need to handle toggle polarity of children when used in a Clear flash
 	for (auto obj : m_objects) {
-		obj->Serialize(serializer, origin);
+		obj->Serialize(serializer, target, origin);
 	}
 }
 

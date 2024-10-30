@@ -36,7 +36,7 @@ public:
 	Draw();
 	Draw(const Segment &segment, std::shared_ptr<Aperture> aperture);
 	virtual ~Draw() = default;
-	void Serialize(Serializer &serializer, const Point &origin) const override;
+	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
 	std::shared_ptr<Circle> GetAperture() const;
 	const Segment& GetSegment() const;
 	Box GetBox() const override;
@@ -46,6 +46,7 @@ public:
 
 private:
 	Segment m_segment;
+	//TODO just store drawWidth
 	std::shared_ptr<Circle> m_aperture;
 };
 
