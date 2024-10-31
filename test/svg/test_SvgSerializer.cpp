@@ -35,7 +35,7 @@ TEST(SvgSerializerTest, Empty) {
 TEST(SvgSerializerTest, MakeFile) {
 	SvgSerializer serializer(Box(20.0, 20.0, -10.0, -10.0));
 	serializer.SetViewPort(400, 400);
-	pSerialItem root = serializer.GetLastGroup();
+	pSerialItem root = serializer.GetTarget(Polarity::Dark());
 	serializer.AddCircle(root, 0.1, Point(-10.0, -10.0));
 	serializer.AddCircle(root, 0.1, Point(10.0, -10.0));
 	serializer.AddCircle(root, 0.1, Point(10.0, 10.0));
@@ -52,9 +52,9 @@ TEST(SvgSerializerTest, Donut) {
 	SvgSerializer serializer(area);
 	serializer.SetForeground("yellow");
 	serializer.SetBackground("blue");
-	pSerialItem root = serializer.GetLastGroup();
+	pSerialItem root = serializer.GetTarget(Polarity::Dark());
 	pSerialItem circle = serializer.AddCircle(root, 100, center);
-	pSerialItem hole = serializer.GetLastMask(area);
+	pSerialItem hole = serializer.NewMask(area);
 	serializer.AddCircle(hole, 40, center);
 	serializer.SetMask(circle, hole);
 	serializer.SaveFile("donut.svg");

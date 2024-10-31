@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();
 
-	pSerialItem root = serializer.GetLastGroup();
+	pSerialItem root = serializer.GetTarget(Polarity::Dark());
 	for (std::shared_ptr<GraphicalObject> obj: objects) {
 		obj->Serialize(serializer, root, Point());
 	}

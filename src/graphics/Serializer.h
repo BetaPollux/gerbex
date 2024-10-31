@@ -51,8 +51,6 @@ public:
 	virtual pSerialItem NewGroup() = 0;
 	virtual pSerialItem NewMask(const Box &box) = 0;
 	virtual void SetMask(pSerialItem target, pSerialItem mask) = 0;
-	virtual pSerialItem GetLastGroup() = 0;
-	virtual pSerialItem GetLastMask(const Box &box) = 0;
 	virtual pSerialItem AddArc(pSerialItem target, double width,
 			const ArcSegment &segment) = 0;
 	virtual pSerialItem AddCircle(pSerialItem target, double radius,

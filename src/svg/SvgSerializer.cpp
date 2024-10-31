@@ -46,6 +46,7 @@ SvgSerializer::SvgSerializer(const Box &viewBox) {
 	m_lastGroup = nullptr;
 	m_lastMask = nullptr;
 	m_viewBox = viewBox;
+	m_polarity = Polarity::Dark();
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -100,22 +101,6 @@ void SvgSerializer::SetForeground(const std::string &color) {
 
 void SvgSerializer::SetBackground(const std::string &color) {
 	m_bgColor = color;
-}
-
-pSerialItem SvgSerializer::GetLastGroup() {
-	if (!m_lastGroup) {
-		m_lastGroup = NewGroup();
-	}
-	return m_lastGroup;
-}
-
-pSerialItem SvgSerializer::GetLastMask(const Box &box) {
-	if (!m_lastMask) {
-		//TODO this makes one global mask, which is not correct...
-		m_lastMask = NewMask(box);
-	}
-	m_lastGroup = nullptr;	//Force a new group to be made
-	return m_lastMask;
 }
 
 pSerialItem SvgSerializer::NewGroup() {
@@ -244,14 +229,22 @@ void SvgSerializer::setBox(pugi::xml_node node, const Box &box) {
 }
 
 pSerialItem SvgSerializer::GetTarget(Polarity polarity) {
+	pSerialItem target;
 	if (polarity == Polarity::Dark()) {
-		return GetLastGroup();
+		if (!m_lastGroup || m_polarity == Polarity::Clear()) {
+			m_lastGroup = NewGroup();
+		}
+		target = m_lastGroup;
 	} else {
-		pSerialItem group = GetLastGroup();
-		pSerialItem mask = GetLastMask(m_viewBox);
-		SetMask(group, mask);
-		return mask;
+		if (!m_lastMask || m_polarity == Polarity::Dark()) {
+			m_lastMask = NewMask(m_viewBox);
+			//TODO this needs to apply to all previous groups
+			SetMask(m_lastGroup, m_lastMask);
+		}
+		target = m_lastMask;
 	}
+	m_polarity = polarity;
+	return target;
 }
 
 } /* namespace gerbex */

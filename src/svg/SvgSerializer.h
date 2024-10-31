@@ -70,8 +70,6 @@ public:
 	pSerialItem NewGroup() override;
 	pSerialItem NewMask(const Box &box) override;
 	void SetMask(pSerialItem target, pSerialItem mask) override;
-	pSerialItem GetLastGroup() override;
-	pSerialItem GetLastMask(const Box &box) override;
 	pSerialItem AddArc(pSerialItem target, double width,
 			const ArcSegment &segment) override;
 	pSerialItem AddCircle(pSerialItem target, double radius,
@@ -97,6 +95,7 @@ private:
 	Box m_viewBox;
 	pSerialItem m_lastGroup;
 	pSerialItem m_lastMask;
+	Polarity m_polarity;
 };
 
 } /* namespace gerbex */
