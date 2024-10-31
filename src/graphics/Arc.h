@@ -38,7 +38,7 @@ public:
 	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture);
 	virtual ~Arc() = default;
 	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
-	std::shared_ptr<Circle> GetAperture() const;
+	double GetDrawWidth() const;
 	const ArcSegment& GetSegment() const;
 	Box GetBox() const override;
 	void ApplyTransform(const Transform &transform) override;
@@ -47,8 +47,7 @@ public:
 
 private:
 	ArcSegment m_segment;
-	//TODO just store drawWidth
-	std::shared_ptr<Circle> m_aperture;
+	double m_drawWidth;
 };
 
 } /* namespace gerbex */

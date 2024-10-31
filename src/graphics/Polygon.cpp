@@ -61,12 +61,18 @@ double Polygon::GetHoleDiameter() const {
 	return m_holeDiameter;
 }
 
-void Polygon::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
+void Polygon::Serialize(Serializer &serializer, pSerialItem target,
+		const Point &origin) const {
 	std::vector<Point> vertices = m_vertices;
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	serializer.AddPolygon(target, vertices);
+	pSerialItem poly = serializer.AddPolygon(target, vertices);
+	if (m_holeDiameter > 0) {
+		pSerialItem mask = serializer.NewMask(GetBox().Translate(origin));
+		serializer.AddCircle(mask, 0.5 * m_holeDiameter, origin);
+		serializer.SetMask(poly, mask);
+	}
 }
 
 Box Polygon::GetBox() const {

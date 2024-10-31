@@ -25,7 +25,7 @@
 namespace gerbex {
 
 Arc::Arc() :
-		m_segment { }, m_aperture { std::make_shared<Circle>() } {
+		m_segment { }, m_drawWidth { 1.0 } {
 	// Empty
 }
 
@@ -36,19 +36,18 @@ Arc::Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture) :
 	if (!circle) {
 		throw std::invalid_argument("arc only supports circle apertures");
 	}
-	m_aperture = circle;
+	m_drawWidth = circle->GetDiameter();
 }
 
 void Arc::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
-	double width = m_aperture->GetDiameter();
 	ArcSegment segment = m_segment;
 	segment.Translate(origin);
 	pSerialItem dest = serializer.GetTarget(m_polarity);
-	serializer.AddArc(dest, width, segment);
+	serializer.AddArc(dest, m_drawWidth, segment);
 }
 
-std::shared_ptr<Circle> Arc::GetAperture() const {
-	return m_aperture;
+double Arc::GetDrawWidth() const {
+	return m_drawWidth;
 }
 
 const ArcSegment& Arc::GetSegment() const {
@@ -56,13 +55,13 @@ const ArcSegment& Arc::GetSegment() const {
 }
 
 Box Arc::GetBox() const {
-	double radius = 0.5 * m_aperture->GetDiameter();
+	double radius = 0.5 * m_drawWidth;
 	Box box = m_segment.GetBox().Pad(radius);
 	return box;
 }
 
 void Arc::ApplyTransform(const Transform &transform) {
-	m_aperture->ApplyTransform(transform);
+	m_drawWidth *= transform.GetScaling();
 	m_segment.ApplyTransform(transform);
 }
 

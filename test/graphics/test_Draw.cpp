@@ -49,7 +49,7 @@ TEST(DrawTest, End) {
 }
 
 TEST(DrawTest, Aperture) {
-	CHECK(aperture == draw.GetAperture());
+	CHECK(aperture->GetDiameter() == draw.GetDrawWidth());
 }
 
 TEST(DrawTest, RejectsNotCircle) {
@@ -71,7 +71,7 @@ TEST(DrawTest, ApplyTransform) {
 
 	draw.ApplyTransform(transform);
 
-	CHECK_EQUAL(expectedCircle, *draw.GetAperture());
+	CHECK_EQUAL(expectedCircle.GetDiameter(), draw.GetDrawWidth());
 	CHECK(expectedSegment == draw.GetSegment());
 }
 

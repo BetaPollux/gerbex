@@ -49,8 +49,12 @@ double Circle::GetHoleDiameter() const {
 }
 
 void Circle::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
-	double radius = 0.5 * m_diameter;
-	serializer.AddCircle(target, radius, origin);
+	pSerialItem circle = serializer.AddCircle(target, 0.5 * m_diameter, origin);
+	if (m_holeDiameter > 0) {
+		pSerialItem mask = serializer.NewMask(GetBox().Translate(origin));
+		serializer.AddCircle(mask, 0.5 * m_holeDiameter, origin);
+		serializer.SetMask(circle, mask);
+	}
 }
 
 Box Circle::GetBox() const {

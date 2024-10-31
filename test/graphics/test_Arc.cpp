@@ -60,7 +60,7 @@ TEST(ArcTest, Direction) {
 }
 
 TEST(ArcTest, Aperture) {
-	CHECK(aperture == arc.GetAperture());
+	CHECK(aperture->GetDiameter() == arc.GetDrawWidth());
 }
 
 TEST(ArcTest, RejectsNotCircle) {
@@ -83,7 +83,7 @@ TEST(ArcTest, ApplyTransform) {
 
 	arc.ApplyTransform(transform);
 
-	CHECK_EQUAL(expectedCircle, *arc.GetAperture());
+	CHECK_EQUAL(expectedCircle.GetDiameter(), arc.GetDrawWidth());
 	CHECK(expectedSegment == arc.GetSegment());
 }
 

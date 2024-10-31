@@ -29,15 +29,16 @@ MockAperture::MockAperture() :
 	// Empty
 }
 
-void MockAperture::Serialize(Serializer &serializer,
+void MockAperture::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	(void) serializer;
+	(void) target;
 	(void) origin;
 	mock().actualCall("ApertureSerialize");
 }
 
 Box MockAperture::GetBox() const {
-	return *(Box*)mock().actualCall("ApertureGetBox").returnPointerValue();
+	return *(Box*) mock().actualCall("ApertureGetBox").returnPointerValue();
 }
 
 std::unique_ptr<Aperture> MockAperture::Clone() const {
