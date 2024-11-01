@@ -67,7 +67,7 @@ public:
 	void SaveFile(const std::string &path);
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
-	pSerialItem NewGroup() override;
+	pSerialItem NewGroup(pSerialItem parent) override;
 	pSerialItem NewMask(const Box &box) override;
 	void SetMask(pSerialItem target, pSerialItem mask) override;
 	pSerialItem AddArc(pSerialItem target, double width,
@@ -82,6 +82,7 @@ public:
 	pSerialItem GetTarget(Polarity polarity) override;
 
 private:
+	pugi::xml_node newGlobalGroup();
 	void setViewBox(const Box &box);
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);

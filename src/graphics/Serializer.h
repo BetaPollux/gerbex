@@ -48,7 +48,7 @@ class Serializer {
 public:
 	Serializer() = default;
 	virtual ~Serializer() = default;
-	virtual pSerialItem NewGroup() = 0;
+	virtual pSerialItem NewGroup(pSerialItem parent) = 0;
 	virtual pSerialItem NewMask(const Box &box) = 0;
 	virtual void SetMask(pSerialItem target, pSerialItem mask) = 0;
 	virtual pSerialItem AddArc(pSerialItem target, double width,

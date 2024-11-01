@@ -36,14 +36,27 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 }
 
 void Macro::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
-	//TODO need to overhaul serializer
-	// Macro ON -> add shape to SVG with a mask= attribute, color is specified dark fill
-	// Macro OFF -> add shape to <mask>, should be black
-	// <mask> applies to elements already created, one macro can have multiple masks
-	// Each <mask> needs a unique name
-	// the <mask> must have a white rect background, based on Macro box
+	pSerialItem macro = serializer.NewGroup(target);
+	pSerialItem on = serializer.NewGroup(macro);
+	pSerialItem off;
+	Box box = GetBox().Translate(origin);
+	MacroExposure lastExposure = MacroExposure::ON;
 	for (std::shared_ptr<MacroPrimitive> prim : m_primitives) {
-		prim->Serialize(serializer, target, origin);
+		pSerialItem primTarget;
+		if (prim->GetExposure() == MacroExposure::ON) {
+			if (lastExposure == MacroExposure::OFF) {
+				on = serializer.NewGroup(macro);
+			}
+			primTarget = on;
+		} else {
+			if (!off) {
+				off = serializer.NewMask(box);
+				serializer.SetMask(on, off);
+			}
+			primTarget = off;
+		}
+		prim->Serialize(serializer, primTarget, origin);
+		lastExposure = prim->GetExposure();
 	}
 }
 

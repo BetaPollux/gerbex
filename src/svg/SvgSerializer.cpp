@@ -103,12 +103,18 @@ void SvgSerializer::SetBackground(const std::string &color) {
 	m_bgColor = color;
 }
 
-pSerialItem SvgSerializer::NewGroup() {
+pSerialItem SvgSerializer::NewGroup(pSerialItem target) {
+	pugi::xml_node node = SvgItem::GetNode(target);
+	pugi::xml_node group = node.append_child("g");
+	return std::make_shared<SvgItem>(group);
+}
+
+pugi::xml_node SvgSerializer::newGlobalGroup() {
 	pugi::xml_node group = m_svg.append_child("g");
 	group.append_attribute("fill") = m_fgColor.c_str();
 	group.append_attribute("stroke") = m_fgColor.c_str();
 	group.append_attribute("stroke-width") = 0;
-	return std::make_shared<SvgItem>(group);
+	return group;
 }
 
 pSerialItem SvgSerializer::NewMask(const Box &box) {
@@ -232,7 +238,7 @@ pSerialItem SvgSerializer::GetTarget(Polarity polarity) {
 	pSerialItem target;
 	if (polarity == Polarity::Dark()) {
 		if (!m_lastGroup || m_polarity == Polarity::Clear()) {
-			m_lastGroup = NewGroup();
+			m_lastGroup = std::make_shared<SvgItem>(newGlobalGroup());
 		}
 		target = m_lastGroup;
 	} else {
