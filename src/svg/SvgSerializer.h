@@ -23,6 +23,7 @@
 
 #include "Box.h"
 #include "GraphicalObject.h"
+#include "Point.h"
 #include "Serializer.h"
 #include <string>
 #include <vector>
@@ -61,7 +62,7 @@ private:
  */
 class SvgSerializer: public Serializer {
 public:
-	SvgSerializer(const Box &viewBox);
+	SvgSerializer(const Box &viewBox, double scaling = 1000.0);
 	virtual ~SvgSerializer() = default;
 	void SetViewPort(int width, int height);
 	void SaveFile(const std::string &path);
@@ -82,23 +83,28 @@ public:
 	pSerialItem GetTarget(Polarity polarity) override;
 
 private:
+	FixedPointType scaleValue(double value) const;
+	FixedPoint scalePoint(const Point &point) const;
+	FixedBox scaleBox(const Box &box) const;
 	pugi::xml_node newGlobalGroup();
-	pugi::xml_node newGlobalMask(const Box &box);
-	pugi::xml_node newMask(pugi::xml_node parent, const Box &box);
-	void setViewBox(const Box &box);
+	pugi::xml_node newGlobalMask(const FixedBox &box);
+	pugi::xml_node newMask(pugi::xml_node parent, const FixedBox &box);
+	void setViewBox(const FixedBox &box);
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	void setBox(pugi::xml_node node, const Box &box) const;
+	void setBox(pugi::xml_node node, const FixedBox &box) const;
 	void setMask(pugi::xml_node target, pugi::xml_node mask) const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 	pugi::xml_node m_defs;
 	std::string m_fgColor;
 	int m_maskCounter;
-	Box m_viewBox;
+	double m_scaling;
+	FixedBox m_viewBox;
 	pugi::xml_node m_lastGroup;
 	pugi::xml_node m_lastMask;
 	Polarity m_polarity;
+
 };
 
 } /* namespace gerbex */

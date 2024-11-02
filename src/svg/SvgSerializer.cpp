@@ -37,7 +37,7 @@ namespace gerbex {
 //		bottom 	-> max y
 //		top 	-> -1 * min y
 
-SvgSerializer::SvgSerializer(const Box &viewBox) {
+SvgSerializer::SvgSerializer(const Box &viewBox, double scaling) {
 	m_svg = m_doc.append_child("svg");
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
 	m_defs = m_svg.append_child("defs");
@@ -45,7 +45,8 @@ SvgSerializer::SvgSerializer(const Box &viewBox) {
 	m_maskCounter = 0;
 	m_lastGroup = pugi::xml_node();
 	m_lastMask = pugi::xml_node();
-	m_viewBox = viewBox;
+	m_scaling = scaling;
+	m_viewBox = scaleBox(viewBox);
 	m_polarity = Polarity::Dark;
 }
 
@@ -54,10 +55,10 @@ void SvgSerializer::SetViewPort(int width, int height) {
 	m_svg.append_attribute("height") = height;
 }
 
-void SvgSerializer::setViewBox(const Box &box) {
+void SvgSerializer::setViewBox(const FixedBox &box) {
 	std::stringstream box_stream;
 	box_stream << box.GetLeft() << " ";
-	box_stream << -box.GetTop() << " ";
+	box_stream << box.GetBottom() << " ";
 	box_stream << box.GetWidth() << " ";
 	box_stream << box.GetHeight();
 	m_svg.remove_attribute("viewBox");
@@ -71,8 +72,9 @@ void SvgSerializer::SaveFile(const std::string &path) {
 
 std::string SvgSerializer::makePathArc(const ArcSegment &segment) {
 	//TODO solve for arc flags
-	double radius = segment.GetStart().Distance(segment.GetCenter());
-	Point e = segment.GetEnd();
+	FixedPointType radius = scaleValue(
+			segment.GetStart().Distance(segment.GetCenter()));
+	FixedPoint e = scalePoint(segment.GetEnd());
 	double rot = 0.0;
 	int large_arc_flag = 0;
 	int sweep_flag =
@@ -80,14 +82,14 @@ std::string SvgSerializer::makePathArc(const ArcSegment &segment) {
 	std::stringstream d;
 	d << "A " << radius << " " << radius << " ";
 	d << rot << " " << large_arc_flag << " " << sweep_flag << " ";
-	d << e.GetX() << " " << -e.GetY() << " ";
+	d << e.GetX() << " " << e.GetY() << " ";
 	return d.str();
 }
 
 std::string SvgSerializer::makePathLine(const Segment &segment) {
-	Point e = segment.GetEnd();
+	FixedPoint e = scalePoint(segment.GetEnd());
 	std::stringstream d;
-	d << "L " << e.GetX() << " " << -e.GetY() << " ";
+	d << "L " << e.GetX() << " " << e.GetY() << " ";
 	return d.str();
 }
 
@@ -114,7 +116,8 @@ pugi::xml_node SvgSerializer::newGlobalGroup() {
 	return group;
 }
 
-pugi::xml_node SvgSerializer::newMask(pugi::xml_node parent, const Box &box) {
+pugi::xml_node SvgSerializer::newMask(pugi::xml_node parent,
+		const FixedBox &box) {
 	pugi::xml_node mask = parent.append_child("mask");
 	std::string maskId = "mask" + std::to_string(m_maskCounter);
 	m_maskCounter++;
@@ -131,11 +134,11 @@ pSerialItem SvgSerializer::NewMask(const Box &box) {
 	if (maskGroup.empty()) {
 		maskGroup = m_defs.append_child(groupName);
 	}
-	pugi::xml_node mask = newMask(maskGroup, box);
+	pugi::xml_node mask = newMask(maskGroup, scaleBox(box));
 	return std::make_shared<SvgItem>(mask);
 }
 
-pugi::xml_node SvgSerializer::newGlobalMask(const Box &box) {
+pugi::xml_node SvgSerializer::newGlobalMask(const FixedBox &box) {
 	pugi::xml_node mask = newMask(m_defs, box);
 
 	std::string id = mask.attribute("id").as_string();
@@ -158,23 +161,23 @@ pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
 		const ArcSegment &segment) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	if (segment.IsCircle()) {
-		Point c = segment.GetCenter();
+		FixedPoint c = scalePoint(segment.GetCenter());
 		pugi::xml_node circle = node.append_child("circle");
 		circle.append_attribute("r") = segment.GetRadius();
 		circle.append_attribute("cx") = c.GetX();
-		circle.append_attribute("cy") = -c.GetY();
+		circle.append_attribute("cy") = c.GetY();
 		circle.append_attribute("fill") = "none";
-		circle.append_attribute("stroke-width") = width;
+		circle.append_attribute("stroke-width") = scaleValue(width);
 		return std::make_shared<SvgItem>(circle);
 	} else {
-		Point s = segment.GetStart();
+		FixedPoint s = scalePoint(segment.GetStart());
 		std::stringstream d;
-		d << "M " << s.GetX() << " " << -s.GetY() << " ";
+		d << "M " << s.GetX() << " " << s.GetY() << " ";
 		d << makePathArc(segment);
 		pugi::xml_node path = node.append_child("path");
 		path.append_attribute("d") = d.str().c_str();
 		path.append_attribute("fill") = "none";
-		path.append_attribute("stroke-width") = width;
+		path.append_attribute("stroke-width") = scaleValue(width);
 		path.append_attribute("stroke-linecap") = "round";
 		return std::make_shared<SvgItem>(path);
 	}
@@ -184,9 +187,10 @@ pSerialItem SvgSerializer::AddCircle(pSerialItem target, double radius,
 		const Point &center) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	pugi::xml_node circle = node.append_child("circle");
-	circle.append_attribute("r") = radius;
-	circle.append_attribute("cx") = center.GetX();
-	circle.append_attribute("cy") = -center.GetY();
+	FixedPoint c = scalePoint(center);
+	circle.append_attribute("r") = scaleValue(radius);
+	circle.append_attribute("cx") = c.GetX();
+	circle.append_attribute("cy") = c.GetY();
 	return std::make_shared<SvgItem>(circle);
 }
 
@@ -195,9 +199,9 @@ pSerialItem SvgSerializer::AddContour(pSerialItem target,
 	pugi::xml_node node = SvgItem::GetNode(target);
 	const std::vector<std::shared_ptr<Segment>> segments =
 			contour.GetSegments();
-	Point s = segments[0]->GetStart();
+	FixedPoint s = scalePoint(segments[0]->GetStart());
 	std::stringstream d;
-	d << "M " << s.GetX() << " " << -s.GetY() << " ";
+	d << "M " << s.GetX() << " " << s.GetY() << " ";
 	for (std::shared_ptr<Segment> segment : segments) {
 		std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<ArcSegment>(
 				segment);
@@ -215,15 +219,16 @@ pSerialItem SvgSerializer::AddContour(pSerialItem target,
 pSerialItem SvgSerializer::AddDraw(pSerialItem target, double width,
 		const Segment &segment) {
 	pugi::xml_node node = SvgItem::GetNode(target);
-	Point s = segment.GetStart();
-	Point e = segment.GetEnd();
+	FixedPoint s = scalePoint(segment.GetStart());
+	FixedPoint e = scalePoint(segment.GetEnd());
 	pugi::xml_node line = node.append_child("line");
 	line.append_attribute("stroke-linecap") = "round";
-	line.append_attribute("stroke-width") = std::to_string(width).c_str();
+	line.append_attribute("stroke-width") =
+			std::to_string(scaleValue(width)).c_str();
 	line.append_attribute("x1") = s.GetX();
-	line.append_attribute("y1") = -s.GetY();
+	line.append_attribute("y1") = s.GetY();
 	line.append_attribute("x2") = e.GetX();
-	line.append_attribute("y2") = -e.GetY();
+	line.append_attribute("y2") = e.GetY();
 	return std::make_shared<SvgItem>(line);
 }
 
@@ -232,8 +237,9 @@ pSerialItem SvgSerializer::AddPolygon(pSerialItem target,
 	pugi::xml_node node = SvgItem::GetNode(target);
 	pugi::xml_node poly = node.append_child("polygon");
 	std::stringstream pts_stream;
-	for (auto pt : points) {
-		pts_stream << pt.GetX() << "," << -pt.GetY() << " ";
+	for (const Point &point : points) {
+		FixedPoint p = scalePoint(point);
+		pts_stream << p.GetX() << "," << p.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
 	return std::make_shared<SvgItem>(poly);
@@ -253,14 +259,14 @@ void SvgSerializer::setMask(pugi::xml_node target, pugi::xml_node mask) const {
 	target.append_attribute("mask") = maskAttr.c_str();
 }
 
-void SvgSerializer::setBox(pugi::xml_node node, const Box &box) const {
+void SvgSerializer::setBox(pugi::xml_node node, const FixedBox &box) const {
 	node.remove_attribute("x");
 	node.remove_attribute("y");
 	node.remove_attribute("width");
 	node.remove_attribute("height");
 
 	node.append_attribute("x") = box.GetLeft();
-	node.append_attribute("y") = -box.GetTop();
+	node.append_attribute("y") = box.GetBottom();
 	node.append_attribute("width") = box.GetWidth();
 	node.append_attribute("height") = box.GetHeight();
 }
@@ -281,6 +287,22 @@ pSerialItem SvgSerializer::GetTarget(Polarity polarity) {
 	}
 	m_polarity = polarity;
 	return std::make_shared<SvgItem>(target);
+}
+
+FixedPointType SvgSerializer::scaleValue(double value) const {
+	return std::round(m_scaling * value);
+}
+
+FixedPoint SvgSerializer::scalePoint(const Point &point) const {
+	return FixedPoint(std::round(m_scaling * point.GetX()),
+			std::round(-m_scaling * point.GetY()));
+}
+
+FixedBox SvgSerializer::scaleBox(const Box &box) const {
+	Box scaled = box * m_scaling;
+	return FixedBox(std::round(scaled.GetWidth()),
+			std::round(scaled.GetHeight()), std::round(scaled.GetLeft()),
+			std::round(-scaled.GetTop()));
 }
 
 } /* namespace gerbex */

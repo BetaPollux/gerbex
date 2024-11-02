@@ -50,7 +50,7 @@ Box::Box(const std::vector<Point> &points) {
 	*this = Box(right - left, top - bottom, left, bottom);
 }
 
-Box::Box(double diameter, const Point& center) {
+Box::Box(double diameter, const Point &center) {
 	double r = 0.5 * diameter;
 	*this = Box(diameter, diameter, center.GetX() - r, center.GetY() - r);
 }
@@ -119,6 +119,32 @@ std::ostream& operator<<(std::ostream &os, const Box &box) {
 	os << box.m_width << " x " << box.m_height << " at (" << box.m_left << ","
 			<< box.m_bottom << ")";
 	return os;
+}
+
+Box Box::operator *(double factor) const {
+	return Box(m_width * factor, m_height * factor, m_left * factor,
+			m_bottom * factor);
+}
+
+Box Box::operator /(double factor) const {
+	return Box(m_width / factor, m_height / factor, m_left / factor,
+			m_bottom / factor);
+}
+
+Box& Box::operator *=(double factor) {
+	m_width *= factor;
+	m_height *= factor;
+	m_left *= factor;
+	m_bottom *= factor;
+	return *this;
+}
+
+Box& Box::operator /=(double factor) {
+	m_width /= factor;
+	m_height /= factor;
+	m_left /= factor;
+	m_bottom /= factor;
+	return *this;
 }
 
 } /* namespace gerbex */
