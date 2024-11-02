@@ -189,7 +189,7 @@ void CommandHandler::ApertureTransformations(CommandsProcessor &processor,
 		std::string option = match[2].str();
 		GraphicsState &state = processor.GetGraphicsState();
 		if (param == "P") {
-			Polarity polarity = Polarity::FromCommand(option);
+			Polarity polarity = GraphicalObject::PolarityFromCommand(option);
 			state.SetPolarity(polarity);
 		} else if (param == "M") {
 			Mirroring mirroring = Transform::MirroringFromCommand(option);

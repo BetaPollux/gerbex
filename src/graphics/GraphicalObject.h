@@ -21,14 +21,19 @@
 #ifndef GRAPHICALOBJECT_H_
 #define GRAPHICALOBJECT_H_
 
-#include "Box.h"
-#include "Polarity.h"
-#include "Serializer.h"
 #include <memory>
+#include <stdexcept>
 
 namespace gerbex {
 
+class Box;
 class Point;
+class Serializer;
+class Transform;
+
+enum class Polarity {
+	Dark, Clear
+};
 
 /*
  * Represents a plane figure that can be serialized.
@@ -36,20 +41,29 @@ class Point;
 class GraphicalObject {
 public:
 	GraphicalObject() :
-			m_polarity { Polarity::Dark() } {
+			m_polarity { Polarity::Dark } {
 	}
 	virtual ~GraphicalObject() = default;
 	virtual void Translate(const Point &offset) = 0;
 	virtual void ApplyTransform(const Transform &transform) = 0;
 	virtual std::unique_ptr<GraphicalObject> Clone() = 0;
-	virtual void Serialize(Serializer &serializer, pSerialItem target,
+	virtual void Serialize(Serializer &serializer,
 			const Point &origin) const = 0;
 	virtual Box GetBox() const = 0;
 	Polarity GetPolarity() const {
 		return m_polarity;
 	}
-	void SetPolarity(Polarity polarity) {
+	virtual void SetPolarity(Polarity polarity) {
 		m_polarity = polarity;
+	}
+	static Polarity PolarityFromCommand(const std::string &str) {
+		if (str == "C") {
+			return Polarity::Clear;
+		} else if (str == "D") {
+			return Polarity::Dark;
+		} else {
+			throw std::invalid_argument("invalid polarity");
+		}
 	}
 
 protected:

@@ -221,12 +221,12 @@ TEST(CommandsProcessor_Flash, Aperture) {
 TEST(CommandsProcessor_Flash, Polarity) {
 	mock().ignoreOtherCalls();
 
-	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear);
 	processor.Flash(origin);
 
 	std::shared_ptr<Flash> flash = GetGraphicalObject<Flash>(
 			processor.GetObjects());
-	CHECK(flash->GetPolarity() == Polarity::Clear());
+	CHECK(flash->GetPolarity() == Polarity::Clear);
 }
 
 TEST(CommandsProcessor_Flash, Transform) {
@@ -326,12 +326,12 @@ TEST(CommandsProcessor_PlotDraw, Aperture) {
 TEST(CommandsProcessor_PlotDraw, Polarity) {
 	mock().ignoreOtherCalls();
 
-	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear);
 	processor.PlotDraw(end);
 
 	std::shared_ptr<Draw> draw = GetGraphicalObject<Draw>(
 			processor.GetObjects());
-	CHECK(draw->GetPolarity() == Polarity::Clear());
+	CHECK(draw->GetPolarity() == Polarity::Clear);
 }
 
 TEST(CommandsProcessor_PlotDraw, Transform) {
@@ -467,11 +467,11 @@ TEST(CommandsProcessor_PlotArc, Aperture) {
 TEST(CommandsProcessor_PlotArc, Polarity) {
 	mock().ignoreOtherCalls();
 
-	processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+	processor.GetGraphicsState().SetPolarity(Polarity::Clear);
 	processor.PlotArc(end, offset);
 
 	std::shared_ptr<Arc> arc = GetGraphicalObject<Arc>(processor.GetObjects());
-	CHECK(arc->GetPolarity() == Polarity::Clear());
+	CHECK(arc->GetPolarity() == Polarity::Clear);
 }
 
 TEST(CommandsProcessor_PlotArc, Transform) {
@@ -572,7 +572,7 @@ TEST_GROUP(CommandsProcessor_AfterRegion) {
 		mock().ignoreOtherCalls();
 
 		processor.GetGraphicsState().SetPlotState(PlotState::Linear);
-		processor.GetGraphicsState().SetPolarity(Polarity::Clear());
+		processor.GetGraphicsState().SetPolarity(Polarity::Clear);
 		processor.StartRegion();
 		processor.Move(origin);
 		processor.PlotDraw(mid);
@@ -609,7 +609,7 @@ TEST(CommandsProcessor_AfterRegion, TakesPolarity) {
 	std::shared_ptr<Region> region = GetGraphicalObject<Region>(
 			processor.GetObjects());
 
-	CHECK(Polarity::Clear() == region->GetPolarity());
+	CHECK(Polarity::Clear == region->GetPolarity());
 }
 
 /***

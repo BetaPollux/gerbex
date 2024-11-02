@@ -46,7 +46,7 @@ SvgSerializer::SvgSerializer(const Box &viewBox) {
 	m_lastGroup = pugi::xml_node();
 	m_lastMask = pugi::xml_node();
 	m_viewBox = viewBox;
-	m_polarity = Polarity::Dark();
+	m_polarity = Polarity::Dark;
 }
 
 void SvgSerializer::SetViewPort(int width, int height) {
@@ -267,13 +267,13 @@ void SvgSerializer::setBox(pugi::xml_node node, const Box &box) const {
 
 pSerialItem SvgSerializer::GetTarget(Polarity polarity) {
 	pugi::xml_node target;
-	if (polarity == Polarity::Dark()) {
-		if (!m_lastGroup || m_polarity == Polarity::Clear()) {
+	if (polarity == Polarity::Dark) {
+		if (!m_lastGroup || m_polarity == Polarity::Clear) {
 			m_lastGroup = newGlobalGroup();
 		}
 		target = m_lastGroup;
 	} else {
-		if (!m_lastMask || m_polarity == Polarity::Dark()) {
+		if (!m_lastMask || m_polarity == Polarity::Dark) {
 			m_lastMask = newGlobalMask(m_viewBox);
 			setMask(m_lastGroup, m_lastMask);
 		}

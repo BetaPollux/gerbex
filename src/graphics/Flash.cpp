@@ -35,7 +35,7 @@ Flash::Flash(const Point &origin, std::shared_ptr<Aperture> aperture) :
 	// Empty
 }
 
-void Flash::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
+void Flash::Serialize(Serializer &serializer, const Point &origin) const {
 	pSerialItem dest = serializer.GetTarget(m_polarity);
 	m_aperture->Serialize(serializer, dest, m_origin + origin);
 }

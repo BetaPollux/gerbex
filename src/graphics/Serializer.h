@@ -21,7 +21,7 @@
 #ifndef SERIALIZER_H_
 #define SERIALIZER_H_
 
-#include "Polarity.h"
+#include "GraphicalObject.h"
 #include <memory>
 #include <string>
 #include <vector>

@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Point.h"
 #include "Serializer.h"
 #include "StepAndRepeat.h"
 #include <stdexcept>

@@ -37,7 +37,7 @@ public:
 	Arc();
 	Arc(const ArcSegment &segment, std::shared_ptr<Aperture> aperture);
 	virtual ~Arc() = default;
-	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	double GetDrawWidth() const;
 	const ArcSegment& GetSegment() const;
 	Box GetBox() const override;

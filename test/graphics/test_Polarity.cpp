@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Polarity.h"
+#include "GraphicalObject.h".h"
 #include "CppUTest/TestHarness.h"
 
 namespace gerbex {
@@ -27,9 +27,10 @@ TEST_GROUP(Polarity) {
 };
 
 TEST(Polarity, PolarityFromCommand) {
-	CHECK(Polarity::Clear == Polarity::FromCommand("C"));
-	CHECK(Polarity::Dark == Polarity::FromCommand("D"));
-	CHECK_THROWS(std::invalid_argument, Polarity::FromCommand("Q"));
+	CHECK(Polarity::Clear == GraphicalObject::PolarityFromCommand("C"));
+	CHECK(Polarity::Dark == GraphicalObject::PolarityFromCommand("D"));
+	CHECK_THROWS(std::invalid_argument,
+			GraphicalObject::PolarityFromCommand("Q"));
 }
 
 } /* namespace gerbex */

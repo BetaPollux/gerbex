@@ -36,7 +36,7 @@ public:
 	Draw();
 	Draw(const Segment &segment, std::shared_ptr<Aperture> aperture);
 	virtual ~Draw() = default;
-	void Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const override;
+	void Serialize(Serializer &serializer, const Point &origin) const override;
 	double GetDrawWidth() const;
 	const Segment& GetSegment() const;
 	Box GetBox() const override;
