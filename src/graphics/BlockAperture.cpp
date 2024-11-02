@@ -34,7 +34,6 @@ std::vector<std::shared_ptr<GraphicalObject>>* BlockAperture::GetObjectList() {
 
 void BlockAperture::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
 	(void)target;
-	//TODO need to handle toggle polarity of children when used in a Clear flash
 	for (auto obj : m_objects) {
 		obj->Serialize(serializer, origin);
 	}
@@ -49,16 +48,6 @@ Box BlockAperture::GetBox() const {
 		box = box.Extend(obj->GetBox());
 	}
 	return box;
-}
-
-bool BlockAperture::operator ==(const BlockAperture &rhs) const {
-	//TODO operator== is not practical for block
-	return GetObjectCount() == rhs.GetObjectCount() && GetBox() == rhs.GetBox();
-}
-
-bool BlockAperture::operator !=(const BlockAperture &rhs) const {
-	//TODO operator!= is not practical for block
-	return GetObjectCount() != rhs.GetObjectCount() || GetBox() != rhs.GetBox();
 }
 
 size_t BlockAperture::GetObjectCount() const {

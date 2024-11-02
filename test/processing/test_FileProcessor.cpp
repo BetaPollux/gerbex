@@ -31,10 +31,8 @@
 #include "MacroThermal.h"
 #include <fstream>
 #include <sstream>
-#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
-
-#define DBL_TOL	1e-5
+#include "../graphics/GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

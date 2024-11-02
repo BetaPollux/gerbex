@@ -35,8 +35,6 @@ class BlockAperture: public Aperture {
 public:
 	BlockAperture() = default;
 	virtual ~BlockAperture() = default;
-	bool operator==(const BlockAperture &rhs) const;
-	bool operator!=(const BlockAperture &rhs) const;
 	void AddObject(std::shared_ptr<GraphicalObject> object);
 	std::vector<std::shared_ptr<GraphicalObject>> *GetObjectList();
 	size_t GetObjectCount() const;

@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "BlockAperture.h"
 #include "Circle.h"
 #include "Flash.h"
 #include "Serializer.h"
@@ -63,6 +64,17 @@ std::unique_ptr<GraphicalObject> Flash::Clone() {
 
 void Flash::Translate(const Point &offset) {
 	m_origin += offset;
+}
+
+void Flash::SetPolarity(Polarity polarity) {
+	GraphicalObject::SetPolarity(polarity);
+	std::shared_ptr<BlockAperture> block = std::dynamic_pointer_cast<
+			BlockAperture>(m_aperture);
+	if (block && polarity == Polarity::Clear) {
+		for (auto obj : *block->GetObjectList()) {
+			obj->TogglePolarity();
+		}
+	}
 }
 
 } /* namespace gerbex */

@@ -18,9 +18,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GraphicsStringFrom.h"
 #include "Segment.h"
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

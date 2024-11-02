@@ -18,14 +18,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GraphicsStringFrom.h"
 #include "MacroVectorLine.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
-
-#define DBL_TOL 1e-5
 
 TEST_GROUP(MacroVectorLineTest) {
 };

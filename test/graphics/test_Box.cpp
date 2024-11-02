@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Box.h"
-#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 #define DBL_TOL	1e-9
 

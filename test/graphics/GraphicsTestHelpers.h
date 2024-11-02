@@ -1,5 +1,5 @@
 /*
- * StringFrom.h
+ * GraphicsTestHelpers.h
  *
  *  Created on: Oct. 12, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICSSTRINGFROM_H_
-#define GRAPHICSSTRINGFROM_H_
+#ifndef GRAPHICSTESTHELPERS_H_
+#define GRAPHICSTESTHELPERS_H_
 
 #include "BlockAperture.h"
 #include "Box.h"
@@ -40,4 +40,7 @@ SimpleString StringFrom(const gerbex::Polygon &polygon);
 SimpleString StringFrom(const gerbex::Rectangle &rectangle);
 SimpleString StringFrom(const gerbex::Transform &transform);
 
-#endif /* GRAPHICSSTRINGFROM_H_ */
+bool operator ==(const gerbex::BlockAperture &lhs, const gerbex::BlockAperture &rhs);
+bool operator !=(const gerbex::BlockAperture &lhs, const gerbex::BlockAperture &rhs);
+
+#endif /* GRAPHICSTESTHELPERS_H_ */

@@ -21,8 +21,8 @@
 #include <stdexcept>
 
 #include "GraphicsState.h"
-#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
+#include "../graphics/GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

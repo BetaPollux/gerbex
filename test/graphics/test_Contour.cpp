@@ -20,23 +20,26 @@
 
 #include "Circle.h"
 #include "Contour.h"
+#include "GraphicsTestHelpers.h"
 #include <memory>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 
 using namespace gerbex;
 
-
 TEST_GROUP(ContourTest) {
+	Contour contour;
+
+	void setup() {
+		contour = Contour();
+	}
 };
 
 TEST(ContourTest, Initial) {
-	Contour contour;
 	LONGS_EQUAL(0, contour.GetSegments().size());
 }
 
 TEST(ContourTest, AddSegment) {
-	Contour contour;
 	std::shared_ptr<Segment> segment = std::make_shared<Segment>(Point(0, 0),
 			Point(0, 100));
 
@@ -47,8 +50,6 @@ TEST(ContourTest, AddSegment) {
 }
 
 TEST(ContourTest, AddSegment_ZeroLength) {
-	Contour contour;
-
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(0, 0);
 
@@ -57,13 +58,10 @@ TEST(ContourTest, AddSegment_ZeroLength) {
 }
 
 TEST(ContourTest, IsClosed_Empty) {
-	Contour contour;
 	CHECK(!contour.IsClosed());
 }
 
 TEST(ContourTest, IsClosed_TwoSegments) {
-	Contour contour;
-
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
 
@@ -74,52 +72,62 @@ TEST(ContourTest, IsClosed_TwoSegments) {
 	CHECK(!contour.IsClosed());
 }
 
-TEST(ContourTest, IsClosed_Triangle) {
+TEST_GROUP(Contour_Triangle) {
 	Contour contour;
+	Point pt1, pt2, pt3;
 
-	Point pt1 = Point(0, 0);
-	Point pt2 = Point(100, 0);
-	Point pt3 = Point(50, 100);
+	void setup() {
+		pt1 = Point(0, 0);
+		pt2 = Point(100, 0);
+		pt3 = Point(50, 100);
 
-	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Segment>(pt2, pt3));
-	contour.AddSegment(std::make_shared<Segment>(pt3, pt1));
+		contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
+		contour.AddSegment(std::make_shared<Segment>(pt2, pt3));
+		contour.AddSegment(std::make_shared<Segment>(pt3, pt1));
+	}
+};
 
-	LONGS_EQUAL(3, contour.GetSegments().size());
+TEST(Contour_Triangle, IsClosed) {
 	CHECK(contour.IsClosed());
 }
 
-TEST(ContourTest, IsClosed_Triangle_OpenEnd) {
-	Contour contour;
-
-	Point pt1 = Point(0, 0);
-	Point pt2 = Point(100, 0);
-	Point pt3 = Point(50, 100);
+TEST(Contour_Triangle, OpenEnd) {
 	Point pt4 = Point(5, 5);
 
-	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Segment>(pt2, pt3));
 	contour.AddSegment(std::make_shared<Segment>(pt3, pt4));
 
-	LONGS_EQUAL(3, contour.GetSegments().size());
 	CHECK(!contour.IsClosed());
 }
 
-TEST(ContourTest, IsClosed_Triangle_OpenTop) {
-	Contour contour;
+TEST(Contour_Triangle, Translate) {
+	Point offset(-10, 20);
+	contour.Translate(offset);
 
-	Point pt1 = Point(0, 0);
-	Point pt2 = Point(100, 0);
-	Point pt3 = Point(105, 0);
-	Point pt4 = Point(50, 100);
-
-	contour.AddSegment(std::make_shared<Segment>(pt1, pt2));
-	contour.AddSegment(std::make_shared<Segment>(pt3, pt4));
-	contour.AddSegment(std::make_shared<Segment>(pt4, pt1));
-
-	LONGS_EQUAL(3, contour.GetSegments().size());
-	CHECK(!contour.IsClosed());
+	CHECK_EQUAL(pt1 + offset, contour.GetSegments()[0]->GetStart());
+	CHECK_EQUAL(pt2 + offset, contour.GetSegments()[1]->GetStart());
+	CHECK_EQUAL(pt3 + offset, contour.GetSegments()[2]->GetStart());
 }
 
-//TODO test translate, transform
+TEST(Contour_Triangle, Transform) {
+	Transform transform(Mirroring::X, 45.0, 0.8);
+	pt1.ApplyTransform(transform);
+	pt2.ApplyTransform(transform);
+	pt3.ApplyTransform(transform);
+
+	contour.Transform(transform);
+
+	CHECK_EQUAL(pt1, contour.GetSegments()[0]->GetStart());
+	CHECK_EQUAL(pt2, contour.GetSegments()[1]->GetStart());
+	CHECK_EQUAL(pt3, contour.GetSegments()[2]->GetStart());
+}
+
+TEST(Contour_Triangle, DeepCopy) {
+	Point offset(-10, 20);
+
+	Contour copy = contour;
+	copy.Translate(offset);
+
+	CHECK_EQUAL(pt1 + offset, copy.GetSegments()[0]->GetStart());
+	CHECK_EQUAL(pt1, contour.GetSegments()[0]->GetStart());
+}
 

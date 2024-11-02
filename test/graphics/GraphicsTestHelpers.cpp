@@ -1,5 +1,5 @@
 /*
- * GraphicsStringFrom.cpp
+ * GraphicsTestHelpers.cpp
  *
  *  Created on: Oct. 12, 2024
  *	Copyright (C) 2024 BetaPollux
@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GraphicsStringFrom.h"
+#include "GraphicsTestHelpers.h"
 
 SimpleString StringFrom(const gerbex::BlockAperture &block) {
 	return StringFromFormat("%ld objects", block.GetObjectCount())
@@ -69,3 +69,16 @@ SimpleString StringFrom(const gerbex::Transform &transform) {
 	return StringFromFormat("%d, %f, %f", (int) transform.GetMirroring(),
 			transform.GetRotation(), transform.GetScaling());
 }
+
+bool operator ==(const gerbex::BlockAperture &lhs,
+		const gerbex::BlockAperture &rhs) {
+	return lhs.GetObjectCount() == rhs.GetObjectCount()
+			&& lhs.GetBox() == rhs.GetBox();
+}
+
+bool operator !=(const gerbex::BlockAperture &lhs,
+		const gerbex::BlockAperture &rhs) {
+	return lhs.GetObjectCount() != rhs.GetObjectCount()
+			|| lhs.GetBox() != rhs.GetBox();
+}
+

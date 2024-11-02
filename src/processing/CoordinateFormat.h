@@ -34,7 +34,7 @@ class CoordinateFormat {
 public:
 	CoordinateFormat();
 	CoordinateFormat(int integer, int decimal);
-	virtual ~CoordinateFormat();
+	virtual ~CoordinateFormat() = default;
 	bool operator==(const CoordinateFormat &rhs) const;
 	bool operator!=(const CoordinateFormat &rhs) const;
 	Point Convert(const FixedPoint &point) const;

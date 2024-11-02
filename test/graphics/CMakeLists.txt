@@ -1,5 +1,5 @@
 add_library(test_graphics OBJECT
-	GraphicsStringFrom.cpp
+	GraphicsTestHelpers.cpp
 	MockAperture.cpp
 	MockTemplate.cpp
 	test_Arc.cpp

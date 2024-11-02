@@ -20,9 +20,9 @@
 
 #include "MockAperture.h"
 #include "Flash.h"
-#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
 
@@ -79,3 +79,4 @@ TEST(FlashTest, Translate) {
 }
 
 //TODO test flash serialize
+//TODO test flash toggle block aperture polarities

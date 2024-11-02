@@ -21,6 +21,7 @@
 #include "FileProcessor.h"
 #include "SvgSerializer.h"
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -38,10 +39,20 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	std::string path = argv[1];
-	std::string svg_file = argc > 2 ? argv[2] : "gerber.svg";
+	std::filesystem::path gbr_file = argv[1];
+	std::filesystem::path svg_file;
+	if (argc > 2) {
+		svg_file = argv[2];
+	} else {
+		svg_file = gbr_file.stem();
+		svg_file += ".svg";
+	}
+	if (std::filesystem::exists(svg_file)) {
+		std::cerr << "file already exists: " << svg_file << std::endl;
+		return EXIT_FAILURE;
+	}
 
-	std::ifstream gerber = std::ifstream(path, std::ifstream::in);
+	std::ifstream gerber = std::ifstream(gbr_file, std::ifstream::in);
 	if (!gerber.good()) {
 		std::cerr << "failed to open file" << std::endl;
 		return EXIT_FAILURE;
@@ -52,13 +63,14 @@ int main(int argc, char *argv[]) {
 	std::cout << "Dimensions: " << box << std::endl;
 
 	SvgSerializer serializer(box.Pad(0.5));
+	serializer.SetViewPort(1000, 1000);
 	serializer.SetForeground("red");
 	serializer.SetBackground("black");
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();
 
-	for (std::shared_ptr<GraphicalObject> obj: objects) {
+	for (std::shared_ptr<GraphicalObject> obj : objects) {
 		obj->Serialize(serializer, Point());
 	}
 

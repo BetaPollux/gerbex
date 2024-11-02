@@ -26,13 +26,13 @@
 #include "Flash.h"
 #include "Region.h"
 #include "StepAndRepeat.h"
-#include "GraphicsStringFrom.h"
 #include "MockAperture.h"
 #include "MockTemplate.h"
 #include <array>
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
+#include "../graphics/GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

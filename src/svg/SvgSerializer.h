@@ -31,8 +31,6 @@
 
 namespace gerbex {
 
-//TODO scale numbers to be reasonable integers?
-
 class SvgItem: public SerialItem {
 public:
 	SvgItem() :

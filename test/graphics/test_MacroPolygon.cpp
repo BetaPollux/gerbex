@@ -18,10 +18,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GraphicsStringFrom.h"
 #include "MacroPolygon.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

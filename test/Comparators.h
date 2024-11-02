@@ -22,11 +22,11 @@
 #define COMPARATORS_H_
 
 #include "DataTypeParser.h"
+#include "GraphicsTestHelpers.h"
 #include "Point.h"
 #include "MacroTemplate.h"
 #include "Transform.h"
 #include <memory>
-#include "GraphicsStringFrom.h"
 #include "CppUTestExt/MockSupport.h"
 
 using namespace gerbex;

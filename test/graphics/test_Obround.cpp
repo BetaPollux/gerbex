@@ -19,9 +19,9 @@
  */
 
 #include "Obround.h"
-#include "GraphicsStringFrom.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 #define DBL_TOL	1e-9
 

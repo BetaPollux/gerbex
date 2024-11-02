@@ -19,6 +19,7 @@
  */
 
 #include "CoordinateFormat.h"
+#include <cmath>
 #include <regex>
 #include <stdexcept>
 #include <iostream>
@@ -33,23 +34,13 @@ CoordinateFormat::CoordinateFormat() :
 CoordinateFormat::CoordinateFormat(int integer, int decimal) :
 		m_integer { integer }, m_decimal { decimal } {
 	if (integer < 1 || integer > 6) {
-		throw std::invalid_argument("Integer must be from 1 to 6.");
+		throw std::invalid_argument("integer must be from 1 to 6");
 	}
 
-	switch (m_decimal) {
-	case 5:
-		m_resolution = 1e-5;
-		break;
-	case 6:
-		m_resolution = 1e-6;
-		break;
-	default:
-		throw std::invalid_argument("Decimal must be either 5 or 6.");
+	if (decimal < 3 || decimal > 6) {
+		throw std::invalid_argument("decimal must be between 3 and 6");
 	}
-}
-
-CoordinateFormat::~CoordinateFormat() {
-	// Empty
+	m_resolution = std::pow(10, -decimal);
 }
 
 int CoordinateFormat::GetInteger() const {

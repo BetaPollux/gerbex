@@ -37,7 +37,7 @@ TEST(CoordinateFormatTest, IntegerTooLarge) {
 }
 
 TEST(CoordinateFormatTest, DecimalTooSmall) {
-	CHECK_THROWS(std::invalid_argument, CoordinateFormat(3, 4));
+	CHECK_THROWS(std::invalid_argument, CoordinateFormat(3, 2));
 }
 
 TEST(CoordinateFormatTest, DecimalTooLarge) {

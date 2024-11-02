@@ -163,7 +163,7 @@ pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
 	if (segment.IsCircle()) {
 		FixedPoint c = scalePoint(segment.GetCenter());
 		pugi::xml_node circle = node.append_child("circle");
-		circle.append_attribute("r") = segment.GetRadius();
+		circle.append_attribute("r") = scaleValue(segment.GetRadius());
 		circle.append_attribute("cx") = c.GetX();
 		circle.append_attribute("cy") = c.GetY();
 		circle.append_attribute("fill") = "none";

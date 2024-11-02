@@ -53,6 +53,13 @@ public:
 	Polarity GetPolarity() const {
 		return m_polarity;
 	}
+	void TogglePolarity() {
+		if (m_polarity == Polarity::Dark) {
+			m_polarity = Polarity::Clear;
+		} else {
+			m_polarity = Polarity::Dark;
+		}
+	}
 	virtual void SetPolarity(Polarity polarity) {
 		m_polarity = polarity;
 	}

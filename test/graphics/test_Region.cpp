@@ -19,10 +19,10 @@
  */
 
 #include "ArcSegment.h"
-#include "GraphicsStringFrom.h"
 #include "Region.h"
 #include <stdexcept>
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
 

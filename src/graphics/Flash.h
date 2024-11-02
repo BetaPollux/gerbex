@@ -43,6 +43,7 @@ public:
 	void ApplyTransform(const Transform &transform) override;
 	std::unique_ptr<GraphicalObject> Clone() override;
 	void Translate(const Point &offset) override;
+	void SetPolarity(Polarity polarity) override;
 
 private:
 	Point m_origin;

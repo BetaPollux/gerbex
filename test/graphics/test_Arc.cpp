@@ -20,8 +20,8 @@
 
 #include "Arc.h"
 #include "Rectangle.h"
-#include "GraphicsStringFrom.h"
 #include "CppUTest/TestHarness.h"
+#include "GraphicsTestHelpers.h"
 
 using namespace gerbex;
 
