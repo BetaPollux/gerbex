@@ -83,19 +83,21 @@ public:
 
 private:
 	pugi::xml_node newGlobalGroup();
+	pugi::xml_node newGlobalMask(const Box &box);
+	pugi::xml_node newMask(pugi::xml_node parent, const Box &box);
 	void setViewBox(const Box &box);
 	std::string makePathArc(const ArcSegment &segment);
 	std::string makePathLine(const Segment &segment);
-	void setBox(pugi::xml_node node, const Box &box);
+	void setBox(pugi::xml_node node, const Box &box) const;
+	void setMask(pugi::xml_node target, pugi::xml_node mask) const;
 	pugi::xml_document m_doc;
 	pugi::xml_node m_svg;
 	pugi::xml_node m_defs;
 	std::string m_fgColor;
-	std::string m_bgColor;
 	int m_maskCounter;
 	Box m_viewBox;
-	pSerialItem m_lastGroup;
-	pSerialItem m_lastMask;
+	pugi::xml_node m_lastGroup;
+	pugi::xml_node m_lastMask;
 	Polarity m_polarity;
 };
 

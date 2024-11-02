@@ -51,6 +51,7 @@ void Macro::Serialize(Serializer &serializer, pSerialItem target, const Point &o
 		} else {
 			if (!off) {
 				off = serializer.NewMask(box);
+				//TODO needs to apply to all previous macro groups
 				serializer.SetMask(on, off);
 			}
 			primTarget = off;

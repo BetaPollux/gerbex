@@ -22,6 +22,7 @@
 #include "Contour.h"
 #include "SvgSerializer.h"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -41,10 +42,9 @@ SvgSerializer::SvgSerializer(const Box &viewBox) {
 	m_svg.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
 	m_defs = m_svg.append_child("defs");
 	m_fgColor = "black";
-	m_bgColor = "";
 	m_maskCounter = 0;
-	m_lastGroup = nullptr;
-	m_lastMask = nullptr;
+	m_lastGroup = pugi::xml_node();
+	m_lastMask = pugi::xml_node();
 	m_viewBox = viewBox;
 	m_polarity = Polarity::Dark();
 }
@@ -66,10 +66,6 @@ void SvgSerializer::setViewBox(const Box &box) {
 
 void SvgSerializer::SaveFile(const std::string &path) {
 	setViewBox(m_viewBox);
-	if (m_bgColor != "") {
-		m_svg.append_attribute("style") =
-				("background-color:" + m_bgColor).c_str();
-	}
 	m_doc.save_file(path.c_str());
 }
 
@@ -100,7 +96,8 @@ void SvgSerializer::SetForeground(const std::string &color) {
 }
 
 void SvgSerializer::SetBackground(const std::string &color) {
-	m_bgColor = color;
+	m_svg.remove_attribute("style");
+	m_svg.append_attribute("style") = ("background-color:" + color).c_str();
 }
 
 pSerialItem SvgSerializer::NewGroup(pSerialItem target) {
@@ -117,15 +114,44 @@ pugi::xml_node SvgSerializer::newGlobalGroup() {
 	return group;
 }
 
-pSerialItem SvgSerializer::NewMask(const Box &box) {
-	pugi::xml_node mask = m_defs.append_child("mask");
-	std::string id = "mask" + std::to_string(m_maskCounter);
+pugi::xml_node SvgSerializer::newMask(pugi::xml_node parent, const Box &box) {
+	pugi::xml_node mask = parent.append_child("mask");
+	std::string maskId = "mask" + std::to_string(m_maskCounter);
 	m_maskCounter++;
-	mask.append_attribute("id") = id.c_str();
+	mask.append_attribute("id") = maskId.c_str();
 	pugi::xml_node rect = mask.append_child("rect");
 	setBox(rect, box);
 	rect.append_attribute("fill") = "white";
+	return mask;
+}
+
+pSerialItem SvgSerializer::NewMask(const Box &box) {
+	const char *groupName = "macro-masks";
+	pugi::xml_node maskGroup = m_defs.child(groupName);
+	if (maskGroup.empty()) {
+		maskGroup = m_defs.append_child(groupName);
+	}
+	pugi::xml_node mask = newMask(maskGroup, box);
 	return std::make_shared<SvgItem>(mask);
+}
+
+pugi::xml_node SvgSerializer::newGlobalMask(const Box &box) {
+	pugi::xml_node mask = newMask(m_defs, box);
+
+	std::string id = mask.attribute("id").as_string();
+	std::string maskObjectsId = id + "-objects";
+	pugi::xml_node maskObjects = m_defs.append_child("g");
+	maskObjects.append_attribute("id") = maskObjectsId.c_str();
+
+	std::string hrefAttr = "#" + maskObjectsId;
+
+	for (pugi::xml_node def = m_defs.child("mask"); def;
+			def = def.next_sibling("mask")) {
+		pugi::xml_node use = def.append_child("use");
+		use.append_attribute("href") = hrefAttr.c_str();
+	}
+
+	return maskObjects;
 }
 
 pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
@@ -216,13 +242,18 @@ pSerialItem SvgSerializer::AddPolygon(pSerialItem target,
 void SvgSerializer::SetMask(pSerialItem target, pSerialItem mask) {
 	pugi::xml_node target_node = SvgItem::GetNode(target);
 	pugi::xml_node mask_node = SvgItem::GetNode(mask);
-	std::string id = mask_node.attribute("id").as_string("missing_id");
-	std::string maskAttr = "url(#" + id + ")";
-	target_node.remove_attribute("mask");
-	target_node.append_attribute("mask") = maskAttr.c_str();
+	setMask(target_node, mask_node);
 }
 
-void SvgSerializer::setBox(pugi::xml_node node, const Box &box) {
+void SvgSerializer::setMask(pugi::xml_node target, pugi::xml_node mask) const {
+	std::string id = mask.attribute("id").as_string("missing_id");
+	id = { id, 0, id.rfind("-objects") };
+	std::string maskAttr = "url(#" + id + ")";
+	target.remove_attribute("mask");
+	target.append_attribute("mask") = maskAttr.c_str();
+}
+
+void SvgSerializer::setBox(pugi::xml_node node, const Box &box) const {
 	node.remove_attribute("x");
 	node.remove_attribute("y");
 	node.remove_attribute("width");
@@ -235,22 +266,21 @@ void SvgSerializer::setBox(pugi::xml_node node, const Box &box) {
 }
 
 pSerialItem SvgSerializer::GetTarget(Polarity polarity) {
-	pSerialItem target;
+	pugi::xml_node target;
 	if (polarity == Polarity::Dark()) {
 		if (!m_lastGroup || m_polarity == Polarity::Clear()) {
-			m_lastGroup = std::make_shared<SvgItem>(newGlobalGroup());
+			m_lastGroup = newGlobalGroup();
 		}
 		target = m_lastGroup;
 	} else {
 		if (!m_lastMask || m_polarity == Polarity::Dark()) {
-			m_lastMask = NewMask(m_viewBox);
-			//TODO this needs to apply to all previous groups
-			SetMask(m_lastGroup, m_lastMask);
+			m_lastMask = newGlobalMask(m_viewBox);
+			setMask(m_lastGroup, m_lastMask);
 		}
 		target = m_lastMask;
 	}
 	m_polarity = polarity;
-	return target;
+	return std::make_shared<SvgItem>(target);
 }
 
 } /* namespace gerbex */
