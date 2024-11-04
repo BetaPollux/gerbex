@@ -62,6 +62,7 @@ public:
 	virtual pSerialItem AddPolygon(pSerialItem target,
 			const std::vector<Point> &points) = 0;
 	virtual pSerialItem GetTarget(Polarity polarity) = 0;
+	virtual void SaveFile(const std::string &path) = 0;
 };
 
 } /* namespace gerbex */

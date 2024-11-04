@@ -15,5 +15,6 @@ The Python code is obsolete; the project is moving to C++.
 Packages required:
 
 	libpugixml-dev
+    libcgal-dev
+    libcgal-qt5-dev
 
-	

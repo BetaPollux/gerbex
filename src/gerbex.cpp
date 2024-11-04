@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "CgalSerializer.h"
 #include "FileProcessor.h"
 #include "SvgSerializer.h"
 #include <cstdlib>
@@ -31,24 +32,44 @@
 
 using namespace gerbex;
 
+enum class GerbexMode {
+	Svg, Cgal
+};
+
 int main(int argc, char *argv[]) {
 	std::cout << "Gerbex" << std::endl;
 
-	if (argc < 2) {
-		std::cerr << "Usage: gerbex <gbr_file> [<svg_file>]" << std::endl;
+	if (argc < 3) {
+		std::cerr << "Usage: gerbex svg|cgal <gbr_file> [<out_file>]"
+				<< std::endl;
 		return EXIT_FAILURE;
 	}
 
-	std::filesystem::path gbr_file = argv[1];
-	std::filesystem::path svg_file;
-	if (argc > 2) {
-		svg_file = argv[2];
+	GerbexMode mode;
+	std::string modeStr = argv[1];
+	std::string fileExt;
+	if (modeStr == "svg") {
+		mode = GerbexMode::Svg;
+		fileExt = ".svg";
+	} else if (modeStr == "cgal") {
+		mode = GerbexMode::Cgal;
+		fileExt = ".vtu";
 	} else {
-		svg_file = gbr_file.stem();
-		svg_file += ".svg";
+		std::cerr << "unrecognized mode " << modeStr << std::endl;
+		return EXIT_FAILURE;
 	}
-	if (std::filesystem::exists(svg_file)) {
-		std::cerr << "file already exists: " << svg_file << std::endl;
+
+	std::filesystem::path gbr_file = argv[2];
+	std::filesystem::path out_file;
+	if (argc > 3) {
+		out_file = argv[3];
+	} else {
+		out_file = gbr_file.stem();
+		out_file += fileExt;
+	}
+
+	if (std::filesystem::exists(out_file)) {
+		std::cerr << "output file already exists: " << out_file << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -57,23 +78,41 @@ int main(int argc, char *argv[]) {
 		std::cerr << "failed to open file" << std::endl;
 		return EXIT_FAILURE;
 	}
+
 	FileProcessor fileProcessor;
 	fileProcessor.Process(gerber);
 	Box box = fileProcessor.GetProcessor().GetBox();
 	std::cout << "Dimensions: " << box << std::endl;
 
-	SvgSerializer serializer(box.Pad(0.5));
-	serializer.SetViewPort(1000, 1000);
-	serializer.SetForeground("red");
-	serializer.SetBackground("black");
+	std::unique_ptr<Serializer> serializer;
+	switch (mode) {
+	case GerbexMode::Svg: {
+		std::unique_ptr<SvgSerializer> svgSerializer = std::make_unique<
+				SvgSerializer>(box.Pad(0.5));
+		svgSerializer->SetViewPort(1000, 1000);
+		svgSerializer->SetForeground("red");
+		svgSerializer->SetBackground("black");
+		serializer = std::move(svgSerializer);
+		break;
+	}
+	case GerbexMode::Cgal: {
+		std::unique_ptr<CgalSerializer> cgalSerializer = std::make_unique<
+				CgalSerializer>();
+		serializer = std::move(cgalSerializer);
+		break;
+	}
+	default:
+		std::cerr << "unrecognized mode" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 	std::vector<std::shared_ptr<GraphicalObject>> objects =
 			fileProcessor.GetProcessor().GetObjects();
 
 	for (std::shared_ptr<GraphicalObject> obj : objects) {
-		obj->Serialize(serializer, Point());
+		obj->Serialize(*serializer, Point());
 	}
 
-	serializer.SaveFile(svg_file);
+	serializer->SaveFile(out_file);
 }
 

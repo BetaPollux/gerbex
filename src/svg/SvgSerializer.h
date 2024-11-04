@@ -63,7 +63,7 @@ public:
 	SvgSerializer(const Box &viewBox, double scaling = 1000.0);
 	virtual ~SvgSerializer() = default;
 	void SetViewPort(int width, int height);
-	void SaveFile(const std::string &path);
+	void SaveFile(const std::string &path) override;
 	void SetForeground(const std::string &color);
 	void SetBackground(const std::string &color);
 	pSerialItem NewGroup(pSerialItem parent) override;

@@ -1,3 +1,4 @@
+add_subdirectory(cgal)
 add_subdirectory(graphics)
 add_subdirectory(processing)
 add_subdirectory(svg)
@@ -7,6 +8,7 @@ add_executable(test_gerbex
 )
 
 target_link_libraries(test_gerbex
+	test_cgal
 	test_graphics
 	test_processing
 	test_svg
