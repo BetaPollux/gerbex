@@ -21,31 +21,51 @@
 #define CGALSERIALIZER_H_
 
 #include "Serializer.h"
-
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-#include <CGAL/Triangulation_conformer_2.h>
-#include <CGAL/IO/write_VTU.h>
-#include <iostream>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
+#include <CGAL/Polygon_set_2.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef CGAL::Triangulation_vertex_base_2<K> Vb;
-typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+typedef CGAL::Polygon_2<K> Polygon_2;
+typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes_2;
+typedef CGAL::Polygon_set_2<K> Polygon_set_2;
+typedef CGAL::Point_2<K> Point_2;
 
 namespace gerbex {
 
 class CgalItem: public SerialItem {
 public:
-	CgalItem() = default;
+	CgalItem() :
+			m_polygonSet { std::make_shared<Polygon_set_2>() } {
+	}
+	CgalItem(std::shared_ptr<Polygon_set_2> polygonSet) :
+			m_polygonSet { polygonSet } {
+	}
+	CgalItem(const Polygon_2 &polygon) :
+			CgalItem() {
+		m_polygonSet->insert(polygon);
+	}
 	virtual ~CgalItem() = default;
+	const std::shared_ptr<Polygon_set_2> GetPolygonSet() const {
+		return m_polygonSet;
+	}
+	static std::shared_ptr<Polygon_set_2> GetPolygonSet(pSerialItem item) {
+		std::shared_ptr<CgalItem> cgal = std::dynamic_pointer_cast<CgalItem>(
+				item);
+		if (!cgal) {
+			throw std::invalid_argument("Svg received non-Svg item");
+		}
+		return cgal->m_polygonSet;
+	}
+
+private:
+	std::shared_ptr<Polygon_set_2> m_polygonSet;
 };
 
 class CgalSerializer: public Serializer {
 public:
-	CgalSerializer() = default;
+	CgalSerializer();
 	virtual ~CgalSerializer() = default;
 	pSerialItem NewMask(const Box &box) override;
 	pSerialItem AddDraw(pSerialItem target, double width,
@@ -63,8 +83,7 @@ public:
 	void SaveFile(const std::string &path) override;
 
 private:
-	void addLineSegment(CDT &cdt, const Point &pt1, const Point &pt2);
-	CDT m_cdt;
+	std::shared_ptr<Polygon_set_2> m_polygonSet;
 };
 
 } /* namespace gerbex */

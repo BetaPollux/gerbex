@@ -24,10 +24,15 @@
 #include "Point.h"
 #include "Segment.h"
 #include <cmath>
+#include <CGAL/draw_polygon_set_2.h>
 
 namespace gerbex {
 
 //TODO this needs to do boolean ops on polygons before creating constraints
+
+CgalSerializer::CgalSerializer() :
+		m_polygonSet { std::make_shared<Polygon_set_2>() } {
+}
 
 pSerialItem CgalSerializer::NewMask(const Box &box) {
 	return std::make_shared<CgalItem>();
@@ -35,7 +40,7 @@ pSerialItem CgalSerializer::NewMask(const Box &box) {
 
 pSerialItem CgalSerializer::AddDraw(pSerialItem target, double width,
 		const Segment &segment) {
-	addLineSegment(m_cdt, segment.GetStart(), segment.GetEnd());
+	//TODO make draw
 	return std::make_shared<CgalItem>();
 }
 
@@ -44,11 +49,16 @@ pSerialItem CgalSerializer::AddPolygon(pSerialItem target,
 	if (points.size() < 3) {
 		throw std::invalid_argument("invalid polygon");
 	}
-	for (size_t i = 1; i < points.size(); i++) {
-		addLineSegment(m_cdt, points[i - 1], points[i]);
+	std::shared_ptr<Polygon_set_2> set = CgalItem::GetPolygonSet(target);
+	Polygon_2 poly;
+	for (const Point &pt : points) {
+		poly.push_back(Point_2(pt.GetX(), pt.GetY()));
 	}
-	addLineSegment(m_cdt, points.back(), points.front());
-	return std::make_shared<CgalItem>();
+	if (poly.orientation() == CGAL::Orientation::NEGATIVE) {
+		poly.reverse_orientation();
+	}
+	set->join(poly);
+	return std::make_shared<CgalItem>(poly);
 }
 
 pSerialItem CgalSerializer::NewGroup(pSerialItem parent) {
@@ -56,12 +66,12 @@ pSerialItem CgalSerializer::NewGroup(pSerialItem parent) {
 }
 
 pSerialItem CgalSerializer::GetTarget(Polarity polarity) {
-	return std::make_shared<CgalItem>();
+	return std::make_shared<CgalItem>(m_polygonSet);
 }
 
 pSerialItem CgalSerializer::AddArc(pSerialItem target, double width,
 		const ArcSegment &segment) {
-	addLineSegment(m_cdt, segment.GetStart(), segment.GetEnd());
+	//TODO make arc
 	return std::make_shared<CgalItem>();
 }
 
@@ -79,29 +89,21 @@ pSerialItem CgalSerializer::AddCircle(pSerialItem target, double radius,
 		double y = radius * sin(angle);
 		points.push_back(center + Point(x, y));
 	}
-	AddPolygon(target, points);
-	return std::make_shared<CgalItem>();
+	return AddPolygon(target, points);
 }
 
 pSerialItem CgalSerializer::AddContour(pSerialItem target,
 		const Contour &contour) {
+	std::vector<Point> points;
 	for (std::shared_ptr<Segment> seg : contour.GetSegments()) {
-		addLineSegment(m_cdt, seg->GetStart(), seg->GetEnd());
+		//TODO handle ArcSegment
+		points.push_back(seg->GetStart());
 	}
-	return std::make_shared<CgalItem>();
+	return AddPolygon(target, points);
 }
 
 void CgalSerializer::SaveFile(const std::string &path) {
-	std::ofstream file(path);
-	CGAL::IO::write_VTU(file, m_cdt);
-	file.close();
-}
-
-void CgalSerializer::addLineSegment(CDT &cdt, const Point &pt1,
-		const Point &pt2) {
-	CDT::Vertex_handle va = cdt.insert(CDT::Point(pt1.GetX(), pt1.GetY()));
-	CDT::Vertex_handle vb = cdt.insert(CDT::Point(pt2.GetX(), pt2.GetY()));
-	cdt.insert_constraint(va, vb);
+	CGAL::draw(*m_polygonSet);
 }
 
 } /* namespace gerbex */
