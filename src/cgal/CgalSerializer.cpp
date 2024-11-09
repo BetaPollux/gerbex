@@ -62,7 +62,7 @@ pSerialItem CgalSerializer::AddPolygon(pSerialItem target,
 }
 
 pSerialItem CgalSerializer::NewGroup(pSerialItem parent) {
-	return std::make_shared<CgalItem>();
+	return std::make_shared<CgalItem>(m_polygonSet);
 }
 
 pSerialItem CgalSerializer::GetTarget(Polarity polarity) {
@@ -76,6 +76,9 @@ pSerialItem CgalSerializer::AddArc(pSerialItem target, double width,
 }
 
 void CgalSerializer::SetMask(pSerialItem target, pSerialItem mask) {
+	std::shared_ptr<Polygon_set_2> targetSet = CgalItem::GetPolygonSet(target);
+	std::shared_ptr<Polygon_set_2> maskSet = CgalItem::GetPolygonSet(mask);
+	targetSet->difference(*maskSet);
 }
 
 pSerialItem CgalSerializer::AddCircle(pSerialItem target, double radius,
