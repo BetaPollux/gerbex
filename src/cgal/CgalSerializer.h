@@ -83,6 +83,9 @@ public:
 	void SaveFile(const std::string &path) override;
 
 private:
+	std::vector<Point_2> makeArc(const Point &center, double radius, double start,
+			double end, int N);
+	Polygon_2 makeRegularPolygon(const Point &center, double radius, int N);
 	std::shared_ptr<Polygon_set_2> m_polygonSet;
 };
 

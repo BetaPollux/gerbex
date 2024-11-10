@@ -67,4 +67,6 @@ TEST(ArcSegment, GetBox) {
 	CHECK_EQUAL(expected, segment.GetBox());
 }
 
+//TODO test transform
+
 } /* namespace gerbex */
