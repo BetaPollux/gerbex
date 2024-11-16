@@ -100,12 +100,10 @@ void CgalSerializer::AddArc(pSerialItem target, double width,
 		circle.add_hole(inner);
 		set->join(circle);
 	} else {
-		Point start, end;
+		Point start = segment.GetStart();
+		Point end = segment.GetEnd();
 		Point center = segment.GetCenter();
-		if (segment.GetDirection() == ArcDirection::CounterClockwise) {
-			start = segment.GetStart();
-			end = segment.GetEnd();
-		} else {
+		if (segment.GetDirection() == ArcDirection::Clockwise) {
 			start = segment.GetEnd();
 			end = segment.GetStart();
 		}
@@ -155,12 +153,39 @@ void CgalSerializer::AddCircle(pSerialItem target, double radius,
 
 void CgalSerializer::AddContour(pSerialItem target, const Contour &contour) {
 	if (!contour.IsCircle()) {
-		std::vector<Point> points;
+		std::shared_ptr<Polygon_set_2> set = CgalItem::GetPolygonSet(target);
+		Polygon_2 poly;
 		for (std::shared_ptr<Segment> seg : contour.GetSegments()) {
-			//TODO handle ArcSegment
-			points.push_back(seg->GetStart());
+			std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<
+					ArcSegment>(seg);
+			if (arc) {
+				Point start = arc->GetStart();
+				Point end = arc->GetEnd();
+				Point center = arc->GetCenter();
+				double startAngle = atan2(start.GetY() - center.GetY(),
+						start.GetX() - center.GetX());
+				double endAngle = atan2(end.GetY() - center.GetY(),
+						end.GetX() - center.GetX());
+				if (arc->GetDirection() == ArcDirection::Clockwise
+						&& endAngle > startAngle) {
+					endAngle -= 2.0 * M_PI;
+				} else if (arc->GetDirection() == ArcDirection::CounterClockwise
+						&& endAngle < startAngle) {
+					endAngle += 2.0 * M_PI;
+				}
+				std::vector<Point_2> arc_points = makeArc(center,
+						arc->GetRadius(), startAngle, endAngle, NUM_ARC_POINTS);
+				arc_points.pop_back();
+				poly.insert(poly.end(), arc_points.begin(), arc_points.end());
+			} else {
+				Point_2 pt(seg->GetStart().GetX(), seg->GetStart().GetY());
+				poly.push_back(pt);
+			}
 		}
-		AddPolygon(target, points);
+		if (poly.orientation() == CGAL::Orientation::NEGATIVE) {
+			poly.reverse_orientation();
+		}
+		set->join(poly);
 	} else {
 		const std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<
 				ArcSegment>(contour.GetSegments().back());
