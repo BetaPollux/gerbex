@@ -157,7 +157,7 @@ pugi::xml_node SvgSerializer::newGlobalMask(const FixedBox &box) {
 	return maskObjects;
 }
 
-pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
+void SvgSerializer::AddArc(pSerialItem target, double width,
 		const ArcSegment &segment) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	if (segment.IsCircle()) {
@@ -168,7 +168,6 @@ pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
 		circle.append_attribute("cy") = c.GetY();
 		circle.append_attribute("fill") = "none";
 		circle.append_attribute("stroke-width") = scaleValue(width);
-		return std::make_shared<SvgItem>(circle);
 	} else {
 		FixedPoint s = scalePoint(segment.GetStart());
 		std::stringstream d;
@@ -179,11 +178,10 @@ pSerialItem SvgSerializer::AddArc(pSerialItem target, double width,
 		path.append_attribute("fill") = "none";
 		path.append_attribute("stroke-width") = scaleValue(width);
 		path.append_attribute("stroke-linecap") = "round";
-		return std::make_shared<SvgItem>(path);
 	}
 }
 
-pSerialItem SvgSerializer::AddCircle(pSerialItem target, double radius,
+void SvgSerializer::AddCircle(pSerialItem target, double radius,
 		const Point &center) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	pugi::xml_node circle = node.append_child("circle");
@@ -191,10 +189,9 @@ pSerialItem SvgSerializer::AddCircle(pSerialItem target, double radius,
 	circle.append_attribute("r") = scaleValue(radius);
 	circle.append_attribute("cx") = c.GetX();
 	circle.append_attribute("cy") = c.GetY();
-	return std::make_shared<SvgItem>(circle);
 }
 
-pSerialItem SvgSerializer::AddContour(pSerialItem target,
+void SvgSerializer::AddContour(pSerialItem target,
 		const Contour &contour) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	const std::vector<std::shared_ptr<Segment>> segments =
@@ -213,10 +210,9 @@ pSerialItem SvgSerializer::AddContour(pSerialItem target,
 	}
 	pugi::xml_node path = node.append_child("path");
 	path.append_attribute("d") = d.str().c_str();
-	return std::make_shared<SvgItem>(path);
 }
 
-pSerialItem SvgSerializer::AddDraw(pSerialItem target, double width,
+void SvgSerializer::AddDraw(pSerialItem target, double width,
 		const Segment &segment) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	FixedPoint s = scalePoint(segment.GetStart());
@@ -229,10 +225,9 @@ pSerialItem SvgSerializer::AddDraw(pSerialItem target, double width,
 	line.append_attribute("y1") = s.GetY();
 	line.append_attribute("x2") = e.GetX();
 	line.append_attribute("y2") = e.GetY();
-	return std::make_shared<SvgItem>(line);
 }
 
-pSerialItem SvgSerializer::AddPolygon(pSerialItem target,
+void SvgSerializer::AddPolygon(pSerialItem target,
 		const std::vector<Point> &points) {
 	pugi::xml_node node = SvgItem::GetNode(target);
 	pugi::xml_node poly = node.append_child("polygon");
@@ -242,7 +237,6 @@ pSerialItem SvgSerializer::AddPolygon(pSerialItem target,
 		pts_stream << p.GetX() << "," << p.GetY() << " ";
 	}
 	poly.append_attribute("points") = pts_stream.str().c_str();
-	return std::make_shared<SvgItem>(poly);
 }
 
 void SvgSerializer::SetMask(pSerialItem target, pSerialItem mask) {

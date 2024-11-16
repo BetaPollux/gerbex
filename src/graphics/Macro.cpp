@@ -36,8 +36,7 @@ const std::vector<std::shared_ptr<MacroPrimitive> >& Macro::GetPrimitives() cons
 }
 
 void Macro::Serialize(Serializer &serializer, pSerialItem target, const Point &origin) const {
-	pSerialItem macro = serializer.NewGroup(target);
-	pSerialItem on = serializer.NewGroup(macro);
+	pSerialItem on = serializer.NewGroup(target);
 	pSerialItem off;
 	Box box = GetBox().Translate(origin);
 	MacroExposure lastExposure = MacroExposure::ON;
@@ -45,7 +44,7 @@ void Macro::Serialize(Serializer &serializer, pSerialItem target, const Point &o
 		pSerialItem primTarget;
 		if (prim->GetExposure() == MacroExposure::ON) {
 			if (lastExposure == MacroExposure::OFF) {
-				on = serializer.NewGroup(macro);
+				on = serializer.NewGroup(target);
 			}
 			primTarget = on;
 		} else {

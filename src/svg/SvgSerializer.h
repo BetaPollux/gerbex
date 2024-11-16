@@ -69,14 +69,14 @@ public:
 	pSerialItem NewGroup(pSerialItem parent) override;
 	pSerialItem NewMask(const Box &box) override;
 	void SetMask(pSerialItem target, pSerialItem mask) override;
-	pSerialItem AddArc(pSerialItem target, double width,
+	void AddArc(pSerialItem target, double width,
 			const ArcSegment &segment) override;
-	pSerialItem AddCircle(pSerialItem target, double radius,
+	void AddCircle(pSerialItem target, double radius,
 			const Point &center) override;
-	pSerialItem AddContour(pSerialItem target, const Contour &contour) override;
-	pSerialItem AddDraw(pSerialItem target, double width,
+	void AddContour(pSerialItem target, const Contour &contour) override;
+	void AddDraw(pSerialItem target, double width,
 			const Segment &segment) override;
-	pSerialItem AddPolygon(pSerialItem target, const std::vector<Point> &points)
+	void AddPolygon(pSerialItem target, const std::vector<Point> &points)
 			override;
 	pSerialItem GetTarget(Polarity polarity) override;
 

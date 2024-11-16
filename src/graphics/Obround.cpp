@@ -58,11 +58,14 @@ void Obround::Serialize(Serializer &serializer, pSerialItem target,
 		const Point &origin) const {
 	Segment segment = m_segment;
 	segment.Translate(origin);
-	pSerialItem draw = serializer.AddDraw(target, m_drawWidth, segment);
-	if (m_holeDiameter > 0) {
+	if (m_holeDiameter == 0.0) {
+		serializer.AddDraw(target, m_drawWidth, segment);
+	} else {
+		pSerialItem group = serializer.NewGroup(target);
+		serializer.AddDraw(group, m_drawWidth, segment);
 		pSerialItem mask = serializer.NewMask(GetBox().Translate(origin));
 		serializer.AddCircle(mask, 0.5 * m_holeDiameter, origin);
-		serializer.SetMask(draw, mask);
+		serializer.SetMask(group, mask);
 	}
 }
 

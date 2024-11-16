@@ -40,7 +40,7 @@ pSerialItem CgalSerializer::NewMask(const Box &box) {
 	return std::make_shared<CgalItem>();
 }
 
-pSerialItem CgalSerializer::AddDraw(pSerialItem target, double width,
+void CgalSerializer::AddDraw(pSerialItem target, double width,
 		const Segment &segment) {
 	std::shared_ptr<Polygon_set_2> set = CgalItem::GetPolygonSet(target);
 	Point start = segment.GetStart();
@@ -56,10 +56,9 @@ pSerialItem CgalSerializer::AddDraw(pSerialItem target, double width,
 	poly.insert(poly.end(), startCap.begin(), startCap.end());
 	poly.insert(poly.end(), endCap.begin(), endCap.end());
 	set->join(poly);
-	return target;
 }
 
-pSerialItem CgalSerializer::AddPolygon(pSerialItem target,
+void CgalSerializer::AddPolygon(pSerialItem target,
 		const std::vector<Point> &points) {
 	if (points.size() < 3) {
 		throw std::invalid_argument("invalid polygon");
@@ -73,7 +72,6 @@ pSerialItem CgalSerializer::AddPolygon(pSerialItem target,
 		poly.reverse_orientation();
 	}
 	set->join(poly);
-	return target;
 }
 
 pSerialItem CgalSerializer::NewGroup(pSerialItem parent) {
@@ -84,7 +82,7 @@ pSerialItem CgalSerializer::GetTarget(Polarity polarity) {
 	return std::make_shared<CgalItem>(m_polygonSet);
 }
 
-pSerialItem CgalSerializer::AddArc(pSerialItem target, double width,
+void CgalSerializer::AddArc(pSerialItem target, double width,
 		const ArcSegment &segment) {
 	std::shared_ptr<Polygon_set_2> set = CgalItem::GetPolygonSet(target);
 	if (segment.IsCircle()) {
@@ -136,7 +134,6 @@ pSerialItem CgalSerializer::AddArc(pSerialItem target, double width,
 		poly.insert(poly.end(), innerArc.begin(), innerArc.end());
 		set->join(poly);
 	}
-	return target;
 }
 
 void CgalSerializer::SetMask(pSerialItem target, pSerialItem mask) {
@@ -145,22 +142,21 @@ void CgalSerializer::SetMask(pSerialItem target, pSerialItem mask) {
 	targetSet->difference(*maskSet);
 }
 
-pSerialItem CgalSerializer::AddCircle(pSerialItem target, double radius,
+void CgalSerializer::AddCircle(pSerialItem target, double radius,
 		const Point &center) {
 	std::shared_ptr<Polygon_set_2> set = CgalItem::GetPolygonSet(target);
 	Polygon_2 circle = makeRegularPolygon(center, radius, NUM_CIRCLE_POINTS);
 	set->join(circle);
-	return target;
 }
 
-pSerialItem CgalSerializer::AddContour(pSerialItem target,
+void CgalSerializer::AddContour(pSerialItem target,
 		const Contour &contour) {
 	std::vector<Point> points;
 	for (std::shared_ptr<Segment> seg : contour.GetSegments()) {
 		//TODO handle ArcSegment
 		points.push_back(seg->GetStart());
 	}
-	return AddPolygon(target, points);
+	AddPolygon(target, points);
 }
 
 void CgalSerializer::SaveFile(const std::string &path) {

@@ -67,11 +67,14 @@ void Polygon::Serialize(Serializer &serializer, pSerialItem target,
 	for (Point &p : vertices) {
 		p += origin;
 	}
-	pSerialItem poly = serializer.AddPolygon(target, vertices);
-	if (m_holeDiameter > 0) {
+	if (m_holeDiameter == 0.0) {
+		serializer.AddPolygon(target, vertices);
+	} else {
+		pSerialItem group = serializer.NewGroup(target);
+		serializer.AddPolygon(group, vertices);
 		pSerialItem mask = serializer.NewMask(GetBox().Translate(origin));
 		serializer.AddCircle(mask, 0.5 * m_holeDiameter, origin);
-		serializer.SetMask(poly, mask);
+		serializer.SetMask(group, mask);
 	}
 }
 

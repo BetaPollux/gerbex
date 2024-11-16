@@ -51,15 +51,14 @@ public:
 	virtual pSerialItem NewGroup(pSerialItem parent) = 0;
 	virtual pSerialItem NewMask(const Box &box) = 0;
 	virtual void SetMask(pSerialItem target, pSerialItem mask) = 0;
-	virtual pSerialItem AddArc(pSerialItem target, double width,
+	virtual void AddArc(pSerialItem target, double width,
 			const ArcSegment &segment) = 0;
-	virtual pSerialItem AddCircle(pSerialItem target, double radius,
+	virtual void AddCircle(pSerialItem target, double radius,
 			const Point &center) = 0;
-	virtual pSerialItem AddContour(pSerialItem target,
-			const Contour &contour) = 0;
-	virtual pSerialItem AddDraw(pSerialItem target, double width,
+	virtual void AddContour(pSerialItem target, const Contour &contour) = 0;
+	virtual void AddDraw(pSerialItem target, double width,
 			const Segment &segment) = 0;
-	virtual pSerialItem AddPolygon(pSerialItem target,
+	virtual void AddPolygon(pSerialItem target,
 			const std::vector<Point> &points) = 0;
 	virtual pSerialItem GetTarget(Polarity polarity) = 0;
 	virtual void SaveFile(const std::string &path) = 0;

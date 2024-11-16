@@ -68,18 +68,18 @@ public:
 	CgalSerializer();
 	virtual ~CgalSerializer() = default;
 	pSerialItem NewMask(const Box &box) override;
-	pSerialItem AddDraw(pSerialItem target, double width,
+	void AddDraw(pSerialItem target, double width,
 			const Segment &segment) override;
-	pSerialItem AddPolygon(pSerialItem target, const std::vector<Point> &points)
+	void AddPolygon(pSerialItem target, const std::vector<Point> &points)
 			override;
 	pSerialItem NewGroup(pSerialItem parent) override;
 	pSerialItem GetTarget(Polarity polarity) override;
-	pSerialItem AddArc(pSerialItem target, double width,
+	void AddArc(pSerialItem target, double width,
 			const ArcSegment &segment) override;
 	void SetMask(pSerialItem target, pSerialItem mask) override;
-	pSerialItem AddCircle(pSerialItem target, double radius,
+	void AddCircle(pSerialItem target, double radius,
 			const Point &center) override;
-	pSerialItem AddContour(pSerialItem target, const Contour &contour) override;
+	void AddContour(pSerialItem target, const Contour &contour) override;
 	void SaveFile(const std::string &path) override;
 
 private:
