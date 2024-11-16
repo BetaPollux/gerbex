@@ -56,7 +56,7 @@ bool Region::AreContoursClosed() const {
 			return false;
 		}
 	}
-	return true;
+	return !m_contours.empty();
 }
 
 void Region::Serialize(Serializer &serializer, const Point &origin) const {
@@ -72,7 +72,7 @@ Box Region::GetBox() const {
 	if (!AreContoursClosed()) {
 		throw std::invalid_argument("cannot get box for open contours");
 	}
-	Box box;
+	Box box = m_contours.front().GetSegments().front()->GetBox();
 	for (const Contour &c : m_contours) {
 		for (std::shared_ptr<Segment> s : c.GetSegments()) {
 			box = box.Extend(s->GetBox());

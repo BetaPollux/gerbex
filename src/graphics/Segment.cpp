@@ -71,4 +71,8 @@ std::unique_ptr<Segment> Segment::Clone() {
 	return std::make_unique<Segment>(*this);
 }
 
+bool Segment::IsZeroLength() const {
+	return m_start == m_end;
+}
+
 } /* namespace gerbex */

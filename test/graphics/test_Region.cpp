@@ -45,6 +45,10 @@ TEST(Region_Init, AddSegment_NoContours) {
 	CHECK_THROWS(std::logic_error, region.AddSegment(segment));
 }
 
+TEST(Region_Init, Closed) {
+	CHECK(!region.AreContoursClosed());
+}
+
 /***
  * Region with one contour
  */
@@ -167,3 +171,4 @@ TEST(Region_Box, Multi) {
 }
 
 //TODO test region serialize, transform, translate, clone
+//TODO test box that excludes 0, 0

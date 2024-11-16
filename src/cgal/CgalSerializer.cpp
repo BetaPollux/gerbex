@@ -33,11 +33,7 @@
 namespace gerbex {
 
 CgalSerializer::CgalSerializer() :
-		m_polygonSet { std::make_shared<Polygon_set_2>() } {
-}
-
-pSerialItem CgalSerializer::NewMask(const Box &box) {
-	return std::make_shared<CgalItem>();
+		m_items { } {
 }
 
 void CgalSerializer::AddDraw(pSerialItem target, double width,
@@ -75,11 +71,19 @@ void CgalSerializer::AddPolygon(pSerialItem target,
 }
 
 pSerialItem CgalSerializer::NewGroup(pSerialItem parent) {
-	return std::make_shared<CgalItem>(m_polygonSet);
+	std::shared_ptr<CgalItem> item = std::make_shared<CgalItem>(Polarity::Dark);
+	m_items.push_back(item);
+	return item;
+}
+
+pSerialItem CgalSerializer::NewMask(const Box &box) {
+	return std::make_shared<CgalItem>(Polarity::Clear);
 }
 
 pSerialItem CgalSerializer::GetTarget(Polarity polarity) {
-	return std::make_shared<CgalItem>(m_polygonSet);
+	std::shared_ptr<CgalItem> item = std::make_shared<CgalItem>(polarity);
+	m_items.push_back(item);
+	return item;
 }
 
 void CgalSerializer::AddArc(pSerialItem target, double width,
@@ -149,18 +153,31 @@ void CgalSerializer::AddCircle(pSerialItem target, double radius,
 	set->join(circle);
 }
 
-void CgalSerializer::AddContour(pSerialItem target,
-		const Contour &contour) {
-	std::vector<Point> points;
-	for (std::shared_ptr<Segment> seg : contour.GetSegments()) {
-		//TODO handle ArcSegment
-		points.push_back(seg->GetStart());
+void CgalSerializer::AddContour(pSerialItem target, const Contour &contour) {
+	if (!contour.IsCircle()) {
+		std::vector<Point> points;
+		for (std::shared_ptr<Segment> seg : contour.GetSegments()) {
+			//TODO handle ArcSegment
+			points.push_back(seg->GetStart());
+		}
+		AddPolygon(target, points);
+	} else {
+		const std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<
+				ArcSegment>(contour.GetSegments().back());
+		AddCircle(target, arc->GetRadius(), arc->GetCenter());
 	}
-	AddPolygon(target, points);
 }
 
 void CgalSerializer::SaveFile(const std::string &path) {
-	CGAL::draw(*m_polygonSet);
+	Polygon_set_2 result;
+	for (std::shared_ptr<CgalItem> item : m_items) {
+		if (item->GetPolarity() == Polarity::Dark) {
+			result.join(*item->GetPolygonSet());
+		} else {
+			result.difference(*item->GetPolygonSet());
+		}
+	}
+	CGAL::draw(result);
 }
 
 std::vector<Point_2> CgalSerializer::makeArc(const Point &center, double radius,

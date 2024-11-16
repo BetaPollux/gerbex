@@ -90,4 +90,8 @@ std::unique_ptr<Segment> ArcSegment::Clone() {
 	return std::make_unique<ArcSegment>(*this);
 }
 
+bool ArcSegment::IsZeroLength() const {
+	return m_start == m_end && m_centerOffset == Point();
+}
+
 } /* namespace gerbex */

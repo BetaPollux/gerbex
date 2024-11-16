@@ -18,7 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Contour.h>
+#include "ArcSegment.h"
+#include "Contour.h"
 #include "Point.h"
 #include "Serializer.h"
 #include <stdexcept>
@@ -33,6 +34,7 @@ Contour::Contour() :
 
 bool Contour::IsClosed() const {
 	//Checks that all segments are connected.
+	//Must be either a triangle or higher order (> 2 sides), or a circle (1 arc segment)
 	//Does NOT check for more complex conditions which are invalid.
 	if (m_segments.size() > 2) {
 		bool closedEnd = (m_segments.front()->GetStart()
@@ -44,13 +46,22 @@ bool Contour::IsClosed() const {
 		}
 		return closedEnd && connected;
 	} else {
+		return IsCircle();
+	}
+}
+
+bool Contour::IsCircle() const {
+	if (m_segments.size() == 1) {
+		std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<ArcSegment>(
+				m_segments.back());
+		return arc && arc->IsCircle();
+	} else {
 		return false;
 	}
 }
 
 void Contour::AddSegment(const std::shared_ptr<Segment> &segment) {
-	//TODO what about a full circle arc?
-	if (segment->GetStart() == segment->GetEnd()) {
+	if (segment->IsZeroLength()) {
 		throw std::invalid_argument("contour cannot have zero-length segment");
 	}
 	m_segments.push_back(segment);

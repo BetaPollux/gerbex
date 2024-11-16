@@ -36,15 +36,9 @@ namespace gerbex {
 
 class CgalItem: public SerialItem {
 public:
-	CgalItem() :
-			m_polygonSet { std::make_shared<Polygon_set_2>() } {
-	}
-	CgalItem(std::shared_ptr<Polygon_set_2> polygonSet) :
-			m_polygonSet { polygonSet } {
-	}
-	CgalItem(const Polygon_2 &polygon) :
-			CgalItem() {
-		m_polygonSet->insert(polygon);
+	CgalItem(Polarity polarity) :
+			m_polarity { polarity }, m_polygonSet { std::make_shared<
+					Polygon_set_2>() } {
 	}
 	virtual ~CgalItem() = default;
 	const std::shared_ptr<Polygon_set_2> GetPolygonSet() const {
@@ -54,12 +48,17 @@ public:
 		std::shared_ptr<CgalItem> cgal = std::dynamic_pointer_cast<CgalItem>(
 				item);
 		if (!cgal) {
-			throw std::invalid_argument("Svg received non-Svg item");
+			throw std::invalid_argument("Cgal received non-Cgal item");
 		}
 		return cgal->m_polygonSet;
 	}
 
+	Polarity GetPolarity() const {
+		return m_polarity;
+	}
+
 private:
+	Polarity m_polarity;
 	std::shared_ptr<Polygon_set_2> m_polygonSet;
 };
 
@@ -68,25 +67,25 @@ public:
 	CgalSerializer();
 	virtual ~CgalSerializer() = default;
 	pSerialItem NewMask(const Box &box) override;
-	void AddDraw(pSerialItem target, double width,
-			const Segment &segment) override;
+	void AddDraw(pSerialItem target, double width, const Segment &segment)
+			override;
 	void AddPolygon(pSerialItem target, const std::vector<Point> &points)
 			override;
 	pSerialItem NewGroup(pSerialItem parent) override;
 	pSerialItem GetTarget(Polarity polarity) override;
-	void AddArc(pSerialItem target, double width,
-			const ArcSegment &segment) override;
+	void AddArc(pSerialItem target, double width, const ArcSegment &segment)
+			override;
 	void SetMask(pSerialItem target, pSerialItem mask) override;
-	void AddCircle(pSerialItem target, double radius,
-			const Point &center) override;
+	void AddCircle(pSerialItem target, double radius, const Point &center)
+			override;
 	void AddContour(pSerialItem target, const Contour &contour) override;
 	void SaveFile(const std::string &path) override;
 
 private:
-	std::vector<Point_2> makeArc(const Point &center, double radius, double start,
-			double end, int N);
+	std::vector<Point_2> makeArc(const Point &center, double radius,
+			double start, double end, int N);
 	Polygon_2 makeRegularPolygon(const Point &center, double radius, int N);
-	std::shared_ptr<Polygon_set_2> m_polygonSet;
+	std::vector<std::shared_ptr<CgalItem>> m_items;
 };
 
 } /* namespace gerbex */

@@ -45,6 +45,7 @@ public:
 	void ApplyTransform(const gerbex::Transform &transform) override;
 	Box GetBox() const override;
 	std::unique_ptr<Segment> Clone() override;
+	bool IsZeroLength() const override;
 
 protected:
 	Point m_centerOffset;

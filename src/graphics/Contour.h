@@ -42,6 +42,7 @@ public:
 	bool operator!=(const Contour &rhs) const;
 	Contour& operator=(const Contour &rhs);
 	bool IsClosed() const;
+	bool IsCircle() const;
 	void AddSegment(const std::shared_ptr<Segment> &segment);
 	const std::vector<std::shared_ptr<Segment>>& GetSegments() const;
 	void Translate(const Point &offset);

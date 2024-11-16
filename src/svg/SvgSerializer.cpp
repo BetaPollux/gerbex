@@ -191,25 +191,31 @@ void SvgSerializer::AddCircle(pSerialItem target, double radius,
 	circle.append_attribute("cy") = c.GetY();
 }
 
-void SvgSerializer::AddContour(pSerialItem target,
-		const Contour &contour) {
-	pugi::xml_node node = SvgItem::GetNode(target);
-	const std::vector<std::shared_ptr<Segment>> segments =
-			contour.GetSegments();
-	FixedPoint s = scalePoint(segments[0]->GetStart());
-	std::stringstream d;
-	d << "M " << s.GetX() << " " << s.GetY() << " ";
-	for (std::shared_ptr<Segment> segment : segments) {
-		std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<ArcSegment>(
-				segment);
-		if (arc) {
-			d << makePathArc(*arc);
-		} else {
-			d << makePathLine(*segment);
+void SvgSerializer::AddContour(pSerialItem target, const Contour &contour) {
+	if (!contour.IsCircle()) {
+		pugi::xml_node node = SvgItem::GetNode(target);
+		const std::vector<std::shared_ptr<Segment>> segments =
+				contour.GetSegments();
+
+		FixedPoint s = scalePoint(segments[0]->GetStart());
+		std::stringstream d;
+		d << "M " << s.GetX() << " " << s.GetY() << " ";
+		for (std::shared_ptr<Segment> segment : segments) {
+			std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<
+					ArcSegment>(segment);
+			if (arc) {
+				d << makePathArc(*arc);
+			} else {
+				d << makePathLine(*segment);
+			}
 		}
+		pugi::xml_node path = node.append_child("path");
+		path.append_attribute("d") = d.str().c_str();
+	} else {
+		const std::shared_ptr<ArcSegment> arc = std::dynamic_pointer_cast<
+				ArcSegment>(contour.GetSegments().back());
+		AddCircle(target, arc->GetRadius(), arc->GetCenter());
 	}
-	pugi::xml_node path = node.append_child("path");
-	path.append_attribute("d") = d.str().c_str();
 }
 
 void SvgSerializer::AddDraw(pSerialItem target, double width,

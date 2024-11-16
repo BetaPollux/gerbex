@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ArcSegment.h"
 #include "Circle.h"
 #include "Contour.h"
 #include "GraphicsTestHelpers.h"
@@ -61,6 +62,10 @@ TEST(ContourTest, IsClosed_Empty) {
 	CHECK(!contour.IsClosed());
 }
 
+TEST(ContourTest, IsCircle_Empty) {
+	CHECK(!contour.IsCircle());
+}
+
 TEST(ContourTest, IsClosed_TwoSegments) {
 	Point pt1 = Point(0, 0);
 	Point pt2 = Point(100, 0);
@@ -89,6 +94,10 @@ TEST_GROUP(Contour_Triangle) {
 
 TEST(Contour_Triangle, IsClosed) {
 	CHECK(contour.IsClosed());
+}
+
+TEST(Contour_Triangle, IsCircle) {
+	CHECK(!contour.IsCircle());
 }
 
 TEST(Contour_Triangle, OpenEnd) {
@@ -129,5 +138,23 @@ TEST(Contour_Triangle, DeepCopy) {
 
 	CHECK_EQUAL(pt1 + offset, copy.GetSegments()[0]->GetStart());
 	CHECK_EQUAL(pt1, contour.GetSegments()[0]->GetStart());
+}
+
+TEST_GROUP(Contour_Circle) {
+	Contour contour;
+
+	void setup() {
+		contour.AddSegment(
+				std::make_shared<ArcSegment>(Point(), Point(), Point(100, 0),
+						ArcDirection::Clockwise));
+	}
+};
+
+TEST(Contour_Circle, IsCircle) {
+	CHECK(contour.IsCircle());
+}
+
+TEST(Contour_Circle, IsClosed) {
+	CHECK(contour.IsClosed());
 }
 

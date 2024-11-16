@@ -34,7 +34,6 @@ TEST(CgalSerializer, MakeFile) {
 	pSerialItem root = serializer.GetTarget(Polarity::Dark);
 	serializer.AddPolygon(root, { Point(-10.0, -10.0), Point(10.0, -10.0),
 			Point(0.0, -5.0) });
-	serializer.SaveFile("output.svg");
 }
 
 

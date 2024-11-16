@@ -40,6 +40,7 @@ public:
 	bool operator!=(const Segment &rhs) const;
 	const Point& GetStart() const;
 	const Point& GetEnd() const;
+	virtual bool IsZeroLength() const;
 	virtual Box GetBox() const;
 	virtual std::unique_ptr<Segment> Clone();
 	virtual void Translate(const Point &offset);
